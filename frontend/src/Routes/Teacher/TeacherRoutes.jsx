@@ -1,0 +1,38 @@
+// Routes/Teacher/TeacherRoutes.jsx
+import { Routes, Route, Navigate } from "react-router-dom";
+import TeacherDashboardPage from "../../pages/teacher/TeacherDashboardPage.jsx";
+import TeacherProfileManage from "../../pages/teacher/TeacherProfileManage.jsx";
+import GetTeacherClassesAndSubjects from "../../pages/teacher/Teacher_Features/GetTeacherClassesAndSubjects.jsx";
+import TeacherNotifications from "../../pages/teacher/Teacher_Features/TeacherNotifications.jsx";
+import SalaryStatus from "../../pages/teacher/Teacher_Features/SalaryStatus.jsx";
+import MarkAttendance from "../../pages/teacher/Teacher_Features/Attendance/MarkAttendance.jsx";
+import ViewMySchedule from "../../pages/teacher/Teacher_Features/ViewMySchedule.jsx";
+import CreateResult from "../../pages/teacher/Teacher_Features/Result/CreateResult.jsx";
+import ViewResults from "../../pages/teacher/Teacher_Features/Result/ViewResults.jsx";
+import EditResult from "../../pages/teacher/Teacher_Features/Result/EditResult.jsx";
+import TeacherAnnouncements from "../../pages/teacher/Teacher_Features/Communication/TeacherAnnouncements.jsx";
+import TeacherMessaging from "../../pages/teacher/Teacher_Features/Communication/TeacherMessaging.jsx";
+
+const TeacherRoutes = () => {  
+  
+  return (
+    <Routes>
+      <Route path="teacher-dashboard" element={<TeacherDashboardPage />} />
+      <Route path="profile" element={<TeacherProfileManage />} />
+      <Route path="my-class" element={<GetTeacherClassesAndSubjects />} />
+      <Route path="create-result" element={<CreateResult />} />
+      <Route path="view-results" element={<ViewResults />} />
+      <Route path="my-schedule" element={<ViewMySchedule />} />
+      <Route path="edit-result/:resultId" element={<EditResult />} />
+      <Route path="mark-attendance" element={<MarkAttendance />} />
+      <Route path="notifications" element={<TeacherNotifications />} />
+      <Route path="salary-status" element={<SalaryStatus />} />
+     <Route path="announcements" element={<TeacherAnnouncements />} />
+     <Route path="messages" element={<TeacherMessaging />} />
+      {/* Catch-all redirect */}
+      <Route path="*" element={<Navigate to="teacher-dashboard" replace />} />
+    </Routes>
+  );
+};
+
+export default TeacherRoutes;
