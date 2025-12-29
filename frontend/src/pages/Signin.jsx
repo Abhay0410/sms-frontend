@@ -185,7 +185,8 @@ const Signin = ({ setIsLoggedIn, setUserRole }) => {
            {/* Test Credentials Helper */}
            <div className="mt-6 p-3 bg-gray-50 text-xs text-gray-500 rounded border">
              <p className="font-bold mb-1">Demo Credentials:</p>
-             <p>Admin ID: ADMO11</p>
+             <p className="font-bold mb-1">Green Valley School:</p>
+             <p>Admin ID: ADM001</p>
              <p>Pass: Admin@123</p><br/>
 
              <p>Teacher ID: TCHR250001</p>
