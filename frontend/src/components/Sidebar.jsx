@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Add useLocation
 import { FaBars, FaHome, FaSignOutAlt, FaChevronDown, FaChevronRight } from "react-icons/fa";
 import useLogout from "../hooks/useLogout";
 
@@ -7,14 +7,11 @@ const Sidebar = ({
   isOpen, 
   setIsOpen, 
   sections, 
-  activeTab, 
-  setActiveTab, 
-  activeSubTab,
-  setActiveSubTab,
   title, 
   role 
 }) => {
   const navigate = useNavigate();
+  const location = useLocation(); // To track which tab is active based on URL
   const logout = useLogout();
   const [expandedSections, setExpandedSections] = useState([]);
 
@@ -26,22 +23,14 @@ const Sidebar = ({
     );
   };
 
-  const handleMainTabClick = (section) => {
-    if (section.subTabs) {
-      toggleSection(section.title);
+  const handleMenuClick = (item) => {
+    if (item.subTabs) {
+      toggleSection(item.title);
     } else {
-      setActiveTab(section.title);
-      setActiveSubTab?.(null);
+      // Navigate to the role-prefixed path
+      navigate(`/${role}/${item.path}`);
       if (window.innerWidth < 768) setIsOpen(false);
-      navigate(`/${role}/${role}-dashboard`);
     }
-  };
-
-  const handleSubTabClick = (sectionTitle, subTitle) => {
-    setActiveTab(sectionTitle);
-    setActiveSubTab?.(subTitle);
-    if (window.innerWidth < 768) setIsOpen(false);
-    navigate(`/${role}/${role}-dashboard`);
   };
 
   return (
@@ -64,13 +53,13 @@ const Sidebar = ({
         </button>
       </div>
 
-      <nav className="mt-6 px-4 space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
+      <nav className="mt-6 px-4 space-y-2 overflow-y-auto max-h-[calc(100vh-200px)] no-scrollbar">
         {sections.map((s) => (
           <div key={s.title}>
             <button
-              onClick={() => handleMainTabClick(s)}
+              onClick={() => handleMenuClick(s)}
               className={`w-full flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold transition-all ${
-                activeTab === s.title && !s.subTabs
+                location.pathname.includes(s.path) && !s.subTabs
                   ? "bg-indigo-600 text-white shadow-lg"
                   : "text-slate-400 hover:bg-slate-800 hover:text-white"
               }`}
@@ -87,9 +76,12 @@ const Sidebar = ({
                 {s.subTabs.map((sub) => (
                   <button
                     key={sub.title}
-                    onClick={() => handleSubTabClick(s.title, sub.title)}
+                    onClick={() => {
+                      navigate(`/${role}/${sub.path}`);
+                      if (window.innerWidth < 768) setIsOpen(false);
+                    }}
                     className={`w-full text-left rounded-lg px-4 py-2 text-xs font-bold transition-all ${
-                      activeSubTab === sub.title ? "bg-slate-800 text-indigo-400" : "text-slate-500 hover:text-slate-300"
+                      location.pathname.includes(sub.path) ? "bg-slate-800 text-indigo-400" : "text-slate-500 hover:text-slate-300"
                     }`}
                   >
                     {sub.title}

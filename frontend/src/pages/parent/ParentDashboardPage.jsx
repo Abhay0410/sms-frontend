@@ -1,83 +1,38 @@
-import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaBars, FaBell, FaChild, FaDollarSign, FaUserAlt, FaCalendarAlt, FaCheckSquare, FaChartBar, FaInbox } from "react-icons/fa";
-import Sidebar from "../../components/Sidebar";
+import React from "react";
+import { FaChild, FaWallet, FaCheckSquare, FaChartBar } from "react-icons/fa";
 
 export default function ParentDashboardPage() {
-  const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("My Children");
-
-  const sections = useMemo(() => [
-    {
-      title: "My Children",
-      description: "Central hub for your children's reports.",
-      cards: [{ icon: <FaChild />, title: "Children Details", page: "children", color: "text-blue-600", bg: "bg-blue-50" }],
-    },
-    {
-      title: "Academic",
-      description: "Monitor daily schedules and outcomes.",
-      cards: [
-        { icon: <FaChartBar />, title: "Exam Results", page: "child-results", color: "text-purple-600", bg: "bg-purple-50" },
-        { icon: <FaCalendarAlt />, title: "Timetable", page: "timetable", color: "text-indigo-600", bg: "bg-indigo-50" },
-        { icon: <FaCheckSquare />, title: "Attendance", page: "attendance", color: "text-emerald-600", bg: "bg-emerald-50" },
-      ],
-    },
-    {
-      title: "Administrative",
-      description: "Manage finances and profile.",
-      cards: [
-        { icon: <FaDollarSign />, title: "Fees", page: "fee-details", color: "text-amber-600", bg: "bg-amber-50" },
-        { icon: <FaInbox />, title: "Mailbox", page: "messages", color: "text-indigo-600", bg: "bg-indigo-50" },
-        { icon: <FaBell />, title: "Notices", page: "notifications", color: "text-rose-600", bg: "bg-rose-50" },
-        { icon: <FaUserAlt />, title: "Profile", page: "profile", color: "text-slate-600", bg: "bg-slate-50" },
-      ],
-    },
-  ], []);
+  const stats = [
+    { label: "Registered Children", value: "02", icon: <FaChild />, color: "bg-blue-500" },
+    { label: "Avg Attendance", value: "88%", icon: <FaCheckSquare />, color: "bg-emerald-500" },
+    { label: "Recent Grade", value: "A+", icon: <FaChartBar />, color: "bg-purple-500" },
+    { label: "Pending Fees", value: "₹0", icon: <FaWallet />, color: "bg-amber-500" },
+  ];
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar 
-        isOpen={sidebarOpen} setIsOpen={setSidebarOpen}
-        sections={sections} activeTab={activeTab} setActiveTab={setActiveTab}
-        title="Parent Hub" role="parent"
-      />
+    <div className="space-y-8">
+      <header>
+        <h2 className="text-4xl font-black text-slate-900 tracking-tighter">Welcome back!</h2>
+        <p className="mt-2 text-slate-500 font-medium italic">Your central command for student success.</p>
+      </header>
 
-      <main className="flex-1 overflow-x-hidden">
-        {/* Mobile Header */}
-        <header className="flex h-16 items-center justify-between bg-white px-6 shadow-sm md:hidden border-b">
-          <button onClick={() => setSidebarOpen(true)} className="text-slate-600"><FaBars size={22} /></button>
-          <span className="font-black text-slate-900 uppercase tracking-widest text-xs">Parent Dashboard</span>
-          <div className="w-6" />
-        </header>
-
-        <div className="p-6 md:p-10 max-w-7xl mx-auto">
-          <header className="mb-10">
-            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">Welcome back!</h2>
-            <p className="mt-2 text-slate-500 font-medium italic">Your central command for student success.</p>
-          </header>
-
-          {sections.filter(s => s.title === activeTab).map(section => (
-            <div key={section.title} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="mb-8">
-                <h3 className="text-2xl font-black text-slate-800 uppercase">{section.title}</h3>
-                <p className="text-slate-500 mt-1 font-medium">{section.description}</p>
-              </div>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {section.cards.map(c => (
-                  <button key={c.title} onClick={() => navigate(`/parent/${c.page}`)} className="group flex flex-col items-start rounded-3xl border border-slate-200 bg-white p-8 text-left transition-all hover:border-indigo-400 hover:shadow-2xl hover:shadow-indigo-100 hover:-translate-y-1">
-                    <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl ${c.bg} ${c.color} transition-transform group-hover:scale-110 shadow-sm`}>
-                      {React.cloneElement(c.icon, { size: 28 })}
-                    </div>
-                    <h5 className="text-lg font-black text-slate-900 group-hover:text-indigo-600 tracking-tight">{c.title}</h5>
-                    <p className="mt-2 text-sm text-slate-400 font-medium">Click to view details and reports.</p>
-                  </button>
-                ))}
-              </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <div key={index} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-5">
+            <div className={`${stat.color} p-4 rounded-2xl text-white shadow-md`}>
+              {React.cloneElement(stat.icon, { size: 24 })}
             </div>
-          ))}
-        </div>
-      </main>
+            <div>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <h3 className="text-2xl font-black text-slate-900">{stat.value}</h3>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white p-10 rounded-[3rem] border border-slate-100 text-center italic text-slate-400">
+        Monitoring your children's progress. Use the sidebar to switch between modules.
+      </div>
     </div>
   );
 }
