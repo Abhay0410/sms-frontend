@@ -52,7 +52,7 @@ useEffect(() => {
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
           Select Your School
         </h1>
-        <p className="text-center text-gray-500 mb-8">
+        <p className="text-center text-gray-500 mb-8 ">
           Choose your institution to login
         </p>
 
