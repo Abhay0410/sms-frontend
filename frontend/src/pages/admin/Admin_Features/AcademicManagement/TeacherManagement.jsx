@@ -2,7 +2,7 @@
 import { useEffect,useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api";
-import BackButton from "../../../../components/BackButton";
+
 import {
   FaUserTie,
   FaChalkboardTeacher,
@@ -152,7 +152,7 @@ export default function TeacherManagement() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50 p-4 md:p-8">
       <div className="mx-auto max-w-7xl">
-        <BackButton to="/admin/admin-dashboard" />
+       
 
         {/* Header */}
         <div className="mt-6">

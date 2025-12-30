@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api";
-import BackButton from "../../../../components/BackButton";
+
 import {
   FaSpinner,
   FaDownload,
