@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api";
-import BackButton from "../../../../components/BackButton";
+
 import {
   FaPlus, FaTimes, FaCheck, FaTrash, FaBell,
   FaGraduationCap, FaUsers, FaSpinner, FaPaperclip, FaSearch,
@@ -196,7 +196,7 @@ export default function AdminAnnouncements() {
   return (
     <div className="min-h-screen bg-slate-50 p-6 text-slate-900 font-sans">
       <div className="max-w-7xl mx-auto">
-        <BackButton to="/admin/admin-dashboard" />
+       
         
         <div className="flex justify-between items-center my-6">
           <h1 className="text-3xl font-bold text-slate-800">School Announcements</h1>

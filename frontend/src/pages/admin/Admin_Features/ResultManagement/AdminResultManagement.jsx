@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom"; // ✅ Add this
 import api, { API_ENDPOINTS } from "../../../../services/api";
-import BackButton from "../../../../components/BackButton";
+
 import {
   FaEye,
   FaDownload,
@@ -239,7 +239,7 @@ const handleView = (resultId) => {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <BackButton to="/admin/admin-dashboard" />
+      
         
         <div className="mt-6 mb-6">
           <h1 className="text-3xl font-bold text-slate-900">Result Management</h1>
