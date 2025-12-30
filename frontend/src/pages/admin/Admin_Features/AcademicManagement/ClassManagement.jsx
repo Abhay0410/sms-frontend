@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import BackButton from "../../../../components/BackButton";
 import { API_ENDPOINTS } from "../../../.././/constants/apiEndpoints";
-import { FaPlus, FaEdit, FaUsers, FaChalkboard, FaTimes, FaUserGraduate, FaCheckCircle, FaArrowRight, FaCopy, FaSync, FaTrash, FaExclamationTriangle, FaChartLine, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaPlus, FaEdit, FaUsers, FaChalkboard, FaTimes, FaUserGraduate, FaCheckCircle, FaArrowRight, FaCopy, FaSync, FaTrash, FaExclamationTriangle, FaChartLine, FaFilter, FaChevronLeft, FaChevronRight, FaLayerGroup } from "react-icons/fa";
 
 export default function ClassManagement() {
   const [classes, setClasses] = useState([]);
@@ -17,7 +17,8 @@ export default function ClassManagement() {
   
   // Horizontal scroll refs
   const scrollContainerRef = useRef(null);
-  
+  const sectionsAreaRef = useRef(null); // Ref for auto-scroll
+
   const academicYears = useMemo(() => {
     const currentYear = new Date().getFullYear();
     const years = [];
@@ -78,7 +79,16 @@ export default function ClassManagement() {
     loadClasses();
   }, [loadClasses]);
 
-  // FIX: Improved scroll behavior - Active class ko center mein rakhega reset kiye bina
+  // Tab click handler with scroll logic
+  const handleTabClick = (className) => {
+    setActiveClassName(className);
+    // Smooth scroll to sections area
+    setTimeout(() => {
+      sectionsAreaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  // Improved scroll position logic for horizontal tabs
   useEffect(() => {
     if (scrollContainerRef.current && activeClassName) {
       const activeBtn = scrollContainerRef.current.querySelector('.active-tab');
@@ -96,22 +106,16 @@ export default function ClassManagement() {
     return classes.find(c => c.className === activeClassName);
   }, [classes, activeClassName]);
 
+  // Real-time Capacity Calculation
   const totalStats = useMemo(() => {
     const totalSections = classes.reduce((sum, cls) => sum + (cls.sections?.length || 0), 0);
-    const totalStudents = classes.reduce(
-      (sum, cls) => sum + (cls.sections?.reduce((s, sec) => s + sec.currentStrength, 0) || 0),
-      0
-    );
-    const totalCapacity = classes.reduce(
-      (sum, cls) => sum + (cls.sections?.reduce((s, sec) => s + sec.capacity, 0) || 0),
-      0
-    );
-    
-    return { totalSections, totalStudents, totalCapacity };
+    const totalStudents = classes.reduce((sum, cls) => sum + (cls.sections?.reduce((s, sec) => s + sec.currentStrength, 0) || 0), 0);
+    const totalCapacity = classes.reduce((sum, cls) => sum + (cls.sections?.reduce((s, sec) => s + sec.capacity, 0) || 0), 0);
+    const capacityPercentage = totalCapacity > 0 ? ((totalStudents / totalCapacity) * 100).toFixed(1) : "0.0";
+    return { totalSections, totalStudents, totalCapacity, capacityPercentage };
   }, [classes]);
 
-  // Scroll navigation functions - improved with hover visibility
-  const scroll = (direction) => {
+  const scrollTabs = (direction) => {
     if (scrollContainerRef.current) {
       const scrollAmount = direction === 'left' ? -300 : 300;
       scrollContainerRef.current.scrollBy({ 
@@ -154,45 +158,43 @@ export default function ClassManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      <div className="mx-auto max-w-7xl p-4 md:p-8">
-        {/* Back Button and Header */}
-        <div className="flex flex-col gap-4">
-          <BackButton to="/admin/admin-dashboard" />
-          
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-4">
-            <div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tight">Academic Structure</h1>
-              <p className="text-slate-600 font-medium mt-2">Manage classes and sections for {academicYear}</p>
-            </div>
+    <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8">
+      <div className="mx-auto max-w-7xl">
+        <BackButton to="/admin/admin-dashboard" />
+
+        {/* Header Section */}
+        <div className="mt-6 flex flex-col gap-6 md:flex-row md:items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Academic Structure</h1>
+            <p className="text-slate-500 font-medium mt-1">Manage grade levels and student allocations</p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setShowCopyModal(true)}
+              className="flex items-center gap-2 rounded-2xl bg-white border-2 border-slate-200 px-6 py-3 font-bold text-slate-600 hover:border-indigo-600 hover:text-indigo-600 transition-all active:scale-95 shadow-sm"
+            >
+              <FaSync /> Sync Session
+            </button>
             
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setShowCopyModal(true)}
-                className="flex items-center gap-2 rounded-2xl bg-white border-2 border-slate-200 px-6 py-3 font-bold text-slate-600 hover:border-indigo-600 hover:text-indigo-600 transition-all active:scale-95 shadow-sm"
-              >
-                <FaSync /> Sync Session
-              </button>
-              
-              <select
-                value={academicYear}
-                onChange={(e) => setAcademicYear(e.target.value)}
-                className="rounded-2xl border-2 border-slate-100 bg-white px-5 py-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
-              >
-                {academicYears.map(year => <option key={year} value={year}>{year}</option>)}
-              </select>
-              
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 px-6 py-3 font-bold text-white shadow-lg hover:shadow-xl hover:opacity-90 transition-all"
-              >
-                <FaPlus /> New Class
-              </button>
-            </div>
+            <select
+              value={academicYear}
+              onChange={(e) => setAcademicYear(e.target.value)}
+              className="rounded-2xl border-2 border-slate-100 bg-white px-5 py-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+            >
+              {academicYears.map(year => <option key={year} value={year}>{year}</option>)}
+            </select>
+            
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 px-8 py-3 font-bold text-white shadow-lg hover:shadow-xl hover:opacity-90 transition-all active:scale-95"
+            >
+              <FaPlus /> New Class
+            </button>
           </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* Real Stats Cards */}
         {classes.length > 0 && (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-gradient-to-br from-indigo-500 to-blue-500 rounded-3xl p-6 text-white shadow-xl">
@@ -235,11 +237,7 @@ export default function ClassManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium opacity-90">Capacity Used</p>
-                  <p className="text-4xl font-black mt-2">
-                    {totalStats.totalCapacity > 0 
-                      ? `${((totalStats.totalStudents / totalStats.totalCapacity) * 100).toFixed(1)}%`
-                      : "0%"}
-                  </p>
+                  <p className="text-4xl font-black mt-2">{totalStats.capacityPercentage}%</p>
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
                   <FaChartLine size={24} />
@@ -283,15 +281,15 @@ export default function ClassManagement() {
               <div className="relative group">
                 {/* Scroll buttons with hover effect */}
                 <button
-                  onClick={() => scroll('left')}
-                  className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 bg-white shadow-lg rounded-full flex items-center justify-center text-slate-400 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-all"
+                  onClick={() => scrollTabs('left')}
+                  className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 bg-white shadow-lg rounded-full flex items-center justify-center text-slate-400 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-all border border-slate-100"
                 >
                   <FaChevronLeft />
                 </button>
                 
                 <button
-                  onClick={() => scroll('right')}
-                  className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 bg-white shadow-lg rounded-full flex items-center justify-center text-slate-400 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-all"
+                  onClick={() => scrollTabs('right')}
+                  className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 bg-white shadow-lg rounded-full flex items-center justify-center text-slate-400 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-all border border-slate-100"
                 >
                   <FaChevronRight />
                 </button>
@@ -299,7 +297,7 @@ export default function ClassManagement() {
                 {/* Horizontal scroll container */}
                 <div 
                   ref={scrollContainerRef}
-                  className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar py-4 px-2"
+                  className="flex gap-3 overflow-x-auto no-scrollbar pb-6"
                   style={{ scrollBehavior: 'smooth' }}
                 >
                   {classes.map((cls, index) => {
@@ -325,11 +323,11 @@ export default function ClassManagement() {
                     return (
                       <button
                         key={cls._id}
-                        onClick={() => setActiveClassName(cls.className)}
-                        className={`relative overflow-hidden rounded-2xl p-6 text-left transition-all transform hover:-translate-y-1 hover:shadow-2xl flex-shrink-0 ${
+                        onClick={() => handleTabClick(cls.className)}
+                        className={`relative overflow-hidden rounded-[2rem] p-6 text-left transition-all transform hover:-translate-y-1 hover:shadow-2xl flex-shrink-0 ${
                           activeClassName === cls.className
-                            ? `active-tab bg-gradient-to-br ${colorScheme} text-white shadow-xl scale-105 border-0`
-                            : "bg-white text-slate-700 border border-slate-200 hover:border-transparent"
+                            ? `active-tab bg-gradient-to-br ${colorScheme} text-white shadow-xl scale-105`
+                            : "bg-white text-slate-700 border-2 border-slate-50 hover:border-indigo-200"
                         }`}
                         style={{ width: "280px" }}
                       >
@@ -375,9 +373,9 @@ export default function ClassManagement() {
                           
                           {activeClassName !== cls.className && (
                             <div className="mt-4">
-                              <div className="h-1 w-full bg-slate-200 rounded-full overflow-hidden">
+                              <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                                 <div 
-                                  className={`h-1 rounded-full bg-gradient-to-r ${colorScheme}`}
+                                  className={`h-2 rounded-full bg-gradient-to-r ${colorScheme}`}
                                   style={{ width: `${totalCapacity > 0 ? (totalStudents / totalCapacity) * 100 : 0}%` }}
                                 />
                               </div>
@@ -499,189 +497,114 @@ export default function ClassManagement() {
           </div>
         )}
 
-        {/* SECTIONS DISPLAY BELOW TABS */}
-        {currentActiveClassData ? (
-          <div className="mt-10 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-black text-slate-900">
-                  Sections in <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
-                    Class {currentActiveClassData.className}
-                  </span>
-                </h2>
-                <p className="text-slate-500 mt-1">Manage sections and student enrollment</p>
+        {/* WORKSPACE AREA */}
+        <div ref={sectionsAreaRef} className="pt-4">
+          {currentActiveClassData ? (
+            <div className="mt-10 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-black text-slate-900">
+                    Sections in <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
+                      Class {currentActiveClassData.className}
+                    </span>
+                  </h2>
+                  <p className="text-slate-500 mt-1">Manage sections and student enrollment</p>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedClass(currentActiveClassData)}
+                    className="flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-all active:scale-95"
+                  >
+                    <FaEdit /> Manage All
+                  </button>
+                </div>
               </div>
-              
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setSelectedClass(currentActiveClassData)}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-2xl font-bold text-sm hover:opacity-90 transition-all shadow-lg"
-                >
-                  <FaEdit /> Manage All
-                </button>
-              </div>
-            </div>
 
-            {currentActiveClassData.sections?.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {currentActiveClassData.sections?.map((section, index) => {
-                  const sectionColors = [
-                    "from-indigo-500 to-blue-500",
-                    "from-purple-500 to-pink-500",
-                    "from-emerald-500 to-green-500",
-                    "from-amber-500 to-orange-500",
-                    "from-red-500 to-rose-500",
-                    "from-blue-500 to-cyan-500"
-                  ];
-                  
-                  const colorScheme = sectionColors[index % sectionColors.length];
-                  const fillPercentage = (section.currentStrength / section.capacity) * 100;
-                  
-                  return (
-                    <div key={section._id} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1">
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${colorScheme} flex items-center justify-center text-white text-xl font-black shadow-md`}>
-                            {section.sectionName}
-                          </div>
-                          <div>
-                            <h3 className="text-xl font-black text-slate-900">Section {section.sectionName}</h3>
-                            <p className="text-slate-400 text-sm">Class {currentActiveClassData.className}</p>
-                          </div>
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          fillPercentage >= 90 
-                            ? "bg-red-100 text-red-600" 
-                            : fillPercentage >= 70 
-                            ? "bg-amber-100 text-amber-600" 
-                            : "bg-emerald-100 text-emerald-600"
-                        }`}>
-                          {fillPercentage.toFixed(0)}% full
-                        </span>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-slate-50 to-white border border-slate-100">
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-50 to-blue-50 flex items-center justify-center">
+              {currentActiveClassData.sections?.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
+                  {currentActiveClassData.sections?.map((section, index) => {
+                    const sectionColors = [
+                      "from-indigo-500 to-blue-500",
+                      "from-purple-500 to-pink-500",
+                      "from-emerald-500 to-green-500",
+                      "from-amber-500 to-orange-500",
+                      "from-red-500 to-rose-500",
+                      "from-blue-500 to-cyan-500"
+                    ];
+                    
+                    const colorScheme = sectionColors[index % sectionColors.length];
+                    const fillPercentage = (section.currentStrength / section.capacity) * 100;
+                    
+                    return (
+                      <div key={section._id} className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-sm hover:shadow-2xl transition-all group overflow-hidden relative">
+                        <div className="absolute top-0 right-0 h-32 w-32 bg-indigo-50 rounded-full -mr-16 -mt-16 opacity-50 transition-colors duration-500 group-hover:bg-indigo-500"></div>
+                        <div className="relative z-10">
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Section</span>
+                          <h4 className="text-5xl font-black text-slate-900 mt-2">{section.sectionName}</h4>
+                          <div className="mt-10 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
                               <FaUserGraduate className="text-indigo-600" />
+                              <span className="text-xl font-black text-slate-900">{section.currentStrength} / {section.capacity}</span>
                             </div>
-                            <div>
-                              <p className="text-sm font-medium text-slate-500">Enrolled Students</p>
-                              <p className="text-2xl font-bold text-slate-900">{section.currentStrength}</p>
-                            </div>
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrolled</span>
                           </div>
-                          
-                          <div className="text-right">
-                            <p className="text-sm font-medium text-slate-500">Capacity</p>
-                            <p className="text-2xl font-bold text-slate-900">{section.capacity}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="font-medium text-slate-600">Enrollment Progress</span>
-                            <span className="font-bold text-indigo-600">
-                              {section.currentStrength}/{section.capacity}
-                            </span>
-                          </div>
-                          <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                          <div className="mt-4 h-3 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
                             <div 
-                              className={`h-2 rounded-full transition-all duration-500 ${
-                                fillPercentage >= 90 
-                                  ? "bg-gradient-to-r from-red-500 to-orange-500" 
-                                  : fillPercentage >= 70 
-                                  ? "bg-gradient-to-r from-amber-500 to-yellow-500" 
-                                  : "bg-gradient-to-r from-emerald-500 to-green-500"
-                              }`}
-                              style={{ width: `${fillPercentage}%` }}
+                              className={`h-full bg-gradient-to-r ${colorScheme} transition-all duration-1000`} 
+                              style={{ width: `${fillPercentage}%` }} 
                             />
                           </div>
                         </div>
-                        
-                        <div className="pt-4 border-t border-slate-100">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-slate-600">Available Seats</span>
-                            <span className="text-xl font-bold text-emerald-600">{section.capacity - section.currentStrength}</span>
-                          </div>
-                        </div>
-                        
-                        <button
-                          onClick={() => setSelectedClass(currentActiveClassData)}
-                          className="w-full mt-4 py-3 bg-gradient-to-r from-slate-50 to-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:border-indigo-300 hover:text-indigo-600 transition-all"
-                        >
-                          Manage Students →
-                        </button>
                       </div>
+                    );
+                  })}
+                  
+                  <button 
+                    onClick={() => setSelectedClass(currentActiveClassData)}
+                    className="border-4 border-dashed border-slate-200 rounded-[3rem] p-10 flex flex-col items-center justify-center text-slate-300 hover:text-indigo-600 hover:border-indigo-400 transition-all group bg-white shadow-inner"
+                  >
+                    <div className="h-16 w-16 rounded-full border-4 border-dashed border-current flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <FaPlus size={24} />
                     </div>
-                  );
-                })}
-                
-                {/* Add New Section Card */}
-                <div 
-                  onClick={() => setSelectedClass(currentActiveClassData)}
-                  className="border-3 border-dashed border-slate-300 rounded-3xl p-8 flex flex-col items-center justify-center text-slate-400 hover:text-indigo-600 hover:border-indigo-400 transition-all bg-gradient-to-b from-slate-50 to-white cursor-pointer group"
-                >
-                  <div className="h-16 w-16 rounded-full border-4 border-dashed border-current flex items-center justify-center mb-4 group-hover:scale-110 group-hover:border-indigo-400 transition-all">
-                    <FaPlus size={28} />
+                    <span className="font-black uppercase tracking-[0.2em] text-xs">Add New Section</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-b from-slate-50 to-white rounded-3xl p-12 text-center border border-slate-200">
+                  <div className="h-20 w-20 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <FaUsers className="h-10 w-10 text-indigo-400" />
                   </div>
-                  <h3 className="text-xl font-black uppercase tracking-wider mb-2">Add New Section</h3>
-                  <p className="text-sm text-center text-slate-500">Click to create a new section for this class</p>
+                  <h3 className="text-2xl font-black text-slate-400 mb-3">No Sections Created</h3>
+                  <p className="text-slate-500 mb-8 max-w-md mx-auto">
+                    Class {currentActiveClassData.className} doesn't have any sections yet. Create sections to start enrolling students.
+                  </p>
+                  <button
+                    onClick={() => setSelectedClass(currentActiveClassData)}
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-bold text-lg hover:shadow-xl hover:opacity-90 transition-all"
+                  >
+                    <FaPlus /> Create First Section
+                  </button>
                 </div>
+              )}
+            </div>
+          ) : classes.length > 0 ? (
+            <div className="mt-12 text-center py-16 bg-gradient-to-b from-slate-50 to-white rounded-3xl border border-slate-200">
+              <div className="h-24 w-24 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <FaChalkboard className="h-12 w-12 text-indigo-400" />
               </div>
-            ) : (
-              <div className="bg-gradient-to-b from-slate-50 to-white rounded-3xl p-12 text-center border border-slate-200">
-                <div className="h-20 w-20 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <FaUsers className="h-10 w-10 text-indigo-400" />
-                </div>
-                <h3 className="text-2xl font-black text-slate-400 mb-3">No Sections Created</h3>
-                <p className="text-slate-500 mb-8 max-w-md mx-auto">
-                  Class {currentActiveClassData.className} doesn't have any sections yet. Create sections to start enrolling students.
-                </p>
-                <button
-                  onClick={() => setSelectedClass(currentActiveClassData)}
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-bold text-lg hover:shadow-xl hover:opacity-90 transition-all"
-                >
-                  <FaPlus /> Create First Section
-                </button>
-              </div>
-            )}
-          </div>
-        ) : classes.length > 0 ? (
-          <div className="mt-12 text-center py-16 bg-gradient-to-b from-slate-50 to-white rounded-3xl border border-slate-200">
-            <div className="h-24 w-24 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
-              <FaChalkboard className="h-12 w-12 text-indigo-400" />
+              <h3 className="text-2xl font-black text-slate-400 mb-3">Select a Class</h3>
+              <p className="text-slate-500 mb-8 max-w-md mx-auto">
+                Choose a class from above to view and manage its sections
+              </p>
             </div>
-            <h3 className="text-2xl font-black text-slate-400 mb-3">Select a Class</h3>
-            <p className="text-slate-500 mb-8 max-w-md mx-auto">
-              Choose a class from above to view and manage its sections
-            </p>
-          </div>
-        ) : (
-          <div className="mt-12 text-center py-20 bg-gradient-to-b from-slate-50 to-white rounded-3xl border border-slate-200">
-            <div className="h-32 w-32 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner">
-              <FaChalkboard className="h-16 w-16 text-indigo-300" />
+          ) : (
+            <div className="mt-20 flex flex-col items-center opacity-40">
+              <FaLayerGroup size={80} className="text-slate-200 mb-6" />
+              <h3 className="text-2xl font-black uppercase tracking-[0.2em] text-slate-400 text-center">Structure Not Initialized</h3>
             </div>
-            <h3 className="text-3xl font-black text-slate-400 mb-4">No Classes Found</h3>
-            <p className="text-slate-500 mb-8 text-lg max-w-lg mx-auto">
-              Create your first class or sync from a previous academic session to get started
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => setShowCopyModal(true)}
-                className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all"
-              >
-                <FaSync /> Sync Previous Session
-              </button>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all"
-              >
-                <FaPlus /> Create New Class
-              </button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* MODALS */}
