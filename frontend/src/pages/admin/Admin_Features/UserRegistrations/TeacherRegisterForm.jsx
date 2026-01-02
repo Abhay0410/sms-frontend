@@ -1,4 +1,3 @@
-
 // pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
@@ -23,20 +22,35 @@ export default function TeacherRegisterForm() {
     dateOfBirth: "",
     qualification: [""],
     subjects: [],
+    department: "",
   });
 
-  const SUBJECT_OPTIONS = [
-    "Math",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "English",
-    "Hindi",
-    "History",
-    "Geography",
-    "Computer Science",
-    "Economics",
+  const DEPARTMENT_OPTIONS = [
+    "Mathematics",
+  "Science",
+  "Languages",
+  "Social Science",
+  "Computer Science",
+  "Environmental Studies",
+  "Physical Education",
+  "Arts & Craft",
+  "Music",
+  "Library",
+  "Primary Education"
   ];
+
+  // const SUBJECT_OPTIONS = [
+  //   "Math",
+  //   "Physics",
+  //   "Chemistry",
+  //   "Biology",
+  //   "English",
+  //   "Hindi",
+  //   "History",
+  //   "Geography",
+  //   "Computer Science",
+  //   "Economics",
+  // ];
 
   const [loading, setLoading] = useState(false);
   const [createdTeacher, setCreatedTeacher] = useState(null);
@@ -45,35 +59,31 @@ export default function TeacherRegisterForm() {
 
   const credentialsRef = useRef(null);
 
- useEffect(() => {
-  const fetchSubjects = async () => {
-    try {
-      setSubjectsLoading(true);
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        setSubjectsLoading(true);
 
-      const resp = await api.get(
-        API_ENDPOINTS.ADMIN.SUBJECT_MANAGEMENT.ALL
-      );
+        const resp = await api.get(API_ENDPOINTS.ADMIN.SUBJECT_MANAGEMENT.ALL);
 
-      const subjectsData = resp.data?.subjects || resp.subjects || [];
+        const subjectsData = resp.data?.subjects || resp.subjects || [];
 
-      // ✅ make subjects unique
-      const uniqueSubjects = [
-        ...new Set(subjectsData.map((s) => s.subjectName))
-      ];
+        // ✅ make subjects unique
+        const uniqueSubjects = [
+          ...new Set(subjectsData.map((s) => s.subjectName)),
+        ];
 
-      setAllSubjects(uniqueSubjects);
+        setAllSubjects(uniqueSubjects);
+      } catch (err) {
+        console.error("Failed to fetch subjects:", err);
+        toast.error("Could not load subjects");
+      } finally {
+        setSubjectsLoading(false);
+      }
+    };
 
-    } catch (err) {
-      console.error("Failed to fetch subjects:", err);
-      toast.error("Could not load subjects");
-    } finally {
-      setSubjectsLoading(false);
-    }
-  };
-
-  fetchSubjects();
-}, []);
-
+    fetchSubjects();
+  }, []);
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -136,6 +146,7 @@ export default function TeacherRegisterForm() {
         qualification: form.qualification.filter(Boolean),
 
         subjects: form.subjects, // ✅ array
+        department: form.department,
         isActive: true,
       };
 
@@ -183,6 +194,7 @@ export default function TeacherRegisterForm() {
         dateOfBirth: "",
         qualification: [""],
         subjects: [],
+        department: "",
       });
     } catch (err) {
       console.error("❌ Registration error:", err);
@@ -238,8 +250,6 @@ Login URL: ${window.location.origin}/signin`;
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-6">
       <div className="mx-auto max-w-4xl">
-       
-
         <div className="mt-6">
           <h2 className="text-3xl font-bold text-gray-900">Register Teacher</h2>
           <p className="mt-2 text-sm text-gray-600">
@@ -382,41 +392,68 @@ Login URL: ${window.location.origin}/signin`;
                   ))}
                 </div>
               </div>
-
-              {/* Subjects */}
-
+              {/* Department + Subjects */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Subjects
-                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Department */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Department <span className="text-red-500">*</span>
+                    </label>
 
-                {subjectsLoading ? (
-                  <p>Loading subjects...</p>
-                ) : allSubjects.length > 0 ? (
-                  <Select
-                    isMulti
-                    options={allSubjects.map((sub) => ({
-                      value: sub,
-                      label: sub,
-                    }))}
-                    value={allSubjects
-                      .map((sub) => ({ value: sub, label: sub }))
-                      .filter((option) => form.subjects.includes(option.value))}
-                    onChange={(selectedOptions) => {
-                      setForm((prev) => ({
-                        ...prev,
-                        subjects: selectedOptions
-                          ? selectedOptions.map((option) => option.value)
-                          : [],
-                      }));
-                    }}
-                    placeholder="Select subjects"
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                  />
-                ) : (
-                  <p>No subjects available</p>
-                )}
+                    <select
+                      name="department"
+                      value={form.department}
+                      onChange={onChange}
+                      required
+                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    >
+                      <option value="" className="text-gray-600" >Select Department</option>
+                      {DEPARTMENT_OPTIONS.map((dept, index) => (
+                        <option key={index} value={dept}>
+                          {dept}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Subjects */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Subjects
+                    </label>
+
+                    {subjectsLoading ? (
+                      <p>Loading subjects...</p>
+                    ) : allSubjects.length > 0 ? (
+                      <Select
+                        isMulti
+                        options={allSubjects.map((sub) => ({
+                          value: sub,
+                          label: sub,
+                        }))}
+                        value={allSubjects
+                          .map((sub) => ({ value: sub, label: sub }))
+                          .filter((option) =>
+                            form.subjects.includes(option.value)
+                          )}
+                        onChange={(selectedOptions) => {
+                          setForm((prev) => ({
+                            ...prev,
+                            subjects: selectedOptions
+                              ? selectedOptions.map((option) => option.value)
+                              : [],
+                          }));
+                        }}
+                        placeholder="Select subjects"
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                      />
+                    ) : (
+                      <p>No subjects available</p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Address */}
