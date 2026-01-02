@@ -1,11 +1,10 @@
-
-import { useEffect, useState , useRef} from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaCopy } from "react-icons/fa";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
-
+import Swal from "sweetalert2";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -26,7 +25,6 @@ const AdminRegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const [credentials, setCredentials] = useState(null);
   const credentialsRef = useRef(null);
-
 
   const [form, setForm] = useState({
     name: "",
@@ -90,9 +88,6 @@ const AdminRegisterForm = () => {
     e.preventDefault();
     setLoading(true);
 
-  
-
-
     try {
       const payload = {
         name: form.name.trim(),
@@ -126,7 +121,15 @@ const AdminRegisterForm = () => {
           password: res.data.password,
         });
 
-        toast.success("Admin registered successfully!");
+        Swal.fire({
+          icon: "success",
+          title: "Admin Registered!",
+          text: "Admin credentials generated successfully. Scroll down to view them.",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#4f46e5",
+        });
+
+        // toast.success("Admin registered successfully!");
         // Reset form after successful registration
         setForm({
           name: "",
@@ -162,14 +165,14 @@ const AdminRegisterForm = () => {
     }
   };
 
-    useEffect(() => {
-  if (credentials && credentialsRef.current) {
-    credentialsRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }
-}, [credentials]);
+  useEffect(() => {
+    if (credentials && credentialsRef.current) {
+      credentialsRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [credentials]);
 
   if (!school) return null;
 
@@ -177,8 +180,6 @@ const AdminRegisterForm = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-6">
       {/* ===== HEADER ===== */}
       <div className="max-w-6xl mx-auto mb-6">
-      
-
         <div className="flex flex-col md:flex-row md:items-center md:gap-3 mt-2">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
             Register Admin
@@ -234,8 +235,8 @@ const AdminRegisterForm = () => {
               onChange={handleChange}
               required
             />
-           
-           <div>
+
+            <div>
               <label className="block text-sm font-medium mb-1">
                 Date of Birth
               </label>
@@ -243,9 +244,7 @@ const AdminRegisterForm = () => {
               <DatePicker
                 selected={
                   form.dateOfBirth
-                    ? new Date(
-                        form.dateOfBirth.split("/").reverse().join("-")
-                      )
+                    ? new Date(form.dateOfBirth.split("/").reverse().join("-"))
                     : null
                 }
                 onChange={(date) => {
@@ -262,7 +261,6 @@ const AdminRegisterForm = () => {
                 className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
-            
 
             {/* Gender */}
             <div className="flex flex-col">
@@ -294,7 +292,9 @@ const AdminRegisterForm = () => {
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="" className="text-gray-600">Select Designation</option>
+                <option value="" className="text-gray-600">
+                  Select Designation
+                </option>
 
                 {/* Teaching Staff */}
                 <option value="Principal">Principal</option>
@@ -339,7 +339,9 @@ const AdminRegisterForm = () => {
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="" className="text-gray-600">Select Department</option>
+                <option value="" className="text-gray-600">
+                  Select Department
+                </option>
                 <option value="Administration">Administration</option>
                 <option value="Accounts">Accounts</option>
                 <option value="Human Resources">Human Resources</option>
@@ -441,8 +443,10 @@ const AdminRegisterForm = () => {
 
           {/* ===== CREDENTIALS DISPLAY ===== */}
           {credentials && (
-            
-            <div className="mt-8 rounded-xl border-l-4 border-green-500 bg-green-50 p-6 shadow animate-fade-in"  ref={credentialsRef}>
+            <div
+              className="mt-8 rounded-xl border-l-4 border-green-500 bg-green-50 p-6 shadow animate-fade-in"
+              ref={credentialsRef}
+            >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-green-800">
                   Admin Login Credentials
@@ -505,8 +509,6 @@ const AdminRegisterForm = () => {
                 ⚠️ Share these credentials securely. For security reasons, the
                 password will not be displayed again.
               </p>
-
-              
             </div>
           )}
         </div>

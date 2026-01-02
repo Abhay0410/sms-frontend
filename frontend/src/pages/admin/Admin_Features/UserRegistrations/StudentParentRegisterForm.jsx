@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { FaUser, FaUserTie, FaCheck, FaSpinner, FaCopy } from "react-icons/fa";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
+import Swal from "sweetalert2";
 
 
 import DatePicker from "react-datepicker";
@@ -266,9 +267,17 @@ export default function StudentParentRegisterForm() {
         : resp.data;
 
       setCreatedData(finalData);
-      toast.success(
-        resp?.message || "Student and parent registered successfully ✅"
-      );
+      // toast.success(
+      //   resp?.message || "Student and parent registered successfully ✅"
+      // );
+
+      Swal.fire({
+        icon: "success",
+        title: "Student & Parent Registered!",
+        text: "Student and parent credentials generated successfully. Scroll down to view them.",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#4f46e5",
+      });
 
       // Reset forms
       setStudentForm({

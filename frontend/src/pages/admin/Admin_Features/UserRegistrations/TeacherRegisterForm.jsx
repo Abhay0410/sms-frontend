@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 import { FaCheck, FaSpinner, FaCopy } from "react-icons/fa";
 import Select from "react-select";
+import Swal from "sweetalert2";
 
 export default function TeacherRegisterForm() {
   const [form, setForm] = useState({
@@ -177,7 +178,15 @@ export default function TeacherRegisterForm() {
       console.log("👤 Final Teacher Object:", teacherData);
 
       setCreatedTeacher(teacherData);
-      toast.success("Teacher registered successfully!");
+     
+      
+      Swal.fire({
+        icon: "success",
+        title: "Teacher Registered!",
+        text: "Teacher credentials generated successfully. Scroll down to view them.",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#4f46e5",
+      });
 
       // Reset form
       setForm({
