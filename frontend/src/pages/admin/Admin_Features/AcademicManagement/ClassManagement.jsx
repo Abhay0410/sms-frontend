@@ -270,33 +270,31 @@ function CopySessionModal({ academicYears, currentYear, onClose, onSuccess }) {
 
   const handleCopy = async (e) => {
     e.preventDefault();
-    if (!sourceYear) return toast.error("Select source year");
+    if (!sourceYear) return toast.error("Please select a source year");
     try {
       setLoading(true);
       await api.post(API_ENDPOINTS.ADMIN.CLASS.COPY_ACADEMIC_YEAR, { sourceYear, targetYear: currentYear });
-      toast.success(`Structure copied successfully from ${sourceYear}!`);
+      toast.success(`Structure synced!`);
       onSuccess();
-    } catch (err) { toast.error(err.message || "Target session may already have data."); } 
-    finally { setLoading(false); }
+    } catch (err) { toast.error(err.message); } finally { setLoading(false); }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4 animate-in fade-in duration-300">
       <div className="w-full max-w-lg bg-white rounded-[2.5rem] overflow-hidden shadow-2xl">
         <div className="bg-slate-900 p-8 text-white flex justify-between items-center">
-          <div><h3 className="text-2xl font-black uppercase tracking-tight">Sync Session</h3><p className="text-slate-400 text-xs mt-1 uppercase">Target Year: {currentYear}</p></div>
-          <FaCopy size={30} className="text-red-500 opacity-50" />
+          <div><h3 className="text-2xl font-black">Sync Session</h3><p className="text-slate-400 text-xs mt-1 uppercase">Target: {currentYear}</p></div>
+          <FaSync size={24} className="text-red-500 opacity-50" />
         </div>
         <form onSubmit={handleCopy} className="p-8 space-y-6">
-          <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-sm font-bold uppercase text-center">Structure Only. No Student Data.</div>
-          <div><label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Source Session</label>
-          <select required className="w-full p-5 bg-slate-50 rounded-2xl font-black border-none text-slate-900 outline-none focus:ring-4 focus:ring-red-100" value={sourceYear} onChange={e => setSourceYear(e.target.value)}>
-            <option value="">Choose Year</option>
+          <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-xs font-black uppercase">Structure Replication Only</div>
+          <select required className="w-full p-5 bg-slate-50 rounded-2xl font-black border-none" value={sourceYear} onChange={e => setSourceYear(e.target.value)}>
+            <option value="">Choose Source Session</option>
             {academicYears.filter(y => y !== currentYear).map(y => <option key={y} value={y}>{y}</option>)}
-          </select></div>
+          </select>
           <div className="flex gap-4">
             <button type="button" onClick={onClose} className="flex-1 py-4 font-black text-slate-400 uppercase text-xs">Discard</button>
-            <button type="submit" disabled={loading} className="flex-[2] py-4 bg-red-600 text-white rounded-2xl font-black uppercase text-xs shadow-xl">{loading ? "Syncing..." : "Confirm Sync"}</button>
+            <button type="submit" disabled={loading} className="flex-[2] py-4 bg-red-600 text-white rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95 transition-all">{loading ? "Syncing..." : "Confirm Sync"}</button>
           </div>
         </form>
       </div>
