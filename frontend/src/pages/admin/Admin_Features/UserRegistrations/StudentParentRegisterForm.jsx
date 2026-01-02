@@ -1,6 +1,6 @@
 
 // pages/admin/Admin_Features/UserRegistrations/StudentParentRegisterForm.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState} from "react";
 import { toast } from "react-toastify";
 import { FaUser, FaUserTie, FaCheck, FaSpinner, FaCopy } from "react-icons/fa";
 import api from "../../../../services/api";
@@ -14,9 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 export default function StudentParentRegisterForm() {
   const [activeTab, setActiveTab] = useState("student");
   const [loading, setLoading] = useState(false);
-  const [createdData, setCreatedData] = useState(null);
-  const credentialsRef = useRef(null);
-
+ 
   const [studentForm, setStudentForm] = useState({
     studentName: "",
     studentEmail: "",
@@ -105,14 +103,7 @@ export default function StudentParentRegisterForm() {
     return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
   };
 
-  const copyToClipboard = (text, label) => {
-    if (!text) {
-      toast.warning(`No ${label.toLowerCase()} available to copy`);
-      return;
-    }
-    navigator.clipboard.writeText(text);
-    toast.success(`${label} copied to clipboard!`);
-  };
+  
 
   const validateForm = () => {
     // Student validation - ✅ UPDATED: No section required
@@ -172,204 +163,149 @@ export default function StudentParentRegisterForm() {
   };
 
   // In your StudentParentRegisterForm.jsx - update the onSubmit function
-  const onSubmit = async (e) => {
-    e.preventDefault();
+ const onSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) return;
 
-    if (!validateForm()) {
-      return;
-    }
+  try {
+    setLoading(true);
 
-    try {
-      setLoading(true);
+    const payload = {
+      ...studentForm,
+      ...parentForm,
+      parentPhone: parentForm.parentPhone.replace(/\D/g, ""),
+      parentIncome: parentForm.parentIncome
+        ? Number(parentForm.parentIncome)
+        : undefined,
+    };
 
-      const payload = {
-        // Student details
-        studentName: studentForm.studentName.trim(),
-        studentEmail: studentForm.studentEmail?.trim() || undefined,
-        dateOfBirth: studentForm.dateOfBirth,
-        gender: studentForm.gender,
-        bloodGroup: studentForm.bloodGroup,
-        religion: studentForm.religion,
-        caste: studentForm.caste,
-        nationality: studentForm.nationality,
-        aadharNumber: studentForm.aadharNumber,
+    const resp = await api.post(
+      API_ENDPOINTS.ADMIN.STUDENT.CREATE_WITH_PARENT,
+      payload
+    );
 
-        // Address
-        street: studentForm.street,
-        city: studentForm.city,
-        state: studentForm.state,
-        pincode: studentForm.pincode,
-        country: studentForm.country,
+    console.log("RESP DATA 👉", resp.data);
 
-        // Parents
-        fatherName: studentForm.fatherName.trim(),
-        fatherPhone: studentForm.fatherPhone,
-        fatherEmail: studentForm.fatherEmail,
-        fatherOccupation: studentForm.fatherOccupation,
-        motherName: studentForm.motherName,
-        motherPhone: studentForm.motherPhone,
-        motherEmail: studentForm.motherEmail,
-        motherOccupation: studentForm.motherOccupation,
-        guardianName: studentForm.guardianName,
-        guardianPhone: studentForm.guardianPhone,
-        guardianRelation: studentForm.guardianRelation,
+    // ✅ CORRECT EXTRACTION (FIX)
+ const studentID = resp?.data?.student?.studentID;
+ const studentPassword = resp?.data?.student?.credentials?.password;
 
-        // Parent account
-        parentName: parentForm.parentName.trim(),
-        parentEmail: parentForm.parentEmail.trim(),
-        parentPhone: parentForm.parentPhone.replace(/\D/g, ""),
-        parentRelation: parentForm.parentRelation,
-        parentOccupation: parentForm.parentOccupation,
-        parentQualification: parentForm.parentQualification,
-        parentIncome: parentForm.parentIncome
-          ? Number(parentForm.parentIncome)
-          : undefined,
+const parentID = resp?.data?.parent?.credentials?.parentID;
+const parentPassword = resp?.data?.parent?.credentials?.password;
 
-        // Academic - ✅ UPDATED: Only className and academicYear
-        className: studentForm.className,
-        academicYear: studentForm.academicYear,
-        previousSchool: studentForm.previousSchool,
 
-        // Medical
-        medicalHistory: studentForm.medicalHistory,
-        allergies: studentForm.allergies,
-        emergencyContactName: studentForm.emergencyContactName,
-        emergencyContactPhone: studentForm.emergencyContactPhone,
-        emergencyContactRelation: studentForm.emergencyContactRelation,
+//     Swal.fire({
+//   icon: "success",
+//   title: "Registration Successful",
+//   html: `
+//     <b>Student ID:</b> ${studentID}<br/>
+//     <b>Parent ID:</b> ${parentID}<br/><br/>
+//     <b> Passwords:</b><br/>
+//     <code style="font-size:12px;color:#4f46e5">${studentPassword}</code><br/>
+//     <code style="font-size:12px;color:#4f46e5">${parentPassword}</code><br/><br/>
+//     <p style="font-size:12px;color:#b91c1c">
+//       Credentials have been sent to the registered email / phone.
+//     </p>
+//   `,
+//   confirmButtonText: "Done",
+// });
 
-        // Transport
-        transportRequired: studentForm.transportRequired,
-        busRoute: studentForm.busRoute,
-        pickupPoint: studentForm.pickupPoint,
+    // reset
+    Swal.fire({
+  icon: "success",
+  title: "Registration Successful 🎉",
+  html: `
+    <div style="text-align:left; padding:10px 5px">
 
-        // Hostel
-        hostelResident: studentForm.hostelResident,
-        hostelBlock: studentForm.hostelBlock,
-        roomNumber: studentForm.roomNumber,
-      };
+      <div style="margin-bottom:12px">
+        <b style="color:#111827">Student ID:</b>
+        <span style="margin-left:6px; color:#2563eb">${studentID}</span>
+      </div>
 
-      console.log("📤 Sending registration payload:", payload);
+      <div style="margin-bottom:16px">
+        <b style="color:#111827">Parent ID:</b>
+        <span style="margin-left:6px; color:#2563eb">${parentID}</span>
+      </div>
 
-      const resp = await api.post(
-        API_ENDPOINTS.ADMIN.STUDENT.CREATE_WITH_PARENT,
-        payload
-      );
+      <hr style="margin:12px 0"/>
 
-      console.log("📥 Registration Response:", resp); // Debug log to see structure
+      <b style="color:#111827">Login Credentials</b>
 
-      // Normalize the response data
-      // Sometimes axios interceptors unwrap it, sometimes they don't.
-      // We check if 'student' exists directly, or inside 'data', or inside 'data.data'
-      const finalData = resp.data?.student
-        ? resp.data
-        : resp.student
-        ? resp
-        : resp.data;
+      <div style="
+        background:#f9fafb;
+        border:1px solid #e5e7eb;
+        border-radius:8px;
+        padding:10px;
+        margin-top:8px;
+      ">
+        <div style="margin-bottom:8px">
+          <small style="color:#6b7280">Student Password</small><br/>
+          <code style="
+            display:block;
+            background:#eef2ff;
+            padding:6px;
+            border-radius:6px;
+            color:#4338ca;
+            font-size:13px
+          ">
+            ${studentPassword || "Sent via email"}
+          </code>
+        </div>
 
-      setCreatedData(finalData);
-      // toast.success(
-      //   resp?.message || "Student and parent registered successfully ✅"
-      // );
+        <div>
+          <small style="color:#6b7280">Parent Password</small><br/>
+          <code style="
+            display:block;
+            background:#eef2ff;
+            padding:6px;
+            border-radius:6px;
+            color:#4338ca;
+            font-size:13px
+          ">
+            ${parentPassword || "Sent via email"}
+          </code>
+        </div>
+      </div>
 
-      Swal.fire({
-        icon: "success",
-        title: "Student & Parent Registered!",
-        text: "Student and parent credentials generated successfully. Scroll down to view them.",
-        confirmButtonText: "OK",
-        confirmButtonColor: "#4f46e5",
-      });
+      <p style="
+        font-size:12px;
+        color:#b91c1c;
+        margin-top:10px
+      ">
+       ⚠️ Please save these credentials. They will not be shown again.
+      </p>
 
-      // Reset forms
-      setStudentForm({
-        studentName: "",
-        studentEmail: "",
-        dateOfBirth: "",
-        gender: "",
-        bloodGroup: "",
-        religion: "",
-        caste: "",
-        nationality: "Indian",
-        aadharNumber: "",
-        street: "",
-        city: "",
-        state: "",
-        pincode: "",
-        country: "India",
-        fatherName: "",
-        fatherPhone: "",
-        fatherEmail: "",
-        fatherOccupation: "",
-        motherName: "",
-        motherPhone: "",
-        motherEmail: "",
-        motherOccupation: "",
-        guardianName: "",
-        guardianPhone: "",
-        guardianRelation: "",
-        className: "",
-        academicYear: "",
-        previousSchool: "",
-        medicalHistory: "",
-        allergies: "",
-        emergencyContactName: "",
-        emergencyContactPhone: "",
-        emergencyContactRelation: "",
-        transportRequired: false,
-        busRoute: "",
-        pickupPoint: "",
-        hostelResident: false,
-        hostelBlock: "",
-        roomNumber: "",
-      });
+    </div>
+  `,
+  confirmButtonText: "Done",
+  confirmButtonColor: "#2563eb",
+});
 
-      setParentForm({
-        parentName: "",
-        parentEmail: "",
-        parentPhone: "",
-        parentRelation: "",
-        parentOccupation: "",
-        parentQualification: "",
-        parentIncome: "",
-      });
-
-      setActiveTab("student");
-    } catch (err) {
-      console.error("❌ Registration error:", err);
-
-      let msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to register student and parent";
-
-      // Handle duplicate field errors more specifically
-      if (msg.includes("duplicate") || msg.includes("already exists")) {
-        if (msg.includes("email")) {
-          msg =
-            "This email address is already registered. Please use a different email.";
-        } else if (msg.includes("parentID")) {
-          msg = "Parent ID conflict. Please try again.";
-        } else if (msg.includes("studentID")) {
-          msg = "Student ID conflict. Please try again.";
-        } else if (msg.includes("aadhar")) {
-          msg = "Aadhar number is already registered. Please check the number.";
-        }
-      }
-
-      Error(msg);
-      toast.error(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
-
- useEffect(() => {
-  if (createdData && credentialsRef.current) {
-    credentialsRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
+    
+    setStudentForm((p) => ({ ...p, studentName: "", className: "" }));
+    setParentForm({
+      parentName: "",
+      parentEmail: "",
+      parentPhone: "",
+      parentRelation: "",
     });
+    setActiveTab("student");
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Registration Failed",
+      text:
+        err?.response?.data?.message ||
+        "Failed to register student and parent",
+    });
+  } finally {
+    setLoading(false);
   }
-}, [createdData]);
+};
+
+
+
+
 
 
   return (
@@ -1288,192 +1224,7 @@ export default function StudentParentRegisterForm() {
           )}
         </form>
 
-        {/* Success Message with Copy Feature */}
-        {createdData && (
-          <div
-            className="mt-6 rounded-lg border-l-4 border-green-500 bg-green-50 p-6 shadow-md"
-            ref={credentialsRef}
-          >
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <FaCheck className="h-6 w-6 text-green-400" />
-              </div>
-              <div className="ml-4 flex-1">
-                <h3 className="text-lg font-semibold text-green-800">
-                  {createdData.isExistingParent
-                    ? "Student Added to Existing Parent Account! 🎉"
-                    : "Registration Successful! 🎉"}
-                </h3>
-
-                <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                  {/* Student Credentials */}
-                  <div className="rounded-lg bg-white p-4 shadow-sm">
-                    <h4 className="mb-3 font-semibold text-gray-900">
-                      Student Credentials
-                    </h4>
-                    <div className="space-y-2 text-sm text-gray-700">
-                      <div className="flex items-center justify-between">
-                        <span>
-                          <strong>Student ID:</strong>{" "}
-                          {createdData.student?.credentials?.studentID ||
-                            "Not Available"}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            copyToClipboard(
-                              createdData.student?.credentials?.studentID,
-                              "Student ID"
-                            )
-                          }
-                          className="ml-2 text-indigo-600 hover:text-indigo-800"
-                        >
-                          <FaCopy />
-                        </button>
-                      </div>
-                      <p>
-                        <strong>Name:</strong> {createdData.student?.name}
-                      </p>
-                      <p>
-                        <strong>Class:</strong>{" "}
-                        {createdData.student?.className || "Not Assigned"}
-                      </p>
-                      <p>
-                        <strong>Section:</strong>{" "}
-                        <span className="text-amber-600">Not Assigned Yet</span>
-                      </p>
-                      <p>
-                        <strong>Status:</strong>{" "}
-                        <span className="inline-flex rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                          REGISTERED
-                        </span>
-                      </p>
-                      <div className="mt-3 rounded bg-red-100 p-3">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium">Password:</span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              copyToClipboard(
-                                createdData.student?.credentials?.password,
-                                "Student Password"
-                              )
-                            }
-                            className="ml-2 text-red-700 hover:text-red-900"
-                          >
-                            <FaCopy />
-                          </button>
-                        </div>
-                        <p className="mt-1 font-mono text-red-700">
-                          {createdData.student?.credentials?.password}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Parent Credentials */}
-                  <div className="rounded-lg bg-white p-4 shadow-sm">
-                    <h4 className="mb-3 font-semibold text-gray-900">
-                      Parent Credentials
-                      {createdData.isExistingParent && (
-                        <span className="ml-2 text-xs font-normal text-orange-600">
-                          (Existing Account)
-                        </span>
-                      )}
-                    </h4>
-                    <div className="space-y-2 text-sm text-gray-700">
-                      <div className="flex items-center justify-between">
-                        <span>
-                          <strong>Parent ID:</strong>{" "}
-                          {createdData.parent?.credentials?.parentID}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            copyToClipboard(
-                              createdData.parent?.credentials?.parentID,
-                              "Parent ID"
-                            )
-                          }
-                          className="ml-2 text-indigo-600 hover:text-indigo-800"
-                        >
-                          <FaCopy />
-                        </button>
-                      </div>
-                      <p>
-                        <strong>Name:</strong> {createdData.parent?.name}
-                      </p>
-                      <p>
-                        <strong>Email:</strong> {createdData.parent?.email}
-                      </p>
-                      <p>
-                        <strong>Children:</strong>{" "}
-                        {createdData.parent?.children?.length || 1}
-                      </p>
-
-                      {!createdData.isExistingParent &&
-                        createdData.parent?.credentials?.password && (
-                          <div className="mt-3 rounded bg-red-100 p-3">
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium">Password:</span>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    createdData.parent?.credentials?.password,
-                                    "Parent Password"
-                                  )
-                                }
-                                className="ml-2 text-red-700 hover:text-red-900"
-                              >
-                                <FaCopy />
-                              </button>
-                            </div>
-                            <p className="mt-1 font-mono text-red-700">
-                              {createdData.parent?.credentials?.password}
-                            </p>
-                          </div>
-                        )}
-
-                      {createdData.isExistingParent && (
-                        <div className="mt-3 rounded bg-orange-100 p-3 text-orange-800">
-                          <p className="text-xs">
-                            ℹ️ This student has been added to an existing parent
-                            account. The parent can use their existing
-                            credentials to login.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4 rounded-lg bg-blue-50 p-4 border border-blue-200">
-                  <p className="text-sm font-medium text-blue-900">
-                    📋 Next Steps:
-                  </p>
-                  <ul className="mt-2 text-sm text-blue-800 space-y-1">
-                    <li>
-                      ✅ Student registered in{" "}
-                      <strong>Class {createdData.student?.className}</strong>
-                    </li>
-                    <li>
-                      ⏳ Status: <strong>REGISTERED</strong> (Section not
-                      assigned yet)
-                    </li>
-                    <li>
-                      🎯 Go to{" "}
-                      <strong>
-                        Class Management → Assign Students to Sections
-                      </strong>
-                    </li>
-                    <li>🔐 Both can change passwords after first login</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+       
       </div>
     </div>
   );

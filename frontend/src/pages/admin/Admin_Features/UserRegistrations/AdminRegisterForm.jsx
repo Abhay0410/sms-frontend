@@ -1,10 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaCopy } from "react-icons/fa";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import Swal from "sweetalert2";
+
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -23,8 +25,8 @@ const AdminRegisterForm = () => {
   const navigate = useNavigate();
   const [school, setSchool] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [credentials, setCredentials] = useState(null);
-  const credentialsRef = useRef(null);
+
+
 
   const [form, setForm] = useState({
     name: "",
@@ -56,16 +58,8 @@ const AdminRegisterForm = () => {
     setSchool(JSON.parse(stored));
   }, [navigate]);
 
-  const copyToClipboard = (text, message) => {
-    navigator.clipboard.writeText(text);
-    toast.success(message);
-  };
-
-  const copyBothCredentials = () => {
-    if (!credentials) return;
-    const text = `Admin ID: ${credentials.adminID}\nPassword: ${credentials.password}`;
-    copyToClipboard(text, "All credentials copied!");
-  };
+ 
+  
 
   const handleChange = (e) => {
     let { name, value, type, checked } = e.target;
@@ -84,102 +78,136 @@ const AdminRegisterForm = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const payload = {
-        name: form.name.trim(),
-        email: form.email.trim().toLowerCase(),
-        phone: form.phone.trim(),
-        schoolId: school._id,
-        dateOfBirth: form.dateOfBirth || null,
-        gender: form.gender || null,
-        designation: form.designation.trim() || "",
-        department: form.department.trim() || "",
-        joiningDate: form.joiningDate || null,
+  try {
+    const payload = {
+      name: form.name.trim(),
+      email: form.email.trim().toLowerCase(),
+      phone: form.phone.trim(),
+      schoolId: school._id,
+      dateOfBirth: form.dateOfBirth || null,
+      gender: form.gender || null,
+      designation: form.designation.trim() || "",
+      department: form.department.trim() || "",
+      joiningDate: form.joiningDate || null,
+      address: {
+        street: form.address.street.trim() || "",
+        city: form.address.city.trim() || "",
+        state: form.address.state.trim() || "",
+        pincode: form.address.pincode.trim() || "",
+        country: "India",
+      },
+      permissions: [],
+      isSuperAdmin: form.isSuperAdmin,
+      role: "admin",
+      profilePicture: "",
+      isActive: true,
+    };
+
+    const res = await api.post(API_ENDPOINTS.ADMIN.AUTH.REGISTER, payload);
+
+    if (res.success === true) {
+      const { adminID, password } = res.data;
+
+     Swal.fire({
+  icon: "success",
+  title: "Admin Registered",
+  width: 420,
+  html: `
+    <div style="text-align:left; font-size:13px; line-height:1.4">
+
+      <div style="margin-bottom:12px">
+        <div style="font-weight:600; margin-bottom:4px">Admin ID</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px">
+          <code style="font-size:12px; padding:4px 6px">${adminID}</code>
+          <button id="copyId"
+            style="font-size:11px; padding:4px 8px; cursor:pointer">
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-weight:600; margin-bottom:4px">Temporary Password</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px">
+          <code style="font-size:12px; padding:4px 6px">${password}</code>
+          <button id="copyPass"
+            style="font-size:11px; padding:4px 8px; cursor:pointer">
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px; font-size:11px; color:#b91c1c">
+        ⚠ Save these credentials. They will not be shown again.
+      </div>
+
+    </div>
+  `,
+  confirmButtonText: "Done",
+  confirmButtonColor: "#4f46e5",
+  didOpen: () => {
+    document.getElementById("copyId").onclick = () => {
+      navigator.clipboard.writeText(adminID);
+      Swal.showValidationMessage("Admin ID copied");
+    };
+
+    document.getElementById("copyPass").onclick = () => {
+      navigator.clipboard.writeText(password);
+      Swal.showValidationMessage("Password copied");
+    };
+  },
+});
+
+
+      // Reset form
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        dateOfBirth: "",
+        gender: "",
+        designation: "",
+        department: "",
+        joiningDate: "",
+        isSuperAdmin: true,
         address: {
-          street: form.address.street.trim() || "",
-          city: form.address.city.trim() || "",
-          state: form.address.state.trim() || "",
-          pincode: form.address.pincode.trim() || "",
+          street: "",
+          city: "",
+          state: "",
+          pincode: "",
           country: "India",
         },
-        permissions: [],
-        isSuperAdmin: form.isSuperAdmin,
-        role: "admin",
-        profilePicture: "",
-        isActive: true,
-      };
-
-      const res = await api.post(API_ENDPOINTS.ADMIN.AUTH.REGISTER, payload);
-
-      if (res.success === true) {
-        setCredentials({
-          adminID: res.data.adminID,
-          password: res.data.password,
-        });
-
-        Swal.fire({
-          icon: "success",
-          title: "Admin Registered!",
-          text: "Admin credentials generated successfully. Scroll down to view them.",
-          confirmButtonText: "OK",
-          confirmButtonColor: "#4f46e5",
-        });
-
-        // toast.success("Admin registered successfully!");
-        // Reset form after successful registration
-        setForm({
-          name: "",
-          email: "",
-          phone: "",
-          dateOfBirth: "",
-          gender: "",
-          designation: "",
-          department: "",
-          joiningDate: "",
-          isSuperAdmin: true,
-          address: {
-            street: "",
-            city: "",
-            state: "",
-            pincode: "",
-            country: "India",
-          },
-        });
-        return;
-      }
-
-      toast.error(res.message || "Admin registration failed");
-    } catch (err) {
-      console.error("❌ Registration Error:", err);
-      toast.error(
-        err.response?.data?.message ||
-          err.message ||
-          "Admin registration failed"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (credentials && credentialsRef.current) {
-      credentialsRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
       });
+    } else {
+      toast.error(res.message || "Admin registration failed");
     }
-  }, [credentials]);
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Registration Failed",
+      text:
+        err.response?.data?.message ||
+        err.message ||
+        "Admin registration failed",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
+   
   if (!school) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-6">
       {/* ===== HEADER ===== */}
       <div className="max-w-6xl mx-auto mb-6">
+      
+
         <div className="flex flex-col md:flex-row md:items-center md:gap-3 mt-2">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
             Register Admin
@@ -235,8 +263,8 @@ const AdminRegisterForm = () => {
               onChange={handleChange}
               required
             />
-
-            <div>
+           
+           <div>
               <label className="block text-sm font-medium mb-1">
                 Date of Birth
               </label>
@@ -244,7 +272,9 @@ const AdminRegisterForm = () => {
               <DatePicker
                 selected={
                   form.dateOfBirth
-                    ? new Date(form.dateOfBirth.split("/").reverse().join("-"))
+                    ? new Date(
+                        form.dateOfBirth.split("/").reverse().join("-")
+                      )
                     : null
                 }
                 onChange={(date) => {
@@ -261,6 +291,7 @@ const AdminRegisterForm = () => {
                 className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
+            
 
             {/* Gender */}
             <div className="flex flex-col">
@@ -292,9 +323,7 @@ const AdminRegisterForm = () => {
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="" className="text-gray-600">
-                  Select Designation
-                </option>
+                <option value="" className="text-gray-600">Select Designation</option>
 
                 {/* Teaching Staff */}
                 <option value="Principal">Principal</option>
@@ -339,9 +368,7 @@ const AdminRegisterForm = () => {
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="" className="text-gray-600">
-                  Select Department
-                </option>
+                <option value="" className="text-gray-600">Select Department</option>
                 <option value="Administration">Administration</option>
                 <option value="Accounts">Accounts</option>
                 <option value="Human Resources">Human Resources</option>
@@ -441,76 +468,8 @@ const AdminRegisterForm = () => {
             </div>
           </form>
 
-          {/* ===== CREDENTIALS DISPLAY ===== */}
-          {credentials && (
-            <div
-              className="mt-8 rounded-xl border-l-4 border-green-500 bg-green-50 p-6 shadow animate-fade-in"
-              ref={credentialsRef}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-green-800">
-                  Admin Login Credentials
-                </h3>
-                <button
-                  type="button"
-                  onClick={copyBothCredentials}
-                  className="bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-md hover:bg-indigo-200 flex items-center gap-2 transition"
-                >
-                  <FaCopy />{" "}
-                  <span className="text-sm font-medium">Copy Both</span>
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {/* Admin ID Row */}
-                <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-green-100">
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase font-bold">
-                      Admin ID
-                    </p>
-                    <p className="font-mono text-lg text-gray-800">
-                      {credentials.adminID}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      copyToClipboard(credentials.adminID, "Admin ID copied!")
-                    }
-                    className="p-2 text-gray-400 hover:text-indigo-600 transition"
-                    title="Copy ID"
-                  >
-                    <FaCopy />
-                  </button>
-                </div>
-
-                {/* Password Row */}
-                <div className="flex items-center justify-between bg-red-50 p-3 rounded-lg border border-red-100">
-                  <div>
-                    <p className="text-xs text-red-500 uppercase font-bold">
-                      Temporary Password
-                    </p>
-                    <p className="font-mono text-lg text-red-700">
-                      {credentials.password}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      copyToClipboard(credentials.password, "Password copied!")
-                    }
-                    className="p-2 text-red-400 hover:text-red-600 transition"
-                    title="Copy Password"
-                  >
-                    <FaCopy />
-                  </button>
-                </div>
-              </div>
-
-              <p className="text-xs text-red-500 mt-4 italic">
-                ⚠️ Share these credentials securely. For security reasons, the
-                password will not be displayed again.
-              </p>
-            </div>
-          )}
+          
+          
         </div>
       </div>
     </div>
