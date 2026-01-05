@@ -78,9 +78,10 @@ export const API_ENDPOINTS = {
     },
 
     // Class Management
-    CLASS: {
+     CLASS: {
       ALL: '/api/admin/classes',
       LIST: '/api/admin/classes/list',
+      STATISTICS: '/api/admin/classes/statistics', // 👈 Add this line
       CREATE: '/api/admin/classes',
       GET_BY_ID: (id) => `/api/admin/classes/${id}`,
       UPDATE: (id) => `/api/admin/classes/${id}`,
