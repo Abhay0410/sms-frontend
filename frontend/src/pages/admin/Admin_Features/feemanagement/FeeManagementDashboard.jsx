@@ -20,9 +20,10 @@ export default function FeeManagementDashboard() {
 
   const tabs = [
     { id: "overview", label: "Overview", icon: <FaChartLine />, component: FeeOverview },
-    { id: "set-fees", label: "Set Class Fees", icon: <FaEdit />, component: SetClassFees },
+   
     { id: "record", label: "Record Payment", icon: <FaPlus />, component: RecordPayment },
     { id: "history", label: "Payment History", icon: <FaEye />, component: PaymentHistory },
+     { id: "set-fees", label: "Set Class Fees", icon: <FaEdit />, component: SetClassFees },
   ];
 
   const ActiveComponent = tabs.find((tab) => tab.id === activeTab)?.component;

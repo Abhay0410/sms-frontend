@@ -179,7 +179,7 @@ const AdminRegisterForm = () => {
           city: "",
           state: "",
           pincode: "",
-          country: "India",
+          country: "",
         },
       });
     } else {
@@ -238,235 +238,201 @@ const AdminRegisterForm = () => {
 
           {/* ===== FORM ===== */}
           <form
-            onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-2 gap-5"
-          >
-            <Input
-              label="Full Name *"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="Email *"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="Phone *"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              required
-            />
-           
-           <div>
-              <label className="block text-sm font-medium mb-1">
-                Date of Birth
-              </label>
+  onSubmit={handleSubmit}
+  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+>
+  {/* BASIC INFO */}
+  <Input
+    label="Full Name *"
+    name="name"
+    value={form.name}
+    onChange={handleChange}
+    required
+  />
 
-              <DatePicker
-                selected={
-                  form.dateOfBirth
-                    ? new Date(
-                        form.dateOfBirth.split("/").reverse().join("-")
-                      )
-                    : null
-                }
-                onChange={(date) => {
-                  const formatted = date
-                    ? `${String(date.getDate()).padStart(2, "0")}/${String(
-                        date.getMonth() + 1
-                      ).padStart(2, "0")}/${date.getFullYear()}`
-                    : "";
+  <Input
+    label="Email *"
+    name="email"
+    type="email"
+    value={form.email}
+    onChange={handleChange}
+    required
+  />
 
-                  setForm({ ...form, dateOfBirth: formatted });
-                }}
-                dateFormat="dd/MM/yyyy"
-                placeholderText="DD/MM/YYYY"
-                className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            
+  <Input
+    label="Phone *"
+    name="phone"
+    value={form.phone}
+    onChange={handleChange}
+    required
+  />
 
-            {/* Gender */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700">
-                Gender
-              </label>
-              <select
-                name="gender"
-                value={form.gender}
-                onChange={handleChange}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 
-                focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">Select</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+  {/* DOB */}
+  <div>
+    <label className="block text-sm font-medium mb-1">Date of Birth</label>
+    <DatePicker
+      selected={
+        form.dateOfBirth
+          ? new Date(form.dateOfBirth.split("/").reverse().join("-"))
+          : null
+      }
+      onChange={(date) => {
+        const formatted = date
+          ? `${String(date.getDate()).padStart(2, "0")}/${String(
+              date.getMonth() + 1
+            ).padStart(2, "0")}/${date.getFullYear()}`
+          : "";
+        setForm({ ...form, dateOfBirth: formatted });
+      }}
+      dateFormat="dd/MM/yyyy"
+      placeholderText="DD/MM/YYYY"
+      className="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+    />
+  </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Designation
-              </label>
+  {/* GENDER */}
+  <div>
+    <label className="text-sm font-medium">Gender</label>
+    <select
+      name="gender"
+      value={form.gender}
+      onChange={handleChange}
+      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 focus:ring-2 focus:ring-indigo-500"
+    >
+      <option value="">Select</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+  </div>
 
-              <select
-                name="designation"
-                value={form.designation}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="" className="text-gray-600">Select Designation</option>
+  {/* DESIGNATION */}
+  <div>
+    <label className="text-sm font-medium">Designation</label>
+    <select
+      name="designation"
+      value={form.designation}
+      onChange={handleChange}
+      className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+    >
+      <option value="">Select Designation</option>
+      <option>Principal</option>
+      <option>Vice Principal</option>
+      <option>Administrator</option>
+      <option>Accountant</option>
+    </select>
+  </div>
 
-                {/* Teaching Staff */}
-                <option value="Principal">Principal</option>
-                <option value="Vice Principal">Vice Principal</option>
-                <option value="Head Teacher">Head Teacher</option>
-                <option value="PGT">PGT (Post Graduate Teacher)</option>
-                <option value="TGT">TGT (Trained Graduate Teacher)</option>
-                <option value="PRT">PRT (Primary Teacher)</option>
-                <option value="Assistant Teacher">Assistant Teacher</option>
-                <option value="Special Educator">Special Educator</option>
-                <option value="Librarian">Librarian</option>
-                <option value="Sports Teacher">Sports Teacher</option>
+  {/* DEPARTMENT */}
+  <div>
+    <label className="text-sm font-medium">Department</label>
+    <select
+      name="department"
+      value={form.department}
+      onChange={handleChange}
+      className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+    >
+      <option value="">Select Department</option>
+      <option>Administration</option>
+      <option>Accounts</option>
+      <option>HR</option>
+      <option>IT</option>
+    </select>
+  </div>
 
-                {/* Administration */}
-                <option value="Administrator">Administrator</option>
-                <option value="Office Superintendent">
-                  Office Superintendent
-                </option>
-                <option value="Clerk">Clerk</option>
-                <option value="Accountant">Accountant</option>
-                <option value="Receptionist">Receptionist</option>
+  {/* JOINING DATE */}
+  <div>
+    <label className="text-sm font-medium">Date of Joining</label>
+    <DatePicker
+      selected={
+        form.joiningDate
+          ? new Date(form.joiningDate.split("/").reverse().join("-"))
+          : null
+      }
+      onChange={(date) => {
+        const formatted = date
+          ? `${String(date.getDate()).padStart(2, "0")}/${String(
+              date.getMonth() + 1
+            ).padStart(2, "0")}/${date.getFullYear()}`
+          : "";
+        setForm({ ...form, joiningDate: formatted });
+      }}
+      dateFormat="dd/MM/yyyy"
+      placeholderText="DD/MM/YYYY"
+      className="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+    />
+  </div>
 
-                {/* Support Staff */}
-                <option value="Lab Assistant">Lab Assistant</option>
-                <option value="IT Coordinator">IT Coordinator</option>
-                <option value="Transport Incharge">Transport Incharge</option>
-                <option value="Hostel Warden">Hostel Warden</option>
-                <option value="Nurse">Nurse</option>
-                <option value="Counsellor">Counsellor</option>
-                <option value="Security Supervisor">Security Supervisor</option>
-              </select>
-            </div>
+  {/* ===== ADDRESS SECTION ===== */}
+  <div className="md:col-span-2 mt-4">
+    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+      Address Details
+    </h3>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Department
-              </label>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-5 rounded-xl border">
+      <Input
+        label="Street Address"
+        name="street"
+        value={form.address.street}
+        onChange={handleAddressChange}
+      />
 
-              <select
-                name="department"
-                value={form.department}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="" className="text-gray-600">Select Department</option>
-                <option value="Administration">Administration</option>
-                <option value="Accounts">Accounts</option>
-                <option value="Human Resources">Human Resources</option>
-                <option value="Teaching">Teaching</option>
-                <option value="Examination">Examination</option>
-                <option value="Library">Library</option>
-                <option value="IT Support">IT Support</option>
-                <option value="Transport">Transport</option>
-                <option value="Hostel">Hostel</option>
-                <option value="Sports">Sports</option>
-                <option value="Medical">Medical</option>
-                <option value="Security">Security</option>
-              </select>
-            </div>
+      <Input
+        label="City"
+        name="city"
+        value={form.address.city}
+        onChange={handleAddressChange}
+      />
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Date of Joining
-              </label>
+      <Input
+        label="State"
+        name="state"
+        value={form.address.state}
+        onChange={handleAddressChange}
+      />
 
-              <DatePicker
-                selected={
-                  form.dateOfJoining
-                    ? new Date(
-                        form.dateOfJoining.split("/").reverse().join("-")
-                      )
-                    : null
-                }
-                onChange={(date) => {
-                  const formatted = date
-                    ? `${String(date.getDate()).padStart(2, "0")}/${String(
-                        date.getMonth() + 1
-                      ).padStart(2, "0")}/${date.getFullYear()}`
-                    : "";
+      <Input
+        label="Pincode"
+        name="pincode"
+        value={form.address.pincode}
+        onChange={handleAddressChange}
+      />
 
-                  setForm({ ...form, dateOfJoining: formatted });
-                }}
-                dateFormat="dd/MM/yyyy"
-                placeholderText="DD/MM/YYYY"
-                className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
+      <Input
+        label="Country"
+        name="country"
+        value={form.address.country}
+        onChange={handleAddressChange}
+      />
+    </div>
+  </div>
 
-            <Input
-              label="Street"
-              name="street"
-              value={form.address.street}
-              onChange={handleAddressChange}
-            />
-            <Input
-              label="City"
-              name="city"
-              value={form.address.city}
-              onChange={handleAddressChange}
-            />
-            <Input
-              label="State"
-              name="state"
-              value={form.address.state}
-              onChange={handleAddressChange}
-            />
-            <Input
-              label="Pincode"
-              name="pincode"
-              value={form.address.pincode}
-              onChange={handleAddressChange}
-            />
+  {/* SUPER ADMIN */}
+  <div className="md:col-span-2 flex items-center gap-2 mt-4">
+    <input
+      type="checkbox"
+      name="isSuperAdmin"
+      checked={form.isSuperAdmin}
+      onChange={handleChange}
+      className="h-4 w-4"
+    />
+    <label className="text-sm font-medium">
+      Grant Super Admin Privileges
+    </label>
+  </div>
 
-            {/* Super Admin Checkbox */}
-            <div className="md:col-span-2 flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="isSuperAdmin"
-                id="isSuperAdmin"
-                checked={form.isSuperAdmin}
-                onChange={handleChange}
-                className="h-4 w-4 text-indigo-600 rounded focus:ring-indigo-500"
-              />
-              <label
-                htmlFor="isSuperAdmin"
-                className="text-sm font-medium text-gray-700"
-              >
-                Grant Super Admin Privileges
-              </label>
-            </div>
+  {/* SUBMIT */}
+  <div className="md:col-span-2 flex justify-end mt-6">
+    <button
+      type="submit"
+      disabled={loading}
+      className="bg-indigo-600 text-white px-8 py-2.5 rounded-lg font-medium hover:bg-indigo-700"
+    >
+      {loading ? "Registering..." : "Register Admin"}
+    </button>
+  </div>
+</form>
 
-            {/* ===== SUBMIT BUTTON ===== */}
-            <div className="md:col-span-2 flex justify-center md:justify-end mt-6">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full md:w-auto bg-indigo-600 text-white px-8 py-2.5 
-                rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Registering..." : "Register Admin"}
-              </button>
-            </div>
-          </form>
 
           
           

@@ -174,13 +174,28 @@ export default function RecordPayment({ academicYear }) {
     );
   };
 
-  const canMakePayment = (student) => {
-    if (!student.feeDetails) return false;
-    const fd = student.feeDetails;
-    const { total, pending } = getSafeFeeNumbers(fd);
-    if (fd.status === "NOT_SET" && !fd.classHasFeeStructure) return false;
-    return pending > 0 || (fd.classHasFeeStructure && (pending > 0 || total > 0));
-  };
+  // const canMakePayment = (student) => {
+  //   if (!student.feeDetails) return false;
+  //   const fd = student.feeDetails;
+  //   const { total, pending } = getSafeFeeNumbers(fd);
+  //   if (fd.status === "NOT_SET" && !fd.classHasFeeStructure) return false;
+  //   return pending > 0 || (fd.classHasFeeStructure && (pending > 0 || total > 0));
+  // };
+
+const canMakePayment = (student) => {
+  if (!student.feeDetails) return false;
+
+  const fd = student.feeDetails;
+
+  // ❌ Fee hi set nahi hai
+  if (fd.status === "NOT_SET" && !fd.classHasFeeStructure) return false;
+
+  const { pending } = getSafeFeeNumbers(fd);
+
+  // ✅ ONLY allow payment if pending > 0
+  return pending > 0;
+};
+
 
   const getPaymentButtonText = (student) => {
     if (!student.feeDetails) return "No Fee Set";

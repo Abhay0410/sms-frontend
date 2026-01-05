@@ -464,6 +464,23 @@ export default function TeacherRegisterForm() {
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {/* City */}
+                     <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Street Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="street"
+                      value={form.address.street}
+                      onChange={onChange}
+                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                      placeholder="Enter street address"
+                      required
+                    />
+                      
+                    
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       City <span className="text-red-500">*</span>
