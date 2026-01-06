@@ -1,10 +1,113 @@
-@import "tailwindcss";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Custom Scrollbar Hide */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Intro Animations (Enhanced) */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(40px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes zoomIn {
+  from { 
+    transform: scale(0.9); 
+    opacity: 0; 
+  }
+  to { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(255,255,255,0.3); 
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(255,255,255,0.6); 
+  }
+}
+
+/* Animation Classes */
+.animate-fadeIn { 
+  animation: fadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+}
+
+.animate-slideUp { 
+  animation: slideUp 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+}
+
+.animate-slideUp.delay-200 { 
+  animation-delay: 0.3s; 
+}
+
+.animate-slideUp.delay-400 { 
+  animation-delay: 0.6s; 
+}
+
+.animate-zoomIn { 
+  animation: zoomIn 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 2s infinite;
+}
+
+/* Custom Hover Effects */
+.hover-scale-hover:hover {
+  transform: scale(1.02) translateY(-4px);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hover-glow-hover:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Glass Morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Text Shadow */
+.text-shadow-xl {
+  text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.text-shadow-2xl {
+  text-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+
+/* Custom Button Hover */
+.btn-primary-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
