@@ -690,6 +690,9 @@ function AssignStudentsTab({ classData, onReload, preSelectedSection, onSectionC
   const [loading, setLoading] = useState(false);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [mode, setMode] = useState("enroll"); // "enroll" or "transfer"
+  const [fromSection, setFromSection] = useState("");
+  const [toSection, setToSection] = useState("");
 
   const loadStudents = useCallback(async () => {
     try {
@@ -697,7 +700,6 @@ function AssignStudentsTab({ classData, onReload, preSelectedSection, onSectionC
       const url = `${API_ENDPOINTS.ADMIN.STUDENT.LIST}?className=${classData.className}&academicYear=${classData.academicYear}`;
       const response = await api.get(url);
       
-      // Robust response parsing to prevent fetching issues
       let studentList = [];
       if (response?.data?.students) {
         studentList = response.data.students;
@@ -733,107 +735,281 @@ function AssignStudentsTab({ classData, onReload, preSelectedSection, onSectionC
     }
   }, [preSelectedSection]);
 
-  const assignOrShiftStudents = async () => {
-    if (!selectedSection) return toast.error("Please select a target section");
-    if (selectedStudents.length === 0) return toast.error("Please select students to process");
-
-    try {
-      setLoading(true);
-      // Backend now handles scénarios: New (+1) or Shift (-1 from old, +1 to new)
-      await api.put(
-        API_ENDPOINTS.ADMIN.CLASS.ASSIGN_STUDENTS(classData._id, selectedSection),
-        { studentIds: selectedStudents }
-      );
-      
-      toast.success(`${selectedStudents.length} students processed successfully!`);
-      setSelectedStudents([]);
-      await loadStudents(); // Refresh local list to update "Current Section" badges
-      onReload(); // Refresh parent ClassManagement to update total stats cards
-    } catch (err) {
-      toast.error(err.message || "Failed to update enrollment");
-    } finally {
-      setLoading(false);
+  // Filter students based on mode
+  const getFilteredStudents = () => {
+    if (mode === "enroll") {
+      // Show unassigned students + students from other sections
+      return students.filter(s => !s.section || s.section !== selectedSection);
+    } else {
+      // Show only students from "fromSection" for transfer
+      return students.filter(s => s.section === fromSection);
     }
   };
 
-  // Logic: Show students who are NOT already in the section selected in the dropdown
-  const pool = students.filter(s => s.section !== selectedSection);
-
-  const filteredStudents = pool.filter(
+  const filteredStudents = getFilteredStudents().filter(
     (student) =>
       student?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student?.studentID?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleAction = async () => {
+    if (mode === "enroll") {
+      if (!selectedSection) {
+        toast.error("Please select a target section");
+        return;
+      }
+    } else {
+      if (!fromSection || !toSection) {
+        toast.error("Please select both FROM and TO sections");
+        return;
+      }
+      if (fromSection === toSection) {
+        toast.error("Source and destination sections cannot be same");
+        return;
+      }
+    }
+
+    if (selectedStudents.length === 0) {
+      toast.error("Please select students to process");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // For both modes, use the same endpoint - backend handles both scenarios
+      const targetSection = mode === "enroll" ? selectedSection : toSection;
+      
+      await api.put(
+        API_ENDPOINTS.ADMIN.CLASS.ASSIGN_STUDENTS(classData._id, targetSection),
+        { studentIds: selectedStudents }
+      );
+      
+      if (mode === "enroll") {
+        toast.success(`${selectedStudents.length} students enrolled to Section ${selectedSection}!`);
+      } else {
+        toast.success(`${selectedStudents.length} students transferred from Section ${fromSection} to ${toSection}!`);
+      }
+      
+      setSelectedStudents([]);
+      await loadStudents();
+      onReload();
+    } catch (err) {
+      toast.error(err.message || "Failed to process students");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sections = classData.sections || [];
+  
+  // Get available vacancies for each section
+  const getVacancies = (sectionName) => {
+    const section = sections.find(s => s.sectionName === sectionName);
+    return section ? section.capacity - section.currentStrength : 0;
+  };
+
   return (
     <div className="space-y-6 animate-in slide-in-from-right duration-500">
-      <div className="bg-gradient-to-b from-slate-50 to-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Target Section</label>
-            <select 
-              value={selectedSection} 
-              onChange={(e) => {
-                setSelectedSection(e.target.value);
-                if (onSectionChange) onSectionChange(e.target.value);
-              }} 
-              className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
-            >
-              <option value="">Select Group</option>
-              {classData.sections?.map(s => (
-                <option key={s._id} value={s.sectionName}>
-                  Section {s.sectionName} ({s.capacity - s.currentStrength} Vacancies)
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Filter Registry</label>
-            <input 
-              type="text" 
-              placeholder="Search name or ID..." 
-              className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
-              value={searchTerm} 
-              onChange={e => setSearchTerm(e.target.value)} 
-            />
-          </div>
-          
-          <div className="flex items-end">
-            <button 
-              onClick={assignOrShiftStudents} 
-              disabled={loading || !selectedStudents.length || !selectedSection} 
-              className="w-full py-4 bg-red-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-red-100 hover:bg-red-700 transition-all disabled:opacity-50 active:scale-95"
-            >
-              {loading ? "Syncing..." : `Process ${selectedStudents.length} Students`}
-            </button>
-          </div>
-        </div>
+      {/* Mode Selection Tabs */}
+      <div className="flex gap-4 border-b border-slate-100 pb-4">
+        <button
+          onClick={() => {
+            setMode("enroll");
+            setSelectedStudents([]);
+            setFromSection("");
+          }}
+          className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
+            mode === "enroll"
+              ? "bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg"
+              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}
+        >
+          <FaPlus className="inline mr-2" />
+          Enroll Students
+        </button>
+        <button
+          onClick={() => {
+            setMode("transfer");
+            setSelectedStudents([]);
+            setSelectedSection("");
+          }}
+          className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
+            mode === "transfer"
+              ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}
+        >
+          <FaExchangeAlt className="inline mr-2" />
+          Transfer Between Sections
+        </button>
       </div>
 
+      {/* Control Panel */}
+      <div className="bg-gradient-to-b from-slate-50 to-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+        {mode === "enroll" ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
+                Enroll to Section
+              </label>
+              <select 
+                value={selectedSection} 
+                onChange={(e) => {
+                  setSelectedSection(e.target.value);
+                  if (onSectionChange) onSectionChange(e.target.value);
+                }} 
+                className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
+              >
+                <option value="">Select Target Section</option>
+                {sections.map(s => (
+                  <option key={s._id} value={s.sectionName}>
+                    Section {s.sectionName} ({getVacancies(s.sectionName)} vacancies)
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
+                Filter Registry
+              </label>
+              <input 
+                type="text" 
+                placeholder="Search name or ID..." 
+                className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
+                value={searchTerm} 
+                onChange={e => setSearchTerm(e.target.value)} 
+              />
+            </div>
+            
+            <div className="flex items-end">
+              <button 
+                onClick={handleAction} 
+                disabled={loading || !selectedStudents.length || !selectedSection} 
+                className="w-full py-4 bg-red-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-red-100 hover:bg-red-700 transition-all disabled:opacity-50 active:scale-95"
+              >
+                {loading ? "Processing..." : `Enroll ${selectedStudents.length} Students`}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
+                From Section
+              </label>
+              <select 
+                value={fromSection} 
+                onChange={(e) => {
+                  setFromSection(e.target.value);
+                  setSelectedStudents([]); // Clear selection when source changes
+                }} 
+                className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+              >
+                <option value="">Select Source Section</option>
+                {sections.map(s => (
+                  <option key={s._id} value={s.sectionName}>
+                    Section {s.sectionName} ({s.currentStrength} students)
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
+                To Section
+              </label>
+              <select 
+                value={toSection} 
+                onChange={(e) => setToSection(e.target.value)} 
+                className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all"
+              >
+                <option value="">Select Destination Section</option>
+                {sections.map(s => (
+                  <option key={s._id} value={s.sectionName}>
+                    Section {s.sectionName} ({getVacancies(s.sectionName)} vacancies)
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
+                Filter Students
+              </label>
+              <input 
+                type="text" 
+                placeholder="Search students..." 
+                className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                value={searchTerm} 
+                onChange={e => setSearchTerm(e.target.value)} 
+              />
+            </div>
+            
+            <div className="flex items-end">
+              <button 
+                onClick={handleAction} 
+                disabled={loading || !selectedStudents.length || !fromSection || !toSection} 
+                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-100 hover:opacity-90 transition-all disabled:opacity-50 active:scale-95"
+              >
+                {loading ? "Transferring..." : `Transfer ${selectedStudents.length} Students`}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Students List */}
       <div className="space-y-2">
         {loadingStudents ? (
           <div className="text-center py-20">
             <div className="h-10 w-10 border-4 border-slate-200 border-t-red-600 rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Scanning Registry...</p>
+            <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Loading Student Registry...</p>
           </div>
         ) : filteredStudents.length > 0 ? (
           <>
             <div className="flex justify-between items-center px-2 mb-4">
-              <div className="text-xs font-bold text-slate-500">
-                Found <span className="text-red-600">{filteredStudents.length}</span> students available to assign/shift
+              <div>
+                <span className="text-xs font-bold text-slate-500">
+                  Showing {filteredStudents.length} students
+                  {mode === "enroll" && selectedSection && (
+                    <span className="text-red-600 ml-2">
+                      • Section {selectedSection} has {getVacancies(selectedSection)} vacancies
+                    </span>
+                  )}
+                  {mode === "transfer" && fromSection && toSection && (
+                    <span className="text-blue-600 ml-2">
+                      • {fromSection} → {toSection} • {getVacancies(toSection)} vacancies available
+                    </span>
+                  )}
+                </span>
               </div>
-              <button
-                onClick={() => setSelectedStudents(filteredStudents.map(s => s._id))}
-                className="text-[10px] font-black text-red-600 uppercase tracking-widest hover:underline"
-              >
-                Select All
-              </button>
+              <div className="flex gap-2">
+                {filteredStudents.length > 0 && (
+                  <button
+                    onClick={() => setSelectedStudents(filteredStudents.map(s => s._id))}
+                    className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:underline hover:text-slate-900"
+                  >
+                    Select All
+                  </button>
+                )}
+                {selectedStudents.length > 0 && (
+                  <button
+                    onClick={() => setSelectedStudents([])}
+                    className="text-[10px] font-black text-red-600 uppercase tracking-widest hover:underline"
+                  >
+                    Clear Selection
+                  </button>
+                )}
+              </div>
             </div>
             
             <div className="space-y-3">
               {filteredStudents.map(s => {
                 const isSelected = selectedStudents.includes(s._id);
+                const isEnrolled = !!s.section;
+                
                 return (
                   <div 
                     key={s._id} 
@@ -842,13 +1018,19 @@ function AssignStudentsTab({ classData, onReload, preSelectedSection, onSectionC
                     )} 
                     className={`p-5 rounded-[1.5rem] border-2 cursor-pointer transition-all ${
                       isSelected 
-                        ? "border-red-600 bg-red-50 shadow-lg scale-[0.99]" 
-                        : "border-slate-50 bg-white hover:border-red-100 shadow-sm"
+                        ? mode === "enroll"
+                          ? "border-red-600 bg-gradient-to-r from-red-50 to-rose-50 shadow-lg"
+                          : "border-blue-600 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg"
+                        : "border-slate-50 bg-white hover:border-slate-200 shadow-sm"
                     }`}
                   >
                     <div className="flex items-center gap-5">
                       <div className={`h-8 w-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                        isSelected ? "bg-red-600 border-red-600 text-white shadow-lg shadow-red-100" : "border-slate-200"
+                        isSelected 
+                          ? mode === "enroll"
+                            ? "bg-red-600 border-red-600 text-white shadow-lg shadow-red-100"
+                            : "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-100"
+                          : "border-slate-200"
                       }`}>
                         {isSelected && <FaCheckCircle size={14} />}
                       </div>
@@ -858,14 +1040,26 @@ function AssignStudentsTab({ classData, onReload, preSelectedSection, onSectionC
                             <p className="font-black text-slate-900 text-lg uppercase tracking-tight">{s.name}</p>
                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{s.studentID}</p>
                           </div>
-                          {s.section && (
-                            <div className="flex items-center gap-2">
-                              <FaExchangeAlt className="text-slate-300" />
-                              <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-widest">
-                                Shifting from Sec {s.section}
+                          <div className="flex items-center gap-3">
+                            {isEnrolled && (
+                              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                                mode === "transfer" && fromSection === s.section
+                                  ? "bg-blue-100 text-blue-600"
+                                  : "bg-slate-100 text-slate-600"
+                              }`}>
+                                {mode === "transfer" ? "Transfer from " : "Currently in "}
+                                Section {s.section}
                               </span>
-                            </div>
-                          )}
+                            )}
+                            {!isEnrolled && mode === "enroll" && (
+                              <span className="text-xs font-bold bg-amber-100 text-amber-600 px-3 py-1 rounded-full">
+                                Unassigned
+                              </span>
+                            )}
+                            {mode === "transfer" && (
+                              <FaExchangeAlt className={`${isSelected ? "text-blue-400" : "text-slate-300"}`} />
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -875,11 +1069,64 @@ function AssignStudentsTab({ classData, onReload, preSelectedSection, onSectionC
             </div>
           </>
         ) : (
-          <div className="py-24 text-center opacity-30 flex flex-col items-center">
-            <FaUserGraduate size={64} className="mb-4" />
-            <p className="font-black uppercase tracking-[0.3em] text-xs text-slate-500">No pending students in pool</p>
+          <div className="py-24 text-center opacity-60 flex flex-col items-center">
+            {mode === "enroll" ? (
+              <>
+                <FaUserGraduate size={64} className="mb-4 text-slate-300" />
+                <p className="font-black uppercase tracking-[0.3em] text-xs text-slate-400 mb-2">
+                  {selectedSection 
+                    ? `No students available for Section ${selectedSection}`
+                    : "Select a target section to view available students"
+                  }
+                </p>
+                <p className="text-slate-500 text-sm max-w-md">
+                  All students are either already enrolled in this section or there are no unassigned students.
+                </p>
+              </>
+            ) : (
+              <>
+                <FaExchangeAlt size={64} className="mb-4 text-slate-300" />
+                <p className="font-black uppercase tracking-[0.3em] text-xs text-slate-400 mb-2">
+                  {fromSection 
+                    ? `No students found in Section ${fromSection}`
+                    : "Select a source section to view transferable students"
+                  }
+                </p>
+                <p className="text-slate-500 text-sm max-w-md">
+                  The selected source section has no enrolled students to transfer.
+                </p>
+              </>
+            )}
           </div>
         )}
+      </div>
+
+      {/* Quick Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-200">
+          <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
+            Total Students
+          </p>
+          <p className="text-2xl font-black text-slate-900">{students.length}</p>
+        </div>
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-200">
+          <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
+            {mode === "enroll" ? "Selected for Enrollment" : "Selected for Transfer"}
+          </p>
+          <p className="text-2xl font-black text-slate-900">{selectedStudents.length}</p>
+        </div>
+        <div className={`p-4 rounded-2xl border ${
+          mode === "enroll"
+            ? "bg-gradient-to-br from-red-50 to-rose-50 border-red-200"
+            : "bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200"
+        }`}>
+          <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
+            Current Mode
+          </p>
+          <p className="text-lg font-black text-slate-900">
+            {mode === "enroll" ? "📥 Enroll Students" : "🔄 Transfer Between Sections"}
+          </p>
+        </div>
       </div>
     </div>
   );
