@@ -1,10 +1,11 @@
 
-import { useEffect, useState , useRef} from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaCopy } from "react-icons/fa";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
+import Swal from "sweetalert2";
 
 
 import DatePicker from "react-datepicker";
@@ -24,8 +25,7 @@ const AdminRegisterForm = () => {
   const navigate = useNavigate();
   const [school, setSchool] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [credentials, setCredentials] = useState(null);
-  const credentialsRef = useRef(null);
+
 
 
   const [form, setForm] = useState({
@@ -58,16 +58,8 @@ const AdminRegisterForm = () => {
     setSchool(JSON.parse(stored));
   }, [navigate]);
 
-  const copyToClipboard = (text, message) => {
-    navigator.clipboard.writeText(text);
-    toast.success(message);
-  };
-
-  const copyBothCredentials = () => {
-    if (!credentials) return;
-    const text = `Admin ID: ${credentials.adminID}\nPassword: ${credentials.password}`;
-    copyToClipboard(text, "All credentials copied!");
-  };
+ 
+  
 
   const handleChange = (e) => {
     let { name, value, type, checked } = e.target;
@@ -86,91 +78,128 @@ const AdminRegisterForm = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-  
+  try {
+    const payload = {
+      name: form.name.trim(),
+      email: form.email.trim().toLowerCase(),
+      phone: form.phone.trim(),
+      schoolId: school._id,
+      dateOfBirth: form.dateOfBirth || null,
+      gender: form.gender || null,
+      designation: form.designation.trim() || "",
+      department: form.department.trim() || "",
+      joiningDate: form.joiningDate || null,
+      address: {
+        street: form.address.street.trim() || "",
+        city: form.address.city.trim() || "",
+        state: form.address.state.trim() || "",
+        pincode: form.address.pincode.trim() || "",
+        country: "India",
+      },
+      permissions: [],
+      isSuperAdmin: form.isSuperAdmin,
+      role: "admin",
+      profilePicture: "",
+      isActive: true,
+    };
+
+    const res = await api.post(API_ENDPOINTS.ADMIN.AUTH.REGISTER, payload);
+
+    if (res.success === true) {
+      const { adminID, password } = res.data;
+
+     Swal.fire({
+  icon: "success",
+  title: "Admin Registered",
+  width: 420,
+  html: `
+    <div style="text-align:left; font-size:13px; line-height:1.4">
+
+      <div style="margin-bottom:12px">
+        <div style="font-weight:600; margin-bottom:4px">Admin ID</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px">
+          <code style="font-size:12px; padding:4px 6px">${adminID}</code>
+          <button id="copyId"
+            style="font-size:11px; padding:4px 8px; cursor:pointer">
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-weight:600; margin-bottom:4px">Temporary Password</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px">
+          <code style="font-size:12px; padding:4px 6px">${password}</code>
+          <button id="copyPass"
+            style="font-size:11px; padding:4px 8px; cursor:pointer">
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px; font-size:11px; color:#b91c1c">
+        ⚠ Save these credentials. They will not be shown again.
+      </div>
+
+    </div>
+  `,
+  confirmButtonText: "Done",
+  confirmButtonColor: "#4f46e5",
+  didOpen: () => {
+    document.getElementById("copyId").onclick = () => {
+      navigator.clipboard.writeText(adminID);
+      Swal.showValidationMessage("Admin ID copied");
+    };
+
+    document.getElementById("copyPass").onclick = () => {
+      navigator.clipboard.writeText(password);
+      Swal.showValidationMessage("Password copied");
+    };
+  },
+});
 
 
-    try {
-      const payload = {
-        name: form.name.trim(),
-        email: form.email.trim().toLowerCase(),
-        phone: form.phone.trim(),
-        schoolId: school._id,
-        dateOfBirth: form.dateOfBirth || null,
-        gender: form.gender || null,
-        designation: form.designation.trim() || "",
-        department: form.department.trim() || "",
-        joiningDate: form.joiningDate || null,
+      // Reset form
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        dateOfBirth: "",
+        gender: "",
+        designation: "",
+        department: "",
+        joiningDate: "",
+        isSuperAdmin: true,
         address: {
-          street: form.address.street.trim() || "",
-          city: form.address.city.trim() || "",
-          state: form.address.state.trim() || "",
-          pincode: form.address.pincode.trim() || "",
-          country: "India",
+          street: "",
+          city: "",
+          state: "",
+          pincode: "",
+          country: "",
         },
-        permissions: [],
-        isSuperAdmin: form.isSuperAdmin,
-        role: "admin",
-        profilePicture: "",
-        isActive: true,
-      };
-
-      const res = await api.post(API_ENDPOINTS.ADMIN.AUTH.REGISTER, payload);
-
-      if (res.success === true) {
-        setCredentials({
-          adminID: res.data.adminID,
-          password: res.data.password,
-        });
-
-        toast.success("Admin registered successfully!");
-        // Reset form after successful registration
-        setForm({
-          name: "",
-          email: "",
-          phone: "",
-          dateOfBirth: "",
-          gender: "",
-          designation: "",
-          department: "",
-          joiningDate: "",
-          isSuperAdmin: true,
-          address: {
-            street: "",
-            city: "",
-            state: "",
-            pincode: "",
-            country: "India",
-          },
-        });
-        return;
-      }
-
+      });
+    } else {
       toast.error(res.message || "Admin registration failed");
-    } catch (err) {
-      console.error("❌ Registration Error:", err);
-      toast.error(
-        err.response?.data?.message ||
-          err.message ||
-          "Admin registration failed"
-      );
-    } finally {
-      setLoading(false);
     }
-  };
-
-    useEffect(() => {
-  if (credentials && credentialsRef.current) {
-    credentialsRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Registration Failed",
+      text:
+        err.response?.data?.message ||
+        err.message ||
+        "Admin registration failed",
     });
+  } finally {
+    setLoading(false);
   }
-}, [credentials]);
+};
 
+   
   if (!school) return null;
 
   return (
@@ -209,306 +238,204 @@ const AdminRegisterForm = () => {
 
           {/* ===== FORM ===== */}
           <form
-            onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-2 gap-5"
-          >
-            <Input
-              label="Full Name *"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="Email *"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="Phone *"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              required
-            />
-           
-           <div>
-              <label className="block text-sm font-medium mb-1">
-                Date of Birth
-              </label>
+  onSubmit={handleSubmit}
+  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+>
+  {/* BASIC INFO */}
+  <Input
+    label="Full Name *"
+    name="name"
+    value={form.name}
+    onChange={handleChange}
+    required
+  />
 
-              <DatePicker
-                selected={
-                  form.dateOfBirth
-                    ? new Date(
-                        form.dateOfBirth.split("/").reverse().join("-")
-                      )
-                    : null
-                }
-                onChange={(date) => {
-                  const formatted = date
-                    ? `${String(date.getDate()).padStart(2, "0")}/${String(
-                        date.getMonth() + 1
-                      ).padStart(2, "0")}/${date.getFullYear()}`
-                    : "";
+  <Input
+    label="Email *"
+    name="email"
+    type="email"
+    value={form.email}
+    onChange={handleChange}
+    required
+  />
 
-                  setForm({ ...form, dateOfBirth: formatted });
-                }}
-                dateFormat="dd/MM/yyyy"
-                placeholderText="DD/MM/YYYY"
-                className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            
+  <Input
+    label="Phone *"
+    name="phone"
+    value={form.phone}
+    onChange={handleChange}
+    required
+  />
 
-            {/* Gender */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700">
-                Gender
-              </label>
-              <select
-                name="gender"
-                value={form.gender}
-                onChange={handleChange}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 
-                focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">Select</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+  {/* DOB */}
+  <div>
+    <label className="block text-sm font-medium mb-1">Date of Birth</label>
+    <DatePicker
+      selected={
+        form.dateOfBirth
+          ? new Date(form.dateOfBirth.split("/").reverse().join("-"))
+          : null
+      }
+      onChange={(date) => {
+        const formatted = date
+          ? `${String(date.getDate()).padStart(2, "0")}/${String(
+              date.getMonth() + 1
+            ).padStart(2, "0")}/${date.getFullYear()}`
+          : "";
+        setForm({ ...form, dateOfBirth: formatted });
+      }}
+      dateFormat="dd/MM/yyyy"
+      placeholderText="DD/MM/YYYY"
+      className="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+    />
+  </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Designation
-              </label>
+  {/* GENDER */}
+  <div>
+    <label className="text-sm font-medium">Gender</label>
+    <select
+      name="gender"
+      value={form.gender}
+      onChange={handleChange}
+      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 focus:ring-2 focus:ring-indigo-500"
+    >
+      <option value="">Select</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+  </div>
 
-              <select
-                name="designation"
-                value={form.designation}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="" className="text-gray-600">Select Designation</option>
+  {/* DESIGNATION */}
+  <div>
+    <label className="text-sm font-medium">Designation</label>
+    <select
+      name="designation"
+      value={form.designation}
+      onChange={handleChange}
+      className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+    >
+      <option value="">Select Designation</option>
+      <option>Principal</option>
+      <option>Vice Principal</option>
+      <option>Administrator</option>
+      <option>Accountant</option>
+    </select>
+  </div>
 
-                {/* Teaching Staff */}
-                <option value="Principal">Principal</option>
-                <option value="Vice Principal">Vice Principal</option>
-                <option value="Head Teacher">Head Teacher</option>
-                <option value="PGT">PGT (Post Graduate Teacher)</option>
-                <option value="TGT">TGT (Trained Graduate Teacher)</option>
-                <option value="PRT">PRT (Primary Teacher)</option>
-                <option value="Assistant Teacher">Assistant Teacher</option>
-                <option value="Special Educator">Special Educator</option>
-                <option value="Librarian">Librarian</option>
-                <option value="Sports Teacher">Sports Teacher</option>
+  {/* DEPARTMENT */}
+  <div>
+    <label className="text-sm font-medium">Department</label>
+    <select
+      name="department"
+      value={form.department}
+      onChange={handleChange}
+      className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+    >
+      <option value="">Select Department</option>
+      <option>Administration</option>
+      <option>Accounts</option>
+      <option>HR</option>
+      <option>IT</option>
+    </select>
+  </div>
 
-                {/* Administration */}
-                <option value="Administrator">Administrator</option>
-                <option value="Office Superintendent">
-                  Office Superintendent
-                </option>
-                <option value="Clerk">Clerk</option>
-                <option value="Accountant">Accountant</option>
-                <option value="Receptionist">Receptionist</option>
+  {/* JOINING DATE */}
+  <div>
+    <label className="text-sm font-medium">Date of Joining</label>
+    <DatePicker
+      selected={
+        form.joiningDate
+          ? new Date(form.joiningDate.split("/").reverse().join("-"))
+          : null
+      }
+      onChange={(date) => {
+        const formatted = date
+          ? `${String(date.getDate()).padStart(2, "0")}/${String(
+              date.getMonth() + 1
+            ).padStart(2, "0")}/${date.getFullYear()}`
+          : "";
+        setForm({ ...form, joiningDate: formatted });
+      }}
+      dateFormat="dd/MM/yyyy"
+      placeholderText="DD/MM/YYYY"
+      className="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+    />
+  </div>
 
-                {/* Support Staff */}
-                <option value="Lab Assistant">Lab Assistant</option>
-                <option value="IT Coordinator">IT Coordinator</option>
-                <option value="Transport Incharge">Transport Incharge</option>
-                <option value="Hostel Warden">Hostel Warden</option>
-                <option value="Nurse">Nurse</option>
-                <option value="Counsellor">Counsellor</option>
-                <option value="Security Supervisor">Security Supervisor</option>
-              </select>
-            </div>
+  {/* ===== ADDRESS SECTION ===== */}
+  <div className="md:col-span-2 mt-4">
+    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+      Address Details
+    </h3>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Department
-              </label>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-5 rounded-xl border">
+      <Input
+        label="Street Address"
+        name="street"
+        value={form.address.street}
+        onChange={handleAddressChange}
+      />
 
-              <select
-                name="department"
-                value={form.department}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="" className="text-gray-600">Select Department</option>
-                <option value="Administration">Administration</option>
-                <option value="Accounts">Accounts</option>
-                <option value="Human Resources">Human Resources</option>
-                <option value="Teaching">Teaching</option>
-                <option value="Examination">Examination</option>
-                <option value="Library">Library</option>
-                <option value="IT Support">IT Support</option>
-                <option value="Transport">Transport</option>
-                <option value="Hostel">Hostel</option>
-                <option value="Sports">Sports</option>
-                <option value="Medical">Medical</option>
-                <option value="Security">Security</option>
-              </select>
-            </div>
+      <Input
+        label="City"
+        name="city"
+        value={form.address.city}
+        onChange={handleAddressChange}
+      />
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Date of Joining
-              </label>
+      <Input
+        label="State"
+        name="state"
+        value={form.address.state}
+        onChange={handleAddressChange}
+      />
 
-              <DatePicker
-                selected={
-                  form.dateOfJoining
-                    ? new Date(
-                        form.dateOfJoining.split("/").reverse().join("-")
-                      )
-                    : null
-                }
-                onChange={(date) => {
-                  const formatted = date
-                    ? `${String(date.getDate()).padStart(2, "0")}/${String(
-                        date.getMonth() + 1
-                      ).padStart(2, "0")}/${date.getFullYear()}`
-                    : "";
+      <Input
+        label="Pincode"
+        name="pincode"
+        value={form.address.pincode}
+        onChange={handleAddressChange}
+      />
 
-                  setForm({ ...form, dateOfJoining: formatted });
-                }}
-                dateFormat="dd/MM/yyyy"
-                placeholderText="DD/MM/YYYY"
-                className="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
+      <Input
+        label="Country"
+        name="country"
+        value={form.address.country}
+        onChange={handleAddressChange}
+      />
+    </div>
+  </div>
 
-            <Input
-              label="Street"
-              name="street"
-              value={form.address.street}
-              onChange={handleAddressChange}
-            />
-            <Input
-              label="City"
-              name="city"
-              value={form.address.city}
-              onChange={handleAddressChange}
-            />
-            <Input
-              label="State"
-              name="state"
-              value={form.address.state}
-              onChange={handleAddressChange}
-            />
-            <Input
-              label="Pincode"
-              name="pincode"
-              value={form.address.pincode}
-              onChange={handleAddressChange}
-            />
+  {/* SUPER ADMIN */}
+  <div className="md:col-span-2 flex items-center gap-2 mt-4">
+    <input
+      type="checkbox"
+      name="isSuperAdmin"
+      checked={form.isSuperAdmin}
+      onChange={handleChange}
+      className="h-4 w-4"
+    />
+    <label className="text-sm font-medium">
+      Grant Super Admin Privileges
+    </label>
+  </div>
 
-            {/* Super Admin Checkbox */}
-            <div className="md:col-span-2 flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="isSuperAdmin"
-                id="isSuperAdmin"
-                checked={form.isSuperAdmin}
-                onChange={handleChange}
-                className="h-4 w-4 text-indigo-600 rounded focus:ring-indigo-500"
-              />
-              <label
-                htmlFor="isSuperAdmin"
-                className="text-sm font-medium text-gray-700"
-              >
-                Grant Super Admin Privileges
-              </label>
-            </div>
+  {/* SUBMIT */}
+  <div className="md:col-span-2 flex justify-end mt-6">
+    <button
+      type="submit"
+      disabled={loading}
+      className="bg-indigo-600 text-white px-8 py-2.5 rounded-lg font-medium hover:bg-indigo-700"
+    >
+      {loading ? "Registering..." : "Register Admin"}
+    </button>
+  </div>
+</form>
 
-            {/* ===== SUBMIT BUTTON ===== */}
-            <div className="md:col-span-2 flex justify-center md:justify-end mt-6">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full md:w-auto bg-indigo-600 text-white px-8 py-2.5 
-                rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Registering..." : "Register Admin"}
-              </button>
-            </div>
-          </form>
 
-          {/* ===== CREDENTIALS DISPLAY ===== */}
-          {credentials && (
-            
-            <div className="mt-8 rounded-xl border-l-4 border-green-500 bg-green-50 p-6 shadow animate-fade-in"  ref={credentialsRef}>
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-green-800">
-                  Admin Login Credentials
-                </h3>
-                <button
-                  type="button"
-                  onClick={copyBothCredentials}
-                  className="bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-md hover:bg-indigo-200 flex items-center gap-2 transition"
-                >
-                  <FaCopy />{" "}
-                  <span className="text-sm font-medium">Copy Both</span>
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {/* Admin ID Row */}
-                <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-green-100">
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase font-bold">
-                      Admin ID
-                    </p>
-                    <p className="font-mono text-lg text-gray-800">
-                      {credentials.adminID}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      copyToClipboard(credentials.adminID, "Admin ID copied!")
-                    }
-                    className="p-2 text-gray-400 hover:text-indigo-600 transition"
-                    title="Copy ID"
-                  >
-                    <FaCopy />
-                  </button>
-                </div>
-
-                {/* Password Row */}
-                <div className="flex items-center justify-between bg-red-50 p-3 rounded-lg border border-red-100">
-                  <div>
-                    <p className="text-xs text-red-500 uppercase font-bold">
-                      Temporary Password
-                    </p>
-                    <p className="font-mono text-lg text-red-700">
-                      {credentials.password}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      copyToClipboard(credentials.password, "Password copied!")
-                    }
-                    className="p-2 text-red-400 hover:text-red-600 transition"
-                    title="Copy Password"
-                  >
-                    <FaCopy />
-                  </button>
-                </div>
-              </div>
-
-              <p className="text-xs text-red-500 mt-4 italic">
-                ⚠️ Share these credentials securely. For security reasons, the
-                password will not be displayed again.
-              </p>
-
-              
-            </div>
-          )}
+          
+          
         </div>
       </div>
     </div>

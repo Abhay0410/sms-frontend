@@ -1,11 +1,12 @@
 // pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 import { FaCheck, FaSpinner, FaCopy } from "react-icons/fa";
 import Select from "react-select";
+import Swal from "sweetalert2";
 
 export default function TeacherRegisterForm() {
   const [form, setForm] = useState({
@@ -27,16 +28,16 @@ export default function TeacherRegisterForm() {
 
   const DEPARTMENT_OPTIONS = [
     "Mathematics",
-  "Science",
-  "Languages",
-  "Social Science",
-  "Computer Science",
-  "Environmental Studies",
-  "Physical Education",
-  "Arts & Craft",
-  "Music",
-  "Library",
-  "Primary Education"
+    "Science",
+    "Languages",
+    "Social Science",
+    "Computer Science",
+    "Environmental Studies",
+    "Physical Education",
+    "Arts & Craft",
+    "Music",
+    "Library",
+    "Primary Education",
   ];
 
   // const SUBJECT_OPTIONS = [
@@ -53,11 +54,9 @@ export default function TeacherRegisterForm() {
   // ];
 
   const [loading, setLoading] = useState(false);
-  const [createdTeacher, setCreatedTeacher] = useState(null);
+
   const [allSubjects, setAllSubjects] = useState([]);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
-
-  const credentialsRef = useRef(null);
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -176,8 +175,48 @@ export default function TeacherRegisterForm() {
 
       console.log("👤 Final Teacher Object:", teacherData);
 
-      setCreatedTeacher(teacherData);
-      toast.success("Teacher registered successfully!");
+      Swal.fire({
+        icon: "success",
+        title: "Teacher Registered Successfully 🎉",
+        html: `
+    <div style="text-align:left; font-size:14px">
+
+      <p><b>Teacher ID:</b>
+        <span style="color:#2563eb; font-weight:600">
+          ${teacherData.teacherID || "N/A"}
+        </span>
+      </p>
+
+
+      <hr style="margin:12px 0"/>
+
+      <p style="font-weight:600">Password</p>
+
+      <div style="
+        background:#eef2ff;
+        padding:10px;
+        border-radius:8px;
+        margin-top:6px;
+        text-align:center;
+        color:#4338ca;
+        font-size:14px
+      ">
+        ${
+          teacherData.credentials?.password ||
+          teacherData.credentials?.defaultPassword ||
+          "Teacher@123"
+        }
+      </div>
+
+      <p style="font-size:12px;color:#b91c1c;margin-top:8px">
+        ⚠️ Please save these credentials. They will not be shown again.
+      </p>
+
+    </div>
+  `,
+        confirmButtonText: "Done",
+        confirmButtonColor: "#4f46e5",
+      });
 
       // Reset form
       setForm({
@@ -204,48 +243,6 @@ export default function TeacherRegisterForm() {
       setLoading(false);
     }
   };
-
-  // ✅ Copy to clipboard function
-  const copyToClipboard = (text, label) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        toast.success(`${label} copied to clipboard!`);
-      })
-      .catch(() => {
-        toast.error("Failed to copy");
-      });
-  };
-
-  // ✅ Copy all credentialsF
-  const copyAllCredentials = () => {
-    const credentials = `Teacher Credentials
-━━━━━━━━━━━━━━━━━━━━
-Name: ${createdTeacher?.name}
-Teacher ID: ${createdTeacher?.teacherID}
-Email: ${createdTeacher?.email}
-Password: ${createdTeacher?.credentials?.defaultPassword || "Teacher@2025"}
-━━━━━━━━━━━━━━━━━━━━
-Login URL: ${window.location.origin}/signin`;
-
-    navigator.clipboard
-      .writeText(credentials)
-      .then(() => {
-        toast.success("All credentials copied to clipboard!");
-      })
-      .catch(() => {
-        toast.error("Failed to copy credentials");
-      });
-  };
-
-  useEffect(() => {
-    if (createdTeacher && credentialsRef.current) {
-      credentialsRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }, [createdTeacher]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-6">
@@ -408,7 +405,9 @@ Login URL: ${window.location.origin}/signin`;
                       required
                       className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     >
-                      <option value="" className="text-gray-600" >Select Department</option>
+                      <option value="" className="text-gray-600">
+                        Select Department
+                      </option>
                       {DEPARTMENT_OPTIONS.map((dept, index) => (
                         <option key={index} value={dept}>
                           {dept}
@@ -465,6 +464,23 @@ Login URL: ${window.location.origin}/signin`;
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {/* City */}
+                     <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Street Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="street"
+                      value={form.address.street}
+                      onChange={onChange}
+                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                      placeholder="Enter street address"
+                      required
+                    />
+                      
+                    
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       City <span className="text-red-500">*</span>
@@ -554,148 +570,6 @@ Login URL: ${window.location.origin}/signin`;
             </div>
           </div>
         </form>
-
-        {/* ✅ SUCCESS MESSAGE WITH COPY BUTTONS */}
-        {createdTeacher && (
-          <div
-            className="mt-6 rounded-lg border-l-4 border-green-500 bg-green-50 p-6 shadow-md"
-            ref={credentialsRef}
-          >
-            <div className="flex items-start">
-              <FaCheck className="h-6 w-6 text-green-400 flex-shrink-0" />
-              <div className="ml-4 flex-1">
-                <h3 className="text-lg font-semibold text-green-800 mb-2">
-                  Registration Successful! 🎉
-                </h3>
-
-                <div className="mt-4 rounded-lg bg-white p-5 shadow-sm border border-green-200">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-semibold text-gray-900">
-                      Teacher Credentials
-                    </h4>
-                    <button
-                      onClick={copyAllCredentials}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition"
-                    >
-                      <FaCopy className="h-3 w-3" />
-                      Copy All
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {/* Name */}
-                    <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <div>
-                        <p className="text-xs text-gray-600">Name</p>
-                        <p className="font-medium text-gray-900">
-                          {createdTeacher?.name}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(createdTeacher?.name, "Name")
-                        }
-                        className="p-2 hover:bg-gray-200 rounded transition"
-                        title="Copy name"
-                      >
-                        <FaCopy className="h-3 w-3 text-gray-600" />
-                      </button>
-                    </div>
-
-                    {/* Teacher ID */}
-                    <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <div>
-                        <p className="text-xs text-gray-600">Teacher ID</p>
-                        <p className="font-mono font-medium text-indigo-700">
-                          {createdTeacher?.teacherID ||
-                            createdTeacher?.teacher?.teacherID ||
-                            "N/A"}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(
-                            createdTeacher?.teacherID ||
-                              createdTeacher?.teacher?.teacherID,
-                            "Teacher ID"
-                          )
-                        }
-                        className="p-2 hover:bg-gray-200 rounded transition"
-                        title="Copy Teacher ID"
-                      >
-                        <FaCopy className="h-3 w-3 text-gray-600" />
-                      </button>
-                    </div>
-
-                    {/* Email */}
-                    <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <div>
-                        <p className="text-xs text-gray-600">Email</p>
-                        <p className="text-gray-900">{createdTeacher?.email}</p>
-                      </div>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(createdTeacher?.email, "Email")
-                        }
-                        className="p-2 hover:bg-gray-200 rounded transition"
-                        title="Copy email"
-                      >
-                        <FaCopy className="h-3 w-3 text-gray-600" />
-                      </button>
-                    </div>
-
-                    {/* Password */}
-                    <div className="flex justify-between items-center p-2 bg-red-50 rounded border border-red-200">
-                      <div>
-                        <p className="text-xs text-red-600 font-medium">
-                          Default Password
-                        </p>
-                        <p className="font-mono font-bold text-red-700">
-                          {createdTeacher?.credentials?.defaultPassword ||
-                            "Teacher@2025"}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(
-                            createdTeacher?.credentials?.defaultPassword ||
-                              "Teacher@2025",
-                            "Password"
-                          )
-                        }
-                        className="p-2 hover:bg-red-100 rounded transition"
-                        title="Copy password"
-                      >
-                        <FaCopy className="h-3 w-3 text-red-600" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-xs text-yellow-800 flex items-start gap-2">
-                    <svg
-                      className="w-4 h-4 mt-0.5 flex-shrink-0"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>
-                      <strong>Important:</strong> Share these credentials with
-                      the teacher and advise them to change the password after
-                      first login.
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -164,28 +164,28 @@ export default function PaymentHistory({ academicYear }) {
     }
   }, []);
 
-  const downloadAllReceipts = async () => {
-    try {
-      toast.info("Generating bulk download...");
-      const baseUrl =
-        import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
+  // const downloadAllReceipts = async () => {
+  //   try {
+  //     toast.info("Generating bulk download...");
+  //     const baseUrl =
+  //       import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
 
-      filteredPayments.forEach((payment) => {
-        setTimeout(() => {
-          const link = document.createElement("a");
-          link.href = `${baseUrl}/api/admin/fees/receipt/${payment._id}/download`;
-          link.download = `receipt-${payment.receiptNumber}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }, Math.random() * 1000);
-      });
+  //     filteredPayments.forEach((payment) => {
+  //       setTimeout(() => {
+  //         const link = document.createElement("a");
+  //         link.href = `${baseUrl}/api/admin/fees/receipt/${payment._id}/download`;
+  //         link.download = `receipt-${payment.receiptNumber}.pdf`;
+  //         document.body.appendChild(link);
+  //         link.click();
+  //         document.body.removeChild(link);
+  //       }, Math.random() * 1000);
+  //     });
 
-      toast.success(`Started download of ${filteredPayments.length} receipts`);
-    } catch {
-      toast.error("Bulk download failed");
-    }
-  };
+  //     toast.success(`Started download of ${filteredPayments.length} receipts`);
+  //   } catch {
+  //     toast.error("Bulk download failed");
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -206,7 +206,7 @@ export default function PaymentHistory({ academicYear }) {
             {filteredPayments.length} payments found
           </p>
         </div>
-        {filteredPayments.length > 0 && (
+        {/* {filteredPayments.length > 0 && (
           <button
             onClick={downloadAllReceipts}
             className="flex items-center gap-2 bg-purple-600 text-white px-6 py-2 rounded-xl hover:bg-purple-700 transition-all font-medium shadow-lg"
@@ -214,7 +214,7 @@ export default function PaymentHistory({ academicYear }) {
             <FaDownload />
             Download All Receipts
           </button>
-        )}
+        )} */}
       </div>
 
       {/* Filters */}
@@ -422,7 +422,7 @@ export default function PaymentHistory({ academicYear }) {
                           className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all"
                           title="Preview Receipt"
                         >
-                          <FaEye className="h-4 w-4" />
+                         
                         </button>
 
                         <button

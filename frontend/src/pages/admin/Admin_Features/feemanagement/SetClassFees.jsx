@@ -5,9 +5,16 @@ import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 
-const FREQUENCY_OPTIONS = ["YEARLY", "ONE_TIME", "MONTHLY", "QUARTERLY", "HALF_YEARLY"];
+const FREQUENCY_OPTIONS = [
+  "YEARLY",
+  "ONE_TIME",
+  "MONTHLY",
+  "QUARTERLY",
+  "HALF_YEARLY",
+];
 
 export default function SetClassFees({ academicYear }) {
+
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,10 +42,7 @@ export default function SetClassFees({ academicYear }) {
       });
 
       const classesData =
-        resp.data?.data?.classes ||
-        resp.data?.classes ||
-        resp.classes ||
-        [];
+        resp.data?.data?.classes || resp.data?.classes || resp.classes || [];
 
       setClasses(classesData);
     } catch (error) {
@@ -75,7 +79,15 @@ export default function SetClassFees({ academicYear }) {
   const updateFeeRow = (index, field, value) => {
     setFeeRows((prev) =>
       prev.map((row, i) =>
-        i === index ? { ...row, [field]: field === "amount" || field === "lateFee" ? Number(value || 0) : value } : row
+        i === index
+          ? {
+              ...row,
+              [field]:
+                field === "amount" || field === "lateFee"
+                  ? Number(value || 0)
+                  : value,
+            }
+          : row
       )
     );
   };
@@ -85,9 +97,13 @@ export default function SetClassFees({ academicYear }) {
   };
 
   const getClassTotalFee = (classData) => {
-    if (!classData.feeStructure || !Array.isArray(classData.feeStructure)) return 0;
+    if (!classData.feeStructure || !Array.isArray(classData.feeStructure))
+      return 0;
     // classData.feeStructure already in new format (amount, frequency)
-    return classData.feeStructure.reduce((sum, item) => sum + (item.annualAmount || item.amount || 0), 0);
+    return classData.feeStructure.reduce(
+      (sum, item) => sum + (item.annualAmount || item.amount || 0),
+      0
+    );
   };
 
   const calculateFormTotal = () => {
@@ -109,16 +125,20 @@ export default function SetClassFees({ academicYear }) {
         lateFee: f.lateFee || 0,
       })) || [];
 
-    setFeeRows(rows.length ? rows : [
-      {
-        headId: "",
-        headName: "",
-        amount: 0,
-        frequency: "YEARLY",
-        dueMonth: "",
-        lateFee: 0,
-      },
-    ]);
+    setFeeRows(
+      rows.length
+        ? rows
+        : [
+            {
+              headId: "",
+              headName: "",
+              amount: 0,
+              frequency: "YEARLY",
+              dueMonth: "",
+              lateFee: 0,
+            },
+          ]
+    );
 
     setSettingsForm({
       paymentSchedule: classData.feeSettings?.paymentSchedule || "YEARLY",
@@ -127,7 +147,9 @@ export default function SetClassFees({ academicYear }) {
         : "",
       lateFeeAmount: classData.feeSettings?.lateFeeAmount || 0,
       lateFeeApplicableAfter: classData.feeSettings?.lateFeeApplicableAfter
-        ? new Date(classData.feeSettings.lateFeeApplicableAfter).toISOString().split("T")[0]
+        ? new Date(classData.feeSettings.lateFeeApplicableAfter)
+            .toISOString()
+            .split("T")[0]
         : "",
     });
 
@@ -140,7 +162,9 @@ export default function SetClassFees({ academicYear }) {
     if (!selectedClass) return;
 
     // Basic validation
-    const activeRows = feeRows.filter((r) => (r.headName || "").trim() && r.amount > 0);
+    const activeRows = feeRows.filter(
+      (r) => (r.headName || "").trim() && r.amount > 0
+    );
     if (!activeRows.length) {
       toast.error("Add at least one fee head with amount > 0");
       return;
@@ -153,7 +177,7 @@ export default function SetClassFees({ academicYear }) {
         className: selectedClass.className,
         academicYear: selectedClass.academicYear,
         feeStructure: activeRows.map((r) => ({
-          head: r.headId || undefined,      // if you later bind with real FeeHead ids
+          head: r.headId || undefined, // if you later bind with real FeeHead ids
           headName: r.headName,
           amount: r.amount,
           frequency: r.frequency,
@@ -166,7 +190,10 @@ export default function SetClassFees({ academicYear }) {
         lateFeeApplicableAfter: settingsForm.lateFeeApplicableAfter || null,
       };
 
-      const resp = await api.put(API_ENDPOINTS.ADMIN.FEE.SET_CLASS_FEE, payload);
+      const resp = await api.put(
+        API_ENDPOINTS.ADMIN.FEE.SET_CLASS_FEE,
+        payload
+      );
       console.log("✅ Class fee structure saved:", resp?.data);
 
       toast.success("Fee structure saved successfully");
@@ -174,7 +201,8 @@ export default function SetClassFees({ academicYear }) {
       await loadClasses();
     } catch (error) {
       console.error("❌ Error saving fee structure:", error);
-      const msg = error.response?.data?.message || "Failed to save fee structure";
+      const msg =
+        error.response?.data?.message || "Failed to save fee structure";
       toast.error(msg);
     } finally {
       setSaving(false);
@@ -195,9 +223,15 @@ export default function SetClassFees({ academicYear }) {
       {/* Classes Table */}
       <div className="rounded-2xl bg-white shadow-lg border border-slate-100 overflow-hidden">
         <div className="p-6 border-b border-slate-100">
-          <h3 className="text-xl font-bold text-slate-900">Class Fee Structures</h3>
-          <p className="text-sm text-slate-600 mt-1">Academic Year: {academicYear}</p>
-          <p className="text-xs text-slate-500 mt-1">Total Classes: {classes.length}</p>
+          <h3 className="text-xl font-bold text-slate-900">
+            Class Fee Structures
+          </h3>
+          <p className="text-sm text-slate-600 mt-1">
+            Academic Year: {academicYear}
+          </p>
+          <p className="text-xs text-slate-500 mt-1">
+            Total Classes: {classes.length}
+          </p>
         </div>
 
         {classes.length ? (
@@ -205,21 +239,37 @@ export default function SetClassFees({ academicYear }) {
             <table className="w-full">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">Class</th>
-                  <th className="p-4 text-right text-sm font-semibold text-slate-700">Total Fee</th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">Schedule</th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">Due Date</th>
-                  <th className="p-4 text-center text-sm font-semibold text-slate-700">Action</th>
+                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                    Class
+                  </th>
+                  <th className="p-4 text-right text-sm font-semibold text-slate-700">
+                    Total Fee
+                  </th>
+                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                    Schedule
+                  </th>
+                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                    Due Date
+                  </th>
+                  <th className="p-4 text-center text-sm font-semibold text-slate-700">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {classes.map((cls) => {
                   const totalFee = getClassTotalFee(cls);
-                  const hasFeeStructure = cls.feeStructure && cls.feeStructure.length > 0;
+                  const hasFeeStructure =
+                    cls.feeStructure && cls.feeStructure.length > 0;
                   return (
-                    <tr key={cls._id} className="border-b border-slate-100 hover:bg-slate-50">
+                    <tr
+                      key={cls._id}
+                      className="border-b border-slate-100 hover:bg-slate-50"
+                    >
                       <td className="p-4">
-                        <span className="font-semibold text-slate-900">{cls.className}</span>
+                        <span className="font-semibold text-slate-900">
+                          {cls.className}
+                        </span>
                         {!hasFeeStructure && (
                           <span className="ml-2 text-xs text-red-500 bg-red-50 px-2 py-1 rounded">
                             Not Set
@@ -229,7 +279,9 @@ export default function SetClassFees({ academicYear }) {
                       <td className="p-4 text-right">
                         <span
                           className={`font-bold ${
-                            hasFeeStructure ? "text-purple-700" : "text-slate-400"
+                            hasFeeStructure
+                              ? "text-purple-700"
+                              : "text-slate-400"
                           }`}
                         >
                           ₹{totalFee.toLocaleString("en-IN")}
@@ -243,7 +295,9 @@ export default function SetClassFees({ academicYear }) {
                       <td className="p-4">
                         <span className="text-sm text-slate-600">
                           {cls.feeSettings?.dueDate
-                            ? new Date(cls.feeSettings.dueDate).toLocaleDateString("en-IN")
+                            ? new Date(
+                                cls.feeSettings.dueDate
+                              ).toLocaleDateString("en-IN")
                             : "Not Set"}
                         </span>
                       </td>
@@ -264,7 +318,9 @@ export default function SetClassFees({ academicYear }) {
           </div>
         ) : (
           <div className="p-12 text-center">
-            <p className="text-slate-600">No classes found for {academicYear}</p>
+            <p className="text-slate-600">
+              No classes found for {academicYear}
+            </p>
             <button
               onClick={loadClasses}
               className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
@@ -301,7 +357,9 @@ export default function SetClassFees({ academicYear }) {
               {/* Fee rows */}
               <div>
                 <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-lg font-bold text-slate-900">Fee Heads</h4>
+                  <h4 className="text-lg font-bold text-slate-900">
+                    Fee Heads
+                  </h4>
                   <button
                     type="button"
                     onClick={addFeeRow}
@@ -339,11 +397,15 @@ export default function SetClassFees({ academicYear }) {
                       </div>
                       <div className="col-span-2">
                         <input
-                          type="number"
-                          min="0"
-                          step="0.01"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           value={row.amount}
-                          onChange={(e) => updateFeeRow(idx, "amount", e.target.value)}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, "");
+                            updateFeeRow(idx, "amount", value);
+                          }}
+                          placeholder="0"
                           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-right focus:border-purple-500 focus:outline-none"
                         />
                       </div>
@@ -367,7 +429,11 @@ export default function SetClassFees({ academicYear }) {
                           type="text"
                           value={row.dueMonth || ""}
                           onChange={(e) =>
-                            updateFeeRow(idx, "dueMonth", e.target.value.toUpperCase())
+                            updateFeeRow(
+                              idx,
+                              "dueMonth",
+                              e.target.value.toUpperCase()
+                            )
                           }
                           placeholder="e.g. APR"
                           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none"
@@ -375,11 +441,15 @@ export default function SetClassFees({ academicYear }) {
                       </div>
                       <div className="col-span-2">
                         <input
-                          type="number"
-                          min="0"
-                          step="0.01"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           value={row.lateFee}
-                          onChange={(e) => updateFeeRow(idx, "lateFee", e.target.value)}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, "");
+                            updateFeeRow(idx, "lateFee", value);
+                          }}
+                          placeholder="0"
                           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-right focus:border-purple-500 focus:outline-none"
                         />
                       </div>
@@ -442,14 +512,16 @@ export default function SetClassFees({ academicYear }) {
                       Late Fee Amount (per overdue rule)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      step="0.01"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={settingsForm.lateFeeAmount}
-                      onChange={(e) =>
-                        handleSettingsChange("lateFeeAmount", e.target.value)
-                      }
-                      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-purple-500 focus:outline-none"
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        handleSettingsChange("lateFeeAmount", value);
+                      }}
+                      placeholder="0"
+                      className="w-full rounded-xl border-2 border-slate-200 p-3 text-sm text-right focus:border-purple-500 focus:outline-none"
                     />
                   </div>
 
@@ -479,7 +551,8 @@ export default function SetClassFees({ academicYear }) {
                     Total of entered heads
                   </p>
                   <p className="text-xs text-purple-600 mt-1">
-                    This is the sum of all fee head amounts (not frequency-adjusted).
+                    This is the sum of all fee head amounts (not
+                    frequency-adjusted).
                   </p>
                 </div>
                 <p className="text-3xl font-bold text-purple-700">
