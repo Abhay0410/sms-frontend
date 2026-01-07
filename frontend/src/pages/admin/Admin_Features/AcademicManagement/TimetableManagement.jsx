@@ -1199,33 +1199,39 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
 
           {/* Day and Period Number */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Day</label>
-              <select
-                value={form.day}
-                onChange={e => setForm({ ...form, day: e.target.value })}
-                className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none transition-all"
-                required
-              >
-                {DAYS.map(day => (
-                  <option key={day} value={day}>{day}</option>
-                ))}
-              </select>
-            </div>
+  <div>
+    <label className="block text-sm font-semibold text-slate-700 mb-2">Day</label>
+    <select
+      value={form.day}
+      onChange={e => setForm({ ...form, day: e.target.value })}
+      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none"
+      required
+    >
+      {DAYS.map(day => (
+        <option key={day} value={day}>{day}</option>
+      ))}
+    </select>
+  </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Period</label>
-              <input
-                type="number"
-                min="1"
-                max="8"
-                value={form.periodNumber}
-                onChange={e => setForm({ ...form, periodNumber: e.target.value })}
-                className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none transition-all"
-                required
-              />
-            </div>
-          </div>
+  <div>
+    <label className="block text-sm font-semibold text-slate-700 mb-2">Period Number</label>
+    <input
+      type="number"
+      step="0.5"
+      min="1"
+      max="8.5"
+      value={form.periodNumber}
+      onChange={e => setForm({ ...form, periodNumber: e.target.value })}
+      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none"
+      required
+    />
+    <p className="text-xs text-slate-500 mt-1">
+      {form.isBreak 
+        ? "Break periods use decimals (e.g., 4.5 for lunch after period 4)"
+        : "Use whole numbers for regular periods"}
+    </p>
+  </div>
+</div>
 
           {/* Start and End Time */}
           <div className="grid grid-cols-2 gap-4">
