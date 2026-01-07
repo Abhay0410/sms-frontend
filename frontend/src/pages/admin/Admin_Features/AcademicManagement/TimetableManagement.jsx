@@ -962,11 +962,11 @@ function OverwriteConfirmationModal({ onConfirm, onCancel, className, sectionNam
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-xl">
+            {/* <div className="p-4 bg-slate-50 rounded-xl">
               <p className="text-sm text-slate-700">
                 Are you sure you want to proceed? This action cannot be undone.
               </p>
-            </div>
+            </div> */}
           </div>
 
           <div className="flex gap-3 pt-6">

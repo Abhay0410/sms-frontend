@@ -6,8 +6,6 @@ export const API_ENDPOINTS = {
     LIST: '/api/schools/list',
     // add other school related endpoints here if needed
   },
-  // ...
-
   // ========================================
   // ADMIN ENDPOINTS
   // ========================================
@@ -23,7 +21,7 @@ export const API_ENDPOINTS = {
     },
 
     // Dashboard
-    DASHBOARD: '/api/admin/dashboard',
+    //DASHBOARD: '/api/admin/dashboard',
 
     // Student Management
     STUDENT: {
