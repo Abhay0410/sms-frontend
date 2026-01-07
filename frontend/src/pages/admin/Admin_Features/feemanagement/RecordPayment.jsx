@@ -18,6 +18,8 @@ export default function RecordPayment({ academicYear }) {
   });
 
   const [paymentForm, setPaymentForm] = useState({
+    installmentId:  undefined,
+
     amountPaid: "",
     paymentMethod: "CASH",
     transactionId: "",
@@ -207,21 +209,57 @@ const canMakePayment = (student) => {
   };
 
   // --------- Open modal ----------
-  const handleRecordPayment = (student) => {
-    setSelectedStudent(student);
-    const { pending } = getSafeFeeNumbers(student.feeDetails || {});
-    setPaymentForm({
-      amountPaid: pending || "",
-      paymentMethod: "CASH",
-      transactionId: "",
-      chequeNumber: "",
-      bankName: "",
-      upiId: "",
-      paymentDate: new Date().toISOString().split("T")[0],
-      remarks: `Payment for ${student.name} - ${student.className}`,
-    });
-    setShowModal(true);
-  };
+  // const handleRecordPayment = (student) => {
+  //   setSelectedStudent(student);
+  //   const { pending } = getSafeFeeNumbers(student.feeDetails || {});
+  //   setPaymentForm({
+  //     amountPaid: pending || "",
+  //     paymentMethod: "CASH",
+  //     transactionId: "",
+  //     chequeNumber: "",
+  //     bankName: "",
+  //     upiId: "",
+  //     paymentDate: new Date().toISOString().split("T")[0],
+  //     remarks: `Payment for ${student.name} - ${student.className}`,
+  //   });
+  //   setShowModal(true);
+  // };
+
+ const handleRecordPayment = (student) => {
+  setSelectedStudent(student);
+
+  let firstPendingInstallment = null;
+
+  if (!student.feeDetails.installments || student.feeDetails.installments.length === 0) {
+    // First payment, no installments yet
+    firstPendingInstallment = {
+      _id: null, // backend will create
+      amount: student.feeDetails.pendingAmount || student.feeDetails.totalAmount,
+      paidAmount: 0,
+      status: "PENDING"
+    };
+  } else {
+    firstPendingInstallment = student.feeDetails.installments.find(
+      (inst) => inst.status !== "PAID"
+    );
+  }
+
+  setPaymentForm({
+    amountPaid: firstPendingInstallment.amount - (firstPendingInstallment.paidAmount || 0),
+    installmentId: firstPendingInstallment._id, // can be null for first payment
+    paymentMethod: "CASH",
+    transactionId: "",
+    chequeNumber: "",
+    bankName: "",
+    upiId: "",
+    paymentDate: new Date().toISOString().split("T")[0],
+    remarks: `Payment for ${student.name} - ${student.className}`,
+  });
+
+  setShowModal(true);
+};
+
+
 
   // --------- Submit payment ----------
   const handleSubmit = async (e) => {
@@ -256,20 +294,37 @@ const canMakePayment = (student) => {
     try {
       setSaving(true);
 
+      // const paymentData = {
+      //   studentId: selectedStudent._id,
+      //   amountPaid: amount,
+      //   paymentMethod: paymentForm.paymentMethod,
+      //   installmentId: paymentForm.installmentId,
+      //   transactionId: paymentForm.transactionId || undefined,
+      //   chequeNumber: paymentForm.chequeNumber || undefined,
+      //   bankName: paymentForm.bankName || undefined,
+      //   upiId: paymentForm.upiId || undefined,
+      //   paymentDate: paymentForm.paymentDate,
+      //   remarks:
+      //     paymentForm.remarks ||
+      //     `Payment recorded for ${selectedStudent.name}`,
+      //   academicYear,
+      // };
       const paymentData = {
-        studentId: selectedStudent._id,
-        amountPaid: amount,
-        paymentMethod: paymentForm.paymentMethod,
-        transactionId: paymentForm.transactionId || undefined,
-        chequeNumber: paymentForm.chequeNumber || undefined,
-        bankName: paymentForm.bankName || undefined,
-        upiId: paymentForm.upiId || undefined,
-        paymentDate: paymentForm.paymentDate,
-        remarks:
-          paymentForm.remarks ||
-          `Payment recorded for ${selectedStudent.name}`,
-        academicYear,
-      };
+  studentId: selectedStudent._id,
+  amountPaid: amount,
+   receiptNumber: `REC-${Date.now()}`, 
+  paymentMode: paymentForm.paymentMethod, // backend expects this
+  installmentId: paymentForm.installmentId,
+  transactionId: paymentForm.transactionId || undefined,
+  chequeNumber: paymentForm.chequeNumber || undefined,
+  bankName: paymentForm.bankName || undefined,
+  upiId: paymentForm.upiId || undefined,
+  paymentDate: paymentForm.paymentDate,
+  remarks: paymentForm.remarks || `Payment recorded for ${selectedStudent.name}`,
+  academicYear,
+};
+
+
 
       if (fd.feePaymentId) {
         paymentData.feePaymentId = fd.feePaymentId;
