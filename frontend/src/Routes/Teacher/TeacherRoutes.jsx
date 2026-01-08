@@ -6,7 +6,7 @@ import TeacherDashboardPage from "../../pages/teacher/TeacherDashboardPage.jsx";
 import TeacherProfileManage from "../../pages/teacher/TeacherProfileManage.jsx";
 import GetTeacherClassesAndSubjects from "../../pages/teacher/Teacher_Features/GetTeacherClassesAndSubjects.jsx";
 import TeacherNotifications from "../../pages/teacher/Teacher_Features/TeacherNotifications.jsx";
-import SalaryStatus from "../../pages/teacher/Teacher_Features/SalaryStatus.jsx";
+import SalaryStatus from "../../pages/teacher/Teacher_Features/HRManagement/SalaryStatus.jsx";
 import MarkAttendance from "../../pages/teacher/Teacher_Features/Attendance/MarkAttendance.jsx";
 import ViewMySchedule from "../../pages/teacher/Teacher_Features/ViewMySchedule.jsx";
 import CreateResult from "../../pages/teacher/Teacher_Features/Result/CreateResult.jsx";
@@ -14,6 +14,8 @@ import ViewResults from "../../pages/teacher/Teacher_Features/Result/ViewResults
 import EditResult from "../../pages/teacher/Teacher_Features/Result/EditResult.jsx";
 import TeacherAnnouncements from "../../pages/teacher/Teacher_Features/Communication/TeacherAnnouncements.jsx";
 import TeacherMessaging from "../../pages/teacher/Teacher_Features/Communication/TeacherMessaging.jsx";
+import StaffSelfAttendance from "../../pages/teacher/Teacher_Features/HRManagement/StaffSelfAttendance.jsx";
+import ApplyLeave from "../../pages/teacher/Teacher_Features/HRManagement/ApplyLeave.jsx";
 
 const TeacherRoutes = () => {  
   const sections = [
@@ -44,10 +46,14 @@ const TeacherRoutes = () => {
       icon: <FaBell />,
       path: "notifications"
     },
-    {
-      title: "Salary Status",
-      icon: <FaMoneyCheckAlt />,
-      path: "salary-status"
+   {
+      title: "HR Portal",
+      icon: <FaCalendarAlt />, 
+      subTabs: [
+        { title: "Self Attendance", path: "self-attendance" },
+        { title: "Apply Leave", path: "apply-leave" },
+        { title: "Salary Status", path: "salary-status" } 
+      ]
     },
     {
       title: "Communication",
@@ -86,10 +92,14 @@ const TeacherRoutes = () => {
         <Route path="view-results" element={<ViewResults />} />
         <Route path="edit-result/:resultId" element={<EditResult />} />
         
-        {/* Notifications & Salary */}
+        {/* Notifications */}
         <Route path="notifications" element={<TeacherNotifications />} />
-        <Route path="salary-status" element={<SalaryStatus />} />
         
+        {/* HR Management Routes */}
+        <Route path="self-attendance" element={<StaffSelfAttendance />} />
+        <Route path="apply-leave" element={<ApplyLeave />} />
+        <Route path="salary-status" element={<SalaryStatus />} />
+
         {/* Communication */}
         <Route path="announcements" element={<TeacherAnnouncements />} />
         <Route path="messages" element={<TeacherMessaging />} />
