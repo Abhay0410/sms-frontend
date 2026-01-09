@@ -254,10 +254,11 @@ MESSAGING: {
 },
 MY_HR: {
 MARK_ATTENDANCE: '/api/teacher/hr/attendance',
+  RECENT_HISTORY: '/api/teacher/hr/attendance/recent',
       TODAY_STATUS: '/api/teacher/hr/attendance/today',
       MARK_IN: '/api/teacher/hr/attendance/in',
       MARK_OUT: '/api/teacher/hr/attendance/out',
-      
+      My_Status: '/api/teacher/hr/attendance/stats',
       APPLY_LEAVE: '/api/teacher/hr/leaves/apply', 
       LEAVE_STATUS: '/api/teacher/hr/leaves/my',
       MY_LEAVES: '/api/teacher/hr/leaves/my',
