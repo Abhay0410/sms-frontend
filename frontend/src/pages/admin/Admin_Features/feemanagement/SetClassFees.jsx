@@ -1,587 +1,438 @@
-// components/admin/fee/SetClassFees.jsx
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
-import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
+import { 
+  FaEdit, 
+  FaPlus, 
+  FaTrash, 
+  FaCalculator, 
+  FaCalendarAlt, 
+  FaLayerGroup,
+  FaCheckCircle,
+  FaExclamationCircle
+} from "react-icons/fa";
+import { FiRefreshCw } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 const FREQUENCY_OPTIONS = [
-  "YEARLY",
-  "ONE_TIME",
-  "MONTHLY",
-  "QUARTERLY",
-  "HALF_YEARLY",
+  { value: "MONTHLY", label: "Monthly (12 Installments)" },
+  { value: "QUARTERLY", label: "Quarterly (4 Installments)" },
+  { value: "HALF_YEARLY", label: "Half-Yearly (2 Installments)" },
+  { value: "YEARLY", label: "Yearly (1 Installment)" },
+  { value: "ONE_TIME", label: "One-Time Payment" },
 ];
 
 export default function SetClassFees({ academicYear }) {
-
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Class-level fee settings
   const [settingsForm, setSettingsForm] = useState({
     paymentSchedule: "YEARLY",
     dueDate: "",
     lateFeeAmount: 0,
-    lateFeeApplicableAfter: "",
   });
 
-  // Per-head structure array for selected class
   const [feeRows, setFeeRows] = useState([]);
 
-  // ----------------- Load classes -----------------
   const loadClasses = useCallback(async () => {
     try {
       setLoading(true);
-
       const resp = await api.get(API_ENDPOINTS.ADMIN.FEE.CLASS_FEES, {
         params: { academicYear },
       });
-
-      const classesData =
-        resp.data?.data?.classes || resp.data?.classes || resp.classes || [];
-
+      const classesData = resp.data?.data?.classes || resp.data?.classes || [];
       setClasses(classesData);
-    } catch (error) {
-      console.error("❌ Failed to load classes:", error);
-      toast.error("Failed to load classes");
+    } catch {
+      toast.error("Failed to load class structures");
     } finally {
       setLoading(false);
     }
   }, [academicYear]);
 
   useEffect(() => {
-    loadClasses();
-  }, [loadClasses]);
+    if (academicYear) {
+      loadClasses();
+    }
+  }, [academicYear, loadClasses]);
 
-  // ----------------- Helpers -----------------
-  const handleSettingsChange = (field, value) => {
-    setSettingsForm((prev) => ({ ...prev, [field]: value }));
-  };
+  // Calculate real yearly total based on frequency
+  const annualTotal = useMemo(() => {
+    return feeRows.reduce((sum, row) => {
+      let multiplier = 1;
+      if (row.frequency === "MONTHLY") multiplier = 12;
+      else if (row.frequency === "QUARTERLY") multiplier = 4;
+      else if (row.frequency === "HALF_YEARLY") multiplier = 2;
+      return sum + (Number(row.amount) || 0) * multiplier;
+    }, 0);
+  }, [feeRows]);
 
   const addFeeRow = () => {
-    setFeeRows((prev) => [
-      ...prev,
-      {
-        headId: "",
-        headName: "",
-        amount: 0,
-        frequency: "YEARLY",
-        dueMonth: "",
-        lateFee: 0,
-      },
-    ]);
+    setFeeRows([...feeRows, { headName: "", amount: 0, frequency: "MONTHLY", lateFee: 0 }]);
   };
 
   const updateFeeRow = (index, field, value) => {
-    setFeeRows((prev) =>
-      prev.map((row, i) =>
-        i === index
-          ? {
-              ...row,
-              [field]:
-                field === "amount" || field === "lateFee"
-                  ? Number(value || 0)
-                  : value,
-            }
-          : row
-      )
-    );
+    const updated = [...feeRows];
+    updated[index][field] = field === "amount" || field === "lateFee" ? Number(value || 0) : value;
+    setFeeRows(updated);
   };
 
   const removeFeeRow = (index) => {
-    setFeeRows((prev) => prev.filter((_, i) => i !== index));
+    setFeeRows(feeRows.filter((_, i) => i !== index));
   };
 
-  const getClassTotalFee = (classData) => {
-    if (!classData.feeStructure || !Array.isArray(classData.feeStructure))
-      return 0;
-    // classData.feeStructure already in new format (amount, frequency)
-    return classData.feeStructure.reduce(
-      (sum, item) => sum + (item.annualAmount || item.amount || 0),
-      0
-    );
-  };
-
-  const calculateFormTotal = () => {
-    return feeRows.reduce((sum, row) => sum + (row.amount || 0), 0);
-  };
-
-  // ----------------- Edit clicked -----------------
   const handleEdit = (classData) => {
     setSelectedClass(classData);
+    const rows = (classData.feeStructure || []).map((f) => ({
+      headId: f.head?._id || f.head || "",
+      headName: f.headName || "",
+      amount: f.amount || 0,
+      frequency: f.frequency || "MONTHLY",
+      lateFee: f.lateFee || 0,
+    }));
 
-    // Map backend feeStructure to editable rows
-    const rows =
-      (classData.feeStructure || []).map((f) => ({
-        headId: f.head?._id || f.head || "",
-        headName: f.headName || f.head?.name || "",
-        amount: f.amount || 0,
-        frequency: f.frequency || "YEARLY",
-        dueMonth: f.dueMonth || "",
-        lateFee: f.lateFee || 0,
-      })) || [];
-
-    setFeeRows(
-      rows.length
-        ? rows
-        : [
-            {
-              headId: "",
-              headName: "",
-              amount: 0,
-              frequency: "YEARLY",
-              dueMonth: "",
-              lateFee: 0,
-            },
-          ]
-    );
-
+    setFeeRows(rows.length ? rows : [{ headName: "", amount: 0, frequency: "MONTHLY", lateFee: 0 }]);
     setSettingsForm({
-      paymentSchedule: classData.feeSettings?.paymentSchedule || "YEARLY",
-      dueDate: classData.feeSettings?.dueDate
-        ? new Date(classData.feeSettings.dueDate).toISOString().split("T")[0]
-        : "",
+      paymentSchedule: classData.feeSettings?.paymentSchedule || "MONTHLY",
+      dueDate: classData.feeSettings?.dueDate ? new Date(classData.feeSettings.dueDate).toISOString().split("T")[0] : "",
       lateFeeAmount: classData.feeSettings?.lateFeeAmount || 0,
-      lateFeeApplicableAfter: classData.feeSettings?.lateFeeApplicableAfter
-        ? new Date(classData.feeSettings.lateFeeApplicableAfter)
-            .toISOString()
-            .split("T")[0]
-        : "",
     });
-
     setShowModal(true);
   };
 
-  // ----------------- Submit -----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedClass) return;
-
-    // Basic validation
-    const activeRows = feeRows.filter(
-      (r) => (r.headName || "").trim() && r.amount > 0
-    );
-    if (!activeRows.length) {
-      toast.error("Add at least one fee head with amount > 0");
-      return;
-    }
+    const activeRows = feeRows.filter((r) => r.headName.trim() && r.amount > 0);
+    if (!activeRows.length) return toast.error("Please add at least one fee head");
 
     try {
       setSaving(true);
-
-      const payload = {
+      await api.put(API_ENDPOINTS.ADMIN.FEE.SET_CLASS_FEE, {
         className: selectedClass.className,
-        academicYear: selectedClass.academicYear,
-        feeStructure: activeRows.map((r) => ({
-          head: r.headId || undefined, // if you later bind with real FeeHead ids
-          headName: r.headName,
-          amount: r.amount,
-          frequency: r.frequency,
-          dueMonth: r.dueMonth || null,
-          lateFee: r.lateFee || 0,
-        })),
-        paymentSchedule: settingsForm.paymentSchedule,
-        dueDate: settingsForm.dueDate || null,
-        lateFeeAmount: Number(settingsForm.lateFeeAmount || 0),
-        lateFeeApplicableAfter: settingsForm.lateFeeApplicableAfter || null,
-      };
-
-      const resp = await api.put(
-        API_ENDPOINTS.ADMIN.FEE.SET_CLASS_FEE,
-        payload
-      );
-      console.log("✅ Class fee structure saved:", resp?.data);
-
-      toast.success("Fee structure saved successfully");
+        academicYear,
+        feeStructure: activeRows,
+        ...settingsForm
+      });
+      toast.success(`Fee structure synced for ${selectedClass.className}`);
       setShowModal(false);
-      await loadClasses();
+      loadClasses();
     } catch (error) {
-      console.error("❌ Error saving fee structure:", error);
-      const msg =
-        error.response?.data?.message || "Failed to save fee structure";
-      toast.error(msg);
+      toast.error(error.response?.data?.message || "Failed to update");
     } finally {
       setSaving(false);
     }
   };
 
-  // ----------------- Render -----------------
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600"></div>
-      </div>
-    );
-  }
+  // Loading skeleton
+  if (loading) return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+          <div className="animate-pulse space-y-6">
+            <div className="flex justify-between">
+              <div className="h-14 w-14 rounded-2xl bg-slate-200" />
+              <div className="h-6 w-24 bg-slate-200 rounded-full" />
+            </div>
+            <div className="h-8 w-3/4 bg-slate-200 rounded" />
+            <div className="h-4 w-1/2 bg-slate-200 rounded" />
+            <div className="pt-6 border-t border-slate-100 flex justify-between">
+              <div className="space-y-2">
+                <div className="h-3 w-16 bg-slate-200 rounded" />
+                <div className="h-6 w-24 bg-slate-200 rounded" />
+              </div>
+              <div className="h-12 w-12 rounded-2xl bg-slate-200" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="space-y-6">
-      {/* Classes Table */}
-      <div className="rounded-2xl bg-white shadow-lg border border-slate-100 overflow-hidden">
-        <div className="p-6 border-b border-slate-100">
-          <h3 className="text-xl font-bold text-slate-900">
-            Class Fee Structures
-          </h3>
-          <p className="text-sm text-slate-600 mt-1">
-            Academic Year: {academicYear}
-          </p>
-          <p className="text-xs text-slate-500 mt-1">
-            Total Classes: {classes.length}
-          </p>
+    <div className="space-y-8">
+      {/* Header Info */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex justify-between items-end bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-[2.5rem] border border-indigo-100 shadow-sm"
+      >
+        <div>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Class Fee Management</h2>
+          <p className="text-slate-600 font-medium mt-1">Configure automated installments for all students</p>
         </div>
+        <div className="bg-white px-6 py-3 rounded-2xl border border-purple-200 shadow-sm">
+          <p className="text-xs font-bold text-purple-600 uppercase tracking-widest">Active Session</p>
+          <p className="text-lg font-black text-slate-800">{academicYear}</p>
+        </div>
+      </motion.div>
 
-        {classes.length ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200">
-                <tr>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
-                    Class
-                  </th>
-                  <th className="p-4 text-right text-sm font-semibold text-slate-700">
-                    Total Fee
-                  </th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
-                    Schedule
-                  </th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
-                    Due Date
-                  </th>
-                  <th className="p-4 text-center text-sm font-semibold text-slate-700">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {classes.map((cls) => {
-                  const totalFee = getClassTotalFee(cls);
-                  const hasFeeStructure =
-                    cls.feeStructure && cls.feeStructure.length > 0;
-                  return (
-                    <tr
-                      key={cls._id}
-                      className="border-b border-slate-100 hover:bg-slate-50"
-                    >
-                      <td className="p-4">
-                        <span className="font-semibold text-slate-900">
-                          {cls.className}
-                        </span>
-                        {!hasFeeStructure && (
-                          <span className="ml-2 text-xs text-red-500 bg-red-50 px-2 py-1 rounded">
-                            Not Set
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-4 text-right">
-                        <span
-                          className={`font-bold ${
-                            hasFeeStructure
-                              ? "text-purple-700"
-                              : "text-slate-400"
-                          }`}
-                        >
-                          ₹{totalFee.toLocaleString("en-IN")}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <span className="text-sm text-slate-600">
-                          {cls.feeSettings?.paymentSchedule || "Not Set"}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <span className="text-sm text-slate-600">
-                          {cls.feeSettings?.dueDate
-                            ? new Date(
-                                cls.feeSettings.dueDate
-                              ).toLocaleDateString("en-IN")
-                            : "Not Set"}
-                        </span>
-                      </td>
-                      <td className="p-4 text-center">
-                        <button
-                          onClick={() => handleEdit(cls)}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white font-semibold hover:bg-purple-700 transition text-sm"
-                        >
-                          <FaEdit />
-                          {hasFeeStructure ? "Edit" : "Set Fees"}
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="p-12 text-center">
-            <p className="text-slate-600">
-              No classes found for {academicYear}
-            </p>
-            <button
-              onClick={loadClasses}
-              className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+      {/* Grid of Classes */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {classes.map((cls) => {
+          const hasFee = cls.feeStructure?.length > 0;
+          const feePercentage = hasFee ? 100 : 0;
+          
+          return (
+            <motion.div 
+              key={cls._id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-all group"
             >
-              Retry Loading Classes
-            </button>
-          </div>
-        )}
+              <div className="flex justify-between items-start mb-6">
+                <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg ${hasFee ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white' : 'bg-gradient-to-br from-rose-100 to-amber-100 text-rose-500'}`}>
+                  <FaLayerGroup size={24} />
+                </div>
+                {hasFee ? (
+                  <span className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
+                    <FaCheckCircle className="text-emerald-500" /> Configured
+                  </span>
+                ) : (
+                  <span className="text-xs font-bold uppercase tracking-widest text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-100">
+                    Setup Required
+                  </span>
+                )}
+              </div>
+              
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight">{cls.className}</h3>
+              <p className="text-slate-500 text-xs font-medium mt-1 mb-6">{cls.sections?.length || 0} sections assigned</p>
+              
+              {/* Progress indicator */}
+              <div className="mb-6">
+                <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
+                  <span>Fee Setup</span>
+                  <span>{feePercentage}%</span>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <motion.div 
+                    className={`h-full ${hasFee ? 'bg-emerald-500' : 'bg-amber-400'}`}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${feePercentage}%` }}
+                    transition={{ duration: 0.8 }}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+                <div>
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Annual Total</p>
+                  <p className="text-xl font-black text-slate-900">₹{(cls.feeSettings?.totalAnnualFee || 0).toLocaleString()}</p>
+                </div>
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleEdit(cls)}
+                  className="h-12 w-12 bg-gradient-to-br from-indigo-50 to-purple-50 text-indigo-500 rounded-2xl flex items-center justify-center hover:from-indigo-100 hover:to-purple-100 transition-all shadow-md"
+                  aria-label={`Edit ${cls.className} fees`}
+                >
+                  <FaEdit size={18} />
+                </motion.button>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
 
-      {/* Modal */}
-      {showModal && selectedClass && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="sticky top-0 bg-white p-6 border-b border-slate-200 z-10 flex justify-between items-center">
-              <div>
-                <h3 className="text-2xl font-bold text-slate-900">
-                  Set Fee Structure - {selectedClass.className}
-                </h3>
-                <p className="text-sm text-slate-600 mt-1">
-                  Academic Year: {selectedClass.academicYear}
-                </p>
+      {/* Configuration Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-[3rem] shadow-2xl max-w-5xl w-full max-h-[92vh] overflow-hidden flex flex-col"
+            >
+              <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                <div>
+                  <h3 className="text-2xl font-black tracking-tight">Fee Setup: {selectedClass.className}</h3>
+                  <p className="text-indigo-200 text-sm mt-1 font-medium">
+                    Applying to all sections & students
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setShowModal(false)} 
+                  className="h-10 w-10 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+                  aria-label="Close modal"
+                >
+                  ✕
+                </button>
               </div>
-              <button
-                className="text-slate-500 hover:text-slate-800"
-                onClick={() => !saving && setShowModal(false)}
-              >
-                ✕
-              </button>
-            </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              {/* Fee rows */}
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-lg font-bold text-slate-900">
-                    Fee Heads
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={addFeeRow}
-                    className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
+              <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+                {/* Dynamic Fee Heads */}
+                <section className="space-y-6">
+                  <div className="flex items-center justify-between px-2">
+                    <h4 className="font-bold text-slate-800 text-lg flex items-center gap-3">
+                      Fee Structure Breakdown
+                    </h4>
+                    <motion.button 
+                      type="button" 
+                      onClick={addFeeRow}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                    >
+                      <FaPlus /> Add Fee Item
+                    </motion.button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {feeRows.map((row, idx) => (
+                      <motion.div 
+                        key={idx}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="grid grid-cols-12 gap-4 p-6 bg-slate-50 rounded-2xl items-center border border-slate-200 hover:border-indigo-300 transition-all"
+                      >
+                        <div className="col-span-5">
+                          <label className="text-xs font-medium text-slate-600 mb-1 block">Fee Label</label>
+                          <div className="relative">
+                            <input 
+                              type="text" 
+                              value={row.headName} 
+                              onChange={(e) => updateFeeRow(idx, "headName", e.target.value)} 
+                              className="w-full bg-white rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none px-4 py-3 font-medium text-slate-800" 
+                              placeholder="Tuition Fee" 
+                              required 
+                            />
+                            {!row.headName.trim() && (
+                              <span className="absolute right-3 top-3.5 text-xs text-rose-500 font-bold">*</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-span-2">
+                          <label className="text-xs font-medium text-slate-600 mb-1 block">Amount (₹)</label>
+                          <input 
+                            type="number" 
+                            value={row.amount} 
+                            onChange={(e) => updateFeeRow(idx, "amount", e.target.value)} 
+                            className="w-full bg-white rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none px-4 py-3 font-medium text-slate-800" 
+                            required 
+                            min="0"
+                          />
+                        </div>
+                        <div className="col-span-3">
+                          <label className="text-xs font-medium text-slate-600 mb-1 block">Frequency</label>
+                          <select 
+                            value={row.frequency} 
+                            onChange={(e) => updateFeeRow(idx, "frequency", e.target.value)} 
+                            className="w-full bg-white rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none py-3 px-4 font-medium text-slate-800"
+                          >
+                            {FREQUENCY_OPTIONS.map(opt => 
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            )}
+                          </select>
+                        </div>
+                        <div className="col-span-1">
+                          <label className="text-xs font-medium text-slate-600 mb-1 block">Late Fee</label>
+                          <input 
+                            type="number" 
+                            value={row.lateFee} 
+                            onChange={(e) => updateFeeRow(idx, "lateFee", e.target.value)} 
+                            className="w-full bg-white rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none px-4 py-3 font-medium text-slate-800" 
+                            min="0"
+                          />
+                        </div>
+                        <div className="col-span-1 text-right pt-5">
+                          <button 
+                            type="button" 
+                            onClick={() => removeFeeRow(idx)}
+                            className="p-3 text-slate-400 hover:text-rose-500 transition-colors"
+                            aria-label="Remove fee row"
+                          >
+                            <FaTrash size={16} />
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Dynamic Calculator Banner */}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-white flex items-center justify-between shadow-xl relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                  <div className="flex items-center gap-6">
+                    <div className="h-16 w-16 bg-white/10 rounded-2xl flex items-center justify-center text-3xl text-indigo-300">
+                      <FaCalculator />
+                    </div>
+                    <div>
+                      <p className="text-indigo-300 text-sm font-bold uppercase tracking-wider">Total Annual Commitment</p>
+                      <p className="text-slate-400 text-xs mt-1">Calculated based on selected intervals</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <h2 className="text-4xl font-black tracking-tight">₹{annualTotal.toLocaleString()}</h2>
+                  </div>
+                </motion.div>
+
+                {/* Master Settings */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                    <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                      <FaCalendarAlt className="text-indigo-500" /> Default Due Date
+                    </label>
+                    <input 
+                      type="date" 
+                      value={settingsForm.dueDate} 
+                      onChange={(e) => setSettingsForm({...settingsForm, dueDate: e.target.value})} 
+                      className="w-full p-3 bg-white rounded-lg border border-slate-300 font-medium text-slate-800 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" 
+                    />
+                    <p className="text-xs text-slate-500">Sets deadline for all generated installments</p>
+                  </div>
+
+                  <div className="p-6 bg-amber-50 rounded-2xl border border-amber-200 flex items-start gap-4">
+                    <FaExclamationCircle className="text-amber-500 mt-1 flex-shrink-0" size={20} />
+                    <div>
+                      <p className="text-amber-800 font-bold text-sm">Adjustment Policy</p>
+                      <p className="text-amber-700 text-sm mt-2 leading-relaxed">
+                        Publishing will generate payment roadmap for all sections. Existing unpaid balances will be recalculated.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-8">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowModal(false)}
+                    disabled={saving}
+                    className="flex-1 py-4 font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
                   >
-                    <FaPlus /> Add Fee Head
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={saving}
+                    className="flex-[2] bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 rounded-xl font-bold shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-70 flex items-center justify-center gap-3"
+                  >
+                    {saving ? (
+                      <>
+                        <FiRefreshCw className="animate-spin" /> Syncing...
+                      </>
+                    ) : (
+                      "Publish & Sync Structure"
+                    )}
                   </button>
                 </div>
-
-                <div className="border rounded-xl overflow-hidden">
-                  <div className="grid grid-cols-12 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600">
-                    <div className="col-span-3">Head Name</div>
-                    <div className="col-span-2 text-right">Amount (₹)</div>
-                    <div className="col-span-2">Frequency</div>
-                    <div className="col-span-2">Due Month (opt)</div>
-                    <div className="col-span-2 text-right">Late Fee (opt)</div>
-                    <div className="col-span-1 text-center">Remove</div>
-                  </div>
-
-                  {feeRows.map((row, idx) => (
-                    <div
-                      key={idx}
-                      className="grid grid-cols-12 gap-2 px-4 py-2 border-t border-slate-100 items-center"
-                    >
-                      <div className="col-span-3">
-                        <input
-                          type="text"
-                          value={row.headName}
-                          onChange={(e) =>
-                            updateFeeRow(idx, "headName", e.target.value)
-                          }
-                          placeholder="e.g. Tuition Fee"
-                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none"
-                        />
-                      </div>
-                      <div className="col-span-2">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          value={row.amount}
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/[^0-9]/g, "");
-                            updateFeeRow(idx, "amount", value);
-                          }}
-                          placeholder="0"
-                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-right focus:border-purple-500 focus:outline-none"
-                        />
-                      </div>
-                      <div className="col-span-2">
-                        <select
-                          value={row.frequency}
-                          onChange={(e) =>
-                            updateFeeRow(idx, "frequency", e.target.value)
-                          }
-                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none"
-                        >
-                          {FREQUENCY_OPTIONS.map((f) => (
-                            <option key={f} value={f}>
-                              {f}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="col-span-2">
-                        <input
-                          type="text"
-                          value={row.dueMonth || ""}
-                          onChange={(e) =>
-                            updateFeeRow(
-                              idx,
-                              "dueMonth",
-                              e.target.value.toUpperCase()
-                            )
-                          }
-                          placeholder="e.g. APR"
-                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-500 focus:outline-none"
-                        />
-                      </div>
-                      <div className="col-span-2">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          value={row.lateFee}
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/[^0-9]/g, "");
-                            updateFeeRow(idx, "lateFee", value);
-                          }}
-                          placeholder="0"
-                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-right focus:border-purple-500 focus:outline-none"
-                        />
-                      </div>
-                      <div className="col-span-1 text-center">
-                        <button
-                          type="button"
-                          onClick={() => removeFeeRow(idx)}
-                          className="text-rose-500 hover:text-rose-700"
-                          disabled={feeRows.length === 1}
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Payment settings */}
-              <div className="border-t border-slate-200 pt-4">
-                <h4 className="text-lg font-bold text-slate-900 mb-3">
-                  Payment Settings
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Payment Schedule
-                    </label>
-                    <select
-                      value={settingsForm.paymentSchedule}
-                      onChange={(e) =>
-                        handleSettingsChange("paymentSchedule", e.target.value)
-                      }
-                      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-purple-500 focus:outline-none"
-                    >
-                      <option value="MONTHLY">Monthly</option>
-                      <option value="QUARTERLY">Quarterly</option>
-                      <option value="HALF_YEARLY">Half Yearly</option>
-                      <option value="YEARLY">Yearly</option>
-                      <option value="ONE_TIME">One Time</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Overall Due Date
-                    </label>
-                    <input
-                      type="date"
-                      value={settingsForm.dueDate}
-                      onChange={(e) =>
-                        handleSettingsChange("dueDate", e.target.value)
-                      }
-                      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-purple-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Late Fee Amount (per overdue rule)
-                    </label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={settingsForm.lateFeeAmount}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9]/g, "");
-                        handleSettingsChange("lateFeeAmount", value);
-                      }}
-                      placeholder="0"
-                      className="w-full rounded-xl border-2 border-slate-200 p-3 text-sm text-right focus:border-purple-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Late Fee Applicable After
-                    </label>
-                    <input
-                      type="date"
-                      value={settingsForm.lateFeeApplicableAfter}
-                      onChange={(e) =>
-                        handleSettingsChange(
-                          "lateFeeApplicableAfter",
-                          e.target.value
-                        )
-                      }
-                      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-purple-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Total summary */}
-              <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-purple-700 font-medium">
-                    Total of entered heads
-                  </p>
-                  <p className="text-xs text-purple-600 mt-1">
-                    This is the sum of all fee head amounts (not
-                    frequency-adjusted).
-                  </p>
-                </div>
-                <p className="text-3xl font-bold text-purple-700">
-                  ₹{calculateFormTotal().toLocaleString("en-IN")}
-                </p>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  disabled={saving}
-                  className="flex-1 rounded-xl border-2 border-slate-300 px-6 py-3 font-semibold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="flex-1 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 font-semibold text-white hover:from-purple-700 hover:to-blue-700 transition shadow-lg disabled:opacity-50"
-                >
-                  {saving ? "Saving..." : "Save Fee Structure"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
