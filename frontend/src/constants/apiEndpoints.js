@@ -20,8 +20,10 @@ export const API_ENDPOINTS = {
       PROFILE: '/api/auth/admin/profile',
       CHANGE_PASSWORD: '/api/auth/admin/change-password',
       VALIDATE: '/api/auth/admin/validate',
+     
     },
-
+    // Update
+     UPDATE: (id) => `/api/admin/update/${id}`,
     // Dashboard
     DASHBOARD: '/api/admin/dashboard',
 
