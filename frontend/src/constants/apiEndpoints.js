@@ -6,8 +6,6 @@ export const API_ENDPOINTS = {
     LIST: '/api/schools/list',
     // add other school related endpoints here if needed
   },
-  // ...
-
   // ========================================
   // ADMIN ENDPOINTS
   // ========================================
@@ -25,7 +23,7 @@ export const API_ENDPOINTS = {
     // Update
      UPDATE: (id) => `/api/admin/update/${id}`,
     // Dashboard
-    DASHBOARD: '/api/admin/dashboard',
+    //DASHBOARD: '/api/admin/dashboard',
 
     // Student Management
     STUDENT: {
@@ -81,9 +79,10 @@ export const API_ENDPOINTS = {
     },
 
     // Class Management
-    CLASS: {
+     CLASS: {
       ALL: '/api/admin/classes',
       LIST: '/api/admin/classes/list',
+      STATISTICS: '/api/admin/classes/statistics', // 👈 Add this line
       CREATE: '/api/admin/classes',
       GET_BY_ID: (id) => `/api/admin/classes/${id}`,
       UPDATE: (id) => `/api/admin/classes/${id}`,
@@ -181,6 +180,16 @@ export const API_ENDPOINTS = {
       BULK_PUBLISH: '/api/admin/results/bulk-publish',
       DELETE: (id) => `/api/admin/results/${id}`,
     },
+   
+  HR: {
+  ATTENDANCE_LIST: '/api/admin/hr/attendance',
+  UPDATE_ATTENDANCE: (id) => `/api/admin/hr/attendance/${id}`,
+LEAVE_REQUESTS: '/api/admin/hr/leaves', // ✅ Correct path
+        PROCESS_LEAVE: (id) => `/api/admin/hr/leaves/${id}/process`,
+  APPROVE_LEAVE: (id) => `/api/admin/hr/leaves/${id}/approve`,
+  REJECT_LEAVE: (id) => `/api/admin/hr/leaves/${id}/reject`,
+},
+
   },
 
   // ========================================
@@ -245,6 +254,17 @@ MESSAGING: {
   GET_THREAD_BY_ID: (id) => `/api/teacher/messages/${id}`,
   REPLY: (id) => `/api/teacher/messages/${id}/reply`,
 },
+MY_HR: {
+MARK_ATTENDANCE: '/api/teacher/hr/attendance',
+  RECENT_HISTORY: '/api/teacher/hr/attendance/recent',
+      TODAY_STATUS: '/api/teacher/hr/attendance/today',
+      MARK_IN: '/api/teacher/hr/attendance/in',
+      MARK_OUT: '/api/teacher/hr/attendance/out',
+      My_Status: '/api/teacher/hr/attendance/stats',
+      APPLY_LEAVE: '/api/teacher/hr/leaves/apply', 
+      LEAVE_STATUS: '/api/teacher/hr/leaves/my',
+      MY_LEAVES: '/api/teacher/hr/leaves/my',
+}
   },
 
   // ========================================

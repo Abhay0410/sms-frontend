@@ -16,6 +16,7 @@
     "axios": "^1.12.2",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
+    "framer-motion": "^12.25.0",
     "lucide-react": "^0.561.0",
     "react": "^19.1.1",
     "react-datepicker": "^9.1.0",
@@ -25,6 +26,7 @@
     "react-router-dom": "^7.9.4",
     "react-select": "^5.10.2",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.6.0",
     "sweetalert2": "^11.26.17"
   },
   "devDependencies": {

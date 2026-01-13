@@ -16,6 +16,8 @@ import AdminResultManagement from "../../pages/admin/Admin_Features/ResultManage
 import AdminViewResult from "../../pages/admin/Admin_Features/ResultManagement/AdminViewResult.jsx";
 import AdminAnnouncementPage from "../../pages/admin/Admin_Features/Communication/annoucment.jsx";
 import AdminRegister from "../../pages/admin/Admin_Features/UserRegistrations/AdminRegisterForm.jsx";
+import StaffAttendance from "../../pages/admin/Admin_Features/HRManagement/StaffAttendance.jsx";
+import LeaveRequests from "../../pages/admin/Admin_Features/HRManagement/LeaveRequests.jsx";
 
 const AdminRoutes = () => { 
   // Define Sidebar Sections here
@@ -59,6 +61,14 @@ const AdminRoutes = () => {
       ]
     },
     {
+      title: "Staff HR",
+      icon: <FaUsers />, // Ya koi HR specific icon
+      subTabs: [
+        { title: "Staff Attendance", path: "staff-attendance" },
+        { title: "Leave Requests", path: "leave-requests" }
+      ]
+    },
+    {
       title: "Communication",
       icon: <FaBullhorn />,
       path: "announcements"
@@ -90,6 +100,10 @@ const AdminRoutes = () => {
         <Route path="subject-management" element={<SubjectManagement />} />
         <Route path="timetable-management" element={<TimetableManagement />} />
         
+        {/* HR Management Routes */}
+        <Route path="staff-attendance" element={<StaffAttendance />} />
+        <Route path="leave-requests" element={<LeaveRequests />} />
+
         {/* Fee Management */}
         <Route path="fee-management" element={<FeeManagementDashboard />} />
         

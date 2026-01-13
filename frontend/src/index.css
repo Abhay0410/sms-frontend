@@ -8,3 +8,24 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* src/index.css mein ye add karo */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-fadeIn { animation: fadeIn 1.2s ease-out; }
+.animate-slideUp { animation: slideUp 2s ease-out forwards; }
+.animate-slideUp.delay-200 { animation-delay: 0.5s; }
+.animate-zoomIn { animation: zoomIn 2s ease-out forwards; }
