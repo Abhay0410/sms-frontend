@@ -588,7 +588,7 @@ export default function RecordPayment({ academicYear }) {
             Academic Year: <span className="font-bold text-purple-600">{academicYear}</span>
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        {/* <div className="flex items-center gap-4">
           <button
             onClick={() => window.print()}
             className="flex items-center gap-2 px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 transition-all font-bold uppercase text-xs tracking-widest"
@@ -596,7 +596,7 @@ export default function RecordPayment({ academicYear }) {
             <FaDownload className="text-sm" />
             Export
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Search & Filter Header */}
