@@ -119,6 +119,24 @@ export default function SubjectManagement() {
   //   }
   // };
 
+  const handleRemoveFromMaster = async (e, subjectName) => {
+    e.stopPropagation(); // Prevent toggling selection when clicking delete
+    if (!window.confirm(`Permanently delete "${subjectName}" from the Class Master Pool? This will remove it from all sections too.`)) return;
+    
+    try {
+      await api.delete(API_ENDPOINTS.ADMIN.SUBJECT_MANAGEMENT.REMOVE_FROM_POOL, {
+        data: { 
+          classId: selectedClass._id, 
+          subjectName: subjectName 
+        }
+      });
+      toast.success("Removed from Class Master Pool");
+      loadSubjects(); // Refresh UI
+    } catch (err) {
+      toast.error(err.message || "Failed to remove master subject");
+    }
+  };
+
   const scrollTabs = (direction) => {
     if (scrollContainerRef.current) {
       const amt = direction === 'left' ? -300 : 300;
@@ -294,71 +312,69 @@ export default function SubjectManagement() {
                   </span>
                 </div>
                 
-                {/* Section selector */}
                 <select
                   value={selectedSection}
                   onChange={(e) => setSelectedSection(e.target.value)}
                   className="w-full rounded-2xl border-2 border-slate-100 p-5 mb-6 font-bold text-slate-700 outline-none focus:ring-4 focus:ring-orange-50 bg-slate-50"
                 >
-                  <option value="">Select Section</option>
+                  <option value="">Select Target Section</option>
                   {subjectData.sections?.map(s => (
-                    <option key={s.sectionName} value={s.sectionName}>
-                      Section {s.sectionName}
-                    </option>
+                    <option key={s.sectionName} value={s.sectionName}>Section {s.sectionName}</option>
                   ))}
                 </select>
                 
-                {/* Subjects list */}
-                <div className="space-y-3 max-h-[400px] overflow-y-auto no-scrollbar mb-8 pr-2">
+                {/* 🔥 SCROLLABLE MASTER POOL CONTAINER */}
+                <div className="space-y-3 max-h-[500px] overflow-y-auto no-scrollbar mb-8 pr-2">
                   {subjectData.availableSubjects?.length > 0 ? 
                     subjectData.availableSubjects.map((sub) => (
                       <div
-                        key={sub._id}
+                        key={sub.subjectName}
                         onClick={() => toggleSubjectSelection(sub.subjectName)}
-                        className={`flex items-center gap-5 p-5 rounded-[2rem] border-2 transition-all cursor-pointer ${
+                        className={`group/master flex items-center gap-4 p-5 rounded-[2rem] border-2 transition-all cursor-pointer ${
                           selectedSubjectsSet.has(sub.subjectName)
                             ? "border-orange-500 bg-gradient-to-r from-orange-50/50 to-red-50/50 shadow-md"
                             : "border-transparent bg-slate-50 hover:bg-white hover:border-orange-100"
                         }`}
                       >
-                        <div className={`h-6 w-6 rounded border-2 flex items-center justify-center transition-all ${
+                        <div className={`h-6 w-6 rounded border-2 flex-shrink-0 flex items-center justify-center transition-all ${
                           selectedSubjectsSet.has(sub.subjectName)
                             ? "bg-gradient-to-r from-orange-500 to-red-500 border-orange-600 text-white"
                             : "border-slate-300 bg-white"
                         }`}>
                           {selectedSubjectsSet.has(sub.subjectName) && <FaCheckCircle size={12}/>}
                         </div>
-                        <div className="flex-1">
-                          <span className="font-black text-slate-700 text-sm uppercase tracking-tight block">
+                        
+                        <div className="flex-1 truncate">
+                          <span className="font-black text-slate-700 text-sm uppercase tracking-tight block truncate">
                             {sub.subjectName}
                           </span>
-                          {sub.subjectCode && (
-                            <span className="text-xs text-slate-400 font-medium block">
-                              {sub.subjectCode}
-                            </span>
-                          )}
                         </div>
+
+                        {/* 🔥 MASTER DELETE BUTTON */}
+                        <button
+                          onClick={(e) => handleRemoveFromMaster(e, sub.subjectName)}
+                          className="opacity-0 group-hover/master:opacity-100 p-2 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                          title="Delete from Master Pool"
+                        >
+                          <FaTrash size={12} />
+                        </button>
                       </div>
                     )) : 
                     <div className="py-20 text-center opacity-30 italic">Pool Empty</div>
                   }
                 </div>
                 
-                {/* Selected count */}
                 <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-6 rounded-[2rem] text-white text-center shadow-lg">
-                  <span className="text-[10px] font-black uppercase text-slate-400 block mb-1">
-                    Selected Buffer
-                  </span>
+                  <span className="text-[10px] font-black uppercase text-slate-400 block mb-1">Ready to Allot</span>
                   <span className="text-3xl font-black">{selectedSubjectsSet.size}</span>
                 </div>
                 
-                {/* Assign button */}
                 <button
                   disabled={!selectedSection || selectedSubjectsSet.size === 0 || assignLoading}
                   onClick={handleAssign}
                   className="w-full mt-6 rounded-2xl bg-gradient-to-r from-orange-600 to-red-600 py-5 text-white font-black uppercase text-xs tracking-widest hover:opacity-90 disabled:opacity-30 transition-all shadow-xl active:scale-95"
                 >
-                  {assignLoading ? "Processing..." : `Assign ${selectedSubjectsSet.size} Subjects`}
+                  {assignLoading ? "Processing..." : `Assign to Section ${selectedSection}`}
                 </button>
               </div>
             </div>

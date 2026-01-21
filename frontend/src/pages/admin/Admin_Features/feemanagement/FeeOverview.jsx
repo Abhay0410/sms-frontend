@@ -2,44 +2,62 @@ import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaCheckCircle,
   FaExclamationCircle,
   FaUsers,
   FaDollarSign,
   FaCalendarAlt,
+  FaChartBar,
+  FaArrowRight,
+  FaFilter,
+  FaChartPie,
 } from "react-icons/fa";
+import { FiRefreshCw } from "react-icons/fi";
+
+const MONTHS = [
+  "April", "May", "June", "July", "August", "September", 
+  "October", "November", "December", "January", "February", "March"
+];
 
 export default function FeeOverview({ academicYear }) {
   const [statistics, setStatistics] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState("ALL");
   const [selectedList, setSelectedList] = useState(null);
   const [studentList, setStudentList] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
-  const [studentsLoading, setStudentsLoading] = useState(false);
+  // Removed unused variable: studentsLoading
+
+  // Get current month for default selection
+  const getCurrentMonth = () => {
+    const monthNames = [
+      "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+      "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+    ];
+    const now = new Date();
+    return monthNames[now.getMonth()];
+  };
 
   const loadStatistics = useCallback(async () => {
     try {
       setStatsLoading(true);
-
-      // यदि academicYear नहीं है तो return
-      if (!academicYear) {
-        toast.info("Please select an academic year");
-        return;
-      }
+      if (!academicYear) return;
 
       const response = await api.get(API_ENDPOINTS.ADMIN.FEE.STATISTICS, {
-        params: { academicYear },
+        params: { 
+          academicYear, 
+          month: selectedMonth !== "ALL" ? selectedMonth : undefined 
+        },
       });
 
       const stats = response.data;
-     
       setStatistics({
         totalStudents: Number(stats.totalStudents || 0),
         totalExpected: Number(stats.totalExpected || 0),
         totalCollected: Number(stats.totalCollected || 0),
         totalPending: Number(stats.totalPending || 0),
         collectionPercentage: Number(stats.collectionPercentage || 0),
-
         paymentStatus: {
           paid: Number(stats.paymentStatus?.paid || 0),
           unpaid: Number(stats.paymentStatus?.unpaid || 0),
@@ -48,29 +66,33 @@ export default function FeeOverview({ academicYear }) {
           pending: Number(stats.paymentStatus?.pending || 0),
           overdue: Number(stats.paymentStatus?.overdue || 0),
         },
-      }); 
-
+      });
     } catch (err) {
-      toast.error(err + "Statistics not available");
+      console.error(err);
+      toast.error("Statistics not available for this period");
     } finally {
       setStatsLoading(false);
     }
-  }, [academicYear]);
+  }, [academicYear, selectedMonth]);
 
   const loadStudentList = async (status) => {
     try {
-      setStudentsLoading(true);
+      // Use a local variable instead of state since it's only used locally
+      const _studentsLoading = true;
+      
       setSelectedList(status);
-
       const res = await api.get(API_ENDPOINTS.ADMIN.FEE.STUDENTS_WITH_FEES, {
-        params: { academicYear, status },
+        params: { 
+          academicYear, 
+          status, 
+          month: selectedMonth !== "ALL" ? selectedMonth : undefined 
+        },
       });
-
       setStudentList(res?.data?.students || []);
-    } catch (err) {
-      toast.error(err + "Failed to load student list");
+    } catch {
+      toast.error("Failed to load student list");
     } finally {
-      setStudentsLoading(false);
+      // Loading state is handled by UI feedback, no need for separate state
     }
   };
 
@@ -80,270 +102,435 @@ export default function FeeOverview({ academicYear }) {
     }
   }, [loadStatistics, academicYear]);
 
-  // यदि academicYear select नहीं किया गया है
-  if (!academicYear) {
-    return (
-      <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 shadow-sm">
-        <div className="h-16 w-16 bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <FaCalendarAlt className="h-8 w-8 text-purple-400" />
-        </div>
-        <h3 className="text-xl font-bold text-slate-900 mb-2">Select Academic Year</h3>
-        <p className="text-slate-600 max-w-md mx-auto">
-          Please select an academic year from the dropdown above to view fee statistics
-        </p>
-      </div>
-    );
-  }
+  // Reset selectedList when month changes
+  useEffect(() => {
+    setSelectedList(null);
+  }, [selectedMonth]);
 
-  if (statsLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="h-14 w-14 animate-spin rounded-full border-4 border-purple-200 border-t-purple-600" />
-        <p className="mt-4 text-slate-500 font-medium">
-          Loading fee statistics for <span className="font-bold text-purple-600">{academicYear}</span>...
-        </p>
-      </div>
-    );
-  }
-
-  if (!statistics) {
-    return (
-      <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-        <div className="h-16 w-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <FaDollarSign className="h-8 w-8 text-slate-300" />
-        </div>
-        <h3 className="text-xl font-bold text-slate-900 mb-2">No Data Available</h3>
-        <p className="text-slate-600 mb-6">
-          No fee data found for academic year <span className="font-bold">{academicYear}</span>
-        </p>
-        <button 
-          onClick={loadStatistics}
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-bold hover:opacity-90 transition-all"
-        >
-          Refresh Data
-        </button>
-      </div>
-    );
-  }
-
-  const collectionPercentage = statistics.collectionPercentage;
+  if (!academicYear) return <NoAcademicYearView />;
 
   return (
-    <div className="space-y-8">
-      {/* Academic Year Banner */}
-      {/* <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-3xl border border-purple-200 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Monthly Filter Section */}
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-[2.5rem] border border-purple-200 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-              <FaCalendarAlt className="h-6 w-6 text-white" />
+            <div className="h-14 w-14 bg-white text-purple-600 rounded-2xl flex items-center justify-center shadow-md">
+              <FaFilter size={20} />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Viewing Fee Data</h3>
-              <p className="text-2xl font-black text-purple-600">{academicYear}</p>
+              <h3 className="text-xl font-black text-slate-900">Analytics Filter</h3>
+              <p className="text-slate-500 text-sm font-medium mt-1">
+                Select month to view specific period collection
+              </p>
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="text-center">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Collection Rate</p>
-              <p className="text-3xl font-black text-slate-900">{collectionPercentage}%</p>
+            <div className="relative">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="
+                  rounded-2xl 
+                  border-2 
+                  border-slate-200 
+                  bg-white 
+                  pl-5 
+                  pr-10 
+                  py-3.5 
+                  font-bold 
+                  text-slate-700 
+                  outline-none 
+                  focus:ring-2 
+                  focus:ring-purple-500/20 
+                  focus:border-purple-500
+                  hover:border-slate-300
+                  transition-all
+                  shadow-sm
+                  appearance-none
+                  cursor-pointer
+                  min-w-[200px]
+                "
+              >
+                <option value="ALL">📊 Full Academic Year</option>
+                {MONTHS.map(m => (
+                  <option key={m} value={m.toUpperCase()}>
+                    {m === getCurrentMonth() ? `📅 ${m} (Current)` : m}
+                  </option>
+                ))}
+              </select>
+              
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg 
+                  className="w-5 h-5 text-slate-400" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
             </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* ===================== TOP CARDS ===================== */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          icon={<FaUsers className="text-purple-600" />}
-          label="Total Students"
-          value={statistics.totalStudents}
-          bg="bg-gradient-to-br from-purple-50 to-white"
-        />
-
-        <StatCard
-          icon={<FaDollarSign className="text-blue-600" />}
-          label="Total Expected"
-          value={`₹${statistics.totalExpected.toLocaleString("en-IN")}`}
-          bg="bg-gradient-to-br from-blue-50 to-white"
-        />
-
-        <StatCard
-          icon={<FaCheckCircle className="text-green-600" />}
-          label="Total Collected"
-          value={`₹${statistics.totalCollected.toLocaleString("en-IN")}`}
-          bg="bg-gradient-to-br from-green-50 to-white"
-        />
-
-        <StatCard
-          icon={<FaExclamationCircle className="text-red-600" />}
-          label="Total Pending"
-          value={`₹${statistics.totalPending.toLocaleString("en-IN")}`}
-          bg="bg-gradient-to-br from-red-50 to-white"
-        />
-      </div>
-
-      {/* ===================== COLLECTION PROGRESS ===================== */}
-      <div className="rounded-3xl bg-white p-8 shadow-lg border border-slate-100">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-          <div>
-            <h3 className="text-2xl font-bold text-slate-900">
-              Fee Collection Progress
-            </h3>
-            <p className="text-slate-500 text-sm mt-1">Academic Year: {academicYear}</p>
-          </div>
-          <span className="text-4xl font-black text-purple-600 mt-2 md:mt-0">
-            {collectionPercentage}%
-          </span>
-        </div>
-
-        <div className="w-full bg-slate-200 rounded-full h-6 overflow-hidden shadow-inner">
-          <div
-            className="bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 h-6 rounded-full transition-all duration-1000"
-            style={{
-              width: `${Math.min(collectionPercentage, 100)}%`,
-            }}
-          />
-        </div>
-        
-        <div className="mt-4 flex justify-between text-sm text-slate-500 font-medium">
-          <span>0%</span>
-          <span>50%</span>
-          <span>100%</span>
-        </div>
-      </div>
-
-      {/* ===================== PAID / UNPAID ===================== */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ClickableCard
-          title="Paid Students"
-          count={statistics.paymentStatus.paid}
-          icon={<FaCheckCircle />}
-          color="green"
-          academicYear={academicYear}
-          onClick={() => loadStudentList("paid")}
-        />
-
-        <ClickableCard
-          title="Unpaid Students"
-          count={statistics.paymentStatus.unpaid}
-          icon={<FaExclamationCircle />}
-          color="red"
-          academicYear={academicYear}
-          onClick={() => loadStudentList("unpaid")}
-        />
-      </div>
-
-      {/* ===================== STUDENT LIST ===================== */}
-      {selectedList && (
-        <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">
-                {selectedList === "paid" ? "✅ Paid Students" : "⚠️ Unpaid Students"}
-              </h3>
-              <p className="text-slate-500 text-sm mt-1">
-                Academic Year: {academicYear} • {studentList.length} students
-              </p>
-            </div>
+            
             <button 
-              onClick={() => setSelectedList(null)}
-              className="text-sm text-slate-500 hover:text-slate-700 mt-2 md:mt-0"
+              onClick={loadStatistics} 
+              className="
+                h-14 w-14 
+                bg-slate-900 
+                text-white 
+                rounded-2xl 
+                flex items-center justify-center 
+                hover:bg-purple-600 
+                transition-all
+                shadow-md
+                hover:shadow-lg
+              "
+              title="Refresh Statistics"
             >
-              Close List
+              <FiRefreshCw className={statsLoading ? "animate-spin" : ""} size={20} />
             </button>
           </div>
-
-          {studentsLoading && (
-            <div className="text-center py-10">
-              <div className="h-8 w-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-slate-500">Loading students...</p>
+        </div>
+        
+        {selectedMonth !== "ALL" && (
+          <div className="mt-6 bg-white/80 rounded-2xl p-4 border border-purple-100">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-600">
+                Viewing data for: <span className="font-bold text-purple-600">{selectedMonth}</span>
+              </span>
+              <span className="text-xs font-bold text-slate-400">
+                {selectedMonth === getCurrentMonth() ? "• Current Month" : "• Historical Data"}
+              </span>
             </div>
-          )}
+          </div>
+        )}
+      </div>
 
-          {!studentsLoading && studentList.length === 0 && (
-            <div className="text-center py-12 bg-gradient-to-b from-slate-50 to-white rounded-2xl border border-slate-200">
-              <FaUsers className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500 font-medium">
-                No {selectedList} students found for {academicYear}
-              </p>
-            </div>
-          )}
+      {statsLoading ? (
+        <LoadingView academicYear={academicYear} selectedMonth={selectedMonth} />
+      ) : (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-8"
+        >
+          {/* Key Metrics Cards (ClassManagement Style) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <StatCard 
+              icon={<FaUsers />} 
+              label="Total Students" 
+              value={statistics.totalStudents} 
+              color="purple" 
+            />
+            <StatCard 
+              icon={<FaDollarSign />} 
+              label={selectedMonth === "ALL" ? "Annual Revenue" : `${selectedMonth} Target`} 
+              value={`₹${statistics.totalExpected.toLocaleString("en-IN")}`} 
+              color="blue" 
+            />
+            <StatCard 
+              icon={<FaCheckCircle />} 
+              label="Collected Amount" 
+              value={`₹${statistics.totalCollected.toLocaleString("en-IN")}`} 
+              color="emerald" 
+            />
+            <StatCard 
+              icon={<FaExclamationCircle />} 
+              label="Pending Dues" 
+              value={`₹${statistics.totalPending.toLocaleString("en-IN")}`} 
+              color="rose" 
+            />
+          </div>
 
-          {!studentsLoading && studentList.length > 0 && (
-            <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
-              {studentList.map((student) => (
-                <div
-                  key={student._id}
-                  className="p-4 rounded-2xl border border-slate-100 hover:border-purple-300 transition-all bg-white hover:shadow-sm"
-                >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <p className="font-bold text-lg text-slate-900">{student.name}</p>
-                      <p className="text-sm text-slate-500">
-                        Class {student.className} • ID: {student.studentID}
-                      </p>
+          {/* Collection Progress Section */}
+          <div className="bg-white rounded-[2.5rem] p-10 shadow-lg border border-slate-100">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+              <div className="flex-1 space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-2xl flex items-center justify-center">
+                    <FaChartBar size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-slate-900">Collection Efficiency</h3>
+                    <p className="text-slate-500 text-sm font-medium mt-1">
+                      {selectedMonth === "ALL" ? 
+                        `Overall performance for ${academicYear}` : 
+                        `${selectedMonth} collection performance`
+                      }
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${statistics?.collectionPercentage || 0}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                      className="h-full bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 rounded-full shadow-lg"
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between text-sm font-medium">
+                    <div className="text-slate-600">
+                      <span className="font-bold">{statistics?.collectionPercentage || 0}%</span> collected
                     </div>
-
-                    <div className="text-right">
-                      <p className="font-bold text-lg text-slate-900">
-                        ₹{student.feeDetails?.paidAmount?.toLocaleString("en-IN") || 0} / ₹
-                        {student.feeDetails?.totalFee?.toLocaleString("en-IN") || 0}
-                      </p>
-                      <p className={`text-sm font-bold ${selectedList === "paid" ? "text-green-600" : "text-red-600"}`}>
-                        {student.feeDetails?.status || "Unknown"}
-                      </p>
+                    <div className="text-slate-600">
+                      <span className="font-bold">{100 - (statistics?.collectionPercentage || 0)}%</span> remaining
                     </div>
                   </div>
                 </div>
-              ))}
+              </div>
+              
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <div className="relative">
+                  <div className="h-40 w-40 rounded-full border-[12px] border-slate-100 flex items-center justify-center shadow-lg">
+                    <svg className="absolute inset-0 w-full h-full -rotate-90">
+                      <circle 
+                        cx="80" 
+                        cy="80" 
+                        r="74" 
+                        fill="none" 
+                        stroke="#8b5cf6" 
+                        strokeWidth="12" 
+                        strokeDasharray="464.96" 
+                        strokeDashoffset={464.96 - (464.96 * (statistics?.collectionPercentage || 0)) / 100} 
+                        strokeLinecap="round" 
+                      />
+                    </svg>
+                    <span className="text-4xl font-black text-slate-900">
+                      {statistics?.collectionPercentage || 0}%
+                    </span>
+                  </div>
+                </div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  Collection Rate
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Status Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <SegmentCard
+              title="Fully Paid"
+              subtitle={selectedMonth === "ALL" ? 
+                "All dues cleared for academic year" : 
+                `All ${selectedMonth} dues cleared`
+              }
+              count={statistics?.paymentStatus?.paid || 0}
+              color="emerald"
+              isActive={selectedList === "paid"}
+              onClick={() => loadStudentList("paid")}
+            />
+            
+            <SegmentCard
+              title="Pending Dues"
+              subtitle={selectedMonth === "ALL" ? 
+                "Includes partial and overdue payments" : 
+                `${selectedMonth} dues pending`
+              }
+              count={statistics?.paymentStatus?.unpaid || 0}
+              color="rose"
+              isActive={selectedList === "unpaid"}
+              onClick={() => loadStudentList("unpaid")}
+            />
+          </div>
+
+          {/* 4. Dynamic Student List Dashboard */}
+          {selectedList && (
+            <div className="bg-slate-900 rounded-[3rem] p-10 shadow-2xl animate-in zoom-in-95 duration-300">
+              <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/10">
+                <div>
+                  <h3 className="text-2xl font-black text-white tracking-tight">
+                    {selectedList === "paid" ? "✅ Monthly Settled" : "⚠️ Monthly Pending"}
+                  </h3>
+                  <p className="text-white/50 text-xs font-bold uppercase tracking-[0.2em] mt-2">
+                    FILTER: {selectedMonth} • FOUND {studentList.length} STUDENTS
+                  </p>
+                </div>
+                <button onClick={() => setSelectedList(null)} className="px-6 py-2 bg-white/10 text-white rounded-full text-xs font-black uppercase">Close</button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-4 custom-scrollbar-white">
+                {studentList.map((student) => {
+                  // 🔥 Current selected month ki installment dhoondo
+                  const monthKey = selectedMonth !== "ALL" ? selectedMonth.substring(0, 3).toUpperCase() : null;
+                  
+                  const monthlyInst = monthKey 
+                    ? student.feeDetails?.installments?.find(i => i.name.toUpperCase().startsWith(monthKey))
+                    : null;
+
+                  // Agar month select hai toh sirf us mahine ka data dikhao, warna yearly
+                  const displayPaid = monthlyInst ? monthlyInst.paidAmount : student.feeDetails.paidAmount;
+                  const displayTotal = monthlyInst ? monthlyInst.amount : student.feeDetails.totalFee;
+                  const displayStatus = monthlyInst ? monthlyInst.status : student.feeDetails.status;
+
+                  return (
+                    <div key={student._id} className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center justify-between">
+                      <div>
+                        <p className="text-white font-black text-lg">{student.name}</p>
+                        <p className="text-white/40 text-[10px] font-bold uppercase">{student.studentID}</p>
+                      </div>
+                      <div className="text-right">
+                        {/* 🔥 Ab yahan ₹41,000 / ₹41,000 dikhega monthly filter par */}
+                        <p className="text-white font-black text-lg">
+                          ₹{displayPaid.toLocaleString()} / ₹{displayTotal.toLocaleString()}
+                        </p>
+                        <div className={`mt-2 inline-block px-3 py-1 rounded-lg text-[9px] font-black uppercase ${
+                            displayStatus === 'PAID' ? 'bg-emerald-400/20 text-emerald-400' : 'bg-rose-400/20 text-rose-400'
+                        }`}>
+                            {displayStatus}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );
 }
 
-/* ===================== SMALL COMPONENTS ===================== */
+/* ===================== SUB-COMPONENTS ===================== */
 
-const StatCard = ({ icon, label, value, bg = "bg-white" }) => (
-  <div className={`p-6 rounded-3xl shadow border border-slate-100 ${bg}`}>
-    <div className="flex items-center gap-3 mb-3">
-      {icon}
-      <p className="text-sm font-bold text-slate-600">{label}</p>
-    </div>
-    <p className="text-3xl font-black text-slate-900">{value}</p>
-  </div>
-);
+const StatCard = ({ icon, label, value, color }) => {
+  const colorMap = {
+    purple: {
+      bg: "bg-purple-50",
+      iconBg: "bg-purple-100 text-purple-600",
+      border: "border-purple-100",
+    },
+    blue: {
+      bg: "bg-blue-50",
+      iconBg: "bg-blue-100 text-blue-600",
+      border: "border-blue-100",
+    },
+    emerald: {
+      bg: "bg-emerald-50",
+      iconBg: "bg-emerald-100 text-emerald-600",
+      border: "border-emerald-100",
+    },
+    rose: {
+      bg: "bg-rose-50",
+      iconBg: "bg-rose-100 text-rose-600",
+      border: "border-rose-100",
+    },
+  };
 
-const ClickableCard = ({ title, count, icon, color, academicYear, onClick }) => {
-  const colorStyles = {
-    green: {
-      bg: "bg-gradient-to-br from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100",
-      border: "border-green-200 hover:border-green-400",
-      text: "text-green-600",
-      value: "text-green-700",
-    },
-    red: {
-      bg: "bg-gradient-to-br from-red-50 to-rose-50 hover:from-red-100 hover:to-rose-100",
-      border: "border-red-200 hover:border-red-400",
-      text: "text-red-600",
-      value: "text-red-700",
-    },
-  }[color];
+  const colors = colorMap[color] || colorMap.purple;
 
   return (
-    <div
-      onClick={onClick}
-      className={`cursor-pointer rounded-3xl p-6 shadow border transition-all duration-300 ${colorStyles.bg} ${colorStyles.border}`}
-    >
-      <div className={`flex items-center gap-3 mb-3 ${colorStyles.text}`}>
-        {icon}
-        <p className="text-sm font-bold">{title}</p>
+    <div className={`p-8 rounded-[2.5rem] border-2 ${colors.border} ${colors.bg} shadow-sm hover:shadow-lg transition-all duration-300 group`}>
+      <div className="flex items-center justify-between mb-6">
+        <div className={`h-14 w-14 rounded-2xl flex items-center justify-center ${colors.iconBg} shadow-sm group-hover:scale-110 transition-transform`}>
+          {icon}
+        </div>
+        <div className="text-right">
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+            {label}
+          </span>
+        </div>
       </div>
-      <p className={`text-4xl font-black ${colorStyles.value}`}>{count}</p>
-      <p className="text-xs text-slate-500 mt-2">Academic Year: {academicYear}</p>
+      <p className="text-3xl font-black text-slate-900 tracking-tight">
+        {value}
+      </p>
+      <div className="mt-4 pt-4 border-t border-slate-100">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          {color === "emerald" ? "✅ Cleared" : color === "rose" ? "⚠️ Pending" : "📊 Metric"}
+        </p>
+      </div>
     </div>
   );
 };
+
+const SegmentCard = ({ title, subtitle, count, color, isActive, onClick }) => {
+  const colorMap = {
+    emerald: {
+      bg: "bg-gradient-to-br from-emerald-50 to-green-50",
+      hoverBg: "hover:from-emerald-100 hover:to-green-100",
+      border: "border-emerald-200",
+      hoverBorder: "hover:border-emerald-400",
+      text: "text-emerald-600",
+      countText: "text-emerald-700",
+    },
+    rose: {
+      bg: "bg-gradient-to-br from-rose-50 to-red-50",
+      hoverBg: "hover:from-rose-100 hover:to-red-100",
+      border: "border-rose-200",
+      hoverBorder: "hover:border-rose-400",
+      text: "text-rose-600",
+      countText: "text-rose-700",
+    },
+  };
+
+  const colors = colorMap[color] || colorMap.emerald;
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className={`
+        p-10 rounded-[2.5rem] border-2 cursor-pointer 
+        transition-all duration-300 flex items-center justify-between
+        ${colors.bg} ${colors.hoverBg} ${colors.border} ${colors.hoverBorder}
+        ${isActive ? 'border-purple-600 shadow-xl shadow-purple-100' : ''}
+      `}
+    >
+      <div className="flex items-center gap-8">
+        <div className={`h-20 w-20 rounded-3xl flex items-center justify-center text-2xl ${colors.text} bg-white/50`}>
+          <FaUsers />
+        </div>
+        <div>
+          <h4 className="text-2xl font-black text-slate-900 tracking-tight">{title}</h4>
+          <p className="text-slate-500 text-sm font-medium mt-2 italic">{subtitle}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-6">
+        <span className={`text-5xl font-black ${colors.countText}`}>{count}</span>
+        <FaArrowRight className={`text-slate-300 transition-colors ${isActive ? 'text-purple-600' : ''}`} size={24} />
+      </div>
+    </motion.div>
+  );
+};
+
+const LoadingView = ({ academicYear, selectedMonth }) => (
+  <div className="flex flex-col items-center justify-center py-32 space-y-6">
+    <div className="relative">
+      <div className="h-20 w-20 rounded-full border-8 border-purple-200"></div>
+      <div className="absolute top-0 left-0 h-20 w-20 rounded-full border-8 border-purple-600 border-t-transparent animate-spin"></div>
+    </div>
+    <div className="text-center space-y-2">
+      <p className="text-purple-600 font-black uppercase tracking-widest text-sm animate-pulse">
+        Loading Analytics Dashboard
+      </p>
+      <p className="text-slate-500 font-medium text-sm">
+        {selectedMonth === "ALL" ? 
+          `Fetching data for ${academicYear}` : 
+          `Fetching ${selectedMonth} data for ${academicYear}`
+        }
+      </p>
+    </div>
+  </div>
+);
+
+const NoAcademicYearView = () => (
+  <div className="text-center py-40 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
+    <div className="h-24 w-24 bg-gradient-to-br from-purple-100 to-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+      <FaCalendarAlt className="h-12 w-12 text-purple-400" />
+    </div>
+    <h3 className="text-3xl font-black text-slate-900 mb-3">Select Academic Year</h3>
+    <p className="text-slate-500 mb-8 max-w-md mx-auto font-medium">
+      Choose an academic year from the dropdown above to view detailed fee analytics and collection statistics.
+    </p>
+    <div className="inline-flex items-center gap-2 text-sm font-bold text-slate-400">
+      <div className="h-2 w-2 bg-slate-300 rounded-full animate-pulse"></div>
+      <span>Waiting for session selection</span>
+    </div>
+  </div>
+);
