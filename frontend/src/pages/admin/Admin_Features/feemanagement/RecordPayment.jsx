@@ -17,7 +17,24 @@ import {
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
 
-export default function RecordPayment({ academicYear }) {
+export default function RecordPayment() {
+  const academicYears = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = -1; i < 6; i++) {
+      const year = currentYear + i;
+      years.push(`${year}-${year + 1}`);
+    }
+    return years;
+  }, []);
+
+  const [academicYear, setAcademicYear] = useState(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  });
+
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -568,14 +585,6 @@ export default function RecordPayment({ academicYear }) {
     }
   `;
 
-  if (loading && pagination.current === 1) {
-    return (
-      <div className="py-20 text-center animate-pulse font-black text-slate-400 uppercase tracking-widest">
-        Initialising Ledger...
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <style>{scrollbarStyles}</style>
@@ -584,9 +593,22 @@ export default function RecordPayment({ academicYear }) {
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
         <div>
           <h1 className="text-3xl font-black text-slate-900">Fee Collection</h1>
-          <p className="text-sm text-slate-600 mt-2">
-            Academic Year: <span className="font-bold text-purple-600">{academicYear}</span>
-          </p>
+          <p className="text-sm text-slate-600 mt-2">Record payments and manage transactions</p>
+        </div>
+
+        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">Session:</span>
+          <select
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="bg-slate-50 border-none text-slate-900 text-sm font-bold rounded-lg py-2 pl-3 pr-8 focus:ring-2 focus:ring-purple-500 cursor-pointer outline-none"
+          >
+            {academicYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -670,7 +692,17 @@ export default function RecordPayment({ academicYear }) {
       </div>
 
       {/* Main Table */}
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden relative min-h-[400px]">
+        {loading && (
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center transition-all duration-300">
+            <div className="bg-white p-4 rounded-full shadow-xl mb-3">
+              <FiRefreshCw className="w-8 h-8 text-purple-600 animate-spin" />
+            </div>
+            <p className="text-slate-600 font-bold text-xs uppercase tracking-widest animate-pulse">
+              Updating Records...
+            </p>
+          </div>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

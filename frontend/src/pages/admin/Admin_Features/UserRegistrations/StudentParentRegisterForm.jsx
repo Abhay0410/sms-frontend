@@ -11,8 +11,17 @@ import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
+
 export default function StudentParentRegisterForm() {
-  const [activeTab, setActiveTab] = useState("student");
   const [loading, setLoading] = useState(false);
  
   const [studentForm, setStudentForm] = useState({
@@ -45,10 +54,14 @@ export default function StudentParentRegisterForm() {
     motherEmail: "",
     motherOccupation: "",
 
-    // Guardian Details (optional)
+    // Guardian Details (Parent Account)
     guardianName: "",
     guardianPhone: "",
+    guardianEmail: "",
     guardianRelation: "",
+    guardianOccupation: "",
+    guardianQualification: "",
+    guardianIncome: "",
 
     // Academic - ✅ UPDATED: className instead of classId, NO section
     className: "", // ✅ Store class as string
@@ -73,27 +86,12 @@ export default function StudentParentRegisterForm() {
     roomNumber: "",
   });
 
-  const [parentForm, setParentForm] = useState({
-    parentName: "",
-    parentEmail: "",
-    parentPhone: "",
-    parentRelation: "",
-    parentOccupation: "",
-    parentQualification: "",
-    parentIncome: "",
-  });
-
   const onStudentChange = (e) => {
     const { name, value, type, checked } = e.target;
     setStudentForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
-  };
-
-  const onParentChange = (e) => {
-    const { name, value } = e.target;
-    setParentForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const getCurrentAcademicYear = () => {
@@ -124,36 +122,36 @@ export default function StudentParentRegisterForm() {
       return false;
     }
 
-    // Parent validation
-    if (!parentForm.parentName.trim()) {
-      toast.error("Parent name is required");
+    // Guardian/Parent validation
+    if (!studentForm.guardianName.trim()) {
+      toast.error("Guardian Name is required for Parent Account");
       return false;
     }
-    if (!parentForm.parentEmail.trim()) {
-      toast.error("Parent email is required");
+    if (!studentForm.guardianEmail.trim()) {
+      toast.error("Guardian Email is required for Parent Account");
       return false;
     }
-    if (!parentForm.parentPhone.trim()) {
-      toast.error("Parent phone is required");
+    if (!studentForm.guardianPhone.trim()) {
+      toast.error("Guardian Phone is required");
       return false;
     }
-    if (!parentForm.parentRelation) {
-      toast.error("Parent relationship is required");
+    if (!studentForm.guardianRelation) {
+      toast.error("Guardian Relation is required");
       return false;
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (parentForm.parentEmail && !emailRegex.test(parentForm.parentEmail)) {
-      toast.error("Please enter a valid parent email address");
+    if (studentForm.guardianEmail && !emailRegex.test(studentForm.guardianEmail)) {
+      toast.error("Please enter a valid guardian email address");
       return false;
     }
 
     // Phone validation
     const phoneRegex = /^[0-9]{10}$/;
     if (
-      parentForm.parentPhone &&
-      !phoneRegex.test(parentForm.parentPhone.replace(/\D/g, ""))
+      studentForm.guardianPhone &&
+      !phoneRegex.test(studentForm.guardianPhone.replace(/\D/g, ""))
     ) {
       toast.error("Please enter a valid 10-digit phone number");
       return false;
@@ -172,10 +170,15 @@ export default function StudentParentRegisterForm() {
 
     const payload = {
       ...studentForm,
-      ...parentForm,
-      parentPhone: parentForm.parentPhone.replace(/\D/g, ""),
-      parentIncome: parentForm.parentIncome
-        ? Number(parentForm.parentIncome)
+      // Map guardian fields to parent fields
+      parentName: studentForm.guardianName,
+      parentEmail: studentForm.guardianEmail,
+      parentPhone: studentForm.guardianPhone.replace(/\D/g, ""),
+      parentRelation: studentForm.guardianRelation,
+      parentOccupation: studentForm.guardianOccupation,
+      parentQualification: studentForm.guardianQualification,
+      parentIncome: studentForm.guardianIncome
+        ? Number(studentForm.guardianIncome)
         : undefined,
     };
 
@@ -220,11 +223,13 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
       <div style="margin-bottom:12px">
         <b style="color:#111827">Student ID:</b>
         <span style="margin-left:6px; color:#2563eb">${studentID}</span>
+        <button id="copyStudentId" style="margin-left:10px; padding:2px 8px; font-size:12px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
       </div>
 
       <div style="margin-bottom:16px">
         <b style="color:#111827">Parent ID:</b>
         <span style="margin-left:6px; color:#2563eb">${parentID}</span>
+        <button id="copyParentId" style="margin-left:10px; padding:2px 8px; font-size:12px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
       </div>
 
       <hr style="margin:12px 0"/>
@@ -240,32 +245,39 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
       ">
         <div style="margin-bottom:8px">
           <small style="color:#6b7280">Student Password</small><br/>
-          <code style="
-            display:block;
-            background:#eef2ff;
-            padding:6px;
-            border-radius:6px;
-            color:#4338ca;
-            font-size:13px
-          ">
-            ${studentPassword || "Sent via email"}
-          </code>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef2ff; padding:6px; border-radius:6px;">
+            <code style="color:#4338ca; font-size:13px">
+              ${studentPassword || "Sent via email"}
+            </code>
+            <button id="copyStudentPass" style="padding:2px 8px; font-size:11px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
+          </div>
         </div>
 
         <div>
           <small style="color:#6b7280">Parent Password</small><br/>
-          <code style="
-            display:block;
-            background:#eef2ff;
-            padding:6px;
-            border-radius:6px;
-            color:#4338ca;
-            font-size:13px
-          ">
-            ${parentPassword || "Sent via email"}
-          </code>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef2ff; padding:6px; border-radius:6px;">
+            <code style="color:#4338ca; font-size:13px">
+              ${parentPassword || "Sent via email"}
+            </code>
+            <button id="copyParentPass" style="padding:2px 8px; font-size:11px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
+          </div>
         </div>
       </div>
+
+      <button id="copyAllCredentials" style="
+        margin-top: 12px;
+        width: 100%;
+        padding: 8px;
+        background-color: #eef2ff;
+        color: #4338ca;
+        border: 1px solid #c7d2fe;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+      ">
+        Copy All Credentials
+      </button>
 
       <p style="
         font-size:12px;
@@ -279,17 +291,46 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
   `,
   confirmButtonText: "Done",
   confirmButtonColor: "#2563eb",
+  didOpen: () => {
+    const copyToClipboard = (text, label) => {
+      navigator.clipboard.writeText(text).then(() => {
+        Swal.showValidationMessage(`${label} copied`);
+      });
+    };
+
+    const allCredentials = 
+`Student ID: ${studentID}
+Parent ID: ${parentID}
+
+Student Password: ${studentPassword || "Sent via email"}
+Parent Password: ${parentPassword || "Sent via email"}`;
+
+    document.getElementById("copyAllCredentials")?.addEventListener("click", () => {
+      navigator.clipboard.writeText(allCredentials).then(() => {
+        Swal.showValidationMessage("Credentials copied to clipboard!");
+      });
+    });
+
+    document.getElementById("copyStudentId")?.addEventListener("click", () => copyToClipboard(studentID, "Student ID"));
+    document.getElementById("copyParentId")?.addEventListener("click", () => copyToClipboard(parentID, "Parent ID"));
+    document.getElementById("copyStudentPass")?.addEventListener("click", () => copyToClipboard(studentPassword, "Student Password"));
+    document.getElementById("copyParentPass")?.addEventListener("click", () => copyToClipboard(parentPassword, "Parent Password"));
+  }
 });
 
     
-    setStudentForm((p) => ({ ...p, studentName: "", className: "" }));
-    setParentForm({
-      parentName: "",
-      parentEmail: "",
-      parentPhone: "",
-      parentRelation: "",
-    });
-    setActiveTab("student");
+    setStudentForm((p) => ({ 
+      ...p, 
+      studentName: "", 
+      className: "",
+      guardianName: "",
+      guardianEmail: "",
+      guardianPhone: "",
+      guardianRelation: "",
+      guardianOccupation: "",
+      guardianQualification: "",
+      guardianIncome: ""
+    }));
   } catch (err) {
     Swal.fire({
       icon: "error",
@@ -322,35 +363,8 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
           </p>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="mt-6 flex gap-2 border-b border-gray-200">
-          <button
-            onClick={() => setActiveTab("student")}
-            className={`flex items-center gap-2 rounded-t-lg px-6 py-3 text-sm font-medium transition-all ${
-              activeTab === "student"
-                ? "border-b-2 border-indigo-600 bg-white text-indigo-700 shadow-sm"
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-            }`}
-          >
-            <FaUser className="h-4 w-4" />
-            Student Details
-          </button>
-          <button
-            onClick={() => setActiveTab("parent")}
-            className={`flex items-center gap-2 rounded-t-lg px-6 py-3 text-sm font-medium transition-all ${
-              activeTab === "parent"
-                ? "border-b-2 border-indigo-600 bg-white text-indigo-700 shadow-sm"
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-            }`}
-          >
-            <FaUserTie className="h-4 w-4" />
-            Parent Details
-          </button>
-        </div>
-
         <form onSubmit={onSubmit} className="mt-6">
           {/* STUDENT FORM */}
-          {activeTab === "student" && (
             <div className="space-y-8">
               {/* Basic Information */}
               <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
@@ -392,11 +406,22 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Date of Birth <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="date"
-                      name="dateOfBirth"
-                      value={studentForm.dateOfBirth}
-                      onChange={onStudentChange}
+                    <DatePicker
+                      selected={
+                        (() => {
+                          if (!studentForm.dateOfBirth) return null;
+                          const [day, month, year] = studentForm.dateOfBirth.split("/");
+                          if (!day || !month || !year) return null;
+                          const date = new Date(year, month - 1, day);
+                          return isNaN(date.getTime()) ? null : date;
+                        })()
+                      }
+                      onChange={(date) => {
+                        const formatted = date ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}` : "";
+                        setStudentForm(prev => ({...prev, dateOfBirth: formatted}));
+                      }}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="DD/MM/YYYY"
                       className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                       required
                     />
@@ -555,15 +580,18 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       State <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="state"
                       value={studentForm.state}
                       onChange={onStudentChange}
                       className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                      placeholder="Enter state"
                       required
-                    />
+                    >
+                      <option value="">Select State</option>
+                      {INDIAN_STATES.map((st) => (
+                        <option key={st} value={st}>{st}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
@@ -737,13 +765,13 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
               {/* Guardian Details (Optional) */}
               <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
                 <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                  Guardian Details (Optional)
+                  Guardian Details (Parent Account)
                 </h3>
 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Guardian's Name
+                      Guardian's Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -751,13 +779,29 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
                       value={studentForm.guardianName}
                       onChange={onStudentChange}
                       className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                      placeholder="If different from parents"
+                      placeholder="Name of the guardian"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Guardian's Phone
+                      Guardian's Email <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name="guardianEmail"
+                      value={studentForm.guardianEmail}
+                      onChange={onStudentChange}
+                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                      placeholder="guardian@example.com"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Guardian's Phone <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
@@ -768,20 +812,56 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
                       maxLength="10"
                       className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                       placeholder="10-digit phone"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Relation with Student
+                      Relation with Student <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="guardianRelation"
                       value={studentForm.guardianRelation}
                       onChange={onStudentChange}
                       className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                      placeholder="Uncle, Aunt, etc."
+                      required
+                    >
+                      <option value="">Select Relation</option>
+                      <option value="Father">Father</option>
+                      <option value="Mother">Mother</option>
+                      <option value="Grandparent">Grandparent</option>
+                      <option value="Uncle">Uncle</option>
+                      <option value="Aunt">Aunt</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Occupation
+                    </label>
+                    <input
+                      type="text"
+                      name="guardianOccupation"
+                      value={studentForm.guardianOccupation}
+                      onChange={onStudentChange}
+                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                      placeholder="Guardian's occupation"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Annual Income
+                    </label>
+                    <input
+                      type="number"
+                      name="guardianIncome"
+                      value={studentForm.guardianIncome}
+                      onChange={onStudentChange}
+                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                      placeholder="Annual income"
                     />
                   </div>
                 </div>
@@ -1054,152 +1134,7 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
                 </div>
               </div>
 
-              {/* Navigation Button */}
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("parent")}
-                  className="rounded-lg bg-indigo-600 px-8 py-3 font-medium text-white transition hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200"
-                >
-                  Next: Parent Details →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* PARENT FORM */}
-          {activeTab === "parent" && (
-            <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-              <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                Parent/Guardian Information
-              </h3>
-              <div className="mb-6 rounded-lg bg-blue-50 p-4 border border-blue-200">
-                <p className="text-sm text-blue-900">
-                  <strong>💡 Note:</strong> If a parent with the same name and
-                  email already exists, the student will be added as an
-                  additional child to that parent account.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="parentName"
-                    value={parentForm.parentName}
-                    onChange={onParentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    placeholder="Enter parent's full name"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="parentEmail"
-                    value={parentForm.parentEmail}
-                    onChange={onParentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    placeholder="parent@example.com"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="parentPhone"
-                    pattern="[0-9]{10}"
-                    maxLength="10"
-                    value={parentForm.parentPhone}
-                    onChange={onParentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    placeholder="10-digit phone number"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Relationship with Student{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="parentRelation"
-                    value={parentForm.parentRelation}
-                    onChange={onParentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    required
-                  >
-                    <option value="">Select Relationship</option>
-                    <option value="Father">Father</option>
-                    <option value="Mother">Mother</option>
-                    <option value="Guardian">Guardian</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Occupation
-                  </label>
-                  <input
-                    type="text"
-                    name="parentOccupation"
-                    value={parentForm.parentOccupation}
-                    onChange={onParentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    placeholder="Enter occupation"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Qualification
-                  </label>
-                  <input
-                    type="text"
-                    name="parentQualification"
-                    value={parentForm.parentQualification}
-                    onChange={onParentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    placeholder="Educational qualification"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Annual Income (Optional)
-                  </label>
-                  <input
-                    type="number"
-                    name="parentIncome"
-                    value={parentForm.parentIncome}
-                    onChange={onParentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    placeholder="Annual income in rupees"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-8 flex justify-between">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("student")}
-                  className="rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50 focus:ring-4 focus:ring-gray-200"
-                >
-                  ← Back to Student Details
-                </button>
-
+              <div className="mt-8 flex justify-end">
                 <button
                   type="submit"
                   disabled={loading}
@@ -1221,7 +1156,6 @@ const parentPassword = resp?.data?.parent?.credentials?.password;
                 </button>
               </div>
             </div>
-          )}
         </form>
 
        

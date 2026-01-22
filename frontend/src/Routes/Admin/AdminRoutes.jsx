@@ -11,7 +11,10 @@ import ClassManagement from "../../pages/admin/Admin_Features/AcademicManagement
 import StudentManagement from "../../pages/admin/Admin_Features/AcademicManagement/StudentManagement.jsx";
 import SubjectManagement from "../../pages/admin/Admin_Features/AcademicManagement/SubjectManagement.jsx";
 import TimetableManagement from "../../pages/admin/Admin_Features/AcademicManagement/TimetableManagement.jsx";
-import FeeManagementDashboard from "../../pages/admin/Admin_Features/feemanagement/FeeManagementDashboard.jsx";
+import FeeOverview from "../../pages/admin/Admin_Features/feemanagement/FeeOverview.jsx";
+import SetClassFees from "../../pages/admin/Admin_Features/feemanagement/SetClassFees.jsx";
+import RecordPayment from "../../pages/admin/Admin_Features/feemanagement/RecordPayment.jsx";
+import PaymentHistory from "../../pages/admin/Admin_Features/feemanagement/PaymentHistory.jsx";
 import AdminResultManagement from "../../pages/admin/Admin_Features/ResultManagement/AdminResultManagement.jsx";
 import AdminViewResult from "../../pages/admin/Admin_Features/ResultManagement/AdminViewResult.jsx";
 import AdminAnnouncementPage from "../../pages/admin/Admin_Features/Communication/annoucment.jsx";
@@ -50,7 +53,12 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
     {
       title: "Fee Management",
       icon: <FaMoneyBill />,
-      path: "fee-management"
+      subTabs: [
+        { title: "Overview", path: "fee-overview" },
+        { title: "Record Payment", path: "fee-record-payment" },
+        { title: "Payment History", path: "fee-history" },
+        { title: "Set Class Fees", path: "fee-structure" }
+      ]
     },
     {
       title: "Result Management",
@@ -107,7 +115,10 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         <Route path="leave-requests" element={<LeaveRequests school={school} />} />
 
         {/* Fee Management */}
-        <Route path="fee-management" element={<FeeManagementDashboard school={school} />} />
+        <Route path="fee-overview" element={<FeeOverview school={school} />} />
+        <Route path="fee-record-payment" element={<RecordPayment school={school} />} />
+        <Route path="fee-history" element={<PaymentHistory school={school} />} />
+        <Route path="fee-structure" element={<SetClassFees school={school} />} />
         
         {/* Result Management Routes */}
         <Route path="result-management" element={<AdminResultManagement school={school} />} />

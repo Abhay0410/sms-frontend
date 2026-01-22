@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaCopy } from "react-icons/fa";
+import { FaCheck, FaSpinner } from "react-icons/fa";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import Swal from "sweetalert2";
@@ -10,6 +10,16 @@ import Swal from "sweetalert2";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
 
 const Input = ({ label, ...props }) => (
   <div>
@@ -115,50 +125,55 @@ const AdminRegisterForm = () => {
      Swal.fire({
   icon: "success",
   title: "Admin Registered",
-  width: 420,
   html: `
-    <div style="text-align:left; font-size:13px; line-height:1.4">
-
+    <div style="text-align:left; padding:10px 5px">
       <div style="margin-bottom:12px">
-        <div style="font-weight:600; margin-bottom:4px">Admin ID</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px">
-          <code style="font-size:12px; padding:4px 6px">${adminID}</code>
-          <button id="copyId"
-            style="font-size:11px; padding:4px 8px; cursor:pointer">
-            Copy
-          </button>
+        <b style="color:#111827">Admin ID:</b>
+        <span style="margin-left:6px; color:#2563eb">${adminID}</span>
+        <button id="copyAdminId" style="margin-left:10px; padding:2px 8px; font-size:12px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
+      </div>
+
+      <hr style="margin:12px 0"/>
+
+      <b style="color:#111827">Login Credentials</b>
+
+      <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:10px; margin-top:8px;">
+        <div style="margin-bottom:8px">
+          <small style="color:#6b7280">Password</small><br/>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef2ff; padding:6px; border-radius:6px;">
+            <code style="color:#4338ca; font-size:13px">
+              ${password}
+            </code>
+            <button id="copyAdminPass" style="padding:2px 8px; font-size:11px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
+          </div>
         </div>
       </div>
 
-      <div>
-        <div style="font-weight:600; margin-bottom:4px">Temporary Password</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px">
-          <code style="font-size:12px; padding:4px 6px">${password}</code>
-          <button id="copyPass"
-            style="font-size:11px; padding:4px 8px; cursor:pointer">
-            Copy
-          </button>
-        </div>
-      </div>
+      <button id="copyAllCredentials" style="margin-top: 12px; width: 100%; padding: 8px; background-color: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">
+        Copy All Credentials
+      </button>
 
-      <div style="margin-top:10px; font-size:11px; color:#b91c1c">
-        ⚠ Save these credentials. They will not be shown again.
-      </div>
-
+      <p style="font-size:12px; color:#b91c1c; margin-top:10px">
+       ⚠️ Please save these credentials. They will not be shown again.
+      </p>
     </div>
   `,
   confirmButtonText: "Done",
   confirmButtonColor: "#4f46e5",
   didOpen: () => {
-    document.getElementById("copyId").onclick = () => {
-      navigator.clipboard.writeText(adminID);
-      Swal.showValidationMessage("Admin ID copied");
+    const copyToClipboard = (text, label) => {
+      navigator.clipboard.writeText(text).then(() => {
+        Swal.showValidationMessage(`${label} copied`);
+      });
     };
+    const allCredentials = `Admin ID: ${adminID}\nPassword: ${password}`;
 
-    document.getElementById("copyPass").onclick = () => {
-      navigator.clipboard.writeText(password);
-      Swal.showValidationMessage("Password copied");
-    };
+    document.getElementById("copyAllCredentials")?.addEventListener("click", () => {
+      navigator.clipboard.writeText(allCredentials).then(() => Swal.showValidationMessage("Credentials copied!"));
+    });
+
+    document.getElementById("copyAdminId")?.addEventListener("click", () => copyToClipboard(adminID, "Admin ID"));
+    document.getElementById("copyAdminPass")?.addEventListener("click", () => copyToClipboard(password, "Password"));
   },
 });
 
@@ -179,7 +194,7 @@ const AdminRegisterForm = () => {
           city: "",
           state: "",
           pincode: "",
-          country: "",
+          country: "India",
         },
       });
     } else {
@@ -223,19 +238,6 @@ const AdminRegisterForm = () => {
             Admin Information
           </h2>
 
-          {/* ===== SCHOOL INFO ===== */}
-          <div className="mb-8 p-4 bg-indigo-50 border border-indigo-100 rounded-lg">
-            <p className="text-xs uppercase tracking-wide text-gray-500">
-              School
-            </p>
-            <p className="text-lg font-semibold text-indigo-700">
-              {school.schoolName}
-            </p>
-            <p className="text-sm text-gray-600">
-              {school.address?.city}, {school.address?.state}
-            </p>
-          </div>
-
           {/* ===== FORM ===== */}
           <form
   onSubmit={handleSubmit}
@@ -269,12 +271,16 @@ const AdminRegisterForm = () => {
 
   {/* DOB */}
   <div>
-    <label className="block text-sm font-medium mb-1">Date of Birth</label>
+    <label className="text-sm font-medium text-gray-700">Date of Birth</label>
     <DatePicker
       selected={
-        form.dateOfBirth
-          ? new Date(form.dateOfBirth.split("/").reverse().join("-"))
-          : null
+        (() => {
+          if (!form.dateOfBirth) return null;
+          const [day, month, year] = form.dateOfBirth.split("/");
+          if (!day || !month || !year) return null;
+          const date = new Date(year, month - 1, day);
+          return isNaN(date.getTime()) ? null : date;
+        })()
       }
       onChange={(date) => {
         const formatted = date
@@ -286,7 +292,8 @@ const AdminRegisterForm = () => {
       }}
       dateFormat="dd/MM/yyyy"
       placeholderText="DD/MM/YYYY"
-      className="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+      wrapperClassName="w-full"
+      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
     />
   </div>
 
@@ -342,12 +349,16 @@ const AdminRegisterForm = () => {
 
   {/* JOINING DATE */}
   <div>
-    <label className="text-sm font-medium">Date of Joining</label>
+    <label className="text-sm font-medium text-gray-700">Date of Joining</label>
     <DatePicker
       selected={
-        form.joiningDate
-          ? new Date(form.joiningDate.split("/").reverse().join("-"))
-          : null
+        (() => {
+          if (!form.joiningDate) return null;
+          const [day, month, year] = form.joiningDate.split("/");
+          if (!day || !month || !year) return null;
+          const date = new Date(year, month - 1, day);
+          return isNaN(date.getTime()) ? null : date;
+        })()
       }
       onChange={(date) => {
         const formatted = date
@@ -359,7 +370,8 @@ const AdminRegisterForm = () => {
       }}
       dateFormat="dd/MM/yyyy"
       placeholderText="DD/MM/YYYY"
-      className="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+      wrapperClassName="w-full"
+      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
     />
   </div>
 
@@ -369,7 +381,7 @@ const AdminRegisterForm = () => {
       Address Details
     </h3>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-5 rounded-xl border">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-5 rounded-xl ">
       <Input
         label="Street Address"
         name="street"
@@ -384,12 +396,20 @@ const AdminRegisterForm = () => {
         onChange={handleAddressChange}
       />
 
-      <Input
-        label="State"
-        name="state"
-        value={form.address.state}
-        onChange={handleAddressChange}
-      />
+      <div>
+        <label className="text-sm font-medium text-gray-700">State</label>
+        <select
+          name="state"
+          value={form.address.state}
+          onChange={handleAddressChange}
+          className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        >
+          <option value="">Select State</option>
+          {INDIAN_STATES.map((st) => (
+            <option key={st} value={st}>{st}</option>
+          ))}
+        </select>
+      </div>
 
       <Input
         label="Pincode"
@@ -426,9 +446,21 @@ const AdminRegisterForm = () => {
     <button
       type="submit"
       disabled={loading}
-      className="bg-indigo-600 text-white px-8 py-2.5 rounded-lg font-medium hover:bg-indigo-700"
+      className={`flex items-center gap-2 rounded-lg bg-indigo-600 px-8 py-3 font-medium text-white transition hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 ${
+        loading ? "opacity-60 cursor-not-allowed" : ""
+      }`}
     >
-      {loading ? "Registering..." : "Register Admin"}
+      {loading ? (
+        <>
+          <FaSpinner className="h-4 w-4 animate-spin" />
+          Registering...
+        </>
+      ) : (
+        <>
+          <FaCheck className="h-4 w-4" />
+          Register Admin
+        </>
+      )}
     </button>
   </div>
 </form>

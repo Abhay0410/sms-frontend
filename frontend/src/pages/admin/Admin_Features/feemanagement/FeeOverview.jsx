@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
@@ -21,7 +21,24 @@ const MONTHS = [
   "October", "November", "December", "January", "February", "March"
 ];
 
-export default function FeeOverview({ academicYear }) {
+export default function FeeOverview() {
+  const academicYears = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = -1; i < 6; i++) {
+      const year = currentYear + i;
+      years.push(`${year}-${year + 1}`);
+    }
+    return years;
+  }, []);
+
+  const [academicYear, setAcademicYear] = useState(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  });
+
   const [statistics, setStatistics] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState("ALL");
   const [selectedList, setSelectedList] = useState(null);
@@ -107,10 +124,31 @@ export default function FeeOverview({ academicYear }) {
     setSelectedList(null);
   }, [selectedMonth]);
 
-  if (!academicYear) return <NoAcademicYearView />;
-
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900">Fee Overview</h1>
+          <p className="text-sm text-slate-600 mt-2">Comprehensive financial analytics and reports</p>
+        </div>
+
+        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">Session:</span>
+          <select
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="bg-slate-50 border-none text-slate-900 text-sm font-bold rounded-lg py-2 pl-3 pr-8 focus:ring-2 focus:ring-purple-500 cursor-pointer outline-none"
+          >
+            {academicYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {/* Monthly Filter Section */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-[2.5rem] border border-purple-200 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

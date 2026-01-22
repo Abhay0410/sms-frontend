@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
@@ -9,13 +9,27 @@ import {
   FaSearch,
   FaSpinner,
   FaDownload,
-  FaCheckCircle,
-  FaUsers,
-  FaCalendarAlt,
-  FaRocket
+  FaSync
 } from "react-icons/fa";
 
-export default function PaymentHistory({ academicYear }) {
+export default function PaymentHistory() {
+  const academicYears = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = -1; i < 6; i++) {
+      const year = currentYear + i;
+      years.push(`${year}-${year + 1}`);
+    }
+    return years;
+  }, []);
+
+  const [academicYear, setAcademicYear] = useState(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  });
+
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -24,7 +38,6 @@ export default function PaymentHistory({ academicYear }) {
     className: "",
   });
   const [filterLoading, setFilterLoading] = useState(false);
-  const [lastRefresh, setLastRefresh] = useState(null);
   
   // Use ref to track if component is mounted
   const isMounted = useRef(true);
@@ -37,7 +50,7 @@ export default function PaymentHistory({ academicYear }) {
   }, []);
 
   // Separate function for loading payments without useCallback dependencies
-  const loadPayments = async (status = filters.status, className = filters.className) => {
+  const loadPayments = useCallback(async (year, status) => {
     if (!isMounted.current) return;
     
     try {
@@ -45,9 +58,8 @@ export default function PaymentHistory({ academicYear }) {
       
       const response = await api.get(API_ENDPOINTS.ADMIN.FEE.ALL, {
         params: {
-          academicYear,
+          academicYear: year,
           status: status || undefined,
-          className: className || undefined,
         },
         timeout: 10000,
       });
@@ -73,7 +85,6 @@ export default function PaymentHistory({ academicYear }) {
       }));
 
       setPayments(paymentsData);
-      setLastRefresh(new Date());
       
     } catch (error) {
       console.error("Error loading payments:", error);
@@ -84,24 +95,15 @@ export default function PaymentHistory({ academicYear }) {
         setFilterLoading(false);
       }
     }
-  };
+  }, []);
 
   // Update filter with proper handling
   const updateFilter = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));
     
     // For class and status filters, trigger API call
-    if (field === 'className' || field === 'status') {
+    if (field === 'status') {
       setFilterLoading(true);
-      // Debounce the API call
-      const timeoutId = setTimeout(() => {
-        loadPayments(
-          field === 'status' ? value : filters.status,
-          field === 'className' ? value : filters.className
-        );
-      }, 300);
-      
-      return () => clearTimeout(timeoutId);
     }
   };
 
@@ -112,8 +114,6 @@ export default function PaymentHistory({ academicYear }) {
       status: "",
       className: "",
     });
-    // Reload all data when clearing filters
-    loadPayments("", "");
   };
 
   // Filter payments locally with search
@@ -146,12 +146,15 @@ export default function PaymentHistory({ academicYear }) {
     return result;
   }, [payments, filters]);
 
-  // Load payments on mount and when academic year changes
+  // Load payments on mount and when academic year or filters change (Debounced)
   useEffect(() => {
-    if (academicYear) {
-      loadPayments(filters.status, filters.className);
-    }
-  }, [academicYear]);
+    const timer = setTimeout(() => {
+      if (academicYear) {
+        loadPayments(academicYear, filters.status);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [academicYear, filters.status, loadPayments]);
 
   // Download receipt
   const downloadReceipt = async (payment) => {
@@ -175,19 +178,6 @@ export default function PaymentHistory({ academicYear }) {
     }
   };
 
-  // Refresh data
-  const refreshData = () => {
-    loadPayments(filters.status, filters.className);
-  };
-
-  // Format time since last refresh
-  const getTimeSinceRefresh = () => {
-    if (!lastRefresh) return "Never";
-    const seconds = Math.floor((new Date() - lastRefresh) / 1000);
-    if (seconds < 60) return `${seconds}s ago`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    return `${Math.floor(seconds / 3600)}h ago`;
-  };
 
   if (loading && payments.length === 0) {
     return (
@@ -202,28 +192,26 @@ export default function PaymentHistory({ academicYear }) {
 
   return (
     <div className="space-y-6">
-      {/* Header with Stats */}
-      <div className="bg-white rounded-2xl p-6 shadow border border-slate-100">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-black text-slate-900">Payment History</h2>
-            <p className="text-slate-500">
-              Total: {payments.length} payments • Filtered: {filteredPayments.length}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={refreshData}
-              disabled={loading}
-              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 font-medium flex items-center gap-2 disabled:opacity-50"
-            >
-              <FaSpinner className={loading ? "animate-spin" : ""} />
-              Refresh
-            </button>
-            <div className="text-xs text-slate-400">
-              Updated {getTimeSinceRefresh()}
-            </div>
-          </div>
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900">Payment History</h1>
+          <p className="text-sm text-slate-600 mt-2">View and manage past transactions</p>
+        </div>
+
+        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">Session:</span>
+          <select
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="bg-slate-50 border-none text-slate-900 text-sm font-bold rounded-lg py-2 pl-3 pr-8 focus:ring-2 focus:ring-purple-500 cursor-pointer outline-none"
+          >
+            {academicYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -238,6 +226,15 @@ export default function PaymentHistory({ academicYear }) {
             <p className="text-sm text-slate-500">
               Search filters locally • Status/Class filters via API
             </p>
+          </div>
+          <div className="ml-auto">
+            <button
+              onClick={() => loadPayments(academicYear, filters.status)}
+              className="p-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"
+              title="Refresh Data"
+            >
+              <FaSync className={loading ? "animate-spin" : ""} />
+            </button>
           </div>
         </div>
 
