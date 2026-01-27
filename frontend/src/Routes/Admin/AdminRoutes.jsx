@@ -18,6 +18,10 @@ import AdminAnnouncementPage from "../../pages/admin/Admin_Features/Communicatio
 import AdminRegister from "../../pages/admin/Admin_Features/UserRegistrations/AdminRegisterForm.jsx";
 import StaffAttendance from "../../pages/admin/Admin_Features/HRManagement/StaffAttendance.jsx";
 import LeaveRequests from "../../pages/admin/Admin_Features/HRManagement/LeaveRequests.jsx";
+import SalarySetup from "../../pages/admin/Admin_Features/HRManagement/SalarySetup.jsx";
+import TeacherPayrollHistory from "../../pages/admin/Admin_Features/HRManagement/TeacherPayrollHistory.jsx";
+import PayrollManager from "../../pages/admin/Admin_Features/HRManagement/PayrollManager.jsx";
+import PayrollList from "../../pages/admin/Admin_Features/HRManagement/PayrollList.jsx";
 
 const AdminRoutes = () => { 
   // Define Sidebar Sections here
@@ -65,7 +69,11 @@ const AdminRoutes = () => {
       icon: <FaUsers />, // Ya koi HR specific icon
       subTabs: [
         { title: "Staff Attendance", path: "staff-attendance" },
-        { title: "Leave Requests", path: "leave-requests" }
+        { title: "Leave Requests", path: "leave-requests" },
+        { title: "Salary Setup", path: "salary-setup" },
+        { title: "Payroll Manager", path: "payroll-manager" },
+        { title: "Payroll List", path: "payroll-list" }   
+
       ]
     },
     {
@@ -103,6 +111,12 @@ const AdminRoutes = () => {
         {/* HR Management Routes */}
         <Route path="staff-attendance" element={<StaffAttendance />} />
         <Route path="leave-requests" element={<LeaveRequests />} />
+        <Route path="teacher-payroll-history/:teacherId" element={<TeacherPayrollHistory />} />
+        <Route path="salary-setup" element={<SalarySetup />} />
+        <Route path="payroll-manager" element={<PayrollManager />} />
+        <Route path="payroll-list" element={<PayrollList />} />
+
+        
 
         {/* Fee Management */}
         <Route path="fee-management" element={<FeeManagementDashboard />} />
