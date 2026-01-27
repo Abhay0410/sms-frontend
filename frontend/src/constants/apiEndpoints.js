@@ -19,8 +19,10 @@ export const API_ENDPOINTS = {
       PROFILE: '/api/auth/admin/profile',
       CHANGE_PASSWORD: '/api/auth/admin/change-password',
       VALIDATE: '/api/auth/admin/validate',
+     
     },
-
+    // Update
+     UPDATE: (id) => `/api/admin/update/${id}`,
     // Dashboard
     //DASHBOARD: '/api/admin/dashboard',
 
@@ -190,6 +192,21 @@ LEAVE_REQUESTS: '/api/admin/hr/leaves', // ✅ Correct path
   APPROVE_LEAVE: (id) => `/api/admin/hr/leaves/${id}/approve`,
   REJECT_LEAVE: (id) => `/api/admin/hr/leaves/${id}/reject`,
 },
+
+
+  // ===============================
+  // 💰 PAYROLL 
+  // ===============================
+  PAYROLL: {
+    GENERATE: '/api/admin/payroll/payroll/generate', // POST
+    LIST: '/api/admin/payroll/payroll', // GET
+    MARK_PAID: (id) => `/api/admin/payroll/payroll/${id}/pay`,
+    TEACHER_HISTORY: (teacherId) =>
+      `/api/admin/payroll/teacher/${teacherId}`,
+    DELETE_DRAFT: (id) => `/api/admin/payroll/delete/payroll/${id}`,
+    SALARY_UPDATE: (id) => `/api/admin/payroll/teachers/${id}/salary`,
+    UPDATE_PAYROLL : (id) => `/api/admin/payroll/update/${id}`,
+  },
 
   },
 
