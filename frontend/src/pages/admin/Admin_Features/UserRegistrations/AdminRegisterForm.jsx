@@ -739,7 +739,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaCopy } from "react-icons/fa";
+import { FaCheck, FaSpinner } from "react-icons/fa";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import Swal from "sweetalert2";
@@ -747,6 +747,16 @@ import Swal from "sweetalert2";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
 
 const Input = ({ label, ...props }) => (
   <div>
@@ -1035,19 +1045,6 @@ const handleSubmit = async (e) => {
             Admin Information
           </h2>
 
-          {/* ===== SCHOOL INFO ===== */}
-          <div className="mb-8 p-4 bg-indigo-50 border border-indigo-100 rounded-lg">
-            <p className="text-xs uppercase tracking-wide text-gray-500">
-              School
-            </p>
-            <p className="text-lg font-semibold text-indigo-700">
-              {school.schoolName}
-            </p>
-            <p className="text-sm text-gray-600">
-              {school.address?.city}, {school.address?.state}
-            </p>
-          </div>
-
           {/* ===== FORM ===== */}
           <form
   onSubmit={handleSubmit}
@@ -1081,12 +1078,16 @@ const handleSubmit = async (e) => {
 
   {/* DOB */}
   <div>
-    <label className="block text-sm font-medium mb-1">Date of Birth</label>
+    <label className="text-sm font-medium text-gray-700">Date of Birth</label>
     <DatePicker
       selected={
-        form.dateOfBirth
-          ? new Date(form.dateOfBirth.split("/").reverse().join("-"))
-          : null
+        (() => {
+          if (!form.dateOfBirth) return null;
+          const [day, month, year] = form.dateOfBirth.split("/");
+          if (!day || !month || !year) return null;
+          const date = new Date(year, month - 1, day);
+          return isNaN(date.getTime()) ? null : date;
+        })()
       }
       onChange={(date) => {
         const formatted = date
@@ -1098,7 +1099,8 @@ const handleSubmit = async (e) => {
       }}
       dateFormat="dd/MM/yyyy"
       placeholderText="DD/MM/YYYY"
-      className="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+      wrapperClassName="w-full"
+      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
     />
   </div>
 
@@ -1154,12 +1156,16 @@ const handleSubmit = async (e) => {
 
   {/* JOINING DATE */}
   <div>
-    <label className="text-sm font-medium">Date of Joining</label>
+    <label className="text-sm font-medium text-gray-700">Date of Joining</label>
     <DatePicker
       selected={
-        form.joiningDate
-          ? new Date(form.joiningDate.split("/").reverse().join("-"))
-          : null
+        (() => {
+          if (!form.joiningDate) return null;
+          const [day, month, year] = form.joiningDate.split("/");
+          if (!day || !month || !year) return null;
+          const date = new Date(year, month - 1, day);
+          return isNaN(date.getTime()) ? null : date;
+        })()
       }
       onChange={(date) => {
         const formatted = date
@@ -1171,7 +1177,8 @@ const handleSubmit = async (e) => {
       }}
       dateFormat="dd/MM/yyyy"
       placeholderText="DD/MM/YYYY"
-      className="w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500"
+      wrapperClassName="w-full"
+      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
     />
   </div>
 
@@ -1192,7 +1199,7 @@ const handleSubmit = async (e) => {
       Address Details
     </h3>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-5 rounded-xl border">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-5 rounded-xl ">
       <Input
         label="Street Address"
         name="street"
@@ -1207,12 +1214,20 @@ const handleSubmit = async (e) => {
         onChange={handleAddressChange}
       />
 
-      <Input
-        label="State"
-        name="state"
-        value={form.address.state}
-        onChange={handleAddressChange}
-      />
+      <div>
+        <label className="text-sm font-medium text-gray-700">State</label>
+        <select
+          name="state"
+          value={form.address.state}
+          onChange={handleAddressChange}
+          className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        >
+          <option value="">Select State</option>
+          {INDIAN_STATES.map((st) => (
+            <option key={st} value={st}>{st}</option>
+          ))}
+        </select>
+      </div>
 
       <Input
         label="Pincode"
@@ -1249,9 +1264,21 @@ const handleSubmit = async (e) => {
     <button
       type="submit"
       disabled={loading}
-      className="bg-indigo-600 text-white px-8 py-2.5 rounded-lg font-medium hover:bg-indigo-700"
+      className={`flex items-center gap-2 rounded-lg bg-indigo-600 px-8 py-3 font-medium text-white transition hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 ${
+        loading ? "opacity-60 cursor-not-allowed" : ""
+      }`}
     >
-      {loading ? "Registering..." : "Register Admin"}
+      {loading ? (
+        <>
+          <FaSpinner className="h-4 w-4 animate-spin" />
+          Registering...
+        </>
+      ) : (
+        <>
+          <FaCheck className="h-4 w-4" />
+          Register Admin
+        </>
+      )}
     </button>
   </div>
 </form>

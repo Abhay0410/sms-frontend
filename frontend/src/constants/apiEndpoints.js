@@ -4,7 +4,8 @@ export const API_ENDPOINTS = {
     SCHOOL: {
     REGISTER: '/api/schools/register',
     LIST: '/api/schools/list',
-    // add other school related endpoints here if needed
+    ACTIVE: '/api/schools/active',
+    BY_SLUG: (slug) => `/api/schools/slug/${slug}`,
   },
   // ========================================
   // ADMIN ENDPOINTS
@@ -99,11 +100,13 @@ export const API_ENDPOINTS = {
     SUBJECT_MANAGEMENT: {
   ALL: '/api/admin/subject-management',
   CLASS: (id) => `/api/admin/subject-management/class/${id}`,
+    REMOVE_FROM_POOL: '/api/admin/subject-management/remove-from-pool',
   ADD: '/api/admin/subject-management/add',
   ADD_TO_SECTIONS: '/api/admin/subject-management/add-to-sections',
   UPDATE: '/api/admin/subject-management/update',
   REMOVE: '/api/admin/subject-management/remove',
   REMOVE_FROM_SECTIONS: '/api/admin/subject-management/remove-from-sections',
+
     },
 
     // Timetable Management

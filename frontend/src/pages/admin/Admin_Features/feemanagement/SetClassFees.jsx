@@ -13,7 +13,7 @@ import {
   FaExclamationCircle
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion,AnimatePresence } from "framer-motion";
 
 const FREQUENCY_OPTIONS = [
   { value: "MONTHLY", label: "Monthly (12 Installments)" },
@@ -23,7 +23,24 @@ const FREQUENCY_OPTIONS = [
   { value: "ONE_TIME", label: "One-Time Payment" },
 ];
 
-export default function SetClassFees({ academicYear }) {
+export default function SetClassFees() {
+  const academicYears = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = -1; i < 6; i++) {
+      const year = currentYear + i;
+      years.push(`${year}-${year + 1}`);
+    }
+    return years;
+  }, []);
+
+  const [academicYear, setAcademicYear] = useState(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  });
+
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -163,9 +180,17 @@ export default function SetClassFees({ academicYear }) {
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">Class Fee Management</h2>
           <p className="text-slate-600 font-medium mt-1">Configure automated installments for all students</p>
         </div>
-        <div className="bg-white px-6 py-3 rounded-2xl border border-purple-200 shadow-sm">
-          <p className="text-xs font-bold text-purple-600 uppercase tracking-widest">Active Session</p>
-          <p className="text-lg font-black text-slate-800">{academicYear}</p>
+        <div className="bg-white px-4 py-2 rounded-2xl border border-purple-200 shadow-sm">
+          <p className="text-xs font-bold text-purple-600 uppercase tracking-widest mb-1">Active Session</p>
+          <select
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="bg-transparent border-none text-lg font-black text-slate-800 focus:ring-0 cursor-pointer outline-none p-0 w-full"
+          >
+            {academicYears.map((year) => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
         </div>
       </motion.div>
 

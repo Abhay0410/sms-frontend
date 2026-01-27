@@ -8,15 +8,29 @@ import { FaCheck, FaSpinner, FaCopy } from "react-icons/fa";
 import Select from "react-select";
 import Swal from "sweetalert2";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
+
 export default function TeacherRegisterForm() {
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     address: {
+      street: "",
       city: "",
       state: "",
-      country: "",
+      country: "India",
       pincode: "",
     },
     gender: "",
@@ -87,7 +101,7 @@ export default function TeacherRegisterForm() {
   const onChange = (e) => {
     const { name, value } = e.target;
 
-    if (["line1", "city", "state", "country", "pincode"].includes(name)) {
+    if (["street", "city", "state", "country", "pincode"].includes(name)) {
       setForm((prev) => ({
         ...prev,
         address: { ...prev.address, [name]: value },
@@ -124,13 +138,63 @@ export default function TeacherRegisterForm() {
     setForm((prev) => ({ ...prev, qualification: updated }));
   };
 
+  const validateForm = () => {
+    if (!form.name.trim()) {
+      toast.error("Full Name is required");
+      return false;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!form.email.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+    if (!emailRegex.test(form.email)) {
+      toast.error("Please enter a valid email address");
+      return false;
+    }
+
+    // Phone validation
+    if (!form.phone.trim()) {
+      toast.error("Phone number is required");
+      return false;
+    }
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(form.phone.replace(/\D/g, ""))) {
+      toast.error("Please enter a valid 10-digit phone number");
+      return false;
+    }
+
+    if (!form.gender) {
+      toast.error("Gender is required");
+      return false;
+    }
+    if (!form.dateOfBirth) {
+      toast.error("Date of Birth is required");
+      return false;
+    }
+    if (!form.department) {
+      toast.error("Department is required");
+      return false;
+    }
+
+    // Address validation
+    if (!form.address.street.trim() || !form.address.city.trim() || !form.address.state || !form.address.pincode.trim()) {
+      toast.error("Please fill all address fields");
+      return false;
+    }
+    if (!/^[0-9]{6}$/.test(form.address.pincode.replace(/\D/g, ""))) {
+      toast.error("Please enter a valid 6-digit Pincode");
+      return false;
+    }
+
+    return true;
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
-
-    if (!form.name || !form.email || !form.phone) {
-      toast.error("Please fill all required fields");
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
       setLoading(true);
@@ -175,47 +239,62 @@ export default function TeacherRegisterForm() {
 
       console.log("👤 Final Teacher Object:", teacherData);
 
+      const teacherID = teacherData.teacherID || "N/A";
+      const password = teacherData.credentials?.password || teacherData.credentials?.defaultPassword || "Teacher@123";
+
       Swal.fire({
         icon: "success",
         title: "Teacher Registered Successfully 🎉",
         html: `
-    <div style="text-align:left; font-size:14px">
-
-      <p><b>Teacher ID:</b>
-        <span style="color:#2563eb; font-weight:600">
-          ${teacherData.teacherID || "N/A"}
-        </span>
-      </p>
-
+    <div style="text-align:left; padding:10px 5px">
+      <div style="margin-bottom:12px">
+        <b style="color:#111827">Teacher ID:</b>
+        <span style="margin-left:6px; color:#2563eb">${teacherID}</span>
+        <button id="copyTeacherId" style="margin-left:10px; padding:2px 8px; font-size:12px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
+      </div>
 
       <hr style="margin:12px 0"/>
 
-      <p style="font-weight:600">Password</p>
+      <b style="color:#111827">Login Credentials</b>
 
-      <div style="
-        background:#eef2ff;
-        padding:10px;
-        border-radius:8px;
-        margin-top:6px;
-        text-align:center;
-        color:#4338ca;
-        font-size:14px
-      ">
-        ${
-          teacherData.credentials?.password ||
-          teacherData.credentials?.defaultPassword ||
-          "Teacher@123"
-        }
+      <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:10px; margin-top:8px;">
+        <div style="margin-bottom:8px">
+          <small style="color:#6b7280">Password</small><br/>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef2ff; padding:6px; border-radius:6px;">
+            <code style="color:#4338ca; font-size:13px">
+              ${password}
+            </code>
+            <button id="copyTeacherPass" style="padding:2px 8px; font-size:11px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
+          </div>
+        </div>
       </div>
 
-      <p style="font-size:12px;color:#b91c1c;margin-top:8px">
-        ⚠️ Please save these credentials. They will not be shown again.
-      </p>
+      <button id="copyAllCredentials" style="margin-top: 12px; width: 100%; padding: 8px; background-color: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">
+        Copy All Credentials
+      </button>
 
+      <p style="font-size:12px; color:#b91c1c; margin-top:10px">
+       ⚠️ Please save these credentials. They will not be shown again.
+      </p>
     </div>
   `,
         confirmButtonText: "Done",
         confirmButtonColor: "#4f46e5",
+        didOpen: () => {
+          const copyToClipboard = (text, label) => {
+            navigator.clipboard.writeText(text).then(() => {
+              Swal.showValidationMessage(`${label} copied`);
+            });
+          };
+          const allCredentials = `Teacher ID: ${teacherID}\nPassword: ${password}`;
+
+          document.getElementById("copyAllCredentials")?.addEventListener("click", () => {
+            navigator.clipboard.writeText(allCredentials).then(() => Swal.showValidationMessage("Credentials copied!"));
+          });
+
+          document.getElementById("copyTeacherId")?.addEventListener("click", () => copyToClipboard(teacherID, "Teacher ID"));
+          document.getElementById("copyTeacherPass")?.addEventListener("click", () => copyToClipboard(password, "Password"));
+        }
       });
 
       // Reset form
@@ -224,9 +303,10 @@ export default function TeacherRegisterForm() {
         email: "",
         phone: "",
         address: {
+          street: "",
           city: "",
           state: "",
-          country: "",
+          country: "India",
           pincode: "",
         },
         gender: "",
@@ -302,6 +382,7 @@ export default function TeacherRegisterForm() {
                   type="tel"
                   name="phone"
                   pattern="[0-9]{10}"
+                  maxLength="10"
                   value={form.phone}
                   onChange={onChange}
                   className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
@@ -334,11 +415,22 @@ export default function TeacherRegisterForm() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Date of Birth <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={form.dateOfBirth}
-                  onChange={onChange}
+                <DatePicker
+                  selected={
+                    (() => {
+                      if (!form.dateOfBirth) return null;
+                      const [day, month, year] = form.dateOfBirth.split("/");
+                      if (!day || !month || !year) return null;
+                      const date = new Date(year, month - 1, day);
+                      return isNaN(date.getTime()) ? null : date;
+                    })()
+                  }
+                  onChange={(date) => {
+                    const formatted = date ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}` : "";
+                    setForm(prev => ({...prev, dateOfBirth: formatted}));
+                  }}
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="DD/MM/YYYY"
                   className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   required
                 />
@@ -501,15 +593,18 @@ export default function TeacherRegisterForm() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       State <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="state"
                       value={form.address.state}
                       onChange={onChange}
                       className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                      placeholder="Enter state"
                       required
-                    />
+                    >
+                      <option value="">Select State</option>
+                      {INDIAN_STATES.map((st) => (
+                        <option key={st} value={st}>{st}</option>
+                      ))}
+                    </select>
                   </div>
 
                   {/* Country */}
@@ -523,7 +618,6 @@ export default function TeacherRegisterForm() {
                       value={form.address.country}
                       onChange={onChange}
                       className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                      placeholder="Enter country"
                       required
                     />
                   </div>
@@ -536,6 +630,8 @@ export default function TeacherRegisterForm() {
                     <input
                       type="text"
                       name="pincode"
+                      pattern="[0-9]{6}"
+                      maxLength="6"
                       value={form.address.pincode}
                       onChange={onChange}
                       className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"

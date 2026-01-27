@@ -1,10 +1,11 @@
-// src/App.jsx
-import { useEffect, useMemo, useState, Suspense, lazy } from "react";
-import { Routes, Route, Navigate, Outlet, useNavigate, } from "react-router-dom"; // ✅ Added useLocation
+// src/App.jsx - UPDATED VERSION
+import { useEffect, useState, Suspense, lazy } from "react";
+import { Routes, Route, Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import api from "./services/api.js";
+import DebugRouter from "./components/DebugRouter.jsx"; // ✅ Add this import
 
 /* ──────────────────────────────────────────────────────────────
  * 🔄 Loading Component
@@ -36,21 +37,29 @@ const ParentRoutes = lazy(() => import("./Routes/Parent/ParentRoutes.jsx"));
 function useAuthState() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null);
-  const [authChecked, setAuthChecked] = useState(false); // ✅ Fix flashing content
+  const [authChecked, setAuthChecked] = useState(false);
+  const [school, setSchool] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("userRole");
-      const school = localStorage.getItem("selectedSchool");
+      const storedSchool = localStorage.getItem("selectedSchool");
 
-      if (token && role && school) {
-        api.setToken(token);
-        setIsLoggedIn(true);
-        setUserRole(role);
+      if (token && role && storedSchool) {
+        try {
+          const schoolData = JSON.parse(storedSchool);
+          api.setToken(token);
+          setIsLoggedIn(true);
+          setUserRole(role);
+          setSchool(schoolData);
+        } catch (error) {
+          console.error("Error parsing school data:", error);
+          localStorage.clear();
+        }
       }
-      setAuthChecked(true); // ✅ Ready to render routes
+      setAuthChecked(true);
     };
     checkAuth();
   }, []);
@@ -60,22 +69,21 @@ function useAuthState() {
       console.log("🔒 Unauthorized - clearing auth");
       localStorage.removeItem("token");
       localStorage.removeItem("userRole");
-      localStorage.removeItem("selectedSchool"); 
       api.clearToken();
       setIsLoggedIn(false);
       setUserRole(null);
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     };
 
     const onLogout = () => {
       console.log("🚪 Logout event received");
       setIsLoggedIn(false);
       setUserRole(null);
-      // Don't clear selected school on regular logout so they can login again easily
+      setSchool(null);
       localStorage.removeItem("token");
       localStorage.removeItem("userRole");
       api.clearToken();
-      navigate("/", { replace: true }); 
+      navigate("/", { replace: true });
     };
 
     window.addEventListener("api:unauthorized", onUnauthorized);
@@ -87,28 +95,39 @@ function useAuthState() {
     };
   }, [navigate]);
 
-  return { isLoggedIn, userRole, setIsLoggedIn, setUserRole, authChecked };
+  return { isLoggedIn, userRole, school, setIsLoggedIn, setUserRole, setSchool, authChecked };
 }
 
 /* ──────────────────────────────────────────────────────────────
- * 🛡️ Private Route Component
+ * 🛡️ Private Route Component (Multi-tenant version)
  * ────────────────────────────────────────────────────────────── */
 function PrivateRoute({ allowedRoles }) {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("userRole");
-  const school = localStorage.getItem("selectedSchool"); 
+  const storedSchool = localStorage.getItem("selectedSchool");
 
+  // Check authentication
   if (!token || !role) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
   
-  // If no school selected, go back to selection
-  if (!school) {
-     return <Navigate to="/" replace />;
+  // Check school selection
+  if (!storedSchool) {
+    return <Navigate to="/" replace />;
   }
-
+  
+  // Check role permissions
   if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to={`/${role}/${role}-dashboard`} replace />;
+    // Get school data for redirect
+    try {
+      const schoolData = JSON.parse(storedSchool);
+      const schoolSlug = schoolData.slug || 
+                        schoolData.schoolName?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 
+                        'default';
+      return <Navigate to={`/school/${schoolSlug}/${role}/${role}-dashboard`} replace />;
+    } catch {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return <Outlet />;
@@ -118,14 +137,15 @@ function PrivateRoute({ allowedRoles }) {
  * 🚀 Main App Component
  * ────────────────────────────────────────────────────────────── */
 export default function App() {
-  const { isLoggedIn, userRole, setIsLoggedIn, setUserRole, authChecked } = useAuthState();
+  const { isLoggedIn, userRole, school, setIsLoggedIn, setUserRole, setSchool, authChecked } = useAuthState();
 
-  const dashboardPath = useMemo(() => {
-    if (!userRole) return "/login";
-    return `/${userRole}/${userRole}-dashboard`;
-  }, [userRole]);
+  const getDashboardPath = () => {
+    if (!userRole || !school) return "/";
+    const slug = school.slug || school.schoolName?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'default';
+    return `/school/${slug}/${userRole}/${userRole}-dashboard`;
+  };
 
-  // ✅ Wait for auth check before rendering routes to prevent redirects
+  // Wait for auth check before rendering routes
   if (!authChecked) {
     return <PageLoader />;
   }
@@ -145,68 +165,64 @@ export default function App() {
         theme="light"
       />
       
+      {/* ✅ Add DebugRouter here - outside Suspense for always visible logs */}
+      <DebugRouter />
+      
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* ✅ 1. School Selection (Homepage) */}
           <Route 
             path="/" 
             element={
-              isLoggedIn ? (
-                <Navigate to={dashboardPath} replace />
+              isLoggedIn && school ? (
+                <Navigate to={getDashboardPath()} replace />
               ) : (
-                <SchoolSelection />
+                <SchoolSelection setSchool={setSchool} />
               )
             } 
           />
 
-          {/* ✅ 2. Login Page */}
-          <Route
-            path="/login"
+          {/* ✅ 2. School-Specific Login Page */}
+          <Route path="/school/:schoolSlug/login" 
             element={
-              isLoggedIn ? (
-                <Navigate to={dashboardPath} replace />
+              isLoggedIn && school ? (
+                <Navigate to={getDashboardPath()} replace />
               ) : (
-                <Signin setIsLoggedIn={setIsLoggedIn} setUserRole={setUserRole} />
+                <Signin setIsLoggedIn={setIsLoggedIn} setUserRole={setUserRole} setSchool={setSchool} />
               )
             }
           />
 
-          {/* ✅ 3. Legacy Redirect */}
-          <Route path="/signin" element={<Navigate to="/login" replace />} />
+          {/* ✅ 3. Generic Login (Redirects to school selection) */}
+          <Route
+            path="/login"
+            element={<Navigate to="/" replace />}
+          />
 
-          {/* ✅ 4. Protected Routes */}
-          <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-            <Route
-              path="/admin/*"
-              element={<AdminRoutes isLoggedIn={isLoggedIn} userRole={userRole} />}
-            />
+          {/* ✅ 4. Legacy Redirect */}
+          <Route path="/signin" element={<Navigate to="/" replace />} />
+
+          {/* ✅ 5. Protected Routes using RoleRouteHandler */}
+          <Route path="/school/:schoolSlug/:role/*" element={<PrivateRoute allowedRoles={["admin", "teacher", "student", "parent"]} />}>
+            <Route path="*" element={<RoleRouteHandler isLoggedIn={isLoggedIn} userRole={userRole} school={school} />} />
           </Route>
 
-          <Route element={<PrivateRoute allowedRoles={["teacher"]} />}>
-            <Route
-              path="/teacher/*"
-              element={<TeacherRoutes isLoggedIn={isLoggedIn} userRole={userRole} />}
-            />
-          </Route>
-
-          <Route element={<PrivateRoute allowedRoles={["student"]} />}>
-            <Route
-              path="/student/*"
-              element={<StudentRoutes isLoggedIn={isLoggedIn} userRole={userRole} />}
-            />
-          </Route>
-
-          <Route element={<PrivateRoute allowedRoles={["parent"]} />}>
-            <Route
-              path="/parent/*"
-              element={<ParentRoutes isLoggedIn={isLoggedIn} userRole={userRole} />}
-            />
-          </Route>
-
-          {/* ✅ 5. Catch-all */}
+          {/* ✅ 6. Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
     </>
   );
+}
+
+// Helper to decide which route set to load based on the URL role
+function RoleRouteHandler({ isLoggedIn, userRole, school }) {
+  const { role } = useParams();
+  
+  if (role === 'admin') return <AdminRoutes isLoggedIn={isLoggedIn} userRole={userRole} school={school} />;
+  if (role === 'teacher') return <TeacherRoutes isLoggedIn={isLoggedIn} userRole={userRole} school={school} />;
+  if (role === 'student') return <StudentRoutes isLoggedIn={isLoggedIn} userRole={userRole} school={school} />;
+  if (role === 'parent') return <ParentRoutes isLoggedIn={isLoggedIn} userRole={userRole} school={school} />;
+  
+  return <Navigate to="/" replace />;
 }

@@ -28,7 +28,7 @@ const introSlides = [
   }
 ];
 
-const SchoolSelection = () => {
+const SchoolSelection = ({ setSchool }) => {
   const [schools, setSchools] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
@@ -76,8 +76,21 @@ const SchoolSelection = () => {
   }, []);
 
   const handleSelectSchool = (school) => {
+    // Store school in localStorage
     localStorage.setItem("selectedSchool", JSON.stringify(school));
-    navigate("/login");
+    
+    // ✅ Generate school slug
+    const schoolSlug = school.slug || 
+                      school.schoolName?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 
+                      'default';
+    
+    // ✅ Redirect to school-specific login page
+    navigate(`/school/${schoolSlug}/login`);
+    
+    // ✅ Optional: Update parent state if needed
+    if (setSchool) {
+      setSchool(school);
+    }
   };
 
   const filteredSchools = schools.filter((s) =>

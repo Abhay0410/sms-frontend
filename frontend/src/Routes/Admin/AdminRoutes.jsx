@@ -1,4 +1,4 @@
-// src/Routes/Admin/AdminRoutes.jsx
+// src/Routes/Admin/AdminRoutes.jsx - UPDATED
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../../components/Layout";
 import { FaHome, FaUsers, FaBook, FaChartBar, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog } from "react-icons/fa";
@@ -11,7 +11,10 @@ import ClassManagement from "../../pages/admin/Admin_Features/AcademicManagement
 import StudentManagement from "../../pages/admin/Admin_Features/AcademicManagement/StudentManagement.jsx";
 import SubjectManagement from "../../pages/admin/Admin_Features/AcademicManagement/SubjectManagement.jsx";
 import TimetableManagement from "../../pages/admin/Admin_Features/AcademicManagement/TimetableManagement.jsx";
-import FeeManagementDashboard from "../../pages/admin/Admin_Features/feemanagement/FeeManagementDashboard.jsx";
+import FeeOverview from "../../pages/admin/Admin_Features/feemanagement/FeeOverview.jsx";
+import SetClassFees from "../../pages/admin/Admin_Features/feemanagement/SetClassFees.jsx";
+import RecordPayment from "../../pages/admin/Admin_Features/feemanagement/RecordPayment.jsx";
+import PaymentHistory from "../../pages/admin/Admin_Features/feemanagement/PaymentHistory.jsx";
 import AdminResultManagement from "../../pages/admin/Admin_Features/ResultManagement/AdminResultManagement.jsx";
 import AdminViewResult from "../../pages/admin/Admin_Features/ResultManagement/AdminViewResult.jsx";
 import AdminAnnouncementPage from "../../pages/admin/Admin_Features/Communication/annoucment.jsx";
@@ -23,7 +26,7 @@ import TeacherPayrollHistory from "../../pages/admin/Admin_Features/HRManagement
 import PayrollManager from "../../pages/admin/Admin_Features/HRManagement/PayrollManager.jsx";
 import PayrollList from "../../pages/admin/Admin_Features/HRManagement/PayrollList.jsx";
 
-const AdminRoutes = () => { 
+const AdminRoutes = ({ school }) => { // ✅ Accept school prop
   // Define Sidebar Sections here
   const sections = [
     { 
@@ -54,7 +57,12 @@ const AdminRoutes = () => {
     {
       title: "Fee Management",
       icon: <FaMoneyBill />,
-      path: "fee-management"
+      subTabs: [
+        { title: "Overview", path: "fee-overview" },
+        { title: "Record Payment", path: "fee-record-payment" },
+        { title: "Payment History", path: "fee-history" },
+        { title: "Set Class Fees", path: "fee-structure" }
+      ]
     },
     {
       title: "Result Management",
@@ -66,7 +74,7 @@ const AdminRoutes = () => {
     },
     {
       title: "Staff HR",
-      icon: <FaUsers />, // Ya koi HR specific icon
+      icon: <FaUsers />,
       subTabs: [
         { title: "Staff Attendance", path: "staff-attendance" },
         { title: "Leave Requests", path: "leave-requests" },
@@ -91,22 +99,24 @@ const AdminRoutes = () => {
   return (
     <Routes>
       {/* All routes inside this Route will share the Sidebar and Layout */}
-      <Route element={<Layout sections={sections} title="Admin Panel" role="admin" />}>
-        {/* Default to Admin Dashboard */}
+      <Route element={<Layout sections={sections} title={`${school?.schoolName || 'Admin'} Panel`} role="admin" />}>
+        {/* ✅ index means exactly /school/:slug/admin/ */}
         <Route index element={<Navigate to="admin-dashboard" replace />} />
-        <Route path="admin-dashboard" element={<AdminDashboardPage />} />  
+        
+        {/* ✅ These paths are RELATIVE to /school/:slug/admin/ */}
+        <Route path="admin-dashboard" element={<AdminDashboardPage school={school} />} />  
         
         {/* User Registration Routes */}
-        <Route path="register-teacher" element={<TeacherRegisterForm />} />
-        <Route path="register-student" element={<StudentParentRegisterForm />} />
-        <Route path="admin-register" element={<AdminRegister />} />
+        <Route path="register-teacher" element={<TeacherRegisterForm school={school} />} />
+        <Route path="register-student" element={<StudentParentRegisterForm school={school} />} />
+        <Route path="admin-register" element={<AdminRegister school={school} />} />
         
         {/* Academic Management Routes */}
-        <Route path="class-management" element={<ClassManagement />} />
-        <Route path="teacher-management" element={<TeacherManagement />} />
-        <Route path="student-management" element={<StudentManagement />} />
-        <Route path="subject-management" element={<SubjectManagement />} />
-        <Route path="timetable-management" element={<TimetableManagement />} />
+        <Route path="class-management" element={<ClassManagement school={school} />} />
+        <Route path="teacher-management" element={<TeacherManagement school={school} />} />
+        <Route path="student-management" element={<StudentManagement school={school} />} />
+        <Route path="subject-management" element={<SubjectManagement school={school} />} />
+        <Route path="timetable-management" element={<TimetableManagement school={school} />} />
         
         {/* HR Management Routes */}
         <Route path="staff-attendance" element={<StaffAttendance />} />
@@ -119,20 +129,22 @@ const AdminRoutes = () => {
         
 
         {/* Fee Management */}
-        <Route path="fee-management" element={<FeeManagementDashboard />} />
+        <Route path="fee-overview" element={<FeeOverview school={school} />} />
+        <Route path="fee-record-payment" element={<RecordPayment school={school} />} />
+        <Route path="fee-history" element={<PaymentHistory school={school} />} />
+        <Route path="fee-structure" element={<SetClassFees school={school} />} />
         
         {/* Result Management Routes */}
-        <Route path="result-management" element={<AdminResultManagement />} />
-        <Route path="results/:id/view" element={<AdminViewResult />} />
+        <Route path="result-management" element={<AdminResultManagement school={school} />} />
+        <Route path="results/:id/view" element={<AdminViewResult school={school} />} />
         
         {/* Communication */}
-        <Route path="announcements" element={<AdminAnnouncementPage />} />
+        <Route path="announcements" element={<AdminAnnouncementPage school={school} />} />
         
         {/* Profile */}
-        <Route path="profile" element={<AdminProfileManage />} />
+        <Route path="profile" element={<AdminProfileManage school={school} />} />
         
-        {/* Catch-all route - redirect to dashboard */}
-        <Route path="*" element={<Navigate to="admin-dashboard" replace />} />
+        {/* ❌ REMOVED: The catch-all here was also forcing reloads */}
       </Route>
     </Routes>
   );
