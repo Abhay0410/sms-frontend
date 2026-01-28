@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
-import { FaCheck, FaSpinner, FaCopy } from "react-icons/fa";
+import { FaCheck, FaSpinner, FaCopy, FaUniversity, FaWallet } from "react-icons/fa";
 import Select from "react-select";
 import Swal from "sweetalert2";
 
@@ -38,6 +38,21 @@ export default function TeacherRegisterForm() {
     qualification: [""],
     subjects: [],
     department: "",
+    joiningDate: "",
+    panNumber: "",
+    salary: {
+      paymentMode: "BANK",
+      bankDetails: {
+        accountNumber: "",
+        ifscCode: "",
+        bankName: "",
+        branchName: "",
+        accountHolderName: ""
+      },
+      uanNumber: "",
+      pfAccountNumber: "",
+      esiNumber: ""
+    },
   });
 
   const DEPARTMENT_OPTIONS = [
@@ -114,6 +129,22 @@ export default function TeacherRegisterForm() {
           .map((s) => s.trim())
           .filter(Boolean),
       }));
+    } else if (["accountNumber", "ifscCode", "bankName", "branchName", "accountHolderName"].includes(name)) {
+      setForm((prev) => ({
+        ...prev,
+        salary: {
+          ...prev.salary,
+          bankDetails: {
+            ...prev.salary.bankDetails,
+            [name]: value
+          }
+        }
+      }));
+    } else if (["paymentMode", "uanNumber", "pfAccountNumber", "esiNumber"].includes(name)) {
+      setForm((prev) => ({
+        ...prev,
+        salary: { ...prev.salary, [name]: value }
+      }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -174,6 +205,10 @@ export default function TeacherRegisterForm() {
       toast.error("Date of Birth is required");
       return false;
     }
+    if (!form.joiningDate) {
+      toast.error("Joining Date is required");
+      return false;
+    }
     if (!form.department) {
       toast.error("Department is required");
       return false;
@@ -199,14 +234,24 @@ export default function TeacherRegisterForm() {
     try {
       setLoading(true);
 
+      // Convert DD/MM/YYYY to YYYY-MM-DD for backend
+      const formatDateForBackend = (dateStr) => {
+        if (!dateStr) return null;
+        const [day, month, year] = dateStr.split("/");
+        return `${year}-${month}-${day}`;
+      };
+
       const payload = {
         name: form.name,
         email: form.email,
         phone: form.phone,
         address: form.address,
         gender: form.gender,
-        dateOfBirth: form.dateOfBirth,
+        dateOfBirth: formatDateForBackend(form.dateOfBirth),
         qualification: form.qualification.filter(Boolean),
+        joiningDate: formatDateForBackend(form.joiningDate),
+        panNumber: form.panNumber,
+        salary: form.salary,
 
         subjects: form.subjects, // ✅ array
         department: form.department,
@@ -314,6 +359,21 @@ export default function TeacherRegisterForm() {
         qualification: [""],
         subjects: [],
         department: "",
+        joiningDate: "",
+        panNumber: "",
+        salary: {
+          paymentMode: "BANK",
+          bankDetails: {
+            accountNumber: "",
+            ifscCode: "",
+            bankName: "",
+            branchName: "",
+            accountHolderName: ""
+          },
+          uanNumber: "",
+          pfAccountNumber: "",
+          esiNumber: ""
+        },
       });
     } catch (err) {
       console.error("❌ Registration error:", err);
@@ -391,6 +451,21 @@ export default function TeacherRegisterForm() {
                 />
               </div>
 
+              {/* PAN Number */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  PAN Number
+                </label>
+                <input
+                  type="text"
+                  name="panNumber"
+                  value={form.panNumber}
+                  onChange={onChange}
+                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  placeholder="Enter PAN Number"
+                />
+              </div>
+
               {/* Gender */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -428,6 +503,30 @@ export default function TeacherRegisterForm() {
                   onChange={(date) => {
                     const formatted = date ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}` : "";
                     setForm(prev => ({...prev, dateOfBirth: formatted}));
+                  }}
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="DD/MM/YYYY"
+                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  required
+                />
+              </div>
+
+              {/* Joining Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Joining Date <span className="text-red-500">*</span>
+                </label>
+                <DatePicker
+                  selected={(() => {
+                    if (!form.joiningDate) return null;
+                    const [day, month, year] = form.joiningDate.split("/");
+                    if (!day || !month || !year) return null;
+                    const date = new Date(year, month - 1, day);
+                    return isNaN(date.getTime()) ? null : date;
+                  })()}
+                  onChange={(date) => {
+                    const formatted = date ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}` : "";
+                    setForm(prev => ({...prev, joiningDate: formatted}));
                   }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
@@ -638,6 +737,60 @@ export default function TeacherRegisterForm() {
                       placeholder="Enter pincode"
                       required
                     />
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Payroll Statutory (2026 Logic) */}
+              <div className="md:col-span-2 bg-slate-900 p-8 rounded-3xl text-white shadow-xl mt-6">
+                <h3 className="text-sm font-black text-orange-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <FaWallet /> Statutory Compliance (PF/ESI)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-500">Universal Account No (UAN)</label>
+                    <input name="uanNumber" onChange={onChange} value={form.salary.uanNumber} className="w-full bg-slate-800 border-none p-4 rounded-xl text-white focus:ring-2 focus:ring-orange-500 transition-all" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-500">PF Member ID</label>
+                    <input name="pfAccountNumber" onChange={onChange} value={form.salary.pfAccountNumber} className="w-full bg-slate-800 border-none p-4 rounded-xl text-white focus:ring-2 focus:ring-orange-500 transition-all" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-500">Payment Mode</label>
+                    <select name="paymentMode" onChange={onChange} value={form.salary.paymentMode} className="w-full bg-slate-800 border-none p-4 rounded-xl text-white focus:ring-2 focus:ring-orange-500 transition-all">
+                      <option value="BANK">Bank Transfer</option>
+                      <option value="CASH">Cash</option>
+                      <option value="CHEQUE">Cheque</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Bank Details */}
+              <div className="md:col-span-2 bg-slate-50 p-8 rounded-3xl shadow-sm border border-slate-200">
+                <h3 className="text-sm font-black text-emerald-600 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <FaUniversity /> Banking Credentials
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Account Holder Name</label>
+                    <input name="accountHolderName" onChange={onChange} value={form.salary.bankDetails.accountHolderName} className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Bank Name</label>
+                    <input name="bankName" onChange={onChange} value={form.salary.bankDetails.bankName} className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Account Number</label>
+                    <input name="accountNumber" onChange={onChange} value={form.salary.bankDetails.accountNumber} className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">IFSC Code</label>
+                    <input name="ifscCode" onChange={onChange} value={form.salary.bankDetails.ifscCode} className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                  </div>
+                  <div className="space-y-2 lg:col-span-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Branch Name</label>
+                    <input name="branchName" onChange={onChange} value={form.salary.bankDetails.branchName} className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
                   </div>
                 </div>
               </div>

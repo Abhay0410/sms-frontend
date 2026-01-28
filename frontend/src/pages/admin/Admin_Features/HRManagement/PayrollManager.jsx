@@ -1,6 +1,4 @@
-
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import api, { API_ENDPOINTS } from "../../../../services/api";
 import { toast } from "react-toastify";
 import {
@@ -19,7 +17,7 @@ export default function PayrollManager() {
   });
 
   /* ================= FETCH ================= */
-  const fetchPayrolls = async () => {
+  const fetchPayrolls = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get(API_ENDPOINTS.ADMIN.PAYROLL.LIST, { params });
@@ -29,11 +27,11 @@ export default function PayrollManager() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params]);
 
   useEffect(() => {
     fetchPayrolls();
-  }, [params.month, params.year]);
+  }, [fetchPayrolls]);
 
   /* ================= ACTIONS ================= */
   const generatePayroll = async () => {
