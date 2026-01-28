@@ -79,6 +79,11 @@ export const API_ENDPOINTS = {
       REMOVE_SUBJECT_TEACHER: '/api/admin/teacher-management/remove-subject-teacher',
     },
 
+    // Staff Management
+   STAFF: {
+   LIST: '/api/admin/payroll/staff-list', 
+ },
+
     // Class Management
      CLASS: {
       ALL: '/api/admin/classes',
@@ -197,16 +202,37 @@ LEAVE_REQUESTS: '/api/admin/hr/leaves', // ✅ Correct path
   // ===============================
   // 💰 PAYROLL 
   // ===============================
-  PAYROLL: {
-    GENERATE: '/api/admin/payroll/payroll/generate', // POST
-    LIST: '/api/admin/payroll/payroll', // GET
-    MARK_PAID: (id) => `/api/admin/payroll/payroll/${id}/pay`,
-    TEACHER_HISTORY: (teacherId) =>
-      `/api/admin/payroll/teacher/${teacherId}`,
-    DELETE_DRAFT: (id) => `/api/admin/payroll/delete/payroll/${id}`,
-    SALARY_UPDATE: (id) => `/api/admin/payroll/teachers/${id}/salary`,
-    UPDATE_PAYROLL : (id) => `/api/admin/payroll/update/${id}`,
-  },
+PAYROLL: {
+   SETUP_SALARY: '/api/admin/payroll/setup-salary',
+  SETUP_STRUCTURE: '/api/admin/payroll/setup-structure',
+  GET_STRUCTURE: (teacherId) => `/api/admin/payroll/structure/${teacherId}`,
+  UPDATE_SALARY: (teacherId) => `/api/admin/payroll/teachers/${teacherId}/salary`,
+  
+  // ✅ Staff Management
+  STAFF_LIST: '/api/admin/payroll/staff-list',
+  
+  // ✅ Pre-payroll
+  ATTENDANCE_STATS: (month, year) => `/api/admin/payroll/attendance-stats?month=${month}&year=${year}`,
+  
+  // ✅ Payroll Generation
+  GENERATE: '/api/admin/payroll/generate', // POST - Bulk generate
+  RUN_PAYROLL: '/api/admin/payroll/run-payroll', // POST - For selected employees
+  
+  // ✅ Payroll Listing
+  LIST: '/api/admin/payroll', // GET - Monthly list
+  SUMMARY: '/api/admin/payroll/summary', // GET - Dashboard summary
+  TEACHER_HISTORY: (teacherId) => `/api/admin/payroll/teacher/${teacherId}`, // GET
+  
+  // ✅ Payroll Status Updates
+  MARK_PAID: (id) => `/api/admin/payroll/${id}/pay`, // PATCH
+  MARK_PAID_V2: (slipId) => `/api/admin/payroll/mark-paid/${slipId}`, // PUT
+  
+  // ✅ Payroll Updates
+  UPDATE_PAYROLL: (id) => `/api/admin/payroll/update/${id}`, // PATCH
+  
+  // ✅ Payroll Deletion
+  DELETE_DRAFT: (id) => `/api/admin/payroll/${id}`, // DELETE
+    },
 
   },
 
@@ -411,5 +437,3 @@ MARK_ATTENDANCE: '/api/teacher/hr/attendance',
     SEARCH: '/api/search',
   },
 };
-
-

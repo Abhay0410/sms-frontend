@@ -1,7 +1,7 @@
 // src/Routes/Admin/AdminRoutes.jsx - UPDATED
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../../components/Layout";
-import { FaHome, FaUsers, FaBook, FaChartBar, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog } from "react-icons/fa";
+import { FaHome, FaUsers, FaBook, FaChartBar, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog ,FaWallet } from "react-icons/fa";
 import AdminDashboardPage from "../../pages/admin/AdminDashboardPage.jsx";
 import TeacherRegisterForm from "../../pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx";
 import AdminProfileManage from "../../pages/admin/AdminProfileManage.jsx";
@@ -21,10 +21,10 @@ import AdminAnnouncementPage from "../../pages/admin/Admin_Features/Communicatio
 import AdminRegister from "../../pages/admin/Admin_Features/UserRegistrations/AdminRegisterForm.jsx";
 import StaffAttendance from "../../pages/admin/Admin_Features/HRManagement/StaffAttendance.jsx";
 import LeaveRequests from "../../pages/admin/Admin_Features/HRManagement/LeaveRequests.jsx";
-import SalarySetup from "../../pages/admin/Admin_Features/HRManagement/SalarySetup.jsx";
-import TeacherPayrollHistory from "../../pages/admin/Admin_Features/HRManagement/TeacherPayrollHistory.jsx";
-import PayrollManager from "../../pages/admin/Admin_Features/HRManagement/PayrollManager.jsx";
-import PayrollList from "../../pages/admin/Admin_Features/HRManagement/PayrollList.jsx";
+
+import AdminPayrollDashboard from "../../pages/admin/Admin_Features/Payroll/AdminPayrollDashboard.jsx";
+import SalaryStructureSetup from "../../pages/admin/Admin_Features/Payroll/SalaryStructureSetup.jsx";
+import MonthlyPayRun from "../../pages/admin/Admin_Features/Payroll/MonthlyPayRun.jsx";
 
 const AdminRoutes = ({ school }) => { // ✅ Accept school prop
   // Define Sidebar Sections here
@@ -77,11 +77,17 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       icon: <FaUsers />,
       subTabs: [
         { title: "Staff Attendance", path: "staff-attendance" },
-        { title: "Leave Requests", path: "leave-requests" },
-        { title: "Salary Setup", path: "salary-setup" },
-        { title: "Payroll Manager", path: "payroll-manager" },
-        { title: "Payroll List", path: "payroll-list" }   
+        { title: "Leave Requests", path: "leave-requests" },  
 
+      ]
+    },
+    {
+      title: "Payroll & Salary",
+      icon: <FaWallet />,
+      subTabs: [
+        { title: "Payroll Dashboard", path: "payroll-dashboard" },
+        { title: "Salary Setup", path: "salary-setup" },
+        { title: "Monthly Pay-Run", path: "monthly-payrun" }
       ]
     },
     {
@@ -121,10 +127,11 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         {/* HR Management Routes */}
         <Route path="staff-attendance" element={<StaffAttendance />} />
         <Route path="leave-requests" element={<LeaveRequests />} />
-        <Route path="teacher-payroll-history/:teacherId" element={<TeacherPayrollHistory />} />
-        <Route path="salary-setup" element={<SalarySetup />} />
-        <Route path="payroll-manager" element={<PayrollManager />} />
-        <Route path="payroll-list" element={<PayrollList />} />
+        {/* <Route path="teacher-payroll-history/:teacherId" element={<TeacherPayrollHistory />} /> */}
+
+        <Route path="payroll-dashboard" element={<AdminPayrollDashboard school={school} />} />
+        <Route path="salary-setup" element={<SalaryStructureSetup school={school} />} />
+        <Route path="monthly-payrun" element={<MonthlyPayRun school={school} />} />
 
         
 
