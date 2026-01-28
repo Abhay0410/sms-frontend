@@ -336,172 +336,6 @@ export default function TeacherManagement() {
     </div>
   );
 
-  // return (
-  //   <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50 p-4 md:p-8">
-  //     <div className="mx-auto max-w-7xl">
-  //       {/* Header */}
-  //       <div className="mt-6">
-  //         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-  //           <div className="space-y-2">
-  //             <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
-  //               Teacher Management
-  //             </h2>
-  //             <p className="text-base text-slate-600 flex items-center gap-2">
-  //               <FaChalkboardTeacher className="text-purple-600" />
-  //               Assign class teachers and subject teachers
-  //             </p>
-  //             {/* Debug Info */}
-  //             <div className="text-xs text-gray-500">
-  //               Found {teachers.length} teachers and {classes.length} classes
-  //             </div>
-  //           </div>
-
-  //           {/* Department Tabs */}
-  //           <div className="mt-6 flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-  //             {DEPARTMENTS.map((dept) => (
-  //               <button
-  //                 key={dept}
-  //                 onClick={() => setSelectedDepartment(dept)}
-  //                 className={`px-5 py-2 rounded-xl whitespace-nowrap border font-medium transition
-  //       ${
-  //         selectedDepartment === dept
-  //           ? "bg-purple-600 text-white border-purple-600"
-  //           : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
-  //       }
-  //     `}
-  //               >
-  //                 {dept}
-  //               </button>
-  //             ))}
-  //           </div>
-
-  //           <div className="flex flex-wrap gap-3">
-  //             <select
-  //               value={academicYear}
-  //               onChange={(e) => setAcademicYear(e.target.value)}
-  //               className="rounded-xl border-2 border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 shadow-sm transition-all hover:border-purple-400 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 focus:outline-none"
-  //             >
-  //               <option value="2023-2024">2023-2024</option>
-  //               <option value="2024-2025">2024-2025</option>
-  //               <option value="2025-2026">2025-2026</option>
-  //             </select>
-  //           </div>
-  //         </div>
-
-  //         {/* Stats Cards */}
-  //         {teachers.length > 0 && (
-  //           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-  //             <div className="rounded-2xl bg-white p-6 shadow-md border border-slate-100 hover:shadow-lg transition-all">
-  //               <div className="flex items-center gap-4">
-  //                 <div className="rounded-xl bg-purple-100 p-3">
-  //                   <FaUserTie className="h-6 w-6 text-purple-600" />
-  //                 </div>
-  //                 <div>
-  //                   <p className="text-sm font-medium text-slate-600">
-  //                     Total Teachers
-  //                   </p>
-  //                   <p className="text-3xl font-bold text-slate-900">
-  //                     {filteredTeachers.length}
-  //                   </p>
-  //                 </div>
-  //               </div>
-  //             </div>
-
-  //             <div className="rounded-2xl bg-white p-6 shadow-md border border-slate-100 hover:shadow-lg transition-all">
-  //               <div className="flex items-center gap-4">
-  //                 <div className="rounded-xl bg-blue-100 p-3">
-  //                   <FaChalkboardTeacher className="h-6 w-6 text-blue-600" />
-  //                 </div>
-  //                 <div>
-  //                   <p className="text-sm font-medium text-slate-600">
-  //                     Class Teachers
-  //                   </p>
-  //                   <p className="text-3xl font-bold text-slate-900">
-  //                     {
-  //                       filteredTeachers.filter((t) => t.assignments?.classTeacher?.length > 0).length
-  //                     }
-  //                   </p>
-  //                 </div>
-  //               </div>
-  //             </div>
-
-  //             <div className="rounded-2xl bg-white p-6 shadow-md border border-slate-100 hover:shadow-lg transition-all">
-  //               <div className="flex items-center gap-4">
-  //                 <div className="rounded-xl bg-green-100 p-3">
-  //                   <FaBook className="h-6 w-6 text-green-600" />
-  //                 </div>
-  //                 <div>
-  //                   <p className="text-sm font-medium text-slate-600">
-  //                     Subject Teachers
-  //                   </p>
-  //                   <p className="text-3xl font-bold text-slate-900">
-  //                     {filteredTeachers.filter((t) => t.assignments?.subjects?.length > 0).length}
-
-  //                   </p>
-  //                 </div>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         )}
-  //       </div>
-
-  //       {/* Teachers Grid */}
-  //       {filteredTeachers.length === 0 ? (
-  //         <div className="mt-12 rounded-2xl bg-white p-16 text-center shadow-lg border border-slate-100">
-  //           <div className="mx-auto w-fit rounded-full bg-purple-50 p-6">
-  //             <FaUserTie className="h-16 w-16 text-purple-400" />
-  //           </div>
-  //           <h3 className="mt-6 text-2xl font-bold text-slate-900">
-  //             No Teachers Found
-  //           </h3>
-  //           <p className="mt-3 text-base text-slate-600">
-  //             No teachers found for <b>{selectedDepartment}</b> department
-  //             <br />
-  //             Check if teachers are registered or try a different academic year.
-  //           </p>
-  //           <button
-  //             onClick={loadData}
-  //             className="mt-4 rounded-lg bg-purple-600 px-6 py-3 text-white font-semibold hover:bg-purple-700"
-  //           >
-  //             Retry Loading
-  //           </button>
-  //         </div>
-  //       ) : (
-  //         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
-  //           {filteredTeachers.map((teacher) => (
-  //             <TeacherCard
-  //               key={teacher._id}
-  //               teacher={teacher}
-  //               onAssignClassTeacher={() =>
-  //                 openAssignModal(teacher, "classTeacher")
-  //               }
-  //               onAssignSubject={() => openAssignModal(teacher, "subject")}
-  //             />
-  //           ))}
-  //         </div>
-  //       )}
-
-  //       {/* Assignment Modal */}
-  //       {showAssignModal && (
-  //         <AssignmentModal
-  //           teacher={selectedTeacher}
-  //           classes={classes}
-  //           type={assignmentType}
-  //           academicYear={academicYear}
-  //           onClose={() => {
-  //             setShowAssignModal(false);
-  //             setSelectedTeacher(null);
-  //             setAssignmentType(null);
-  //           }}
-  //           onSuccess={() => {
-  //             setShowAssignModal(false);
-  //             loadData();
-  //           }}
-  //         />
-  //       )}
-  //     </div>
-  //   </div>
-  // );
 }
 
 // Teacher Card Component
@@ -524,6 +358,9 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
           <div>
             <h3 className="text-xl font-bold text-slate-900">{teacher.name}</h3>
             <p className="text-sm text-slate-500">{teacher.teacherID}</p>
+
+         
+
           </div>
         </div>
         {isOverloaded && (
@@ -546,6 +383,24 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
             <strong>Department:</strong> {teacher.department}
           </p>
         )}
+
+           {teacher.assignedClasses && teacher.assignedClasses.length > 0 && (
+      <div className="mt-3 rounded-lg bg-slate-50 p-3 border">
+        <p className="text-xs font-semibold mb-2">Assignments</p>
+
+        {teacher.assignedClasses.map((ac, idx) => (
+          <p key={idx} className="text-xs text-slate-700">
+             {ac.class?.className} - {ac.section} | {ac.subject}
+            {ac.isClassTeacher && (
+              <span className="ml-2 text-blue-600 font-semibold">
+                (Class Teacher)
+              </span>
+            )}
+          </p>
+        ))}
+      </div>
+    )}
+        
       </div>
 
       {/* Workload */}
@@ -602,8 +457,8 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
           )}
 
         {/* Subject Teacher */}
-        {teacher.assignments?.subjects &&
-          teacher.assignments.subjects.length > 0 && (
+        {teacher.assignedClasses?.subjects &&
+          teacher.assignedClasses.subjects.length > 0 && (
             <div className="rounded-lg bg-green-50 p-3 border border-green-200">
               <p className="text-xs font-semibold text-green-900 mb-2 flex items-center gap-2">
                 <FaBook className="h-3 w-3" />

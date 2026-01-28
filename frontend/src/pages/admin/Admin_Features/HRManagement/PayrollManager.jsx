@@ -1,7 +1,7 @@
 
 
 import React, { useEffect, useState } from "react";
-import {api, API_ENDPOINTS} from "../../../../services/api";
+import api, { API_ENDPOINTS } from "../../../../services/api";
 import { toast } from "react-toastify";
 import {
   FaMoneyBillWave,

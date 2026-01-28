@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
+
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import { 
   FaSearch, 
@@ -16,6 +17,8 @@ import {
   FaExclamationCircle
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
+import Swal from 'sweetalert2';
+import downloadReceiptPDF from "../../../../utils/downloadReceiptPDF";
 
 export default function RecordPayment() {
   const academicYears = useMemo(() => {
@@ -35,6 +38,7 @@ export default function RecordPayment() {
     return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
   });
 
+ 
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -125,11 +129,16 @@ export default function RecordPayment() {
         } 
       };
     }
+   
+
     
     const amount = Number(paymentForm.amountPaid);
     let remaining = amount;
     const items = [];
     let coveredCount = 0;
+
+    
+    
 
     // A. Manual Selection Logic
     if (selectedInsts.length > 0) {
@@ -263,6 +272,16 @@ export default function RecordPayment() {
     },
     [academicYear, searchTerm, filterStatus]
   );
+
+
+  const school = (() => {
+  try {
+    return JSON.parse(localStorage.getItem("selectedSchool"));
+  } catch {
+    return null;
+  }
+})();
+
 
   useEffect(() => {
     const delaySearch = setTimeout(() => {
@@ -439,6 +458,7 @@ export default function RecordPayment() {
 
       // ✅ Prepare payload matching backend expectations
       const payload = {
+      
         studentId: selectedStudent._id,
         academicYear: academicYear,
         amountPaid: amount,
@@ -476,19 +496,51 @@ export default function RecordPayment() {
         payload
       );
 
-      toast.success(
-        <div className="space-y-1">
-          <div className="font-bold uppercase">Payment Processed!</div>
-          <div className="text-sm opacity-90">
-            Amount: ₹{amount.toLocaleString('en-IN')} | Receipt: {response.data?.receiptNumber || "Generated"}
-          </div>
-        </div>,
-        {
-          icon: <FaCheckDouble className="text-emerald-500" />,
-          autoClose: 4000,
-          closeOnClick: false,
-        }
-      );
+      // toast.success(
+      //   <div className="space-y-1">
+      //     <div className="font-bold uppercase">Payment Processed!</div>
+      //     <div className="text-sm opacity-90">
+      //       Amount: ₹{amount.toLocaleString('en-IN')} | Receipt: {response.data?.receiptNumber || "Generated"}
+      //     </div>
+      //   </div>,
+      //   {
+      //     icon: <FaCheckDouble className="text-emerald-500" />,
+      //     autoClose: 4000,
+      //     closeOnClick: false,
+      //   }
+      // );
+ Swal.fire({
+      title: 'Payment Successful!',
+      html: `
+        <p>Amount Paid: <strong>₹${payload.amountPaid.toLocaleString('en-IN')}</strong></p>
+        <p>Receipt #: <strong>${response.data?.receiptNumber || 'Generated'}</strong></p>
+      `,
+      icon: 'success',
+      showCancelButton: true,
+      confirmButtonText: 'Download Receipt',
+      cancelButtonText: 'Close',
+      reverseButtons: true,
+      focusCancel: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        
+        // Download receipt
+         downloadReceiptPDF({
+          schoolName:school?.schoolName,
+      receiptNumber: response.data?.receiptNumber || 'Generated',
+      studentName: selectedStudent.name,
+      studentID: selectedStudent.studentID,
+      amountPaid: payload.amountPaid,
+      paymentDate: payload.paymentDate || new Date(),
+      paymentMode: payload.paymentMode || 'N/A',
+      remarks: payload.remarks || '',
+      
+    });
+      //   window.open(`${API_ENDPOINTS.ADMIN.FEE.DOWNLOAD_RECEIPT}?receiptNumber=${response.data?.receiptNumber}`, '_blank');
+     }
+   
+
+    });
 
       setShowModal(false);
       setSelectedInsts([]);
