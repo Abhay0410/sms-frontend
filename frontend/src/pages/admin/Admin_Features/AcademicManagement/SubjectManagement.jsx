@@ -99,25 +99,7 @@ export default function SubjectManagement() {
     }
   };
 
-  // const handleQuickAssign = async (sectionName) => {
-  //   if (selectedSubjectsSet.size === 0) return toast.warning("Select subjects from Master Pool");
-  //   try {
-  //     setAssignLoading(true);
-  //     for (const name of Array.from(selectedSubjectsSet)) {
-  //       await api.post(API_ENDPOINTS.ADMIN.SUBJECT_MANAGEMENT.ADD_TO_SECTIONS, {
-  //         classId: selectedClass._id,
-  //         sectionNames: [sectionName],
-  //         subject: { subjectName: name, hoursPerWeek: 5 }
-  //       });
-  //     }
-  //     toast.success(`Section ${sectionName} Curriculum Updated`);
-  //     loadSubjects();
-  //   } catch (e) { 
-  //     toast.error(e.message || "Assignment failed"); 
-  //   } finally { 
-  //     setAssignLoading(false); 
-  //   }
-  // };
+
 
   const handleRemoveFromMaster = async (e, subjectName) => {
     e.stopPropagation(); // Prevent toggling selection when clicking delete
@@ -144,15 +126,7 @@ export default function SubjectManagement() {
     }
   };
 
-  // Stats calculation
-  // const totalStats = useMemo(() => {
-  //   const totalAvailable = subjectData?.availableSubjects?.length || 0;
-  //   const totalAssigned = subjectData?.sections?.reduce((sum, section) => 
-  //     sum + (section.subjects?.length || 0), 0) || 0;
-  //   const totalSections = subjectData?.sections?.length || 0;
-    
-  //   return { totalAvailable, totalAssigned, totalSections };
-  // }, [subjectData]);
+  
 
   if (error && classes.length === 0) {
     return (
@@ -216,50 +190,7 @@ export default function SubjectManagement() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        {/* {subjectData && (
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 flex items-center justify-center font-bold text-lg shadow-inner">
-                {totalStats.totalAvailable}
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Master Pool</p>
-                <p className="text-xl font-black text-slate-900">Available Subjects</p>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg shadow-inner">
-                {totalStats.totalAssigned}
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assigned</p>
-                <p className="text-xl font-black text-slate-900">Active Subjects</p>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg shadow-inner">
-                {totalStats.totalSections}
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sections</p>
-                <p className="text-xl font-black text-slate-900">Active</p>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex items-center gap-4 border-b-4 border-b-orange-500 hover:shadow-md transition-shadow">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg shadow-inner">
-                {selectedClass?.sections?.reduce((sum, s) => sum + (s.currentStrength || 0), 0) || 0}
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Students</p>
-                <p className="text-xl font-black text-slate-900">Total Enrolled</p>
-              </div>
-            </div>
-          </div>
-        )} */}
+       
 
         {/* Grade Scroller */}
         <div className="mt-12 relative group">
@@ -396,13 +327,7 @@ export default function SubjectManagement() {
                           </p>
                         </div>
                       </div>
-                      {/* <button 
-                        disabled={assignLoading || selectedSubjectsSet.size === 0} 
-                        onClick={() => handleQuickAssign(section.sectionName)} 
-                        className="px-8 py-4 bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gradient-to-r hover:from-orange-600 hover:to-red-600 disabled:opacity-20 transition-all shadow-xl"
-                      >
-                        {assignLoading ? "Deploying..." : "Assign Buffer Here"}
-                      </button> */}
+                     
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
