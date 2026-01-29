@@ -32,6 +32,28 @@ export default function SalaryStructureSetup() {
     loadStaff();
   }, []);
 
+  // 1. Dropdown select handle karne ka naya function
+  const handleStaffChange = async (staffId) => {
+    setSelectedStaff(staffId);
+    setMonthlyGross(""); // Reset pehle
+
+    if (!staffId) return;
+
+    try {
+      // ✅ Check if structure exists for this employee
+      const resp = await api.get(API_ENDPOINTS.ADMIN.PAYROLL.GET_STRUCTURE(staffId));
+      
+      if (resp.data) {
+        // ✅ Agar data mila, toh input fill kar do
+        setMonthlyGross(resp.data.grossSalary);
+        toast.info(`Existing structure loaded for ${resp.data.employeeName || 'staff'}`);
+      }
+    } catch  {
+      // 404 error means no setup yet, which is fine
+      console.log("No existing structure found for this staff.");
+    }
+  };
+
   // 🧮 2026 Indian Payroll Logic Engine
   const calculation = useMemo(() => {
     const gross = parseFloat(monthlyGross) || 0;
@@ -113,7 +135,7 @@ export default function SalaryStructureSetup() {
                 <FaUserTie className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
                 <select 
                   value={selectedStaff}
-                  onChange={(e) => setSelectedStaff(e.target.value)}
+                  onChange={(e) => handleStaffChange(e.target.value)}
                   disabled={loading} // Fixed: Using loading state
                   className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl border-none font-bold text-slate-700 focus:ring-4 focus:ring-indigo-50 transition-all appearance-none cursor-pointer disabled:opacity-50"
                 >
@@ -219,7 +241,7 @@ export default function SalaryStructureSetup() {
                 disabled={saving || !selectedStaff}
                 className="w-full mt-8 bg-indigo-600 hover:bg-indigo-700 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
-                {saving ? "Saving Configuration..." : <><FaSave /> Initialize Salary Structure</>}
+                {saving ? "Processing..." : monthlyGross ? <><FaSave /> Update Salary Structure</> : <><FaSave /> Initialize Salary Structure</>}
               </button>
             </div>
           </div>

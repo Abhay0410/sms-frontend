@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "../../../../services/api";
-import { FaSync, FaCheckCircle, FaSpinner, FaHistory, FaFileInvoiceDollar, FaDownload, FaEye, FaTimes, FaPrint, FaShareAlt } from "react-icons/fa";
+import { FaSync, FaCheckCircle, FaSpinner, FaHistory, FaFileInvoiceDollar, FaDownload, FaEye, FaTimes, FaPrint } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
@@ -10,7 +10,6 @@ export default function MonthlyPayRun() {
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState(null);
   
-  // ✅ ADD THESE STATES FOR MODAL
   const [showModal, setShowModal] = useState(false);
   const [selectedSlipData, setSelectedSlipData] = useState(null);
   const [loadingSlip, setLoadingSlip] = useState(false);
@@ -23,6 +22,28 @@ export default function MonthlyPayRun() {
     "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
     "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
   ];
+
+  // Format date safely
+  const formatDateSafe = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      return isNaN(date.getTime()) ? "N/A" : date.toLocaleDateString('en-IN');
+    } catch {
+      return "N/A";
+    }
+  };
+
+  // Format currency safely (convert decimals to proper amounts)
+  // ✅ FIX: Simple rounding without weird multiplication
+  const formatCurrency = (amount) => {
+    return Math.round(Number(amount || 0));
+  };
+
+  // Format currency for display
+  const displayCurrency = (amount) => {
+    return formatCurrency(amount).toLocaleString('en-IN');
+  };
 
   // 1. Fetch Data
   const loadData = useCallback(async () => {
@@ -61,11 +82,11 @@ export default function MonthlyPayRun() {
         _id: slip._id || slip.id || `SLIP-${Math.random().toString(36).substr(2, 9)}`,
         employeeId: slip.teacherId || slip.employeeId || slip.staffId,
         employeeName: slip.employeeName || slip.name || "Unknown",
-        netSalary: slip.netSalary || slip.totalAmount || slip.amount || 0,
+        netSalary: formatCurrency(slip.netSalary || slip.totalAmount || slip.amount),
         paymentStatus: slip.paymentStatus || "PENDING",
         month: slip.month || selectedMonth,
         year: slip.year || selectedYear,
-        generatedAt: slip.createdAt || slip.generatedAt || new Date().toISOString()
+        generatedAt: slip.createdAt || slip.generatedAt || slip.updatedAt || new Date().toISOString()
       }));
 
       setStats(formattedPending);
@@ -102,83 +123,71 @@ export default function MonthlyPayRun() {
     }
   };
 
-  // ✅ UPDATED: View Salary Slip Details with Modal
-  const handleViewSlip = async (slipId, employeeName) => {
-    setLoadingSlip(true);
-    try {
-      // Use your actual API endpoint - adjust if needed
-      const endpoint = API_ENDPOINTS.ADMIN.PAYROLL.VIEW_SLIP 
-        ? `${API_ENDPOINTS.ADMIN.PAYROLL.VIEW_SLIP}/${slipId}`
-        : `/api/admin/payroll/slip-details/${slipId}`;
-      
-      const response = await api.get(endpoint);
-      
-      // Format the data for modal display
-      const slipData = response.data || response;
-      setSelectedSlipData({
-        ...slipData,
-        employeeName: employeeName || slipData.employeeName
-      });
-      setShowModal(true);
-    } catch (err) {
-      console.error("Error fetching slip details:", err);
-      
-      // Fallback: Show demo data if API fails
-      setSelectedSlipData({
-        slip: {
-          _id: slipId,
-          employeeName: employeeName || "Unknown",
-          month: selectedMonth,
-          year: selectedYear,
-          netSalary: 45000,
-          grossSalary: 52000,
-          earnings: {
-            basic: 35000,
-            hra: 12000,
-            specialAllowance: 5000
-          },
-          deductions: {
-            epfEmployee: 1800,
-            professionalTax: 200,
-            tds: 2000
-          },
-          paymentStatus: "PROCESSED",
-          generatedAt: new Date().toISOString()
-        },
-        employee: {
-          name: employeeName || "Unknown",
-          employeeId: slipId,
-          department: "Mathematics",
-          designation: "Teacher"
-        }
-      });
-      setShowModal(true);
-      
-      toast.warning("Showing demo data - API endpoint might not be configured");
-    } finally {
-      setLoadingSlip(false);
-    }
-  };
+// ✅ UPDATED: View Salary Slip Details with Modal (Fixed Logic)
+const handleViewSlip = async (slipId, employeeName) => {
+  setLoadingSlip(true);
+  try {
+    const endpoint = API_ENDPOINTS.ADMIN.PAYROLL.VIEW_SLIP(slipId);
+    const response = await api.get(endpoint);
+    
+    // ✅ FIX: Extract 'slip' and 'staff' correctly from your backend response
+    const { slip, staff } = response.data?.data || response.data || {};
 
-  // ✅ Download PDF Function
-  const handleDownloadPdf = async (slipId, employeeName) => {
-    try {
-      toast.info(`Preparing PDF for ${employeeName}...`);
-      
-      // Use your actual PDF download endpoint
-      const endpoint = API_ENDPOINTS.ADMIN.PAYROLL.DOWNLOAD_SLIP 
-        ? `${API_ENDPOINTS.ADMIN.PAYROLL.DOWNLOAD_SLIP}/${slipId}`
-        : `/api/admin/payroll/download-slip/${slipId}`;
-      
-      // For PDF download, you might want to use a direct link
-      window.open(endpoint, '_blank');
-      
-      toast.success("PDF download started");
-    } catch (err) {
-      console.error("Download error:", err);
-      toast.error("Failed to download PDF");
-    }
-  };
+    const processedData = {
+      slip: {
+        ...slip,
+        earnings: slip.earnings || {},
+        deductions: slip.deductions || {}
+      },
+      employee: {
+        name: staff?.name || employeeName,
+        employeeId: staff?.teacherID || staff?.adminID || slip.employeeId,
+        department: staff?.department || "Teaching",
+        paymentMode: staff?.salary?.paymentMode || "Bank Transfer"
+      }
+    };
+    
+    setSelectedSlipData(processedData);
+    setShowModal(true);
+  } catch {
+    toast.error("Slip data loading failed");
+  } finally {
+    setLoadingSlip(false);
+  }
+};
+
+// ✅ Download PDF Function - Updated with Axios Blob
+const handleDownloadPDF = async (slipId) => {
+  try {
+    toast.info("Generating PDF, please wait...");
+    
+    // ✅ Use Axios with responseType 'blob'
+    const response = await api.axios.get(
+      API_ENDPOINTS.ADMIN.PAYROLL.DOWNLOAD_SLIP(slipId),
+      { responseType: 'blob' }
+    );
+
+    // ✅ Create a URL for the blob
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    
+    // Set filename
+    link.setAttribute('download', `SalarySlip_${slipId}.pdf`);
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    // Cleanup
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    toast.success("Download started!");
+  } catch (err) {
+    console.error("Download Error:", err);
+    toast.error("Failed to download PDF. Please try again.");
+  }
+};
 
   // ✅ Print Slip Function
   const handlePrintSlip = () => {
@@ -190,47 +199,66 @@ export default function MonthlyPayRun() {
           <title>Salary Slip - ${selectedSlipData.employee.name}</title>
           <style>
             body { font-family: Arial, sans-serif; padding: 20px; }
-            .header { text-align: center; margin-bottom: 30px; }
+            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
             .section { margin-bottom: 20px; }
             table { width: 100%; border-collapse: collapse; margin: 15px 0; }
             th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
             .total { font-weight: bold; font-size: 1.2em; }
             .footer { margin-top: 30px; text-align: center; font-size: 0.8em; color: #666; }
+            .earnings { color: #059669; }
+            .deductions { color: #dc2626; }
           </style>
         </head>
         <body>
           <div class="header">
-            <h1>Salary Slip</h1>
-            <p>${selectedSlipData.employee.name} • ${monthNames[selectedSlipData.slip.month - 1]} ${selectedSlipData.slip.year}</p>
+            <h1>SALARY SLIP</h1>
+            <p><strong>${isNaN(selectedSlipData.slip.month) 
+              ? selectedSlipData.slip.month 
+              : monthNames[parseInt(selectedSlipData.slip.month) - 1]} ${selectedSlipData.slip.year}</strong></p>
+            <p>${selectedSlipData.employee.name} • ${selectedSlipData.slip.paymentStatus}</p>
           </div>
           
           <div class="section">
-            <h3>Earnings</h3>
+            <p><strong>Employee ID:</strong> ${selectedSlipData.employee.employeeId}</p>
+            <p><strong>Department:</strong> ${selectedSlipData.employee.department}</p>
+            <p><strong>Generated On:</strong> ${formatDateSafe(selectedSlipData.slip.generatedAt)}</p>
+          </div>
+          
+          <div class="section">
+            <h3 class="earnings">EARNINGS</h3>
             <table>
-              <tr><td>Basic Pay</td><td>₹${selectedSlipData.slip.earnings.basic?.toLocaleString() || 0}</td></tr>
-              <tr><td>HRA</td><td>₹${selectedSlipData.slip.earnings.hra?.toLocaleString() || 0}</td></tr>
-              <tr><td>Allowances</td><td>₹${selectedSlipData.slip.earnings.specialAllowance?.toLocaleString() || 0}</td></tr>
-              <tr class="total"><td>Gross Salary</td><td>₹${selectedSlipData.slip.grossSalary?.toLocaleString() || 0}</td></tr>
+              <tr><td>Basic Pay</td><td>₹${displayCurrency(selectedSlipData.slip.earnings.basic)}</td></tr>
+              <tr><td>House Rent Allowance (HRA)</td><td>₹${displayCurrency(selectedSlipData.slip.earnings.hra)}</td></tr>
+              <tr><td>Special Allowance</td><td>₹${displayCurrency(selectedSlipData.slip.earnings.specialAllowance)}</td></tr>
+              <tr class="total"><td>Gross Salary</td><td>₹${displayCurrency(selectedSlipData.slip.grossSalary)}</td></tr>
             </table>
           </div>
           
           <div class="section">
-            <h3>Deductions</h3>
+            <h3 class="deductions">DEDUCTIONS</h3>
             <table>
-              <tr><td>EPF (Employee)</td><td>-₹${selectedSlipData.slip.deductions.epfEmployee?.toLocaleString() || 0}</td></tr>
-              <tr><td>Professional Tax</td><td>-₹${selectedSlipData.slip.deductions.professionalTax?.toLocaleString() || 0}</td></tr>
-              <tr><td>TDS</td><td>-₹${selectedSlipData.slip.deductions.tds?.toLocaleString() || 0}</td></tr>
-              <tr class="total"><td>Total Deductions</td><td>-₹${(selectedSlipData.slip.deductions.epfEmployee + selectedSlipData.slip.deductions.professionalTax + selectedSlipData.slip.deductions.tds)?.toLocaleString() || 0}</td></tr>
+              <tr><td>EPF (Employee Contribution)</td><td>-₹${displayCurrency(selectedSlipData.slip.deductions.epfEmployee)}</td></tr>
+              <tr><td>Professional Tax</td><td>-₹${displayCurrency(selectedSlipData.slip.deductions.professionalTax)}</td></tr>
+              <tr><td>Tax Deducted at Source (TDS)</td><td>-₹${displayCurrency(selectedSlipData.slip.deductions.tds)}</td></tr>
+              <tr class="total deductions"><td>Total Deductions</td><td>-₹${displayCurrency(
+                (selectedSlipData.slip.deductions.epfEmployee || 0) +
+                (selectedSlipData.slip.deductions.professionalTax || 0) +
+                (selectedSlipData.slip.deductions.tds || 0)
+              )}</td></tr>
             </table>
           </div>
           
-          <div class="section total" style="background: #f0f9ff; padding: 20px; border-radius: 8px;">
-            <h2>Net Salary: ₹${selectedSlipData.slip.netSalary?.toLocaleString() || 0}</h2>
-            <p>Status: ${selectedSlipData.slip.paymentStatus}</p>
+          <div class="section total" style="background: #f0f9ff; padding: 30px; border-radius: 8px; text-align: center;">
+            <h2 style="color: #4f46e5; margin: 0;">Net Take-Home Pay: ₹${displayCurrency(selectedSlipData.slip.netSalary)}</h2>
+            <p>Payable via ${selectedSlipData.employee.paymentMode}</p>
           </div>
           
           <div class="footer">
-            <p>Generated on ${new Date(selectedSlipData.slip.generatedAt).toLocaleDateString()}</p>
+            <p><strong>Notes:</strong></p>
+            <p>• This is a system-generated salary slip</p>
+            <p>• For any discrepancies, contact accounts department within 7 days</p>
+            <p>• Salary is credited on the 5th of every month</p>
+            <p>• Generated on: ${new Date().toLocaleDateString('en-IN')} ${new Date().toLocaleTimeString('en-IN')}</p>
             <p>School Management System © ${new Date().getFullYear()}</p>
           </div>
         </body>
@@ -247,17 +275,27 @@ export default function MonthlyPayRun() {
     }, 250);
   };
 
-  // ✅ Share Slip Function (WhatsApp/Email)
-  const handleShareSlip = () => {
-    if (!selectedSlipData) return;
-    
-    const message = `Salary Slip - ${selectedSlipData.employee.name}
-Month: ${monthNames[selectedSlipData.slip.month - 1]} ${selectedSlipData.slip.year}
-Net Salary: ₹${selectedSlipData.slip.netSalary?.toLocaleString()}
-Status: ${selectedSlipData.slip.paymentStatus}`;
-    
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+  // 5. Mark as Paid
+  const handleMarkPaid = async (slipId) => {
+    const transactionId = window.prompt("Enter Transaction ID / UTR Number:");
+    if (!transactionId || transactionId.trim().length < 5) {
+      return toast.warning("Valid Transaction ID is required");
+    }
+
+    const paymentMode = window.confirm("Is this a Bank Transfer (NEFT/IMPS)? Click Cancel for CASH.") ? 'NEFT' : 'CASH';
+
+    try {
+      // API endpoint call
+      await api.put(API_ENDPOINTS.ADMIN.PAYROLL.MARK_PAID_V2(slipId), {
+        transactionId: transactionId.trim(),
+        paymentMode: paymentMode
+      });
+      
+      toast.success(`Salary successfully marked as PAID via ${paymentMode}`);
+      loadData(); // Refresh list
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Payment update failed");
+    }
   };
 
   // 4. Bulk Generate
@@ -507,6 +545,14 @@ Status: ${selectedSlipData.slip.paymentStatus}`;
                     </td>
                     <td className="p-6 text-right">
                       <div className="flex gap-2 justify-end">
+                        {slip.paymentStatus !== 'PAID' && (
+                          <button 
+                            onClick={() => handleMarkPaid(slip._id)}
+                            className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2"
+                          >
+                            <FaCheckCircle /> Pay
+                          </button>
+                        )}
                         <button 
                           onClick={() => handleViewSlip(slip._id, slip.employeeName)}
                           disabled={loadingSlip}
@@ -515,7 +561,7 @@ Status: ${selectedSlipData.slip.paymentStatus}`;
                           {loadingSlip ? <FaSpinner className="animate-spin" /> : <FaEye />} View
                         </button>
                         <button 
-                          onClick={() => handleDownloadPdf(slip._id, slip.employeeName)}
+                          onClick={() => handleDownloadPDF(slip._id)}
                           className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2"
                         >
                           <FaDownload /> PDF
@@ -553,16 +599,18 @@ Status: ${selectedSlipData.slip.paymentStatus}`;
 
       {/* ✅ SALARY SLIP MODAL */}
       {showModal && selectedSlipData && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl animate-slideUp">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+          <div className="bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl" style={{ animation: 'slideUp 0.4s ease-out' }}>
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white flex justify-between items-center">
               <div>
                 <h3 className="text-2xl font-black uppercase tracking-tight">Salary Slip</h3>
                 <div className="flex items-center gap-4 mt-2">
-                  <p className="text-sm font-bold">{selectedSlipData.employee?.name || selectedSlipData.slip.employeeName}</p>
+                  <p className="text-sm font-bold">{selectedSlipData.employee.name}</p>
                   <span className="text-xs bg-white/20 px-3 py-1 rounded-full">
-                    {monthNames[selectedSlipData.slip.month - 1]} {selectedSlipData.slip.year}
+                    {isNaN(selectedSlipData.slip.month)
+                      ? selectedSlipData.slip.month
+                      : monthNames[parseInt(selectedSlipData.slip.month) - 1]} {selectedSlipData.slip.year}
                   </span>
                   <span className={`text-xs px-3 py-1 rounded-full font-bold ${
                     selectedSlipData.slip.paymentStatus === 'PAID' ? 'bg-emerald-500' :
@@ -586,15 +634,22 @@ Status: ${selectedSlipData.slip.paymentStatus}`;
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 p-6 rounded-2xl">
                 <div>
                   <p className="text-xs text-slate-500 font-semibold uppercase">Employee ID</p>
-                  <p className="font-bold">{selectedSlipData.employee?.employeeId || selectedSlipData.slip.employeeId || "N/A"}</p>
+                  <p className="font-bold">{selectedSlipData.employee.employeeId || "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 font-semibold uppercase">Department</p>
-                  <p className="font-bold">{selectedSlipData.employee?.department || "Teaching"}</p>
+                  <p className="font-bold">{selectedSlipData.employee.department}</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 font-semibold uppercase">Generated On</p>
-                  <p className="font-bold">{new Date(selectedSlipData.slip.generatedAt).toLocaleDateString('en-IN')}</p>
+                  <p className="font-bold text-indigo-600">
+                    {selectedSlipData.slip.createdAt 
+                      ? new Date(selectedSlipData.slip.createdAt).toLocaleString('en-IN', {
+                          day: '2-digit', month: 'short', year: 'numeric',
+                          hour: '2-digit', minute: '2-digit', hour12: true
+                        }) 
+                      : "Pending Generation"}
+                  </p>
                 </div>
               </div>
 
@@ -606,19 +661,19 @@ Status: ${selectedSlipData.slip.paymentStatus}`;
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-slate-700">Basic Pay</span>
-                      <span className="font-bold">₹{selectedSlipData.slip.earnings?.basic?.toLocaleString('en-IN') || 0}</span>
+                      <span className="font-bold">₹{displayCurrency(selectedSlipData.slip.earnings.basic)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-700">House Rent Allowance (HRA)</span>
-                      <span className="font-bold">₹{selectedSlipData.slip.earnings?.hra?.toLocaleString('en-IN') || 0}</span>
+                      <span className="font-bold">₹{displayCurrency(selectedSlipData.slip.earnings.hra)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-700">Special Allowance</span>
-                      <span className="font-bold">₹{selectedSlipData.slip.earnings?.specialAllowance?.toLocaleString('en-IN') || 0}</span>
+                      <span className="font-bold">₹{displayCurrency(selectedSlipData.slip.earnings.specialAllowance)}</span>
                     </div>
                     <div className="flex justify-between pt-3 border-t border-slate-200 text-lg font-black text-emerald-700">
                       <span>Gross Salary</span>
-                      <span>₹{selectedSlipData.slip.grossSalary?.toLocaleString('en-IN') || 0}</span>
+                      <span>₹{displayCurrency(selectedSlipData.slip.grossSalary)}</span>
                     </div>
                   </div>
                 </div>
@@ -629,23 +684,23 @@ Status: ${selectedSlipData.slip.paymentStatus}`;
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-slate-700">EPF (Employee Contribution)</span>
-                      <span className="font-bold text-rose-600">-₹{selectedSlipData.slip.deductions?.epfEmployee?.toLocaleString('en-IN') || 0}</span>
+                      <span className="font-bold text-rose-600">-₹{displayCurrency(selectedSlipData.slip.deductions.epfEmployee)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-700">Professional Tax</span>
-                      <span className="font-bold text-rose-600">-₹{selectedSlipData.slip.deductions?.professionalTax?.toLocaleString('en-IN') || 0}</span>
+                      <span className="font-bold text-rose-600">-₹{displayCurrency(selectedSlipData.slip.deductions.professionalTax)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-700">Tax Deducted at Source (TDS)</span>
-                      <span className="font-bold text-rose-600">-₹{selectedSlipData.slip.deductions?.tds?.toLocaleString('en-IN') || 0}</span>
+                      <span className="font-bold text-rose-600">-₹{displayCurrency(selectedSlipData.slip.deductions.tds)}</span>
                     </div>
                     <div className="flex justify-between pt-3 border-t border-slate-200 text-lg font-black text-rose-700">
                       <span>Total Deductions</span>
-                      <span>-₹{(
-                        (selectedSlipData.slip.deductions?.epfEmployee || 0) +
-                        (selectedSlipData.slip.deductions?.professionalTax || 0) +
-                        (selectedSlipData.slip.deductions?.tds || 0)
-                      ).toLocaleString('en-IN')}</span>
+                      <span>-₹{displayCurrency(
+                        (selectedSlipData.slip.deductions.epfEmployee || 0) +
+                        (selectedSlipData.slip.deductions.professionalTax || 0) +
+                        (selectedSlipData.slip.deductions.tds || 0)
+                      )}</span>
                     </div>
                   </div>
                 </div>
@@ -656,8 +711,8 @@ Status: ${selectedSlipData.slip.paymentStatus}`;
                 <div className="flex flex-col md:flex-row justify-between items-center">
                   <div>
                     <p className="text-sm font-bold uppercase opacity-90">Net Take-Home Pay</p>
-                    <h2 className="text-4xl font-black mt-2">₹{selectedSlipData.slip.netSalary?.toLocaleString('en-IN') || 0}</h2>
-                    <p className="text-sm opacity-90 mt-2">Payable via {selectedSlipData.employee?.paymentMode || "Bank Transfer"}</p>
+                    <h2 className="text-4xl font-black mt-2">₹{displayCurrency(selectedSlipData.slip.netSalary)}</h2>
+                    <p className="text-sm opacity-90 mt-2">Payable via {selectedSlipData.employee.paymentMode}</p>
                   </div>
                   <div className="flex gap-3 mt-6 md:mt-0">
                     <button 
@@ -667,16 +722,10 @@ Status: ${selectedSlipData.slip.paymentStatus}`;
                       <FaPrint /> Print
                     </button>
                     <button 
-                      onClick={() => handleDownloadPdf(selectedSlipData.slip._id, selectedSlipData.employee?.name)}
+                      onClick={() => handleDownloadPDF(selectedSlipData.slip._id)}
                       className="bg-white text-indigo-600 hover:bg-slate-100 px-6 py-3 rounded-2xl font-bold text-sm uppercase tracking-widest flex items-center gap-2 transition-all"
                     >
                       <FaDownload /> Download PDF
-                    </button>
-                    <button 
-                      onClick={handleShareSlip}
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-2xl font-bold text-sm uppercase tracking-widest flex items-center gap-2 transition-all"
-                    >
-                      <FaShareAlt /> Share
                     </button>
                   </div>
                 </div>
@@ -697,23 +746,19 @@ Status: ${selectedSlipData.slip.paymentStatus}`;
         </div>
       )}
 
-      {/* Add CSS for animations */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideUp {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-        .animate-slideUp {
-          animation: slideUp 0.4s ease-out;
-        }
-      `}</style>
+      {/* ✅ Add inline styles for animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+          }
+        `}
+      </style>
     </div>
   );
 }

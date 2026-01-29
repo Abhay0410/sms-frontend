@@ -202,8 +202,10 @@ LEAVE_REQUESTS: '/api/admin/hr/leaves', // ✅ Correct path
   // ===============================
   // 💰 PAYROLL 
   // ===============================
+// src/constants/apiEndpoints.js
+
 PAYROLL: {
-   SETUP_SALARY: '/api/admin/payroll/setup-salary',
+  SETUP_SALARY: '/api/admin/payroll/setup-salary',
   SETUP_STRUCTURE: '/api/admin/payroll/setup-structure',
   GET_STRUCTURE: (teacherId) => `/api/admin/payroll/structure/${teacherId}`,
   UPDATE_SALARY: (teacherId) => `/api/admin/payroll/teachers/${teacherId}/salary`,
@@ -215,24 +217,27 @@ PAYROLL: {
   ATTENDANCE_STATS: (month, year) => `/api/admin/payroll/attendance-stats?month=${month}&year=${year}`,
   
   // ✅ Payroll Generation
-  GENERATE: '/api/admin/payroll/generate', // POST - Bulk generate
-  RUN_PAYROLL: '/api/admin/payroll/run-payroll', // POST - For selected employees
+  GENERATE: '/api/admin/payroll/generate',
+  RUN_PAYROLL: '/api/admin/payroll/run-payroll',
   
   // ✅ Payroll Listing
-  LIST: '/api/admin/payroll', // GET - Monthly list
-  SUMMARY: '/api/admin/payroll/summary', // GET - Dashboard summary
-  TEACHER_HISTORY: (teacherId) => `/api/admin/payroll/teacher/${teacherId}`, // GET
+  LIST: '/api/admin/payroll', 
+  SUMMARY: '/api/admin/payroll/summary',
+  TEACHER_HISTORY: (teacherId) => `/api/admin/payroll/teacher/${teacherId}`,
+
+  // ✨ NEW: Self Service & View Endpoints (Added for consistency)
+  MY_HISTORY: '/api/admin/payroll/my-history', // Staff self view
+  VIEW_SLIP: (slipId) => `/api/admin/payroll/slip-details/${slipId}`, // Get details for modal
+  DOWNLOAD_SLIP: (slipId) => `/api/admin/payroll/download-slip/${slipId}`, // Generate PDFKit file
   
-  // ✅ Payroll Status Updates
-  MARK_PAID: (id) => `/api/admin/payroll/${id}/pay`, // PATCH
-  MARK_PAID_V2: (slipId) => `/api/admin/payroll/mark-paid/${slipId}`, // PUT
+  // ✅ Status Updates
+  MARK_PAID: (id) => `/api/admin/payroll/${id}/pay`,
+  MARK_PAID_V2: (slipId) => `/api/admin/payroll/mark-paid/${slipId}`,
   
-  // ✅ Payroll Updates
-  UPDATE_PAYROLL: (id) => `/api/admin/payroll/update/${id}`, // PATCH
-  
-  // ✅ Payroll Deletion
-  DELETE_DRAFT: (id) => `/api/admin/payroll/${id}`, // DELETE
-    },
+  // ✅ Updates & Deletion
+  UPDATE_PAYROLL: (id) => `/api/admin/payroll/update/${id}`,
+  DELETE_DRAFT: (id) => `/api/admin/payroll/${id}`,
+},
 
   },
 
@@ -308,6 +313,7 @@ MARK_ATTENDANCE: '/api/teacher/hr/attendance',
       APPLY_LEAVE: '/api/teacher/hr/leaves/apply', 
       LEAVE_STATUS: '/api/teacher/hr/leaves/my',
       MY_LEAVES: '/api/teacher/hr/leaves/my',
+      MY_PAYROLL: '/api/teacher/hr/payroll/my',
 }
   },
 
