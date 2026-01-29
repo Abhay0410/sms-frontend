@@ -460,14 +460,9 @@ export default function TeacherRegisterForm() {
                   type="text"
                   name="panNumber"
                   value={form.panNumber}
-                  onChange={(e) => {
-                    // ✅ Force Uppercase for PAN
-                    const val = e.target.value.toUpperCase();
-                    setForm(prev => ({ ...prev, panNumber: val }));
-                  }}
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 uppercase"
-                  placeholder="ABCDE1234F"
-                  maxLength="10"
+                  onChange={onChange}
+                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  placeholder="Enter PAN Number"
                 />
               </div>
 

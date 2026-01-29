@@ -347,154 +347,292 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
   const isOverloaded = workload > maxWorkload;
   const isHighLoad = workload > maxWorkload * 0.8;
 
-  return (
-    <div className="group rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-md transition-all hover:shadow-xl hover:border-purple-200">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 p-3 shadow-md">
-            <FaUserTie className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-slate-900">{teacher.name}</h3>
-            <p className="text-sm text-slate-500">{teacher.teacherID}</p>
+  // return (
+  //   <div className="group rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-md transition-all hover:shadow-xl hover:border-purple-200">
+  //     {/* Header */}
+  //     <div className="flex items-start justify-between mb-4">
+  //       <div className="flex items-center gap-3">
+  //         <div className="rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 p-3 shadow-md">
+  //           <FaUserTie className="h-6 w-6 text-white" />
+  //         </div>
+  //         <div>
+  //           <h3 className="text-xl font-bold text-slate-900">{teacher.name}</h3>
+  //           <p className="text-sm text-slate-500">{teacher.teacherID}</p>
 
          
 
-          </div>
+  //         </div>
+  //       </div>
+  //       {isOverloaded && (
+  //         <div className="rounded-lg bg-red-100 p-2">
+  //           <FaExclamationTriangle className="h-5 w-5 text-red-600" />
+  //         </div>
+  //       )}
+  //     </div>
+
+  //     {/* Info */}
+  //     <div className="mb-4 space-y-2 text-sm">
+  //       <p className="text-slate-600">
+  //         <strong>Email:</strong> {teacher.email}
+  //       </p>
+  //       <p className="text-slate-600">
+  //         <strong>Phone:</strong> {teacher.phone || "N/A"}
+  //       </p>
+  //       {teacher.department && (
+  //         <p className="text-slate-600">
+  //           <strong>Department:</strong> {teacher.department}
+  //         </p>
+  //       )}
+
+  //          {teacher.assignedClasses && teacher.assignedClasses.length > 0 && (
+  //     <div className="mt-3 rounded-lg bg-slate-50 p-3 border">
+  //       <p className="text-xs font-semibold mb-2">Assignments</p>
+
+  //       {teacher.assignedClasses.map((ac, idx) => (
+  //         <p key={idx} className="text-xs text-slate-700">
+  //            {ac.class?.className} - {ac.section} | {ac.subject}
+  //           {ac.isClassTeacher && (
+  //             <span className="ml-2 text-blue-600 font-semibold">
+  //               (Class Teacher)
+  //             </span>
+  //           )}
+  //         </p>
+  //       ))}
+  //     </div>
+  //   )}
+        
+  //     </div>
+
+  //     {/* Workload */}
+  //     <div className="mb-4">
+  //       <div className="flex items-center justify-between mb-2">
+  //         <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
+  //           <FaClock className="h-3 w-3" />
+  //           Weekly Workload
+  //         </span>
+  //         <span
+  //           className={`text-xs font-bold ${
+  //             isOverloaded
+  //               ? "text-red-600"
+  //               : isHighLoad
+  //               ? "text-orange-600"
+  //               : "text-green-600"
+  //           }`}
+  //         >
+  //           {workload}h / {maxWorkload}h
+  //         </span>
+  //       </div>
+  //       <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+  //         <div
+  //           className={`h-2 rounded-full transition-all duration-500 ${
+  //             isOverloaded
+  //               ? "bg-gradient-to-r from-red-500 to-red-600"
+  //               : isHighLoad
+  //               ? "bg-gradient-to-r from-orange-500 to-orange-600"
+  //               : "bg-gradient-to-r from-green-500 to-green-600"
+  //           }`}
+  //           style={{ width: `${Math.min(workloadPercentage, 100)}%` }}
+  //         />
+  //       </div>
+  //     </div>
+
+  //     {/* Assignments */}
+  //     <div className="space-y-3 mb-4">
+  //       {/* Class Teacher */}
+  //       {teacher.assignments?.classTeacher &&
+  //         teacher.assignments.classTeacher.length > 0 && (
+  //           <div className="rounded-lg bg-blue-50 p-3 border border-blue-200">
+  //             <p className="text-xs font-semibold text-blue-900 mb-2 flex items-center gap-2">
+  //               <FaChalkboardTeacher className="h-3 w-3" />
+  //               Class Teacher
+  //             </p>
+  //             <div className="space-y-1">
+  //               {teacher.assignments.classTeacher.map((ct, idx) => (
+  //                 <p key={idx} className="text-xs text-blue-800">
+  //                   Class {ct.className} - {ct.section}
+  //                 </p>
+  //               ))}
+  //             </div>
+  //           </div>
+  //         )}
+
+  //       {/* Subject Teacher */}
+  //       {teacher.assignedClasses?.subjects &&
+  //         teacher.assignedClasses.subjects.length > 0 && (
+  //           <div className="rounded-lg bg-green-50 p-3 border border-green-200">
+  //             <p className="text-xs font-semibold text-green-900 mb-2 flex items-center gap-2">
+  //               <FaBook className="h-3 w-3" />
+  //               Subject Teacher ({teacher.assignments.subjects.length})
+  //             </p>
+  //             <div className="space-y-1 max-h-24 overflow-y-auto">
+  //               {teacher.assignments.subjects.map((sub, idx) => (
+  //                 <p key={idx} className="text-xs text-green-800">
+  //                   {sub.subject} - Class {sub.className}
+  //                   {sub.section} ({sub.hoursPerWeek}h)
+  //                 </p>
+  //               ))}
+  //             </div>
+  //           </div>
+  //         )}
+  //     </div>
+
+  //     {/* Actions */}
+  //     <div className="flex gap-2">
+  //       <button
+  //         onClick={onAssignClassTeacher}
+  //         className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:scale-105 flex items-center justify-center gap-2"
+  //       >
+  //         <FaPlus className="h-3 w-3" />
+  //         Class Teacher
+  //       </button>
+  //       <button
+  //         onClick={onAssignSubject}
+  //         className="flex-1 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-green-700 hover:scale-105 flex items-center justify-center gap-2"
+  //       >
+  //         <FaPlus className="h-3 w-3" />
+  //         Subject
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
+return (
+  <div className="group relative bg-white rounded-2xl 
+    shadow-[0_10px_30px_rgba(124,58,237,0.12)]
+    hover:shadow-[0_20px_45px_rgba(124,58,237,0.25)]
+    transition-all duration-300 p-5 overflow-hidden">
+
+    {/* Gradient top border */}
+    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500" />
+
+    {/* ===== Header ===== */}
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className="h-12 w-12 rounded-xl 
+          bg-gradient-to-br from-purple-500 to-pink-600
+          flex items-center justify-center text-white shadow-lg">
+          <FaUserTie className="h-6 w-6" />
         </div>
-        {isOverloaded && (
-          <div className="rounded-lg bg-red-100 p-2">
-            <FaExclamationTriangle className="h-5 w-5 text-red-600" />
-          </div>
-        )}
+
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900 group-hover:text-purple-600 transition">
+            {teacher.name}
+          </h3>
+          <p className="text-xs text-slate-500">
+            ID: {teacher.teacherID}
+          </p>
+        </div>
       </div>
 
-      {/* Info */}
-      <div className="mb-4 space-y-2 text-sm">
-        <p className="text-slate-600">
-          <strong>Email:</strong> {teacher.email}
-        </p>
-        <p className="text-slate-600">
-          <strong>Phone:</strong> {teacher.phone || "N/A"}
-        </p>
-        {teacher.department && (
-          <p className="text-slate-600">
-            <strong>Department:</strong> {teacher.department}
-          </p>
-        )}
+      {isOverloaded && (
+        <span className="px-3 py-1 text-xs rounded-full 
+          bg-gradient-to-r from-red-500 to-pink-500
+          text-white font-semibold shadow">
+          Overloaded
+        </span>
+      )}
+    </div>
 
-           {teacher.assignedClasses && teacher.assignedClasses.length > 0 && (
-      <div className="mt-3 rounded-lg bg-slate-50 p-3 border">
-        <p className="text-xs font-semibold mb-2">Assignments</p>
+    {/* ===== Department ===== */}
+    {teacher.department && (
+      <span className="inline-block mt-3 px-3 py-1 text-xs rounded-full 
+        bg-purple-50 text-purple-700 border border-purple-200">
+        {teacher.department}
+      </span>
+    )}
 
-        {teacher.assignedClasses.map((ac, idx) => (
-          <p key={idx} className="text-xs text-slate-700">
-             {ac.class?.className} - {ac.section} | {ac.subject}
-            {ac.isClassTeacher && (
-              <span className="ml-2 text-blue-600 font-semibold">
-                (Class Teacher)
-              </span>
-            )}
-          </p>
-        ))}
+    {/* ===== Contact ===== */}
+    <div className="grid grid-cols-2 gap-2 text-sm text-slate-600 mt-4">
+      <p className="truncate">📧 {teacher.email}</p>
+      <p>📞 {teacher.phone || "N/A"}</p>
+    </div>
+
+    {/* ===== Assignments ===== */}
+    {teacher.assignedClasses?.length > 0 && (
+      <div className="mt-4">
+        <p className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">
+          Assignments
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {teacher.assignedClasses.map((ac, idx) => (
+            <span
+              key={idx}
+              className={`px-2 py-1 rounded-md text-xs font-medium shadow-sm
+                ${
+                  ac.isClassTeacher
+                    ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700"
+                    : "bg-slate-100 text-slate-700"
+                }`}
+            >
+              {ac.class?.className}-{ac.section} • {ac.subject}
+              {ac.isClassTeacher && " (Class Teacher)"}
+            </span>
+          ))}
+        </div>
       </div>
     )}
-        
-      </div>
 
-      {/* Workload */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
-            <FaClock className="h-3 w-3" />
-            Weekly Workload
-          </span>
-          <span
-            className={`text-xs font-bold ${
-              isOverloaded
-                ? "text-red-600"
-                : isHighLoad
-                ? "text-orange-600"
-                : "text-green-600"
-            }`}
-          >
-            {workload}h / {maxWorkload}h
-          </span>
-        </div>
-        <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-          <div
-            className={`h-2 rounded-full transition-all duration-500 ${
-              isOverloaded
-                ? "bg-gradient-to-r from-red-500 to-red-600"
-                : isHighLoad
-                ? "bg-gradient-to-r from-orange-500 to-orange-600"
-                : "bg-gradient-to-r from-green-500 to-green-600"
-            }`}
-            style={{ width: `${Math.min(workloadPercentage, 100)}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Assignments */}
-      <div className="space-y-3 mb-4">
-        {/* Class Teacher */}
-        {teacher.assignments?.classTeacher &&
-          teacher.assignments.classTeacher.length > 0 && (
-            <div className="rounded-lg bg-blue-50 p-3 border border-blue-200">
-              <p className="text-xs font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                <FaChalkboardTeacher className="h-3 w-3" />
-                Class Teacher
-              </p>
-              <div className="space-y-1">
-                {teacher.assignments.classTeacher.map((ct, idx) => (
-                  <p key={idx} className="text-xs text-blue-800">
-                    Class {ct.className} - {ct.section}
-                  </p>
-                ))}
-              </div>
-            </div>
-          )}
-
-        {/* Subject Teacher */}
-        {teacher.assignedClasses?.subjects &&
-          teacher.assignedClasses.subjects.length > 0 && (
-            <div className="rounded-lg bg-green-50 p-3 border border-green-200">
-              <p className="text-xs font-semibold text-green-900 mb-2 flex items-center gap-2">
-                <FaBook className="h-3 w-3" />
-                Subject Teacher ({teacher.assignments.subjects.length})
-              </p>
-              <div className="space-y-1 max-h-24 overflow-y-auto">
-                {teacher.assignments.subjects.map((sub, idx) => (
-                  <p key={idx} className="text-xs text-green-800">
-                    {sub.subject} - Class {sub.className}
-                    {sub.section} ({sub.hoursPerWeek}h)
-                  </p>
-                ))}
-              </div>
-            </div>
-          )}
-      </div>
-
-      {/* Actions */}
-      <div className="flex gap-2">
-        <button
-          onClick={onAssignClassTeacher}
-          className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:scale-105 flex items-center justify-center gap-2"
+    {/* ===== Workload ===== */}
+    <div className="mt-5">
+      <div className="flex justify-between text-xs text-slate-500 mb-1">
+        <span className="flex items-center gap-1">
+          <FaClock className="h-3 w-3 text-purple-500" />
+          Weekly Workload
+        </span>
+        <span
+          className={`font-semibold ${
+            isOverloaded
+              ? "text-red-600"
+              : isHighLoad
+              ? "text-orange-600"
+              : "text-green-600"
+          }`}
         >
-          <FaPlus className="h-3 w-3" />
-          Class Teacher
-        </button>
-        <button
-          onClick={onAssignSubject}
-          className="flex-1 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-green-700 hover:scale-105 flex items-center justify-center gap-2"
-        >
-          <FaPlus className="h-3 w-3" />
-          Subject
-        </button>
+          {workload}h / {maxWorkload}h
+        </span>
+      </div>
+
+      <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+        <div
+          className={`h-2 rounded-full transition-all duration-500
+            ${
+              isOverloaded
+                ? "bg-gradient-to-r from-red-500 to-pink-500"
+                : isHighLoad
+                ? "bg-gradient-to-r from-orange-400 to-orange-600"
+                : "bg-gradient-to-r from-emerald-400 to-green-600"
+            }`}
+          style={{ width: `${Math.min(workloadPercentage, 100)}%` }}
+        />
       </div>
     </div>
-  );
+
+    {/* ===== Actions ===== */}
+    <div className="flex gap-3 mt-6">
+      <button
+        onClick={onAssignClassTeacher}
+        className="flex-1 rounded-lg 
+          bg-gradient-to-r from-indigo-500 to-purple-600
+          hover:from-indigo-600 hover:to-purple-700
+          text-white text-sm py-2 font-semibold shadow-md transition"
+      >
+        + Class Teacher
+      </button>
+
+      <button
+        onClick={onAssignSubject}
+        className="flex-1 rounded-lg 
+          bg-gradient-to-r from-emerald-500 to-green-600
+          hover:from-emerald-600 hover:to-green-700
+          text-white text-sm py-2 font-semibold shadow-md transition"
+      >
+        + Subject
+      </button>
+    </div>
+  </div>
+);
+
+
+
 }
 
 // Assignment Modal Component
