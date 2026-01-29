@@ -988,63 +988,12 @@ const handleSubmit = async (e) => {
     if (res.success) {
       const { adminID, password } = res.data;
 
-     Swal.fire({
-  icon: "success",
-  title: "Admin Registered",
-  html: `
-    <div style="text-align:left; padding:10px 5px">
-      <div style="margin-bottom:12px">
-        <b style="color:#111827">Admin ID:</b>
-        <span style="margin-left:6px; color:#2563eb">${adminID}</span>
-        <button id="copyAdminId" style="margin-left:10px; padding:2px 8px; font-size:12px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
-      </div>
-
-      <hr style="margin:12px 0"/>
-
-      <b style="color:#111827">Login Credentials</b>
-
-      <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:10px; margin-top:8px;">
-        <div style="margin-bottom:8px">
-          <small style="color:#6b7280">Password</small><br/>
-          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef2ff; padding:6px; border-radius:6px;">
-            <code style="color:#4338ca; font-size:13px">
-              ${password}
-            </code>
-            <button id="copyAdminPass" style="padding:2px 8px; font-size:11px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
-          </div>
-        </div>
-      </div>
-
-      <button id="copyAllCredentials" style="margin-top: 12px; width: 100%; padding: 8px; background-color: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">
-        Copy All Credentials
-      </button>
-
-      <p style="font-size:12px; color:#b91c1c; margin-top:10px">
-       ⚠️ Please save these credentials. They will not be shown again.
-      </p>
-    </div>
-  `,
-  confirmButtonText: "Done",
-  confirmButtonColor: "#4f46e5",
-  didOpen: () => {
-    const copyToClipboard = (text, label) => {
-      navigator.clipboard.writeText(text).then(() => {
-        Swal.showValidationMessage(`${label} copied`);
+      Swal.fire({
+        icon: "success",
+        title: "Admin Registered",
+        html: `<div>Admin ID: ${adminID}<br>Password: ${password}</div>`,
       });
-    };
-    const allCredentials = `Admin ID: ${adminID}\nPassword: ${password}`;
 
-    document.getElementById("copyAllCredentials")?.addEventListener("click", () => {
-      navigator.clipboard.writeText(allCredentials).then(() => Swal.showValidationMessage("Credentials copied!"));
-    });
-
-    document.getElementById("copyAdminId")?.addEventListener("click", () => copyToClipboard(adminID, "Admin ID"));
-    document.getElementById("copyAdminPass")?.addEventListener("click", () => copyToClipboard(password, "Password"));
-  },
-});
-
-
-      // Reset form
       setForm({
         name: "",
         email: "",
@@ -1055,13 +1004,8 @@ const handleSubmit = async (e) => {
         department: "",
         joiningDate: "",
         isSuperAdmin: true,
-        address: {
-          street: "",
-          city: "",
-          state: "",
-          pincode: "",
-          country: "India",
-        },
+        address: { street: "", city: "", state: "", pincode: "", country: "India" },
+        profilePictureFile: null,
       });
     } else {
       toast.error(res.message || "Admin registration failed");
