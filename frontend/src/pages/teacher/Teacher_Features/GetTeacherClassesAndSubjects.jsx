@@ -70,20 +70,20 @@ export default function GetTeacherClassesAndSubjects() {
               Teacher ID: <span className="font-semibold">{data.teacher.teacherID}</span>
             </p>
             <div className="mt-4 flex gap-4 text-sm">
-              <span className={`px-3 py-1 rounded-full ${
+              {/* <span className={`px-3 py-1 rounded-full ${
                 data.classes.length > 0 
                   ? 'bg-green-100 text-green-800' 
                   : 'bg-gray-100 text-gray-800'
               }`}>
                 Class Teacher: {data.classes.length} classes
-              </span>
-              <span className={`px-3 py-1 rounded-full ${
+              </span> */}
+              {/* <span className={`px-3 py-1 rounded-full ${
                 data.subjects.length > 0 
                   ? 'bg-blue-100 text-blue-800' 
                   : 'bg-gray-100 text-gray-800'
               }`}>
                 Subject Teacher: {data.subjects.length} subjects
-              </span>
+              </span> */}
             </div>
           </div>
         )}
@@ -113,9 +113,9 @@ export default function GetTeacherClassesAndSubjects() {
                           Class Teacher
                         </span>
                       </div>
-                      <span className="text-sm text-gray-500">
+                      {/* <span className="text-sm text-gray-500">
                         Students: {cls.currentStrength || 0}
-                      </span>
+                      </span> */}
                     </div>
                   </div>
                 ))}
@@ -187,14 +187,14 @@ export default function GetTeacherClassesAndSubjects() {
         </div>
 
         {/* Debug Info */}
-        <div className="mt-8 p-4 bg-gray-100 rounded-lg">
+        {/* <div className="mt-8 p-4 bg-gray-100 rounded-lg">
           <details>
             <summary className="cursor-pointer font-medium text-gray-700">Debug Information</summary>
             <pre className="mt-2 text-xs bg-white p-2 rounded overflow-auto max-h-40">
               {JSON.stringify(data, null, 2)}
             </pre>
           </details>
-        </div>
+        </div> */}
       </div>
     </div>
   );
