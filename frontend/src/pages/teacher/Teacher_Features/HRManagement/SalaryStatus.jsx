@@ -79,7 +79,7 @@ export default function SalaryStatus() {
       
       toast.info("Downloading salary slip...");
       window.open(downloadUrl, '_blank');
-    } catch (error) { // eslint-disable-line no-unused-vars
+    } catch {
       toast.error("Failed to download slip");
     }
   };
@@ -89,7 +89,7 @@ export default function SalaryStatus() {
     setShowDetails(true);
   };
 
-  const handlePrint = () => { // Removed unused slipId
+  const handlePrint = () => {
     const printWindow = window.open('', '_blank');
     const content = `
       <html>
@@ -279,7 +279,7 @@ export default function SalaryStatus() {
               <p className="text-slate-400">No salary slips available for the selected filters</p>
             </div>
           ) : (
-            filteredSalaries.map((item) => ( // Removed unused index
+            filteredSalaries.map((item) => (
               <div 
                 key={item._id} 
                 className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
@@ -365,7 +365,7 @@ export default function SalaryStatus() {
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
                 <h3 className="text-xl font-bold mb-2">Period Summary</h3>
-                <p className="text-slate-300">{filteredSalaries.length} salary slips • {monthNames[selectedSlip?.month - 1] || 'Selected Period'} {selectedYear}</p>
+                <p className="text-slate-300">{filteredSalaries.length} salary slips for {selectedYear}</p>
               </div>
               <div className="text-right">
                 <p className="text-slate-300 text-sm">Total for period</p>
@@ -433,7 +433,7 @@ export default function SalaryStatus() {
                   <FaFilePdf /> Download PDF
                 </button>
                 <button 
-                  onClick={() => handlePrint(selectedSlip._id)}
+                  onClick={() => handlePrint()}
                   className="flex-1 bg-slate-100 text-slate-700 py-3 rounded-xl font-bold flex items-center justify-center gap-2"
                 >
                   <FaPrint /> Print

@@ -18,6 +18,24 @@ export default function MonthlyPayRun() {
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 
+  // New state for extra earnings
+  const [extraEarnings, setExtraEarnings] = useState({}); // Structure: { teacherId: { amount: 0, remark: "" } }
+
+  // 1. Row Add karne ka function
+  const handleAddExtraRow = (staffId) => {
+    setExtraEarnings(prev => ({
+      ...prev,
+      [staffId]: [...(prev[staffId] || []), { amount: "", remark: "" }]
+    }));
+  };
+
+  // 2. Specific field update karne ka function
+  const handleExtraFieldChange = (staffId, index, field, value) => {
+    const updated = [...(extraEarnings[staffId] || [])];
+    updated[index] = { ...updated[index], [field]: field === "amount" ? value : value };
+    setExtraEarnings(prev => ({ ...prev, [staffId]: updated }));
+  };
+
   const monthNames = [
     "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
     "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
@@ -58,12 +76,13 @@ export default function MonthlyPayRun() {
       );
       
       const processedIds = (payrollResp.data || payrollResp || []).map(p => {
-        const id = p.teacherId || p.employeeId || p.staffId || p._id;
-        return id?.toString();
+        // ✅ STRICT FIX: Always use employeeId as per your Payroll Schema
+        return p.employeeId?.toString();
       }).filter(Boolean);
       
       const pendingStaff = (attendanceResp.data || attendanceResp || []).filter(s => {
         const staffId = s.teacherId || s.employeeId || s._id;
+        // Agar processedIds mein ye ID hai, toh ise pending se hata do
         return staffId && !processedIds.includes(staffId.toString());
       });
 
@@ -110,11 +129,15 @@ export default function MonthlyPayRun() {
       const payload = {
         month: selectedMonth.toString(),
         year: selectedYear.toString(),
-        employeeIds: [teacherId]
+        employeeIds: [teacherId],
+        // ✅ Pass extra earnings for this specific teacher
+        extraEarnings: {
+          [teacherId]: extraEarnings[teacherId] || []
+        }
       };
       
       await api.post(API_ENDPOINTS.ADMIN.PAYROLL.RUN_PAYROLL, payload);
-      toast.success("Salary slip generated successfully!");
+      toast.success("Salary slip with extra allowance generated!");
       loadData();
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed to generate salary slip");
@@ -313,7 +336,9 @@ const handleDownloadPDF = async (slipId) => {
       const payload = {
         month: selectedMonth.toString(),
         year: selectedYear.toString(),
-        employeeIds: stats.map(s => s.id).filter(Boolean)
+        employeeIds: stats.map(s => s.id).filter(Boolean),
+        // ✅ ADD THIS: Bulk data transfer
+        extraEarnings: extraEarnings
       };
       
       await api.post(API_ENDPOINTS.ADMIN.PAYROLL.RUN_PAYROLL, payload);
@@ -421,6 +446,7 @@ const handleDownloadPDF = async (slipId) => {
                   <th className="p-6 text-center">Duty Days</th>
                   <th className="p-6 text-center">Attendance</th>
                   <th className="p-6 text-center">Factor</th>
+                  <th className="p-6 text-center">Extra Pay</th>
                   <th className="p-6 text-right">Action</th>
                 </tr>
               </thead>
@@ -452,6 +478,32 @@ const handleDownloadPDF = async (slipId) => {
                       <span className="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-full text-sm font-bold">
                         {row.attendanceFactor}x
                       </span>
+                    </td>
+                    <td className="p-6">
+                      <div className="space-y-2">
+                        {(extraEarnings[row.id] || []).map((extra, idx) => (
+                          <div key={idx} className="flex gap-2 animate-in fade-in slide-in-from-left-2">
+                            <input 
+                              type="number" placeholder="₹" 
+                              className="w-20 p-1 text-xs border border-purple-100 rounded-lg font-bold"
+                              value={extra.amount}
+                              onChange={(e) => handleExtraFieldChange(row.id, idx, "amount", e.target.value)}
+                            />
+                            <input 
+                              type="text" placeholder="Reason" 
+                              className="flex-1 p-1 text-[10px] border border-slate-100 rounded-lg italic"
+                              value={extra.remark}
+                              onChange={(e) => handleExtraFieldChange(row.id, idx, "remark", e.target.value)}
+                            />
+                          </div>
+                        ))}
+                        <button 
+                          onClick={() => handleAddExtraRow(row.id)}
+                          className="text-[9px] font-black text-indigo-500 hover:text-indigo-700 uppercase tracking-tighter"
+                        >
+                          + Add Category
+                        </button>
+                      </div>
                     </td>
                     <td className="p-6 text-right">
                       <button 

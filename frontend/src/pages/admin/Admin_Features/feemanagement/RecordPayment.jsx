@@ -18,7 +18,7 @@ import {
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
 import Swal from 'sweetalert2';
-import downloadReceiptPDF from "../../../../utils/downloadReceiptPDF";
+// import downloadReceiptPDF from "../../../../utils/downloadReceiptPDF";
 
 export default function RecordPayment() {
   const academicYears = useMemo(() => {
@@ -129,7 +129,6 @@ export default function RecordPayment() {
         } 
       };
     }
-   
 
     
     const amount = Number(paymentForm.amountPaid);
@@ -274,13 +273,13 @@ export default function RecordPayment() {
   );
 
 
-  const school = (() => {
-  try {
-    return JSON.parse(localStorage.getItem("selectedSchool"));
-  } catch {
-    return null;
-  }
-})();
+//   const school = (() => {
+//   try {
+//     return JSON.parse(localStorage.getItem("selectedSchool"));
+//   } catch {
+//     return null;
+//   }
+// })();
 
 
   useEffect(() => {
@@ -491,56 +490,90 @@ export default function RecordPayment() {
         payload.feePaymentId = selectedStudent.feeDetails.feePaymentId;
       }
 
+
+      const downloadReceipt = async (paymentId) => {
+  try {
+    const res = await api.get(
+      API_ENDPOINTS.ADMIN.FEE.DOWNLOAD_RECEIPT(paymentId),
+      { responseType: "blob" }
+    );
+    console.log("FULL PAYMENT RESPONSE 👉", res);
+
+
+    const blob = new Blob([res.data], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Fee_Receipt_${paymentId}.pdf`;
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    toast.error("Failed to download receipt");
+    console.error(err);
+  }
+};
+
+
       const response = await api.post(
         API_ENDPOINTS.ADMIN.FEE.RECORD_PAYMENT,
         payload
       );
 
-      // toast.success(
-      //   <div className="space-y-1">
-      //     <div className="font-bold uppercase">Payment Processed!</div>
-      //     <div className="text-sm opacity-90">
-      //       Amount: ₹{amount.toLocaleString('en-IN')} | Receipt: {response.data?.receiptNumber || "Generated"}
-      //     </div>
-      //   </div>,
-      //   {
-      //     icon: <FaCheckDouble className="text-emerald-500" />,
-      //     autoClose: 4000,
-      //     closeOnClick: false,
-      //   }
-      // );
- Swal.fire({
-      title: 'Payment Successful!',
-      html: `
-        <p>Amount Paid: <strong>₹${payload.amountPaid.toLocaleString('en-IN')}</strong></p>
-        <p>Receipt #: <strong>${response.data?.receiptNumber || 'Generated'}</strong></p>
-      `,
-      icon: 'success',
-      showCancelButton: true,
-      confirmButtonText: 'Download Receipt',
-      cancelButtonText: 'Close',
-      reverseButtons: true,
-      focusCancel: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        
-        // Download receipt
-         downloadReceiptPDF({
-          schoolName:school?.schoolName,
-      receiptNumber: response.data?.receiptNumber || 'Generated',
-      studentName: selectedStudent.name,
-      studentID: selectedStudent.studentID,
-      amountPaid: payload.amountPaid,
-      paymentDate: payload.paymentDate || new Date(),
-      paymentMode: payload.paymentMode || 'N/A',
-      remarks: payload.remarks || '',
       
-    });
-      //   window.open(`${API_ENDPOINTS.ADMIN.FEE.DOWNLOAD_RECEIPT}?receiptNumber=${response.data?.receiptNumber}`, '_blank');
-     }
-   
 
-    });
+   
+Swal.fire({
+  title: "🎉 Payment Successful!",
+  html: `
+    <div style="text-align:left; font-size:15px; line-height:1.6">
+   
+      <p>💰 <strong>Amount Paid:</strong> 
+        <span style="color:#2e7d32;font-size:18px;">
+          ₹${payload.amountPaid.toLocaleString("en-IN")}
+        </span>
+      </p>
+      <p>🧾 <strong>Receipt No:</strong> 
+        <span style="color:#1976d2">
+          ${response.data?.receiptNumber || "Generated"}
+        </span>
+      </p>
+      <p>📅 <strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+      <hr/>
+      <p style="font-size:13px;color:#666">
+        You can download the receipt now or later from payment history.
+      </p>
+    </div>
+  `,
+  icon: "success",
+  background: "#f9fbff",
+  confirmButtonText: "⬇️ Download Receipt",
+  cancelButtonText: "❌ Close",
+  showCancelButton: true,
+  confirmButtonColor: "#1976d2",
+  cancelButtonColor: "#9e9e9e",
+  reverseButtons: true,
+  allowOutsideClick: false,
+  allowEscapeKey: true,
+  showClass: {
+    popup: "animate__animated animate__fadeInDown"
+  },
+  hideClass: {
+    popup: "animate__animated animate__fadeOutUp"
+  }
+}).then((result) => {
+  if (result.isConfirmed) {
+    const paymentId = response.data?.paymentId;
+    if (!paymentId) {
+      toast.error("Payment ID not found for receipt");
+      return;
+    }
+    downloadReceipt(paymentId);
+  }
+});
+
+    
 
       setShowModal(false);
       setSelectedInsts([]);
