@@ -39,8 +39,8 @@ export default function PaymentHistory() {
   });
   const [filterLoading, setFilterLoading] = useState(false);
   
-  // Use ref to track if component is mounted
   const isMounted = useRef(true);
+  const lastRequestKey = useRef("");
 
   // Cleanup on unmount
   useEffect(() => {
@@ -49,80 +49,109 @@ export default function PaymentHistory() {
     };
   }, []);
 
-  // Separate function for loading payments without useCallback dependencies
+  // ✅ 1. PaymentHistory.jsx mein loadPayments function ko replace karein
   const loadPayments = useCallback(async (year, status) => {
     if (!isMounted.current) return;
     
     try {
       setLoading(true);
-      
       const response = await api.get(API_ENDPOINTS.ADMIN.FEE.ALL, {
-        params: {
-          academicYear: year,
-          status: status || undefined,
-        },
+        params: { academicYear: year, status: status || undefined },
         timeout: 10000,
       });
 
-      let apiData = [];
-      if (Array.isArray(response?.data?.payments)) {
-        apiData = response.data.payments;
-      } else if (Array.isArray(response?.payments)) {
-        apiData = response.payments;
-      }
+      // 🔍 Backend Response Structure Check:
+      // Case 1: response.payments (Aapka current code)
+      // Case 2: response.data.payments (Standard MERN)
+      // Case 3: response (Direct array)
+      const apiData = response?.data?.payments || response?.payments || (Array.isArray(response) ? response : []); 
+      
+      console.log("DEBUG: Payment Data received:", apiData); // Inspect console mein check karein
 
       const paymentsData = apiData.map((p, idx) => ({
-        _id: p._id || `payment-${idx}`,
+        _id: p._id || `p-${idx}`,
         receiptNumber: p.receiptNumber || `RCPT${1000 + idx}`,
-        studentName: p.student?.name || p.studentName || "Unknown Student",
+        studentName: p.student?.name || p.studentName || "Unknown",
         studentID: p.student?.studentID || p.studentID || "N/A",
         className: p.className || "N/A",
-        section: p.section || "",
         amountPaid: Number(p.amountPaid || p.amount || 0),
-        paymentMethod: p.paymentMethod || p.paymentMode || "CASH",
+        paymentMethod: p.paymentMethod || "CASH",
         paymentDate: p.paymentDate || new Date().toISOString(),
         status: p.status || "PAID",
       }));
 
-      setPayments(paymentsData);
-      
+      if (isMounted.current) {
+        setPayments(paymentsData);
+      }
     } catch (error) {
-      console.error("Error loading payments:", error);
-      toast.error("Failed to load payment history");
+      console.error("Fetch Error:", error);
+      if (isMounted.current) toast.error("Connection Error with Backend");
     } finally {
       if (isMounted.current) {
-        setLoading(false);
+        setLoading(false); // ✅ Ye ensure karega ki spinner hatega
         setFilterLoading(false);
       }
     }
   }, []);
 
-  // Update filter with proper handling
-  const updateFilter = (field, value) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+  // ✅ FIXED: Correct useEffect with all dependencies
+  useEffect(() => {
+    console.log("useEffect triggered:", { academicYear, filters });
     
-    // For class and status filters, trigger API call
-    if (field === 'status') {
-      setFilterLoading(true);
+    const requestKey = `${academicYear}-${filters.status}-${filters.className}`;
+    
+    // Skip if same request is already in progress
+    if (lastRequestKey.current === requestKey) {
+      console.log("Skipping duplicate request");
+      return;
     }
-  };
+    
+    lastRequestKey.current = requestKey;
+    
+    const timer = setTimeout(() => {
+      console.log("Calling loadPayments");
+      loadPayments(academicYear, filters.status, filters.className);
+    }, 400);
 
-  // Clear all filters
-  const clearFilters = () => {
+    return () => {
+      console.log("Cleaning up timer");
+      clearTimeout(timer);
+    };
+  }, [academicYear, filters, loadPayments]); // ✅ Added filters and loadPayments
+
+  // ✅ FIXED: Use useCallback for filter functions
+  const updateFilter = useCallback((field, value) => {
+    setFilters(prev => {
+      const newFilters = { ...prev, [field]: value };
+      
+      if (field === 'status' || field === 'className') {
+        setFilterLoading(true);
+      }
+      
+      return newFilters;
+    });
+  }, []);
+
+  const clearFilters = useCallback(() => {
     setFilters({
       search: "",
       status: "",
       className: "",
     });
-  };
+    setFilterLoading(true);
+  }, []);
 
-  // Filter payments locally with search
+  // ✅ FIXED: Local filtering with all dependencies
   const filteredPayments = useMemo(() => {
-    let result = payments;
+    console.log("Filtering payments:", payments.length, filters);
+    
+    if (!payments.length) return [];
+    
+    let result = [...payments];
     
     // Apply search filter
     if (filters.search) {
-      const q = filters.search.toLowerCase();
+      const q = filters.search.toLowerCase().trim();
       result = result.filter(p => 
         p.studentName?.toLowerCase().includes(q) ||
         p.studentID?.toLowerCase().includes(q) ||
@@ -131,53 +160,55 @@ export default function PaymentHistory() {
       );
     }
     
-    // Apply status filter (already done via API, but double-check locally)
+    // Apply status filter locally (already filtered by API)
     if (filters.status) {
       result = result.filter(p => p.status === filters.status);
     }
     
-    // Apply class filter (already done via API, but double-check locally)
+    // Apply class filter locally (already filtered by API)
     if (filters.className) {
       result = result.filter(p => 
         p.className.toLowerCase().includes(filters.className.toLowerCase())
       );
     }
     
+    console.log("Filtered result:", result.length);
     return result;
-  }, [payments, filters]);
+  }, [payments, filters]); // ✅ Added filters dependency
 
-  // Load payments on mount and when academic year or filters change (Debounced)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (academicYear) {
-        loadPayments(academicYear, filters.status);
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [academicYear, filters.status, loadPayments]);
-
-  // Download receipt
+  // ✅ FIXED: Download receipt function
   const downloadReceipt = async (payment) => {
     try {
-      const response = await api.get(
-        API_ENDPOINTS.ADMIN.FEE.DOWNLOAD_RECEIPT(payment._id),
-        { responseType: "blob" }
-      );
+      // Use API_ENDPOINTS constant
+      const endpoint = API_ENDPOINTS.ADMIN.FEE.DOWNLOAD_RECEIPT(payment._id);
+      console.log("Downloading receipt from:", endpoint);
       
-      const blob = new Blob([response.data], { type: "application/pdf" });
+      const response = await api.get(endpoint, { 
+        responseType: "blob" 
+      });
+      
+      const blob = new Blob([response], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.download = `${payment.studentName.replace(/\s+/g, "_")}_${payment.receiptNumber}.pdf`;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       
-      toast.success("Receipt downloaded");
-    } catch {
-      toast.error("Download failed");
+      toast.success("Receipt downloaded successfully");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Failed to download receipt");
     }
   };
 
+  // Refresh button handler
+  const handleRefresh = () => {
+    setFilterLoading(true);
+    loadPayments(academicYear, filters.status, filters.className);
+  };
 
   if (loading && payments.length === 0) {
     return (
@@ -222,16 +253,17 @@ export default function PaymentHistory() {
             <FaFilter className="text-purple-600" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-900">Quick Filters</h3>
+            <h3 className="font-bold text-slate-900">Filters</h3>
             <p className="text-sm text-slate-500">
-              Search filters locally • Status/Class filters via API
+              Search locally • Status/Class filter via API
             </p>
           </div>
           <div className="ml-auto">
             <button
-              onClick={() => loadPayments(academicYear, filters.status)}
+              onClick={handleRefresh}
               className="p-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"
               title="Refresh Data"
+              disabled={loading}
             >
               <FaSync className={loading ? "animate-spin" : ""} />
             </button>
@@ -250,11 +282,7 @@ export default function PaymentHistory() {
                 type="text"
                 placeholder="Name, ID, receipt..."
                 value={filters.search}
-                onChange={(e) => {
-                  setFilters(prev => ({ ...prev, search: e.target.value }));
-                  setFilterLoading(true);
-                  setTimeout(() => setFilterLoading(false), 100);
-                }}
+                onChange={(e) => updateFilter("search", e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
               />
             </div>
@@ -272,7 +300,7 @@ export default function PaymentHistory() {
             >
               <option value="">All Status</option>
               <option value="PAID">Paid</option>
-              <option value="PARTIALLY_PAID">Partial</option>
+              <option value="PARTIAL">Partial</option>
               <option value="PENDING">Pending</option>
             </select>
           </div>
@@ -293,7 +321,7 @@ export default function PaymentHistory() {
         </div>
 
         {/* Active Filters */}
-        {Object.values(filters).some(f => f) && (
+        {(filters.search || filters.status || filters.className) && (
           <div className="mt-6 pt-6 border-t border-slate-100">
             <div className="flex items-center gap-3 mb-3">
               <div className="h-2 w-2 bg-purple-500 rounded-full animate-pulse"></div>
@@ -333,10 +361,10 @@ export default function PaymentHistory() {
             <h3 className="text-xl font-bold text-slate-900">
               Payments ({filteredPayments.length})
             </h3>
-            {filterLoading && (
+            {(filterLoading || loading) && (
               <div className="flex items-center gap-2 text-sm text-slate-500">
                 <FaSpinner className="animate-spin" />
-                Applying filters...
+                {filterLoading ? "Applying filters..." : "Loading..."}
               </div>
             )}
           </div>
@@ -345,8 +373,14 @@ export default function PaymentHistory() {
         {filteredPayments.length === 0 ? (
           <div className="p-12 text-center">
             <FaFileDownload className="mx-auto h-12 w-12 text-slate-300 mb-4" />
-            <h4 className="text-lg font-semibold text-slate-900 mb-2">No payments found</h4>
-            <p className="text-slate-500">Try adjusting your search or filters</p>
+            <h4 className="text-lg font-semibold text-slate-900 mb-2">
+              {payments.length === 0 ? "No payments found" : "No matching payments"}
+            </h4>
+            <p className="text-slate-500">
+              {payments.length === 0 
+                ? "No payment records for the selected filters" 
+                : "Try adjusting your search"}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -400,7 +434,7 @@ export default function PaymentHistory() {
                     <td className="p-4">
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                         payment.status === 'PAID' ? 'bg-green-100 text-green-700' :
-                        payment.status === 'PARTIALLY_PAID' ? 'bg-yellow-100 text-yellow-700' :
+                        payment.status === 'PARTIAL' ? 'bg-yellow-100 text-yellow-700' :
                         'bg-orange-100 text-orange-700'
                       }`}>
                         {payment.status}
@@ -411,7 +445,7 @@ export default function PaymentHistory() {
                         <button
                           onClick={() => downloadReceipt(payment)}
                           className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                          title="Download"
+                          title="Download Receipt"
                         >
                           <FaDownload />
                         </button>
