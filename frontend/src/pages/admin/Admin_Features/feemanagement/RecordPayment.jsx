@@ -129,7 +129,6 @@ export default function RecordPayment() {
         } 
       };
     }
-   
 
     
     const amount = Number(paymentForm.amountPaid);

@@ -13,7 +13,7 @@ import {
   FaExclamationCircle
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
-import { motion,AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const FREQUENCY_OPTIONS = [
   { value: "MONTHLY", label: "Monthly (12 Installments)" },

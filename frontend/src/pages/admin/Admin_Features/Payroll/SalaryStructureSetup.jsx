@@ -15,6 +15,34 @@ export default function SalaryStructureSetup() {
   const [taxRegime] = useState("NEW"); // Fixed: Removed unused setter
   const [limitPF, setLimitPF] = useState(true);
 
+  // Policy State
+  const [policy, setPolicy] = useState({ basicPercent: 50, hraPercent: 20, daPercent: 10 });
+  const [showPolicy, setShowPolicy] = useState(false);
+
+  useEffect(() => {
+    const fetchPolicy = async () => {
+      try {
+        const resp = await api.get(API_ENDPOINTS.ADMIN.PAYROLL.GET_POLICY);
+        if (resp.data?.payrollSettings) {
+          setPolicy(resp.data.payrollSettings);
+        }
+      } catch  {
+        console.log("Using default norms...");
+      }
+    };
+    fetchPolicy();
+  }, []);
+
+  const handleSavePolicy = async () => {
+    try {
+        await api.post('/api/admin/payroll/policy', policy);
+        toast.success("Global School Policy Updated!");
+        setShowPolicy(false);
+    } catch {
+        toast.error("Failed to update policy");
+    }
+  };
+
   // Load Staff on mount
   useEffect(() => {
     const loadStaff = async () => {
@@ -59,11 +87,11 @@ export default function SalaryStructureSetup() {
     const gross = parseFloat(monthlyGross) || 0;
     
     // 1. Basic Salary (50% of Gross - 2026 Guidelines)
-    const basic = gross * 0.50;
+    const basic = gross * (policy.basicPercent / 100);
     
     // 2. Allowances
-    const da = basic * 0.10; // Assuming 10% DA
-    const hra = basic * 0.20; // Assuming 20% HRA
+    const hra = gross * (policy.hraPercent / 100);
+    const da = gross * (policy.daPercent / 100);
     const special = Math.max(0, gross - (basic + da + hra));
 
     // 3. EPF Calculation (12% of Basic + DA)
@@ -80,7 +108,7 @@ export default function SalaryStructureSetup() {
     const netPay = gross - (epfEmployee + pt);
 
     return { basic, da, hra, special, epfEmployee, epfEmployer, gratuity, netPay, pt };
-  }, [monthlyGross, limitPF]);
+  }, [monthlyGross, limitPF, policy]);
 
   const handleSaveStructure = async () => {
     if (!selectedStaff) return toast.warning("Please select a staff member");
@@ -121,6 +149,34 @@ export default function SalaryStructureSetup() {
             <FaShieldAlt className="text-emerald-500" /> Compliance Year: 2026 • Indian Wage Code Policy
           </p>
         </div>
+      </div>
+
+      {/* Policy UI Panel */}
+      <div className="bg-slate-900 rounded-[2rem] p-6 mb-8 text-white shadow-xl">
+        <div className="flex justify-between items-center cursor-pointer" onClick={() => setShowPolicy(!showPolicy)}>
+          <div className="flex items-center gap-3">
+            <FaShieldAlt className="text-orange-400" />
+            <h3 className="font-black uppercase text-xs tracking-widest">Global Payout Configuration</h3>
+          </div>
+          <button className="text-[10px] bg-white/10 px-4 py-1 rounded-full hover:bg-white/20">{showPolicy ? 'Close' : 'Modify Default %'}</button>
+        </div>
+        
+        {showPolicy && (
+          <div className="grid grid-cols-3 gap-6 mt-8 animate-in fade-in zoom-in duration-300">
+            {['basicPercent', 'hraPercent', 'daPercent'].map(field => (
+              <div key={field}>
+                <label className="text-[9px] uppercase font-bold text-slate-500 block mb-2">{field.replace('Percent', ' %')}</label>
+                <input 
+                  type="number" 
+                  value={policy[field]} 
+                  onChange={(e) => setPolicy({...policy, [field]: e.target.value})}
+                  className="w-full bg-slate-800 border-none rounded-xl p-3 text-sm font-black focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
+            ))}
+            <button onClick={handleSavePolicy} className="col-span-3 bg-orange-500 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-orange-600 transition-all">Save Changes for all Employees</button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -195,15 +251,15 @@ export default function SalaryStructureSetup() {
               <table className="w-full text-sm">
                 <tbody className="divide-y divide-slate-50">
                   <tr className="py-4 flex justify-between font-bold">
-                    <td className="text-slate-500">Basic Salary (50%)</td>
+                    <td className="text-slate-500">Basic Salary ({policy.basicPercent}%)</td>
                     <td className="text-slate-900">₹{calculation.basic.toLocaleString()}</td>
                   </tr>
                   <tr className="py-4 flex justify-between font-bold">
-                    <td className="text-slate-500">Dearness Allowance (DA)</td>
+                    <td className="text-slate-500">Dearness Allowance ({policy.daPercent}%)</td>
                     <td className="text-slate-900">₹{calculation.da.toLocaleString()}</td>
                   </tr>
                   <tr className="py-4 flex justify-between font-bold">
-                    <td className="text-slate-500">House Rent Allowance (HRA)</td>
+                    <td className="text-slate-500">House Rent Allowance ({policy.hraPercent}%)</td>
                     <td className="text-slate-900">₹{calculation.hra.toLocaleString()}</td>
                   </tr>
                   <tr className="py-4 flex justify-between font-bold">

@@ -202,9 +202,11 @@ LEAVE_REQUESTS: '/api/admin/hr/leaves', // ✅ Correct path
   // ===============================
   // 💰 PAYROLL 
   // ===============================
-// src/constants/apiEndpoints.js
 
 PAYROLL: {
+  GET_POLICY: '/api/admin/payroll/policy',
+  UPDATE_POLICY: '/api/admin/payroll/policy',
+  
   SETUP_SALARY: '/api/admin/payroll/setup-salary',
   SETUP_STRUCTURE: '/api/admin/payroll/setup-structure',
   GET_STRUCTURE: (teacherId) => `/api/admin/payroll/structure/${teacherId}`,
