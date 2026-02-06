@@ -1030,11 +1030,12 @@ const handleSubmit = async (e) => {
       <div className="max-w-6xl mx-auto mb-6">
       
 
-        <div className="flex flex-col md:flex-row md:items-center md:gap-3 mt-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+        <div className="mt-6">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-800 tracking-tight">
             Register Admin
           </h1>
-          <p className="text-gray-500">Add a new admin to the system</p>
+         
+          <p className="text-slate-500 font-medium mt-2 text-sm">Add a new admin to the system</p>
         </div>
       </div>
 
