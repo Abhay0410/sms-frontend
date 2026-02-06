@@ -131,6 +131,8 @@ export default function TeacherManagement() {
     }
   }, [academicYear]);
 
+  
+
   // ✅ Now useEffects can safely use loadData
   useEffect(() => {
     console.log("🔍 Current localStorage tokens:");
@@ -496,13 +498,19 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
   //   </div>
   // );
 return (
-  <div className="group relative bg-white rounded-2xl 
-    shadow-[0_10px_30px_rgba(124,58,237,0.12)]
-    hover:shadow-[0_20px_45px_rgba(124,58,237,0.25)]
-    transition-all duration-300 p-5 overflow-hidden">
+ <div
+  className="group relative bg-white rounded-2xl
+shadow-[0_10px_30px_rgba(220,38,38,0.12)]
+hover:shadow-[0_20px_45px_rgba(220,38,38,0.25)]
+
+  transition-all duration-300
+  p-5 overflow-hidden
+  flex flex-col h-full"
+>
+
 
     {/* Gradient top border */}
-    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500" />
+    {/* <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500" /> */}
 
     {/* ===== Header ===== */}
     <div className="flex items-center justify-between">
@@ -548,7 +556,7 @@ return (
 
     {/* ===== Assignments ===== */}
     {teacher.assignedClasses?.length > 0 && (
-      <div className="mt-4">
+      <div className="mt-4 flex-grow">
         <p className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">
           Assignments
         </p>
@@ -607,7 +615,7 @@ return (
     </div>
 
     {/* ===== Actions ===== */}
-    <div className="flex gap-3 mt-6">
+    <div className="flex gap-3 mt-auto pt-5">
       <button
         onClick={onAssignClassTeacher}
         className="flex-1 rounded-lg 
