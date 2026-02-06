@@ -418,10 +418,10 @@ export default function TimetableManagement() {
         {/* Header */}
         <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
-            <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
               Timetable Management
             </h2>
-            <p className="text-base text-slate-600 flex items-center gap-2">
+            <p className="text-base text-slate-500 font-medium flex items-center gap-2">
               <FaClock className="text-teal-600" />
               Create and manage class schedules
             </p>

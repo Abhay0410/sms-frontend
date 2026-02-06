@@ -371,12 +371,12 @@ export default function ClassManagement() {
          
           <div
             className={`relative bg-white p-7 rounded-[2rem] border  overflow-hidden transition-all duration-300
-  ${
-    activeClassName
-      ? "border-red-400 shadow-lg scale-[1.02]"
-      : "border-slate-100 shadow-sm  " 
-  }
-`}
+            ${
+              activeClassName
+                ? "border-red-400 shadow-lg scale-[1.02]"
+                : "border-slate-100 shadow-sm  " 
+                }
+            `}
           >
             {/* Top Accent Bar */}
             <div className="absolute top-0 left-0 h-1 w-full rounded-t-[2rem] bg-gradient-to-r from-red-500 to-orange-400" />

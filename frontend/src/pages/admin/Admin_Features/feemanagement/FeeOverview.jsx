@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
-import {  AnimatePresence } from "framer-motion";
+import {  AnimatePresence, motion} from "framer-motion";
+
 import {
   FaCheckCircle,
   FaExclamationCircle,
