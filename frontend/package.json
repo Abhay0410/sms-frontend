@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
     "@tailwindcss/vite": "^4.1.14",
     "axios": "^1.12.2",
     "date-fns": "^4.1.0",
@@ -20,6 +21,7 @@
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.561.0",
+    "pagination": "^0.4.6",
     "react": "^19.1.1",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.1.1",
