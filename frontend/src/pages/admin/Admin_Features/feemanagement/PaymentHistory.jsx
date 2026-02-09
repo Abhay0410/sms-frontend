@@ -1,969 +1,826 @@
-// import { useEffect, useState, useMemo, useRef, useCallback } from "react";
-// import { toast } from "react-toastify";
-// import api from "../../../../services/api";
-// import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
-// import {
-//   FaFileDownload,
-//   FaFilter,
-//   FaEye,
-//   FaSearch,
-//   FaSpinner,
-//   FaDownload,
-//   FaSync,
-// } from "react-icons/fa";
-
-// export default function PaymentHistory() {
-//   const academicYears = useMemo(() => {
-//     const currentYear = new Date().getFullYear();
-//     const years = [];
-//     for (let i = -1; i < 6; i++) {
-//       const year = currentYear + i;
-//       years.push(`${year}-${year + 1}`);
-//     }
-//     return years;
-//   }, []);
-
-//   const [academicYear, setAcademicYear] = useState(() => {
-//     const now = new Date();
-//     const year = now.getFullYear();
-//     const month = now.getMonth();
-//     return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
-//   });
-
-//   const [payments, setPayments] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [filters, setFilters] = useState({
-//     search: "",
-//     status: "",
-//     className: "",
-//   });
-//   const [filterLoading, setFilterLoading] = useState(false);
-
-//   // Use ref to track if component is mounted
-//   const isMounted = useRef(true);
-
-//   // Cleanup on unmount
-//   useEffect(() => {
-//     return () => {
-//       isMounted.current = false;
-//     };
-//   }, []);
-
-//   // Separate function for loading payments without useCallback dependencies
-//   const loadPayments = useCallback(async (year, status) => {
-//     if (!isMounted.current) return;
-
-//     try {
-//       // setLoading(true);
-//       if (!payments.length) {
-//         setLoading(true); // only first load
-//       } else {
-//         setFilterLoading(true); // filters
-//       }
-
-//       console.log("🔥 loadPayments called", year, status);
-
-//       const response = await api.get(API_ENDPOINTS.ADMIN.FEE.ALL, {
-//         params: {
-//           academicYear: year,
-//           status: status || undefined,
-//         },
-//         timeout: 10000,
-//       });
-
-//       console.log("✅ API RESPONSE", response.data);
-
-//       // let apiData = [];
-//       // if (Array.isArray(response?.data?.payments)) {
-//       //   apiData = response.data.payments;
-//       // } else if (Array.isArray(response?.payments)) {
-//       //   apiData = response.payments;
-//       // }
-
-//       const apiData = Array.isArray(response?.data?.data?.payments)
-//         ? response.data.data.payments
-//         : [];
-
-//       console.log("📦 payments length", apiData.length);
-
-//       const paymentsData = apiData.map((p, idx) => ({
-//         _id: p._id || `payment-${idx}`,
-//         receiptNumber: p.receiptNumber || `RCPT${1000 + idx}`,
-//         studentName: p.student?.name || p.studentName || "Unknown Student",
-//         studentID: p.student?.studentID || p.studentID || "N/A",
-//         className: p.className || "N/A",
-//         section: p.section || "",
-//         amountPaid: Number(p.amountPaid || p.amount || 0),
-//         paymentMethod: p.paymentMethod || p.paymentMode || "CASH",
-//         paymentDate: p.paymentDate || new Date().toISOString(),
-//         status: p.status || "PAID",
-//       }));
-
-//       setPayments(paymentsData);
-//     } catch (error) {
-//       console.error("Error loading payments:", error);
-//       toast.error("Failed to load payment history");
-//     } finally {
-//       if (isMounted.current) {
-//         setLoading(false);
-//         setFilterLoading(false);
-//       }
-//     }
-//   }, []);
-
-//   // Update filter with proper handling
-//   const updateFilter = (field, value) => {
-//     setFilters((prev) => ({ ...prev, [field]: value }));
-
-//     // For class and status filters, trigger API call
-//     if (field === "status") {
-//       setFilterLoading(true);
-//     }
-//   };
-
-//   // Clear all filters
-//   const clearFilters = () => {
-//     setFilters({
-//       search: "",
-//       status: "",
-//       className: "",
-//     });
-//   };
-
-//   // Filter payments locally with search
-//   const filteredPayments = useMemo(() => {
-//     let result = payments;
-
-//     // Apply search filter
-//     if (filters.search) {
-//       const q = filters.search.toLowerCase();
-//       result = result.filter(
-//         (p) =>
-//           p.studentName?.toLowerCase().includes(q) ||
-//           p.studentID?.toLowerCase().includes(q) ||
-//           p.receiptNumber?.toLowerCase().includes(q) ||
-//           p.className?.toLowerCase().includes(q),
-//       );
-//     }
-
-//     // Apply status filter (already done via API, but double-check locally)
-//     // if (filters.status) {
-//     //   result = result.filter(p => p.status === filters.status);
-//     // }
-
-//     // Apply class filter (already done via API, but double-check locally)
-//     if (filters.className) {
-//       result = result.filter((p) =>
-//         p.className.toLowerCase().includes(filters.className.toLowerCase()),
-//       );
-//     }
-
-//     return result;
-//   }, [payments, filters]);
-
-//   // Load payments on mount and when academic year or filters change (Debounced)
-//   useEffect(() => {
-//     const timer = setTimeout(() => {
-//       if (academicYear) {
-//         loadPayments(academicYear, filters.status);
-//       }
-//     }, 500);
-//     return () => clearTimeout(timer);
-//   }, [academicYear, filters.status, loadPayments]);
-
-//   // Download receipt
-//   const downloadReceipt = async (payment) => {
-//     try {
-//       const response = await api.get(
-//         API_ENDPOINTS.ADMIN.FEE.DOWNLOAD_RECEIPT(payment._id),
-//         { responseType: "blob" },
-//       );
-
-//       const blob = new Blob([response.data], { type: "application/pdf" });
-//       const url = window.URL.createObjectURL(blob);
-//       const link = document.createElement("a");
-//       link.href = url;
-//       link.download = `${payment.studentName.replace(/\s+/g, "_")}_${payment.receiptNumber}.pdf`;
-//       link.click();
-//       window.URL.revokeObjectURL(url);
-
-//       toast.success("Receipt downloaded");
-//     } catch {
-//       toast.error("Download failed");
-//     }
-//   };
-
-//   return (
-//     <div className="space-y-6">
-//       {loading && (
-//         <div className="flex items-center justify-center min-h-[400px]">
-//           <div className="text-center space-y-4">
-//             <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-200 border-t-purple-600 mx-auto" />
-//             <p className="text-slate-600 font-medium">
-//               Loading payment history...
-//             </p>
-//           </div>
-//         </div>
-//       )}
-
-//       {!loading && (
-//         <div className="space-y-6">
-//           {/* Header Section */}
-//           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-//             <div>
-//               <h1 className="text-3xl font-black text-slate-900">
-//                 Payment History
-//               </h1>
-//               <p className="text-sm text-slate-600 mt-2">
-//                 View and manage past transactions
-//               </p>
-//             </div>
-
-//             <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-//               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">
-//                 Session:
-//               </span>
-//               <select
-//                 value={academicYear}
-//                 onChange={(e) => setAcademicYear(e.target.value)}
-//                 className="bg-slate-50 border-none text-slate-900 text-sm font-bold rounded-lg py-2 pl-3 pr-8 focus:ring-2 focus:ring-purple-500 cursor-pointer outline-none"
-//               >
-//                 {academicYears.map((year) => (
-//                   <option key={year} value={year}>
-//                     {year}
-//                   </option>
-//                 ))}
-//               </select>
-//             </div>
-//           </div>
-
-//           {/* Essential Filters */}
-//           <div className="bg-white rounded-2xl p-6 shadow border border-slate-100">
-//             <div className="flex items-center gap-3 mb-6">
-//               <div className="h-10 w-10 bg-purple-100 rounded-xl flex items-center justify-center">
-//                 <FaFilter className="text-purple-600" />
-//               </div>
-//               <div>
-//                 <h3 className="font-bold text-slate-900">Quick Filters</h3>
-//                 <p className="text-sm text-slate-500">
-//                   Search filters locally • Status/Class filters via API
-//                 </p>
-//               </div>
-//               <div className="ml-auto">
-//                 <button
-//                   onClick={() => loadPayments(academicYear, filters.status)}
-//                   className="p-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"
-//                   title="Refresh Data"
-//                 >
-//                   <FaSync className={loading ? "animate-spin" : ""} />
-//                 </button>
-//               </div>
-//             </div>
-
-//             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-//               {/* Search - Local Filter */}
-//               <div>
-//                 <label className="text-sm font-medium text-slate-700 mb-2 block">
-//                   Search (Instant)
-//                 </label>
-//                 <div className="relative">
-//                   <FaSearch className="absolute left-3 top-3.5 text-slate-400 text-sm" />
-//                   <input
-//                     type="text"
-//                     placeholder="Name, ID, receipt..."
-//                     value={filters.search}
-//                     onChange={(e) => {
-//                       setFilters((prev) => ({
-//                         ...prev,
-//                         search: e.target.value,
-//                       }));
-//                       setFilterLoading(true);
-//                       setTimeout(() => setFilterLoading(false), 100);
-//                     }}
-//                     className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-//                   />
-//                 </div>
-//               </div>
-
-//               {/* Status - API Filter */}
-//               <div>
-//                 <label className="text-sm font-medium text-slate-700 mb-2 block">
-//                   Status
-//                 </label>
-//                 <select
-//                   value={filters.status}
-//                   onChange={(e) => updateFilter("status", e.target.value)}
-//                   className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 bg-white transition-all"
-//                 >
-//                   <option value="">All Status</option>
-//                   <option value="PAID">Paid</option>
-//                   <option value="PARTIAL">Partial</option>
-//                   <option value="PENDING">Pending</option>
-//                 </select>
-//               </div>
-
-//               {/* Class - API Filter */}
-//               <div>
-//                 <label className="text-sm font-medium text-slate-700 mb-2 block">
-//                   Class
-//                 </label>
-//                 <input
-//                   type="text"
-//                   placeholder="Class name"
-//                   value={filters.className}
-//                   onChange={(e) => updateFilter("className", e.target.value)}
-//                   className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-//                 />
-//               </div>
-//             </div>
-
-//             {/* Active Filters */}
-//             {Object.values(filters).some((f) => f) && (
-//               <div className="mt-6 pt-6 border-t border-slate-100">
-//                 <div className="flex items-center gap-3 mb-3">
-//                   <div className="h-2 w-2 bg-purple-500 rounded-full animate-pulse"></div>
-//                   <span className="text-sm font-medium text-slate-700">
-//                     Active filters:
-//                   </span>
-//                 </div>
-//                 <div className="flex flex-wrap gap-2">
-//                   {filters.search && (
-//                     <span className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full">
-//                       🔍 {filters.search}
-//                     </span>
-//                   )}
-//                   {filters.status && (
-//                     <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
-//                       📊 {filters.status}
-//                     </span>
-//                   )}
-//                   {filters.className && (
-//                     <span className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full">
-//                       🏫 {filters.className}
-//                     </span>
-//                   )}
-//                   <button
-//                     onClick={clearFilters}
-//                     className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm rounded-full transition-colors"
-//                   >
-//                     Clear all
-//                   </button>
-//                 </div>
-//               </div>
-//             )}
-//           </div>
-
-//           {/* Payment Table */}
-//           <div className="bg-white rounded-2xl shadow border border-slate-100 overflow-hidden">
-//             <div className="p-6 border-b border-slate-100">
-//               <div className="flex items-center justify-between">
-//                 <h3 className="text-xl font-bold text-slate-900">
-//                   Payments ({filteredPayments.length})
-//                 </h3>
-//                 {filterLoading && (
-//                   <div className="flex items-center gap-2 text-sm text-slate-500">
-//                     <FaSpinner className="animate-spin" />
-//                     Applying filters...
-//                   </div>
-//                 )}
-//               </div>
-//             </div>
-
-//             {filteredPayments.length === 0 ? (
-//               <div className="p-12 text-center">
-//                 <FaFileDownload className="mx-auto h-12 w-12 text-slate-300 mb-4" />
-//                 <h4 className="text-lg font-semibold text-slate-900 mb-2">
-//                   No payments found
-//                 </h4>
-//                 <p className="text-slate-500">
-//                   Try adjusting your search or filters
-//                 </p>
-//               </div>
-//             ) : (
-//               <div className="overflow-x-auto">
-//                 <table className="w-full">
-//                   <thead className="bg-slate-50">
-//                     <tr>
-//                       {[
-//                         "Receipt",
-//                         "Student",
-//                         "Class",
-//                         "Amount",
-//                         "Method",
-//                         "Date",
-//                         "Status",
-//                         "Actions",
-//                       ].map((header) => (
-//                         <th
-//                           key={header}
-//                           className="p-4 text-left text-sm font-semibold text-slate-700"
-//                         >
-//                           {header}
-//                         </th>
-//                       ))}
-//                     </tr>
-//                   </thead>
-//                   <tbody className="divide-y divide-slate-100">
-//                     {filteredPayments.map((payment) => (
-//                       <tr
-//                         key={payment._id}
-//                         className="hover:bg-slate-50 transition-colors"
-//                       >
-//                         <td className="p-4">
-//                           <div className="font-mono font-semibold text-slate-900">
-//                             {payment.receiptNumber}
-//                           </div>
-//                         </td>
-//                         <td className="p-4">
-//                           <div>
-//                             <div className="font-semibold text-slate-900">
-//                               {payment.studentName}
-//                             </div>
-//                             <div className="text-sm text-slate-500">
-//                               {payment.studentID}
-//                             </div>
-//                           </div>
-//                         </td>
-//                         <td className="p-4">
-//                           <div className="text-slate-700 font-medium">
-//                             {payment.className}
-//                             {payment.section && ` (${payment.section})`}
-//                           </div>
-//                         </td>
-//                         <td className="p-4">
-//                           <div className="text-lg font-bold text-green-700">
-//                             ₹{payment.amountPaid.toLocaleString("en-IN")}
-//                           </div>
-//                         </td>
-//                         <td className="p-4">
-//                           <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
-//                             {payment.paymentMethod}
-//                           </span>
-//                         </td>
-//                         <td className="p-4">
-//                           {new Date(payment.paymentDate).toLocaleDateString(
-//                             "en-IN",
-//                             {
-//                               day: "2-digit",
-//                               month: "short",
-//                               year: "numeric",
-//                             },
-//                           )}
-//                         </td>
-//                         <td className="p-4">
-//                           <span
-//                             className={`px-3 py-1 rounded-full text-sm font-medium ${
-//                               payment.status === "PAID"
-//                                 ? "bg-green-100 text-green-700"
-//                                 : payment.status === "PARTIAL"
-//                                   ? "bg-yellow-100 text-yellow-700"
-//                                   : "bg-orange-100 text-orange-700"
-//                             }`}
-//                           >
-//                             {payment.status}
-//                           </span>
-//                         </td>
-//                         <td className="p-4">
-//                           <div className="flex items-center gap-2">
-//                             <button
-//                               onClick={() => downloadReceipt(payment)}
-//                               className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-//                               title="Download"
-//                             >
-//                               <FaDownload />
-//                             </button>
-//                           </div>
-//                         </td>
-//                       </tr>
-//                     ))}
-//                   </tbody>
-//                 </table>
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-
-
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
-import api from "../../../../services/api";
-import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
-import {
-  FaFileDownload,
-  FaFilter,
-  FaEye,
-  FaSearch,
-  FaSpinner,
-  FaDownload,
-  FaSync
+import api, { API_ENDPOINTS } from "../../../../services/api";
+import { 
+  FaReceipt, 
+  FaDownload, 
+  FaEye, 
+  FaFilter, 
+  FaSearch, 
+  FaCalendarAlt, 
+  FaSync,
+  FaFilePdf,
+  FaRupeeSign,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaHistory,
+  FaChevronLeft,
+  FaChevronRight
 } from "react-icons/fa";
+import { format } from "date-fns";
 
 export default function PaymentHistory() {
-  const academicYears = useMemo(() => {
-    const currentYear = new Date().getFullYear();
-    const years = [];
-    for (let i = -1; i < 6; i++) {
-      const year = currentYear + i;
-      years.push(`${year}-${year + 1}`);
-    }
-    return years;
-  }, []);
-
-  const [academicYear, setAcademicYear] = useState(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
-  });
-
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    search: "",
+    academicYear: "",
     status: "",
     className: "",
+    search: "",
+    month: "",
   });
-  const [filterLoading, setFilterLoading] = useState(false);
+  const [academicYears, setAcademicYears] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [receiptModal, setReceiptModal] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState(null);
+  const [downloadLoading, setDownloadLoading] = useState(null);
   
-  const isMounted = useRef(true);
-  const lastRequestKey = useRef("");
+  // ✅ CHANGE ITEMS PER PAGE HERE:
+  const itemsPerPage = 10;
+  
+  // Simple pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [allPayments, setAllPayments] = useState([]); // Store all fetched payments
+  const [totalPayments, setTotalPayments] = useState(0); // Store total count
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  // ✅ FIXED: Stable loadPayments function
-  const loadPayments = useCallback(async (year, status, className) => {
-    if (!isMounted.current) return;
-    
+  // Fetch payment history
+  const fetchPayments = useCallback(async (page = 1) => {
     try {
       setLoading(true);
-      
-      const params = {
-        academicYear: year,
-        ...(status && { status }),
-        ...(className && { className })
-      };
+      setError(null);
 
-      console.log("Fetching payments with params:", params);
-      
-      // ✅ Use the correct endpoint from API_ENDPOINTS
-      const response = await api.get(API_ENDPOINTS.ADMIN.FEE.ALL, {
-        params,
-        timeout: 10000,
-      });
+      const params = new URLSearchParams();
+      if (filters.academicYear) params.append("academicYear", filters.academicYear);
+      if (filters.status) params.append("status", filters.status);
+      if (filters.className) params.append("className", filters.className);
+      if (filters.search) params.append("search", filters.search);
+      if (filters.month) params.append("month", filters.month);
 
+      console.log("Fetching payments with filters:", Object.fromEntries(params));
+      
+      const response = await api.get(`${API_ENDPOINTS.ADMIN.FEE.ALL}?${params.toString()}`);
+      
       console.log("API Response:", response);
-
-      // Backend ka getAllPayments { success, message, data: { payments: [] } } format mein return karta hai
-      const apiData = response?.data?.payments || response?.payments || [];
       
-      console.log("Processed data:", apiData);
-
-      const paymentsData = Array.isArray(apiData) ? apiData.map((p, idx) => ({
-        _id: p._id || p.feePaymentId || `payment-${idx}`,
-        receiptNumber: p.receiptNumber || `RCPT${1000 + idx}`,
-        studentName: p.student?.name || p.studentName || "Unknown Student",
-        studentID: p.student?.studentID || p.studentID || "N/A",
-        className: p.className || "N/A",
-        section: p.section || "",
-        amountPaid: Number(p.amountPaid || p.amount || 0),
-        paymentMethod: p.paymentMethod || p.paymentMode || "CASH",
-        paymentDate: p.paymentDate || new Date().toISOString(),
-        status: p.status || "PAID",
-      })) : [];
-
-      if (isMounted.current) {
-        setPayments(paymentsData);
-        setFilterLoading(false);
-        console.log("Payments set:", paymentsData.length);
-      }
-    } catch (error) {
-      console.error("Fetch Error:", error);
-      if (isMounted.current) {
+      if (response && response.success) {
+        const fetchedPayments = response.data.payments || [];
+        setAllPayments(fetchedPayments);
+        setTotalPayments(fetchedPayments.length);
+        
+        // Client-side pagination - Now shows 10 items per page
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedPayments = fetchedPayments.slice(startIndex, endIndex);
+        
+        setPayments(paginatedPayments);
+        setHasMore(endIndex < fetchedPayments.length);
+        setCurrentPage(page);
+        
+        console.log(`Page ${page}: Showing ${paginatedPayments.length} of ${fetchedPayments.length} payments (${itemsPerPage} per page)`);
+      } else {
         setPayments([]);
-        toast.error("Failed to load payments");
+        setAllPayments([]);
+        setTotalPayments(0);
+        setHasMore(false);
       }
+    } catch (err) {
+      console.error("Error fetching payments:", err);
+      setError(err.message || "Failed to fetch payment history");
+      setPayments([]);
+      setAllPayments([]);
+      setTotalPayments(0);
+      setHasMore(false);
     } finally {
-      if (isMounted.current) {
-        setLoading(false);
-        console.log("Loading finished");
-      }
+      setLoading(false);
     }
-  }, []);
+  }, [filters, itemsPerPage]);
 
-  // ✅ FIXED: Correct useEffect with all dependencies
-  useEffect(() => {
-    console.log("useEffect triggered:", { academicYear, filters });
-    
-    const requestKey = `${academicYear}-${filters.status}-${filters.className}`;
-    
-    // Skip if same request is already in progress
-    if (lastRequestKey.current === requestKey) {
-      console.log("Skipping duplicate request");
-      return;
+  // Fetch filter options
+  const fetchFilterOptions = async () => {
+    try {
+      const classResponse = await api.get(API_ENDPOINTS.ADMIN.CLASS.ALL);
+      if (classResponse && classResponse.success) {
+        const years = [...new Set(classResponse.data.classes?.map(c => c.academicYear) || [])];
+        setAcademicYears(years.sort().reverse());
+        
+        const uniqueClasses = [...new Set(classResponse.data.classes?.map(c => c.className) || [])];
+        setClasses(uniqueClasses.sort());
+      }
+    } catch (err) {
+      console.error("Error fetching filter options:", err);
     }
-    
-    lastRequestKey.current = requestKey;
-    
-    const timer = setTimeout(() => {
-      console.log("Calling loadPayments");
-      loadPayments(academicYear, filters.status, filters.className);
-    }, 400);
+  };
 
-    return () => {
-      console.log("Cleaning up timer");
-      clearTimeout(timer);
-    };
-  }, [academicYear, filters, loadPayments]); // ✅ Added filters and loadPayments
-
-  // ✅ FIXED: Use useCallback for filter functions
-  const updateFilter = useCallback((field, value) => {
-    setFilters(prev => {
-      const newFilters = { ...prev, [field]: value };
+  // Download receipt
+  const downloadReceipt = async (paymentId, receiptNumber) => {
+    try {
+      setDownloadLoading(paymentId);
       
-      if (field === 'status' || field === 'className') {
-        setFilterLoading(true);
+      console.log("Downloading receipt ID:", paymentId, "Receipt:", receiptNumber);
+      
+      // Try both possible endpoints
+      let response;
+      try {
+        response = await api.axios.get(
+          `/api/admin/fees/receipt/${paymentId}/download`,
+          { 
+            responseType: 'blob',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+      } catch {
+        console.log("First endpoint failed, trying alternative...");
+        response = await api.axios.get(
+          `${API_ENDPOINTS.ADMIN.FEE.DOWNLOAD_RECEIPT(paymentId)}`,
+          { 
+            responseType: 'blob',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+      }
+
+      console.log("PDF Response received");
+
+      // Create blob
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      
+      // Try to open in new tab
+      const newWindow = window.open(url, '_blank');
+      
+      // Fallback to download if pop-up blocked
+      if (!newWindow) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Receipt_${receiptNumber}_${Date.now()}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success("Receipt downloaded!");
+      } else {
+        toast.success("Receipt opened in new tab!");
       }
       
-      return newFilters;
-    });
-  }, []);
+      // Clean up URL after use
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 1000);
+      
+    } catch (err) {
+      console.error("Error downloading receipt:", err);
+      toast.error(`Failed to download receipt. Please check if receipt exists.`);
+    } finally {
+      setDownloadLoading(null);
+    }
+  };
 
-  const clearFilters = useCallback(() => {
+  // View receipt details
+  const viewReceiptDetails = (payment) => {
+    setSelectedReceipt(payment);
+    setReceiptModal(true);
+  };
+
+  // Handle filter changes
+  const handleFilterChange = (field, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Reset filters
+  const resetFilters = () => {
     setFilters({
-      search: "",
+      academicYear: "",
       status: "",
       className: "",
+      search: "",
+      month: "",
     });
-    setFilterLoading(true);
-  }, []);
+    setCurrentPage(1);
+  };
 
-  // ✅ FIXED: Local filtering with all dependencies
-  const filteredPayments = useMemo(() => {
-    console.log("Filtering payments:", payments.length, filters);
-    
-    if (!payments.length) return [];
-    
-    let result = [...payments];
-    
-    // Apply search filter
-    if (filters.search) {
-      const q = filters.search.toLowerCase().trim();
-      result = result.filter(p => 
-        p.studentName?.toLowerCase().includes(q) ||
-        p.studentID?.toLowerCase().includes(q) ||
-        p.receiptNumber?.toLowerCase().includes(q) ||
-        p.className?.toLowerCase().includes(q)
-      );
-    }
-    
-    // Apply status filter locally (already filtered by API)
-    if (filters.status) {
-      result = result.filter(p => p.status === filters.status);
-    }
-    
-    // Apply class filter locally (already filtered by API)
-    if (filters.className) {
-      result = result.filter(p => 
-        p.className.toLowerCase().includes(filters.className.toLowerCase())
-      );
-    }
-    
-    console.log("Filtered result:", result.length);
-    return result;
-  }, [payments, filters]); // ✅ Added filters dependency
-
-  // ✅ FIXED: Download receipt function
-  const downloadReceipt = async (payment) => {
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
     try {
-      // Use API_ENDPOINTS constant
-      const endpoint = API_ENDPOINTS.ADMIN.FEE.DOWNLOAD_RECEIPT(payment._id);
-      console.log("Downloading receipt from:", endpoint);
-      
-      const response = await api.get(endpoint, { 
-        responseType: "blob" 
-      });
-      
-      const blob = new Blob([response], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${payment.studentName.replace(/\s+/g, "_")}_${payment.receiptNumber}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      toast.success("Receipt downloaded successfully");
-    } catch (error) {
-      console.error("Download error:", error);
-      toast.error("Failed to download receipt");
+      return format(new Date(dateString), "dd MMM yyyy, hh:mm a");
+    } catch {
+      return dateString;
     }
   };
 
-  // Refresh button handler
-  const handleRefresh = () => {
-    setFilterLoading(true);
-    loadPayments(academicYear, filters.status, filters.className);
+  // Format currency
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+    }).format(amount || 0);
   };
 
-  if (loading && payments.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-200 border-t-purple-600 mx-auto" />
-          <p className="text-slate-600 font-medium">Loading payment history...</p>
-        </div>
-      </div>
-    );
-  }
+  // Get status color
+  const getStatusColor = (status) => {
+    switch (status?.toUpperCase()) {
+      case "PAID":
+        return "bg-emerald-100 text-emerald-700";
+      case "PARTIAL":
+        return "bg-amber-100 text-amber-700";
+      case "PENDING":
+        return "bg-rose-100 text-rose-700";
+      default:
+        return "bg-slate-100 text-slate-700";
+    }
+  };
+
+  // Get payment method color
+  const getPaymentMethodColor = (method) => {
+    switch (method?.toUpperCase()) {
+      case "CASH":
+        return "border-l-4 border-emerald-500";
+      case "CARD":
+        return "border-l-4 border-blue-500";
+      case "UPI":
+        return "border-l-4 border-purple-500";
+      case "CHEQUE":
+        return "border-l-4 border-amber-500";
+      case "BANK_TRANSFER":
+      case "NEFT":
+      case "IMPS":
+        return "border-l-4 border-indigo-500";
+      default:
+        return "border-l-4 border-slate-500";
+    }
+  };
+
+  // Calculate totals for current page
+  // const totalAmount = payments.reduce((sum, payment) => sum + (payment.amountPaid || 0), 0);
+  const paidCount = payments.filter(p => p.status === "PAID").length;
+  // const pendingCount = payments.filter(p => p.status === "PENDING").length;
+
+  // Month options for filter
+  const monthOptions = [
+    "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+    "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+  ];
+
+  // Pagination handlers
+  const goToNextPage = () => {
+    if (hasMore) {
+      const nextPage = currentPage + 1;
+      const startIndex = (nextPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedPayments = allPayments.slice(startIndex, endIndex);
+      
+      setPayments(paginatedPayments);
+      setHasMore(endIndex < allPayments.length);
+      setCurrentPage(nextPage);
+      
+      // Scroll to top of table
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      const prevPage = currentPage - 1;
+      const startIndex = (prevPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedPayments = allPayments.slice(startIndex, endIndex);
+      
+      setPayments(paginatedPayments);
+      setHasMore(endIndex < allPayments.length);
+      setCurrentPage(prevPage);
+      
+      // Scroll to top of table
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Apply filters handler
+  const applyFilters = () => {
+    setCurrentPage(1);
+    fetchPayments(1);
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchFilterOptions();
+    fetchPayments(1);
+  }, [fetchPayments]);
 
   return (
-    <div className="space-y-6">
-      {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-        <div>
-          <h1 className="text-3xl font-extrabold text-slate-900">Payment History</h1>
-          <p className="text-sm font-medium text-slate-600 mt-2">View and manage past transactions</p>
+    <div className="space-y-8 animate-in fade-in duration-700 p-4">
+      {/* Header */}
+      <div className="bg-white p-8 rounded-3xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-5">
+          <div className="h-16 w-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl">
+            <FaReceipt />
+          </div>
+          <div>
+            <h2 className="text-3xl font-black">Payment History</h2>
+            <p className="text-slate-500">View and manage all fee payment receipts</p>
+            <p className="text-xs text-indigo-600 font-bold mt-1">
+              Showing {itemsPerPage} receipts per page
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">Session:</span>
-          <select
-            value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
-            className="bg-slate-50 border-none text-slate-900 text-sm font-bold rounded-lg py-2 pl-3 pr-8 focus:ring-2 focus:ring-purple-500 cursor-pointer outline-none"
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => fetchPayments(currentPage)}
+            disabled={loading}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all disabled:opacity-50"
           >
-            {academicYears.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
+            <FaSync className={loading ? "animate-spin" : ""} /> Refresh
+          </button>
         </div>
       </div>
 
-      {/* Essential Filters */}
-      <div className="bg-white rounded-2xl p-6 shadow border border-slate-100">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="h-10 w-10 bg-purple-100 rounded-xl flex items-center justify-center">
-            <FaFilter className="text-purple-600" />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-2xl shadow p-6">
+          <div className="text-sm text-slate-500 font-semibold">Total Records</div>
+          <div className="text-3xl font-black text-indigo-600 mt-2">{totalPayments}</div>
+          <div className="text-xs text-slate-400 mt-1">All payment records</div>
+        </div>
+        
+        <div className="bg-white rounded-2xl shadow p-6">
+          <div className="text-sm text-slate-500 font-semibold">Current Page</div>
+          <div className="text-3xl font-black text-emerald-600 mt-2">{payments.length}</div>
+          <div className="text-xs text-slate-400 mt-1">Showing {itemsPerPage} per page</div>
+        </div>
+        
+        <div className="bg-white rounded-2xl shadow p-6">
+          <div className="text-sm text-slate-500 font-semibold">Page {currentPage}</div>
+          <div className="text-3xl font-black text-purple-600 mt-2">
+            {((currentPage - 1) * itemsPerPage + 1)} - {Math.min(currentPage * itemsPerPage, totalPayments)}
           </div>
-          <div>
-            <h3 className="font-bold text-slate-900">Filters</h3>
-            <p className="text-sm text-slate-500">
-              Search locally • Status/Class filter via API
-            </p>
+          <div className="text-xs text-slate-400 mt-1">Records range</div>
+        </div>
+        
+        <div className="bg-white rounded-2xl shadow p-6">
+          <div className="text-sm text-slate-500 font-semibold">Paid</div>
+          <div className="text-3xl font-black text-emerald-600 mt-2">{paidCount}</div>
+          <div className="text-xs text-slate-400 mt-1">Completed payments</div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-3xl shadow-sm p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <FaFilter className="text-indigo-600" />
+          <h3 className="text-lg font-bold">Filters</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Search */}
+          <div className="relative">
+            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search by student name, ID, receipt..."
+              value={filters.search}
+              onChange={(e) => handleFilterChange("search", e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
           </div>
-          <div className="ml-auto">
-            <button
-              onClick={handleRefresh}
-              className="p-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"
-              title="Refresh Data"
-              disabled={loading}
-            >
-              <FaSync className={loading ? "animate-spin" : ""} />
-            </button>
-          </div>
+
+          {/* Academic Year */}
+          <select
+            value={filters.academicYear}
+            onChange={(e) => handleFilterChange("academicYear", e.target.value)}
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-bold"
+          >
+            <option value="">All Academic Years</option>
+            {academicYears.map((year) => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+
+          {/* Class */}
+          <select
+            value={filters.className}
+            onChange={(e) => handleFilterChange("className", e.target.value)}
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-bold"
+          >
+            <option value="">All Classes</option>
+            {classes.map((className) => (
+              <option key={className} value={className}>{className}</option>
+            ))}
+          </select>
+
+          {/* Status */}
+          <select
+            value={filters.status}
+            onChange={(e) => handleFilterChange("status", e.target.value)}
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-bold"
+          >
+            <option value="">All Status</option>
+            <option value="PAID">Paid</option>
+            <option value="PARTIAL">Partial</option>
+            <option value="PENDING">Pending</option>
+          </select>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Search - Local Filter */}
-          <div>
-            <label className="text-sm font-medium text-slate-700 mb-2 block">
-              Search (Instant)
-            </label>
-            <div className="relative">
-              <FaSearch className="absolute left-3 top-3.5 text-slate-400 text-sm" />
-              <input
-                type="text"
-                placeholder="Name, ID, receipt..."
-                value={filters.search}
-                onChange={(e) => updateFilter("search", e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-              />
-            </div>
-          </div>
-
-          {/* Status - API Filter */}
-          <div>
-            <label className="text-sm font-medium text-slate-700 mb-2 block">
-              Status
-            </label>
+        {/* Month Filter and Action Buttons */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6">
+          <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl w-full md:w-auto">
+            <FaCalendarAlt className="text-slate-400" />
             <select
-              value={filters.status}
-              onChange={(e) => updateFilter("status", e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 bg-white transition-all"
+              value={filters.month}
+              onChange={(e) => handleFilterChange("month", e.target.value)}
+              className="bg-transparent border-none focus:outline-none font-bold"
             >
-              <option value="">All Status</option>
-              <option value="PAID">Paid</option>
-              <option value="PARTIAL">Partial</option>
-              <option value="PENDING">Pending</option>
+              <option value="">All Months</option>
+              {monthOptions.map((month) => (
+                <option key={month} value={month}>{month}</option>
+              ))}
             </select>
           </div>
 
-          {/* Class - API Filter */}
-          <div>
-            <label className="text-sm font-medium text-slate-700 mb-2 block">
-              Class
-            </label>
-            <input
-              type="text"
-              placeholder="Class name"
-              value={filters.className}
-              onChange={(e) => updateFilter("className", e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-            />
+          <div className="flex gap-3 w-full md:w-auto">
+            <button
+              onClick={applyFilters}
+              className="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all"
+            >
+              Apply Filters
+            </button>
+            <button
+              onClick={resetFilters}
+              className="flex-1 md:flex-none border border-slate-300 hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all"
+            >
+              Reset
+            </button>
           </div>
         </div>
-
-        {/* Active Filters */}
-        {(filters.search || filters.status || filters.className) && (
-          <div className="mt-6 pt-6 border-t border-slate-100">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="h-2 w-2 bg-purple-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-slate-700">Active filters:</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {filters.search && (
-                <span className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full">
-                  🔍 {filters.search}
-                </span>
-              )}
-              {filters.status && (
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
-                  📊 {filters.status}
-                </span>
-              )}
-              {filters.className && (
-                <span className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full">
-                  🏫 {filters.className}
-                </span>
-              )}
-              <button
-                onClick={clearFilters}
-                className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm rounded-full transition-colors"
-              >
-                Clear all
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Payment Table */}
-      <div className="bg-white rounded-2xl shadow border border-slate-100 overflow-hidden">
-        <div className="p-6 border-b border-slate-100">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-slate-900">
-              Payments ({filteredPayments.length})
-            </h3>
-            {(filterLoading || loading) && (
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <FaSpinner className="animate-spin" />
-                {filterLoading ? "Applying filters..." : "Loading..."}
-              </div>
-            )}
+      {/* Error Alert */}
+      {error && (
+        <div className="bg-rose-50 border border-rose-200 text-rose-700 px-6 py-4 rounded-2xl flex items-center gap-3">
+          <FaExclamationTriangle />
+          <span>{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="ml-auto text-rose-500 hover:text-rose-700"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Payments Table */}
+      <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            <FaHistory className="text-indigo-600" />
+            Payment Records
+          </h3>
+          <div className="text-sm text-slate-500">
+            Showing <span className="font-bold text-indigo-600">{payments.length}</span> of{" "}
+            <span className="font-bold">{totalPayments}</span> records
           </div>
         </div>
 
-        {filteredPayments.length === 0 ? (
+        {loading ? (
           <div className="p-12 text-center">
-            <FaFileDownload className="mx-auto h-12 w-12 text-slate-300 mb-4" />
-            <h4 className="text-lg font-semibold text-slate-900 mb-2">
-              {payments.length === 0 ? "No payments found" : "No matching payments"}
-            </h4>
-            <p className="text-slate-500">
-              {payments.length === 0 
-                ? "No payment records for the selected filters" 
-                : "Try adjusting your search"}
-            </p>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <p className="mt-4 text-slate-500">Loading payment history...</p>
+          </div>
+        ) : payments.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="h-20 w-20 mx-auto bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400 text-3xl mb-4">
+              <FaReceipt />
+            </div>
+            <h4 className="text-lg font-bold text-slate-700">No payment records found</h4>
+            <p className="text-slate-500 mt-2">Try adjusting your filters or check back later</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50">
-                <tr>
-                  {["Receipt", "Student", "Class", "Amount", "Method", "Date", "Status", "Actions"].map((header) => (
-                    <th key={header} className="p-4 text-left text-sm font-semibold text-slate-700">
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredPayments.map((payment) => (
-                  <tr key={payment._id} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-4">
-                      <div className="font-mono font-semibold text-slate-900">
-                        {payment.receiptNumber}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div>
-                        <div className="font-semibold text-slate-900">{payment.studentName}</div>
-                        <div className="text-sm text-slate-500">{payment.studentID}</div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="text-slate-700 font-medium">
-                        {payment.className}
-                        {payment.section && ` (${payment.section})`}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="text-lg font-bold text-green-700">
-                        ₹{payment.amountPaid.toLocaleString('en-IN')}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
-                        {payment.paymentMethod}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      {new Date(payment.paymentDate).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      })}
-                    </td>
-                    <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        payment.status === 'PAID' ? 'bg-green-100 text-green-700' :
-                        payment.status === 'PARTIAL' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-orange-100 text-orange-700'
-                      }`}>
-                        {payment.status}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => downloadReceipt(payment)}
-                          className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                          title="Download Receipt"
-                        >
-                          <FaDownload />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-100 text-slate-700 text-xs uppercase font-bold">
+                  <tr>
+                    <th className="p-4 text-left">Receipt Details</th>
+                    <th className="p-4 text-left">Student</th>
+                    <th className="p-4 text-left">Class</th>
+                    <th className="p-4 text-left">Amount</th>
+                    <th className="p-4 text-left">Payment Method</th>
+                    <th className="p-4 text-left">Date & Time</th>
+                    <th className="p-4 text-left">Status</th>
+                    <th className="p-4 text-left">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {payments.map((payment, index) => (
+                    <tr key={payment._id} className="hover:bg-slate-50/50 transition-colors">
+                      {/* Receipt Details */}
+                      <td className="p-4">
+                        <div className={`${getPaymentMethodColor(payment.paymentMethod)} pl-4`}>
+                          <p className="font-bold text-slate-900">{payment.receiptNumber}</p>
+                          <p className="text-xs text-slate-400">
+                            #{(currentPage - 1) * itemsPerPage + index + 1}
+                          </p>
+                          {payment.remarks && (
+                            <p className="text-xs text-slate-500 mt-1 italic max-w-xs truncate">
+                              {payment.remarks}
+                            </p>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Student Info */}
+                      <td className="p-4">
+                        <p className="font-bold text-slate-900">
+                          {payment.student?.name || "N/A"}
+                        </p>
+                        <p className="text-xs text-slate-500 font-medium">
+                          ID: {payment.student?.studentID || "N/A"}
+                        </p>
+                      </td>
+
+                      {/* Class Info */}
+                      <td className="p-4">
+                        <p className="font-bold">
+                          {payment.className || "N/A"}
+                          {payment.section && (
+                            <span className="text-slate-500 ml-1">- {payment.section}</span>
+                          )}
+                        </p>
+                      </td>
+
+                      {/* Amount */}
+                      <td className="p-4">
+                        <div className="flex items-center gap-1">
+                          <FaRupeeSign className="text-emerald-600" />
+                          <span className="font-bold text-emerald-600 text-lg">
+                            {formatCurrency(payment.amountPaid).replace("₹", "")}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Payment Method */}
+                      <td className="p-4">
+                        <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold">
+                          {payment.paymentMethod || "N/A"}
+                        </span>
+                      </td>
+
+                      {/* Date & Time */}
+                      <td className="p-4">
+                        <p className="font-bold text-sm">{formatDate(payment.paymentDate)}</p>
+                      </td>
+
+                      {/* Status */}
+                      <td className="p-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(payment.status)}`}>
+                          {payment.status || "N/A"}
+                        </span>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="p-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => viewReceiptDetails(payment)}
+                            className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 p-2.5 rounded-xl transition-all"
+                            title="View Details"
+                          >
+                            <FaEye />
+                          </button>
+                          <button
+                            onClick={() => downloadReceipt(payment._id, payment.receiptNumber)}
+                            disabled={downloadLoading === payment._id}
+                            className="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 p-2.5 rounded-xl transition-all disabled:opacity-50"
+                            title="Download Receipt"
+                          >
+                            {downloadLoading === payment._id ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600"></div>
+                            ) : (
+                              <FaDownload />
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Simple Pagination - Only Next/Prev Buttons */}
+            <div className="p-6 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="text-slate-500 text-sm">
+                Page <span className="font-bold">{currentPage}</span> • 
+                Showing <span className="font-bold">{((currentPage - 1) * itemsPerPage + 1)} - {Math.min(currentPage * itemsPerPage, totalPayments)}</span> of{" "}
+                <span className="font-bold">{totalPayments}</span> records
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={goToPrevPage}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <FaChevronLeft /> Previous
+                </button>
+                
+                <span className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold">
+                  Page {currentPage}
+                </span>
+                
+                <button
+                  onClick={goToNextPage}
+                  disabled={!hasMore}
+                  className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next <FaChevronRight />
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
+
+      {/* Receipt Details Modal */}
+      {receiptModal && selectedReceipt && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" 
+             style={{ animation: 'fadeIn 0.3s ease-out' }}>
+          <div className="bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl" 
+               style={{ animation: 'slideUp 0.4s ease-out' }}>
+            
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white flex justify-between items-center">
+              <div>
+                <h3 className="text-2xl font-black uppercase tracking-tight">Receipt Details</h3>
+                <div className="flex items-center gap-4 mt-2">
+                  <p className="text-sm font-bold">{selectedReceipt.student?.name || "N/A"}</p>
+                  <span className="text-xs bg-white/20 px-3 py-1 rounded-full">
+                    {selectedReceipt.receiptNumber}
+                  </span>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(selectedReceipt.status).replace("bg-", "bg-").replace("text-", "text-")}`}>
+                    {selectedReceipt.status}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setReceiptModal(false)}
+                className="h-12 w-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all font-bold text-xl"
+              >
+                ×
+              </button>
+            </div>
+            
+            {/* Modal Body */}
+            <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
+              {/* Student Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-2xl">
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold uppercase">Student Name</p>
+                  <p className="font-bold text-lg">{selectedReceipt.student?.name || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold uppercase">Student ID</p>
+                  <p className="font-bold">{selectedReceipt.student?.studentID || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold uppercase">Class & Section</p>
+                  <p className="font-bold">
+                    {selectedReceipt.className || "N/A"}
+                    {selectedReceipt.section && ` - ${selectedReceipt.section}`}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold uppercase">Payment Date</p>
+                  <p className="font-bold text-indigo-600">
+                    {formatDate(selectedReceipt.paymentDate)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Payment Details */}
+              <div className="space-y-6">
+                <h4 className="text-sm font-black uppercase text-slate-700 tracking-widest border-b pb-3">
+                  Payment Information
+                </h4>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Left Column */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-4 bg-emerald-50 rounded-2xl">
+                      <div>
+                        <p className="text-sm text-slate-600">Amount Paid</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <FaRupeeSign className="text-emerald-600" />
+                          <span className="text-3xl font-black text-emerald-600">
+                            {formatCurrency(selectedReceipt.amountPaid).replace("₹", "")}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 rounded-xl">
+                        <span className="text-xs font-bold text-slate-700 uppercase">
+                          {selectedReceipt.paymentMethod}
+                        </span>
+                      </div>
+                    </div>
+
+                    {selectedReceipt.remarks && (
+                      <div className="p-4 bg-amber-50 rounded-2xl">
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-2">Remarks</p>
+                        <p className="text-slate-700 italic">{selectedReceipt.remarks}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-4">
+                    <div className="p-4 bg-indigo-50 rounded-2xl">
+                      <p className="text-xs text-slate-500 font-semibold uppercase mb-2">Receipt Information</p>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-slate-600">Receipt Number</span>
+                          <span className="font-bold">{selectedReceipt.receiptNumber}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-600">Transaction ID</span>
+                          <span className="font-bold">{selectedReceipt._id?.slice(-8)?.toUpperCase() || "N/A"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-600">Generated</span>
+                          <span className="font-bold">{formatDate(selectedReceipt.paymentDate)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-50 rounded-2xl">
+                      <p className="text-xs text-slate-500 font-semibold uppercase mb-2">Status Details</p>
+                      <div className="flex items-center gap-3">
+                        <div className={`h-3 w-3 rounded-full ${selectedReceipt.status === "PAID" ? "bg-emerald-500" : selectedReceipt.status === "PARTIAL" ? "bg-amber-500" : "bg-rose-500"}`}></div>
+                        <span className="font-bold">{selectedReceipt.status} Payment</span>
+                        {selectedReceipt.status === "PAID" && (
+                          <FaCheckCircle className="text-emerald-500 ml-auto" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-8 rounded-3xl text-white">
+                <div className="flex flex-col md:flex-row justify-between items-center">
+                  <div>
+                    <p className="text-sm font-bold uppercase opacity-90">Receipt Actions</p>
+                    <h2 className="text-3xl font-black mt-2">Payment Confirmed</h2>
+                    <p className="text-sm opacity-90 mt-2">
+                      Download official receipt for records
+                    </p>
+                  </div>
+                  <div className="flex gap-3 mt-6 md:mt-0">
+                    <button
+                      onClick={() => {
+                        downloadReceipt(selectedReceipt._id, selectedReceipt.receiptNumber);
+                        setReceiptModal(false);
+                      }}
+                      disabled={downloadLoading === selectedReceipt._id}
+                      className="bg-white text-indigo-600 hover:bg-slate-100 px-6 py-3 rounded-2xl font-bold text-sm uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-50"
+                    >
+                      <FaFilePdf /> Download PDF
+                    </button>
+                    <button
+                      onClick={() => window.print()}
+                      className="bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-2xl font-bold text-sm uppercase tracking-widest flex items-center gap-2 transition-all"
+                    >
+                      Print Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Inline styles for animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+          }
+        `}
+      </style>
     </div>
   );
 }
