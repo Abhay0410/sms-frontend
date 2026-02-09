@@ -326,9 +326,6 @@ export default function PaymentHistory() {
           <div>
             <h2 className="text-3xl font-black">Payment History</h2>
             <p className="text-slate-500">View and manage all fee payment receipts</p>
-            <p className="text-xs text-indigo-600 font-bold mt-1">
-              Showing {itemsPerPage} receipts per page
-            </p>
           </div>
         </div>
 
