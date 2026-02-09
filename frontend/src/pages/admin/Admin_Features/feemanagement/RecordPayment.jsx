@@ -677,8 +677,8 @@ Swal.fire({
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
         <div>
-          <h1 className="text-3xl font-black text-slate-900">Fee Collection</h1>
-          <p className="text-sm text-slate-600 mt-2">Record payments and manage transactions</p>
+          <h1 className="text-3xl font-extrabold text-slate-900">Fee Collection</h1>
+          <p className="text-sm font-medium text-slate-600 mt-2">Record payments and manage transactions</p>
         </div>
 
         <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">

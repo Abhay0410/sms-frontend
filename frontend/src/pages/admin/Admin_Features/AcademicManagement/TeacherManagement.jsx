@@ -160,117 +160,49 @@ export default function TeacherManagement() {
   }
 
   return (
-    <div className="space-y-6 p-4 md:p-6 bg-gradient-to-br from-slate-50 to-white min-h-screen">
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Teacher Management</h1>
-          <p className="text-slate-600 mt-1 flex items-center gap-2">
-            <FaChalkboardTeacher className="text-teal-600" />
-            Assign class teachers and subject teachers
-          </p>
-          <p className="mt-1 text-sm text-slate-500">
-            Found {totalTeachers} teachers and {classes.length} classes
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search teachers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none w-full md:w-64"
-            />
-          </div>
-
-          <select
-            value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
-            className="px-4 py-2.5 rounded-xl border-2 border-slate-200 bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
-          >
-            <option value="2023-2024">2023-2024</option>
-            <option value="2024-2025">2024-2025</option>
-            <option value="2025-2026">2025-2026</option>
-          </select>
-
-          <button
-            onClick={loadData}
-            disabled={loading}
-            className="px-4 py-2.5 bg-teal-600 text-white rounded-xl hover:bg-teal-700 disabled:opacity-50 transition-all flex items-center gap-2"
-          >
-            <FaSync className={loading ? "animate-spin" : ""} />
-            {loading ? "Refreshing..." : "Refresh"}
-          </button>
-        </div>
-      </div>
-
-      {/* ================= STATS CARDS ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50 p-4 md:p-8">
+      <div className="mx-auto max-w-7xl">
+        {/* ================= HEADER ================= */}
+        <div className="mb-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            {/* Left */}
             <div>
-              <p className="text-sm font-medium text-slate-600">Total Teachers</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{totalTeachers}</p>
+              <h1 className="text-4xl font-extrabold text-slate-900">
+                Teacher Management
+              </h1>
+              <p className="mt-1 flex items-center gap-2 text-slate-500 font-medium">
+                <FaChalkboardTeacher className="text-blue-600 text-sm font-medium" />
+                Assign class teachers and subject teachers
+              </p>
+              <p className="mt-1 text-xs text-slate-500 font-semibold">
+                Found {teachers.length} teachers and {classes.length} classes
+              </p>
             </div>
-            <div className="p-3 rounded-lg bg-teal-100">
-              <FaUserTie className="text-lg text-teal-600" />
-            </div>
-          </div>
-          <div className="mt-2 text-xs text-slate-500">
-            {selectedDepartment === "All" ? "All departments" : selectedDepartment}
-          </div>
-        </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Class Teachers</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{classTeachersCount}</p>
-            </div>
-            <div className="p-3 rounded-lg bg-blue-100">
-              <FaChalkboardTeacher className="text-lg text-blue-600" />
-            </div>
+            {/* Right */}
+            <select
+              value={academicYear}
+              onChange={(e) => setAcademicYear(e.target.value)}
+              className="w-full lg:w-auto rounded-xl border-2 border-slate-200 bg-white px-5 py-3 font-medium shadow-sm
+              hover:border-purple-400 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 outline-none"
+            >
+              <option value="2023-2024">2023-2024</option>
+              <option value="2024-2025">2024-2025</option>
+              <option value="2025-2026">2025-2026</option>
+            </select>
           </div>
-          <div className="mt-2 text-xs text-slate-500">
-            {((classTeachersCount / totalTeachers) * 100 || 0).toFixed(1)}% of total
-          </div>
-        </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-600">Subject Teachers</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{subjectTeachersCount}</p>
-            </div>
-            <div className="p-3 rounded-lg bg-emerald-100">
-              <FaBook className="text-lg text-emerald-600" />
-            </div>
-          </div>
-          <div className="mt-2 text-xs text-slate-500">
-            {((subjectTeachersCount / totalTeachers) * 100 || 0).toFixed(1)}% of total
-          </div>
-        </div>
-      </div>
-
-      {/* ================= DEPARTMENT FILTERS ================= */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-        <div className="flex flex-wrap items-center gap-4">
-          <span className="font-medium text-slate-700 flex items-center gap-2">
-            <FaFilter className="text-slate-400" />
-            Filter by Department:
-          </span>
-          <div className="flex flex-wrap gap-2">
+          {/* ================= DEPARTMENT TABS ================= */}
+          <div className="mt-6 flex gap-3 overflow-x-auto pb-2 no-scrollbar">
             {DEPARTMENTS.map((dept) => (
               <button
                 key={dept}
                 onClick={() => setSelectedDepartment(dept)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`px-5 py-2 rounded-full border text-sm font-bold whitespace-nowrap transition shadow-sm
+                ${
                   selectedDepartment === dept
-                    ? 'bg-teal-600 text-white'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    ? "bg-slate-700 text-white border-purple-600"
+                    : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
                 }`}
               >
                 {dept}
@@ -278,58 +210,93 @@ export default function TeacherManagement() {
             ))}
           </div>
         </div>
-      </div>
 
-      {/* ================= TEACHER GRID ================= */}
-      {filteredTeachers.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-lg border border-slate-100 p-16 text-center">
-          <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <FaUserTie className="h-10 w-10 text-slate-400" />
-          </div>
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">
-            No Teachers Found
-          </h3>
-          <p className="text-slate-600 mb-6">
-            {searchQuery
-              ? "No teachers match your search criteria"
-              : `No teachers found in ${selectedDepartment} department`}
-          </p>
-          <button
-            onClick={() => {
-              setSearchQuery("");
-              setSelectedDepartment("All");
-            }}
-            className="px-6 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl hover:shadow-lg transition-all"
-          >
-            Clear Filters
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredTeachers.map((teacher) => (
-            <TeacherCard
-              key={teacher._id}
-              teacher={teacher}
-              onAssignClassTeacher={() => openAssignModal(teacher, "classTeacher")}
-              onAssignSubject={() => openAssignModal(teacher, "subject")}
-            />
-          ))}
-        </div>
-      )}
+        {/* ================= STATS ================= */}
+        {teachers.length > 0 && (
+          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl bg-white p-6 shadow-md border">
+              <div className="flex items-center gap-4">
+                <div className="rounded-xl bg-indigo-100 p-3">
+                  <FaUserTie className="h-6 w-6 text-indigo-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Teachers</p>
+                  <p className="text-3xl font-bold">
+                    {filteredTeachers.length}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-      {/* Summary Footer */}
-      {filteredTeachers.length > 0 && (
-        <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-slate-600">
-              Showing <span className="font-semibold">{filteredTeachers.length}</span> of <span className="font-semibold">{totalTeachers}</span> teachers
+            <div className="rounded-2xl bg-white p-6 shadow-md border">
+              <div className="flex items-center gap-4">
+                <div className="rounded-xl bg-blue-100 p-3">
+                  <FaChalkboardTeacher className="h-6 w-6 text-slate-700" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Class Teachers</p>
+                  <p className="text-3xl font-bold">
+                    {
+                      filteredTeachers.filter(
+                        (t) => t.assignments?.classTeacher?.length > 0
+                      ).length
+                    }
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="text-sm text-slate-600">
-              Department: <span className="font-semibold">{selectedDepartment}</span>
+
+            <div className="rounded-2xl bg-white p-6 shadow-md border">
+              <div className="flex items-center gap-4">
+                <div className="rounded-xl bg-green-100 p-3">
+                  <FaBook className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Subject Teachers</p>
+                  <p className="text-3xl font-bold">
+                    {
+                      filteredTeachers.filter(
+                        (t) => t.assignments?.subjects?.length > 0
+                      ).length
+                    }
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* ================= TEACHER GRID ================= */}
+        {filteredTeachers.length === 0 ? (
+          <div className="rounded-2xl bg-white p-16 text-center shadow-md border">
+            <FaUserTie className="mx-auto h-14 w-14 text-slate-600" />
+            <h3 className="mt-4 text-xl font-bold text-black">
+              No Teachers Found
+            </h3>
+            <p className="mt-2 text-slate-600">
+              No teachers found for <b>{selectedDepartment}</b> department
+            </p>
+            <button
+              onClick={loadData}
+              className="mt-4 rounded-lg bg-slate-600 px-6 py-3 text-white font-semibold hover:bg-purple-700"
+            >
+              Retry
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {filteredTeachers.map((teacher) => (
+              <TeacherCard
+                key={teacher._id}
+                teacher={teacher}
+                onAssignClassTeacher={() =>
+                  openAssignModal(teacher, "classTeacher")
+                }
+                onAssignSubject={() => openAssignModal(teacher, "subject")}
+              />
+            ))}
+          </div>
+        )}
 
       {/* ================= MODAL ================= */}
       {showAssignModal && (
@@ -361,18 +328,186 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
   const isOverloaded = workload > maxWorkload;
   const isHighLoad = workload > maxWorkload * 0.8;
 
-  return (
-    <div className="bg-white rounded-xl shadow-lg border border-slate-100 hover:shadow-xl transition-all duration-300 p-5">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="h-12 w-12 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-xl flex items-center justify-center font-bold text-teal-700">
-            {teacher.name?.charAt(0) || "T"}
-          </div>
-          <div>
-            <h3 className="font-semibold text-slate-900">{teacher.name}</h3>
-            <p className="text-sm text-slate-500">ID: {teacher.teacherID}</p>
-          </div>
+  // return (
+  //   <div className="group rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-md transition-all hover:shadow-xl hover:border-purple-200">
+  //     {/* Header */}
+  //     <div className="flex items-start justify-between mb-4">
+  //       <div className="flex items-center gap-3">
+  //         <div className="rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 p-3 shadow-md">
+  //           <FaUserTie className="h-6 w-6 text-white" />
+  //         </div>
+  //         <div>
+  //           <h3 className="text-xl font-bold text-slate-900">{teacher.name}</h3>
+  //           <p className="text-sm text-slate-500">{teacher.teacherID}</p>
+
+         
+
+  //         </div>
+  //       </div>
+  //       {isOverloaded && (
+  //         <div className="rounded-lg bg-red-100 p-2">
+  //           <FaExclamationTriangle className="h-5 w-5 text-red-600" />
+  //         </div>
+  //       )}
+  //     </div>
+
+  //     {/* Info */}
+  //     <div className="mb-4 space-y-2 text-sm">
+  //       <p className="text-slate-600">
+  //         <strong>Email:</strong> {teacher.email}
+  //       </p>
+  //       <p className="text-slate-600">
+  //         <strong>Phone:</strong> {teacher.phone || "N/A"}
+  //       </p>
+  //       {teacher.department && (
+  //         <p className="text-slate-600">
+  //           <strong>Department:</strong> {teacher.department}
+  //         </p>
+  //       )}
+
+  //          {teacher.assignedClasses && teacher.assignedClasses.length > 0 && (
+  //     <div className="mt-3 rounded-lg bg-slate-50 p-3 border">
+  //       <p className="text-xs font-semibold mb-2">Assignments</p>
+
+  //       {teacher.assignedClasses.map((ac, idx) => (
+  //         <p key={idx} className="text-xs text-slate-700">
+  //            {ac.class?.className} - {ac.section} | {ac.subject}
+  //           {ac.isClassTeacher && (
+  //             <span className="ml-2 text-blue-600 font-semibold">
+  //               (Class Teacher)
+  //             </span>
+  //           )}
+  //         </p>
+  //       ))}
+  //     </div>
+  //   )}
+        
+  //     </div>
+
+  //     {/* Workload */}
+  //     <div className="mb-4">
+  //       <div className="flex items-center justify-between mb-2">
+  //         <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
+  //           <FaClock className="h-3 w-3" />
+  //           Weekly Workload
+  //         </span>
+  //         <span
+  //           className={`text-xs font-bold ${
+  //             isOverloaded
+  //               ? "text-red-600"
+  //               : isHighLoad
+  //               ? "text-orange-600"
+  //               : "text-green-600"
+  //           }`}
+  //         >
+  //           {workload}h / {maxWorkload}h
+  //         </span>
+  //       </div>
+  //       <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+  //         <div
+  //           className={`h-2 rounded-full transition-all duration-500 ${
+  //             isOverloaded
+  //               ? "bg-gradient-to-r from-red-500 to-red-600"
+  //               : isHighLoad
+  //               ? "bg-gradient-to-r from-orange-500 to-orange-600"
+  //               : "bg-gradient-to-r from-green-500 to-green-600"
+  //           }`}
+  //           style={{ width: `${Math.min(workloadPercentage, 100)}%` }}
+  //         />
+  //       </div>
+  //     </div>
+
+  //     {/* Assignments */}
+  //     <div className="space-y-3 mb-4">
+  //       {/* Class Teacher */}
+  //       {teacher.assignments?.classTeacher &&
+  //         teacher.assignments.classTeacher.length > 0 && (
+  //           <div className="rounded-lg bg-blue-50 p-3 border border-blue-200">
+  //             <p className="text-xs font-semibold text-blue-900 mb-2 flex items-center gap-2">
+  //               <FaChalkboardTeacher className="h-3 w-3" />
+  //               Class Teacher
+  //             </p>
+  //             <div className="space-y-1">
+  //               {teacher.assignments.classTeacher.map((ct, idx) => (
+  //                 <p key={idx} className="text-xs text-blue-800">
+  //                   Class {ct.className} - {ct.section}
+  //                 </p>
+  //               ))}
+  //             </div>
+  //           </div>
+  //         )}
+
+  //       {/* Subject Teacher */}
+  //       {teacher.assignedClasses?.subjects &&
+  //         teacher.assignedClasses.subjects.length > 0 && (
+  //           <div className="rounded-lg bg-green-50 p-3 border border-green-200">
+  //             <p className="text-xs font-semibold text-green-900 mb-2 flex items-center gap-2">
+  //               <FaBook className="h-3 w-3" />
+  //               Subject Teacher ({teacher.assignments.subjects.length})
+  //             </p>
+  //             <div className="space-y-1 max-h-24 overflow-y-auto">
+  //               {teacher.assignments.subjects.map((sub, idx) => (
+  //                 <p key={idx} className="text-xs text-green-800">
+  //                   {sub.subject} - Class {sub.className}
+  //                   {sub.section} ({sub.hoursPerWeek}h)
+  //                 </p>
+  //               ))}
+  //             </div>
+  //           </div>
+  //         )}
+  //     </div>
+
+  //     {/* Actions */}
+  //     <div className="flex gap-2">
+  //       <button
+  //         onClick={onAssignClassTeacher}
+  //         className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:scale-105 flex items-center justify-center gap-2"
+  //       >
+  //         <FaPlus className="h-3 w-3" />
+  //         Class Teacher
+  //       </button>
+  //       <button
+  //         onClick={onAssignSubject}
+  //         className="flex-1 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-green-700 hover:scale-105 flex items-center justify-center gap-2"
+  //       >
+  //         <FaPlus className="h-3 w-3" />
+  //         Subject
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
+return (
+
+<div
+  className="group relative bg-white rounded-2xl
+  border border-slate-200
+  shadow-[0_8px_25px_rgba(79,70,229,0.08)]
+  hover:shadow-[0_18px_40px_rgba(79,70,229,0.18)]
+  transition-all duration-300
+  p-5 overflow-hidden
+  flex flex-col h-full"
+>
+
+
+    {/* Gradient top border */}
+    {/* <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500" /> */}
+
+    {/* ===== Header ===== */}
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className="h-11 w-11 rounded-lg 
+          bg-slate-600 
+          flex items-center justify-center text-white shadow-md">
+          <FaUserTie className="h-6 w-6  " />
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold text-purple-600 group-hover:text-slate-900 transition">
+            {teacher.name}
+          </h3>
+          <p className="text-xs text-slate-500">
+            ID: {teacher.teacherID}
+          </p>
         </div>
         {isOverloaded && (
           <span className="px-2 py-1 text-xs rounded-full bg-rose-100 text-rose-700 border border-rose-300">
@@ -381,16 +516,19 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
         )}
       </div>
 
-      {/* Info */}
-      <div className="space-y-2 mb-4">
-        <p className="text-sm text-slate-600 truncate">📧 {teacher.email}</p>
-        <p className="text-sm text-slate-600">📞 {teacher.phone || "N/A"}</p>
-        {teacher.department && (
-          <span className="inline-block px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium">
-            {teacher.department}
-          </span>
-        )}
-      </div>
+    {/* ===== Department ===== */}
+    {teacher.department && (
+      <span className="inline-block mt-3 px-3 py-1 text-xs rounded-md
+  bg-slate-100 text-slate-700">
+        {teacher.department}
+      </span>
+    )}
+
+    {/* ===== Contact ===== */}
+    <div className="grid grid-cols-2 gap-2 text-sm text-slate-600 mt-4">
+      <p className="truncate">📧 {teacher.email}</p>
+      <p>📞 {teacher.phone || "N/A"}</p>
+    </div>
 
       {/* Assignments */}
       {teacher.assignedClasses?.length > 0 && (
@@ -420,50 +558,68 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
         </div>
       )}
 
-      {/* Workload */}
-      <div className="mb-4">
-        <div className="flex justify-between text-xs text-slate-500 mb-1">
-          <span className="flex items-center gap-1">
-            <FaClock className="h-3 w-3 text-teal-500" />
-            Weekly Workload
-          </span>
-          <span className={`font-semibold ${
-            isOverloaded ? "text-rose-600" : 
-            isHighLoad ? "text-amber-600" : 
-            "text-emerald-600"
-          }`}>
-            {workload}h / {maxWorkload}h
-          </span>
-        </div>
-        <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-          <div
-            className={`h-2 rounded-full transition-all duration-500 ${
-              isOverloaded ? "bg-gradient-to-r from-rose-500 to-pink-500" :
-              isHighLoad ? "bg-gradient-to-r from-amber-400 to-orange-500" :
-              "bg-gradient-to-r from-emerald-400 to-teal-500"
+    {/* ===== Workload ===== */}
+    <div className="mt-5">
+      <div className="flex justify-between text-xs text-slate-500 mb-1">
+        <span className="flex items-center gap-1">
+          <FaClock className="h-3 w-3 text-purple-500" />
+          Weekly Workload
+        </span>
+        <span
+          className={`font-semibold ${
+            isOverloaded
+              ? "text-red-600"
+              : isHighLoad
+              ? "text-orange-600"
+              : "text-green-600"
+          }`}
+        >
+          {workload}h / {maxWorkload}h
+        </span>
+      </div>
+
+      <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+        <div
+          className={`h-2 rounded-full transition-all duration-500
+            ${
+              isOverloaded
+                ? "bg-gradient-to-r from-red-500 to-red-500"
+                : isHighLoad
+                ? "bg-gradient-to-r from-amber-400 to-amber-600"
+                : "bg-gradient-to-r from-indigo-400 to-purple-600"
             }`}
             style={{ width: `${Math.min(workloadPercentage, 100)}%` }}
           />
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-2">
-        <button
-          onClick={onAssignClassTeacher}
-          className="flex-1 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm py-2 font-semibold hover:shadow-lg transition-all"
-        >
-          + Class Teacher
-        </button>
-        <button
-          onClick={onAssignSubject}
-          className="flex-1 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-sm py-2 font-semibold hover:shadow-lg transition-all"
-        >
-          + Subject
-        </button>
-      </div>
+    {/* ===== Actions ===== */}
+    <div className="flex gap-3 mt-auto pt-5">
+      <button
+        onClick={onAssignClassTeacher}
+        className="flex-1 rounded-lg 
+          bg-gradient-to-r from-indigo-600 to-purple-600
+          hover:from-indigo-700 hover:to-purple-700
+          text-white text-sm py-2 font-semibold shadow-md transition"
+      >
+        + Class Teacher
+      </button>
+
+      <button
+        onClick={onAssignSubject}
+        className="flex-1 rounded-lg 
+          bg-gradient-to-r from-slate-500 to-slate-900
+          hover:from-slate-800 hover:to-black
+          text-white text-sm py-2 font-semibold shadow-md transition"
+      >
+        + Subject
+      </button>
     </div>
-  );
+  </div>
+);
+
+
+
 }
 
 // Assignment Modal Component

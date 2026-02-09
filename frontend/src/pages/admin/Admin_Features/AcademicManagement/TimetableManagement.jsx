@@ -421,7 +421,7 @@ export default function TimetableManagement() {
             <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
               Timetable Management
             </h2>
-            <p className="text-base text-slate-500 font-medium flex items-center gap-2">
+            <p className="text-base text-slate-500 font-medium flex items-center gap-2 text-sm">
               <FaClock className="text-teal-600" />
               Create and manage class schedules
             </p>

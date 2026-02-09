@@ -178,7 +178,7 @@ setAdminInfo(updatedAdmin);
 
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mt-6 bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
+          <h1 className="text-4xl font-extrabold mt-6 bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
             Administrator Profile
           </h1>
           <p className="text-gray-600 mt-2 font-medium">
