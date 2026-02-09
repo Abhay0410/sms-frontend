@@ -246,7 +246,7 @@ if (sortedClasses.length > 0 && !selectedClass)
             <h1 className="text-4xl  font-extrabold text-slate-900 tracking-tight">
               Curriculum Planner
             </h1>
-            <p className="text-slate-500 font-medium">
+            <p className="text-slate-500 font-medium text-sm">
               Configure master curriculum for {academicYear}
             </p>
           </div>

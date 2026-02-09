@@ -185,14 +185,14 @@ export default function TeacherManagement() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             {/* Left */}
             <div>
-              <h1 className="text-4xl font-bold text-slate-900">
+              <h1 className="text-4xl font-extrabold text-slate-900">
                 Teacher Management
               </h1>
-              <p className="mt-1 flex items-center gap-2 text-slate-600">
-                <FaChalkboardTeacher className="text-purple-600" />
+              <p className="mt-1 flex items-center gap-2 text-slate-500 font-medium">
+                <FaChalkboardTeacher className="text-blue-600 text-sm font-medium" />
                 Assign class teachers and subject teachers
               </p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-500 font-semibold">
                 Found {teachers.length} teachers and {classes.length} classes
               </p>
             </div>
@@ -216,10 +216,10 @@ export default function TeacherManagement() {
               <button
                 key={dept}
                 onClick={() => setSelectedDepartment(dept)}
-                className={`px-5 py-2 rounded-full border text-sm font-semibold whitespace-nowrap transition
+                className={`px-5 py-2 rounded-full border text-sm font-bold whitespace-nowrap transition shadow-sm
                 ${
                   selectedDepartment === dept
-                    ? "bg-purple-600 text-white border-purple-600"
+                    ? "bg-slate-700 text-white border-purple-600"
                     : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
                 }`}
               >
@@ -234,11 +234,11 @@ export default function TeacherManagement() {
           <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="rounded-2xl bg-white p-6 shadow-md border">
               <div className="flex items-center gap-4">
-                <div className="rounded-xl bg-purple-100 p-3">
-                  <FaUserTie className="h-6 w-6 text-purple-600" />
+                <div className="rounded-xl bg-indigo-100 p-3">
+                  <FaUserTie className="h-6 w-6 text-indigo-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-600">Total Teachers</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Teachers</p>
                   <p className="text-3xl font-bold">
                     {filteredTeachers.length}
                   </p>
@@ -249,10 +249,10 @@ export default function TeacherManagement() {
             <div className="rounded-2xl bg-white p-6 shadow-md border">
               <div className="flex items-center gap-4">
                 <div className="rounded-xl bg-blue-100 p-3">
-                  <FaChalkboardTeacher className="h-6 w-6 text-blue-600" />
+                  <FaChalkboardTeacher className="h-6 w-6 text-slate-700" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-600">Class Teachers</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Class Teachers</p>
                   <p className="text-3xl font-bold">
                     {
                       filteredTeachers.filter(
@@ -267,10 +267,10 @@ export default function TeacherManagement() {
             <div className="rounded-2xl bg-white p-6 shadow-md border">
               <div className="flex items-center gap-4">
                 <div className="rounded-xl bg-green-100 p-3">
-                  <FaBook className="h-6 w-6 text-green-600" />
+                  <FaBook className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-600">Subject Teachers</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Subject Teachers</p>
                   <p className="text-3xl font-bold">
                     {
                       filteredTeachers.filter(
@@ -287,8 +287,8 @@ export default function TeacherManagement() {
         {/* ================= TEACHER GRID ================= */}
         {filteredTeachers.length === 0 ? (
           <div className="rounded-2xl bg-white p-16 text-center shadow-md border">
-            <FaUserTie className="mx-auto h-14 w-14 text-purple-400" />
-            <h3 className="mt-4 text-xl font-bold text-slate-900">
+            <FaUserTie className="mx-auto h-14 w-14 text-slate-600" />
+            <h3 className="mt-4 text-xl font-bold text-black">
               No Teachers Found
             </h3>
             <p className="mt-2 text-slate-600">
@@ -296,7 +296,7 @@ export default function TeacherManagement() {
             </p>
             <button
               onClick={loadData}
-              className="mt-4 rounded-lg bg-purple-600 px-6 py-3 text-white font-semibold hover:bg-purple-700"
+              className="mt-4 rounded-lg bg-slate-600 px-6 py-3 text-white font-semibold hover:bg-purple-700"
             >
               Retry
             </button>
@@ -498,11 +498,12 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
   //   </div>
   // );
 return (
- <div
-  className="group relative bg-white rounded-2xl
-shadow-[0_10px_30px_rgba(220,38,38,0.12)]
-hover:shadow-[0_20px_45px_rgba(220,38,38,0.25)]
 
+<div
+  className="group relative bg-white rounded-2xl
+  border border-slate-200
+  shadow-[0_8px_25px_rgba(79,70,229,0.08)]
+  hover:shadow-[0_18px_40px_rgba(79,70,229,0.18)]
   transition-all duration-300
   p-5 overflow-hidden
   flex flex-col h-full"
@@ -515,14 +516,14 @@ hover:shadow-[0_20px_45px_rgba(220,38,38,0.25)]
     {/* ===== Header ===== */}
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <div className="h-12 w-12 rounded-xl 
-          bg-gradient-to-br from-purple-500 to-pink-600
-          flex items-center justify-center text-white shadow-lg">
-          <FaUserTie className="h-6 w-6" />
+        <div className="h-11 w-11 rounded-lg 
+          bg-slate-600 
+          flex items-center justify-center text-white shadow-md">
+          <FaUserTie className="h-6 w-6  " />
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 group-hover:text-purple-600 transition">
+          <h3 className="text-lg font-semibold text-purple-600 group-hover:text-slate-900 transition">
             {teacher.name}
           </h3>
           <p className="text-xs text-slate-500">
@@ -542,8 +543,8 @@ hover:shadow-[0_20px_45px_rgba(220,38,38,0.25)]
 
     {/* ===== Department ===== */}
     {teacher.department && (
-      <span className="inline-block mt-3 px-3 py-1 text-xs rounded-full 
-        bg-purple-50 text-purple-700 border border-purple-200">
+      <span className="inline-block mt-3 px-3 py-1 text-xs rounded-md
+  bg-slate-100 text-slate-700">
         {teacher.department}
       </span>
     )}
@@ -604,10 +605,10 @@ hover:shadow-[0_20px_45px_rgba(220,38,38,0.25)]
           className={`h-2 rounded-full transition-all duration-500
             ${
               isOverloaded
-                ? "bg-gradient-to-r from-red-500 to-pink-500"
+                ? "bg-gradient-to-r from-red-500 to-red-500"
                 : isHighLoad
-                ? "bg-gradient-to-r from-orange-400 to-orange-600"
-                : "bg-gradient-to-r from-emerald-400 to-green-600"
+                ? "bg-gradient-to-r from-amber-400 to-amber-600"
+                : "bg-gradient-to-r from-indigo-400 to-purple-600"
             }`}
           style={{ width: `${Math.min(workloadPercentage, 100)}%` }}
         />
@@ -619,8 +620,8 @@ hover:shadow-[0_20px_45px_rgba(220,38,38,0.25)]
       <button
         onClick={onAssignClassTeacher}
         className="flex-1 rounded-lg 
-          bg-gradient-to-r from-indigo-500 to-purple-600
-          hover:from-indigo-600 hover:to-purple-700
+          bg-gradient-to-r from-indigo-600 to-purple-600
+          hover:from-indigo-700 hover:to-purple-700
           text-white text-sm py-2 font-semibold shadow-md transition"
       >
         + Class Teacher
@@ -629,8 +630,8 @@ hover:shadow-[0_20px_45px_rgba(220,38,38,0.25)]
       <button
         onClick={onAssignSubject}
         className="flex-1 rounded-lg 
-          bg-gradient-to-r from-emerald-500 to-green-600
-          hover:from-emerald-600 hover:to-green-700
+          bg-gradient-to-r from-slate-500 to-slate-900
+          hover:from-slate-800 hover:to-black
           text-white text-sm py-2 font-semibold shadow-md transition"
       >
         + Subject

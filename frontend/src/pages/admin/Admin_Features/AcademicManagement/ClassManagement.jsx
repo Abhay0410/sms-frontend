@@ -272,10 +272,10 @@ export default function ClassManagement() {
         {/* Header Section */}
         <div className="flex flex-col gap-6 md:flex-row md:items-center justify-between mt-4">
           <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
               Academic Structure
             </h1>
-            <p className="text-slate-500 font-medium">
+            <p className="text-slate-500  text-sm font-medium">
               Session Control & Enrollment Monitoring
             </p>
           </div>

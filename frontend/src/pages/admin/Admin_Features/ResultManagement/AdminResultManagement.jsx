@@ -242,8 +242,8 @@ const handleView = (resultId) => {
       
         
         <div className="mt-6 mb-6">
-          <h1 className="text-3xl font-bold text-slate-900">Result Management</h1>
-          <p className="text-slate-600 mt-1">Manage, approve, publish, and download examination results</p>
+          <h1 className="text-3xl font-extrabold text-slate-900">Result Management</h1>
+          <p className="text-slate-600 text-sm font-medium mt-1">Manage, approve, publish, and download examination results</p>
         </div>
 
         {/* Stats Cards */}
@@ -251,7 +251,7 @@ const handleView = (resultId) => {
           <div className="bg-white rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-600">Total Results</p>
+                <p className="text-sm font-bold text-slate-600">Total Results</p>
                 <p className="text-3xl font-bold text-slate-900">{stats.totalResults || 0}</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-xl">
@@ -262,7 +262,7 @@ const handleView = (resultId) => {
           <div className="bg-white rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-600">Draft</p>
+                <p className="text-sm font-bold text-slate-600">Draft</p>
                 <p className="text-3xl font-bold text-orange-600">{stats.draftCount || 0}</p>
               </div>
               <div className="p-3 bg-orange-100 rounded-xl">
@@ -273,7 +273,7 @@ const handleView = (resultId) => {
           <div className="bg-white rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-600">Approved</p>
+                <p className="text-sm font-bold text-slate-600">Approved</p>
                 <p className="text-3xl font-bold text-green-600">{stats.approvedCount || 0}</p>
               </div>
               <div className="p-3 bg-green-100 rounded-xl">
@@ -284,7 +284,7 @@ const handleView = (resultId) => {
           <div className="bg-white rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-600">Published</p>
+                <p className="text-sm font-bold text-slate-600">Published</p>
                 <p className="text-3xl font-bold text-blue-600">{stats.publishedCount || 0}</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-xl">
