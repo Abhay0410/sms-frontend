@@ -4,16 +4,21 @@ import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import { 
   FaPaperPlane, FaUsers, FaPlus, FaSearch, FaSpinner, 
-  FaInbox, FaClock, FaTimes, FaUserGraduate, FaUserFriends, FaChevronRight 
+  FaInbox, FaClock, FaTimes, FaUserGraduate, FaUserFriends, FaChevronRight,
+  FaPaperclip, FaTrash, FaFile, FaFilePdf, FaFileImage, FaDownload
 } from "react-icons/fa";
 import { format } from 'date-fns';
-import BackButton from "../../../../components/BackButton";
+// import BackButton from "../../../../components/BackButton";
+
+const BACKEND_URL = import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
 
 const TeacherMessaging = () => {
   const [threads, setThreads] = useState([]);
   const [activeThread, setActiveThread] = useState(null);
   const [loading, setLoading] = useState(true);
   const [replyMessage, setReplyMessage] = useState('');
+  const [replyFiles, setReplyFiles] = useState([]);
+  const [composeFiles, setComposeFiles] = useState([]);
   
   const [showCompose, setShowCompose] = useState(false);
   const [mySections, setMySections] = useState([]);
@@ -77,18 +82,35 @@ const TeacherMessaging = () => {
     if (formData.mode === 'section' && !formData.classId) return toast.error("Select a class");
     if (formData.mode === 'single' && formData.studentIds.length === 0 && formData.parentIds.length === 0) return toast.error("Select a recipient");
 
+    const submitData = new FormData();
+    submitData.append("title", formData.title);
+    submitData.append("message", formData.message);
+    submitData.append("mode", formData.mode);
+    
+    if (formData.mode === 'section') {
+      submitData.append("classId", formData.classId);
+      submitData.append("sectionName", formData.sectionName);
+      submitData.append("includeStudents", formData.includeStudents);
+      submitData.append("includeParents", formData.includeParents);
+    } else {
+      submitData.append("studentIds", JSON.stringify(formData.studentIds));
+      submitData.append("parentIds", JSON.stringify(formData.parentIds));
+    }
+
+    composeFiles.forEach(file => submitData.append("attachments", file));
+
     try {
-      await api.post(API_ENDPOINTS.TEACHER.MESSAGING.CREATE_THREAD, formData);
+      await api.post(API_ENDPOINTS.TEACHER.MESSAGING.CREATE_THREAD, submitData);
       toast.success("Message sent");
       setShowCompose(false);
       resetForm();
       fetchThreads();
-    } catch { toast.error("Failed to send"); }
+    } catch (err) { console.error(err); toast.error("Failed to send"); }
   };
 
   const resetForm = () => {
     setFormData({ title: '', message: '', mode: 'section', classId: '', sectionName: '', includeStudents: true, includeParents: true, studentIds: [], parentIds: [] });
-    setSearchTerm('');
+    setSearchTerm(''); setComposeFiles([]);
     setSearchResults([]);
   };
 
@@ -107,15 +129,35 @@ const TeacherMessaging = () => {
 
   const handleReply = async (e) => {
     e.preventDefault();
-    if (!replyMessage.trim() || !activeThread) return;
+    if ((!replyMessage.trim() && replyFiles.length === 0) || !activeThread) return;
     const threadId = activeThread._id;
+    
+    const submitData = new FormData();
+    submitData.append("message", replyMessage);
+    replyFiles.forEach(file => submitData.append("attachments", file));
+
     try {
-      await api.post(API_ENDPOINTS.TEACHER.MESSAGING.REPLY(threadId), { message: replyMessage });
+      await api.post(API_ENDPOINTS.TEACHER.MESSAGING.REPLY(threadId), submitData);
       setReplyMessage('');
+      setReplyFiles([]);
       await selectThread(threadId);
       await fetchThreads();
     } catch  {
       toast.error("Failed to send reply.");
+    }
+  };
+
+  const handleDeleteMessage = async (messageId) => {
+    if(!window.confirm("Delete this message?")) return;
+    try {
+      await api.delete(API_ENDPOINTS.TEACHER.MESSAGING.DELETE_MESSAGE(activeThread._id, messageId));
+      setActiveThread(prev => ({
+        ...prev,
+        messages: prev.messages.filter(m => m._id !== messageId)
+      }));
+      toast.success("Message deleted");
+    } catch {
+      toast.error("Failed to delete message");
     }
   };
 
@@ -126,7 +168,7 @@ const TeacherMessaging = () => {
     <div className="p-4 h-full bg-slate-50">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <BackButton />
+          {/* <BackButton /> */}
           <h2 className="text-2xl font-bold flex items-center gap-2 text-slate-800">
             <FaInbox className="text-indigo-600" /> Communications
           </h2>
@@ -179,19 +221,58 @@ const TeacherMessaging = () => {
                   <div key={i} className={`flex ${msg.senderType === 'teacher' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`p-4 rounded-2xl max-w-[70%] shadow-sm ${msg.senderType === 'teacher' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'}`}>
                       {msg.senderType !== 'teacher' && <p className="text-[9px] font-black text-indigo-500 mb-1 uppercase">{msg.senderType}</p>}
-                      <p className="text-sm leading-relaxed">{msg.content}</p>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                      
+                      {/* Attachments Display */}
+                      {msg.attachments?.length > 0 && (
+                        <div className="mt-3 space-y-2">
+                          {msg.attachments.map((att, idx) => {
+                             const fileUrl = att.fileUrl?.startsWith('http') ? att.fileUrl : `${BACKEND_URL}${att.fileUrl}`;
+                             return (
+                              <a key={idx} href={fileUrl} target="_blank" rel="noreferrer" className={`flex items-center gap-2 p-2 rounded-lg text-xs font-bold transition-all ${msg.senderType === 'teacher' ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
+                                {att.fileType === 'image' ? <FaFileImage /> : <FaFilePdf />}
+                                <span className="truncate max-w-[150px]">{att.fileName}</span>
+                                <FaDownload className="ml-auto opacity-70" />
+                              </a>
+                             );
+                          })}
+                        </div>
+                      )}
+
                       <span className="text-[9px] block text-right opacity-60 mt-2">{format(new Date(msg.createdAt), 'p')}</span>
                     </div>
+                    {/* Delete Button for Teacher */}
+                    {msg.senderType === 'teacher' && (
+                      <button onClick={() => handleDeleteMessage(msg._id)} className="ml-2 text-slate-300 hover:text-red-500 self-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <FaTrash size={12} />
+                      </button>
+                    )}
                   </div>
                 ))}
                 <div ref={scrollRef} />
               </div>
               
-              <form onSubmit={handleReply} className="p-4 bg-white border-t flex gap-3 items-center">
+              <form onSubmit={handleReply} className="p-4 bg-white border-t flex flex-col gap-3">
+                {replyFiles.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {replyFiles.map((f, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full text-xs font-bold text-slate-600">
+                        <FaFile className="text-indigo-500" /> {f.name}
+                        <button type="button" onClick={() => setReplyFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-slate-400 hover:text-red-500"><FaTimes /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-3 items-center">
+                <label className="cursor-pointer p-3 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all">
+                  <FaPaperclip />
+                  <input type="file" multiple className="hidden" onChange={(e) => setReplyFiles([...replyFiles, ...Array.from(e.target.files)])} />
+                </label>
                 <input value={replyMessage} onChange={(e)=>setReplyMessage(e.target.value)} className="flex-1 bg-slate-100 border-none rounded-2xl px-6 py-3 outline-none focus:ring-2 ring-indigo-500/20 text-sm" placeholder="Write a message..." />
                 <button className="bg-indigo-600 text-white p-3.5 rounded-2xl hover:bg-indigo-700 shadow-lg transition-transform active:scale-95">
                   <FaPaperPlane />
                 </button>
+                </div>
               </form>
             </>
           ) : (
@@ -253,6 +334,22 @@ const TeacherMessaging = () => {
 
               <textarea required className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 h-32 resize-none outline-none focus:ring-2 ring-indigo-500/20" placeholder="Type your message here..." value={formData.message} onChange={(e)=>setFormData({...formData, message: e.target.value})} />
               
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer w-fit px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-all">
+                  <FaPaperclip className="text-indigo-500" /> Attach Files
+                  <input type="file" multiple className="hidden" onChange={(e) => setComposeFiles([...composeFiles, ...Array.from(e.target.files)])} />
+                </label>
+                {composeFiles.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {composeFiles.map((f, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-indigo-50 px-3 py-1 rounded-lg text-xs font-bold text-indigo-700 border border-indigo-100">
+                        {f.name} <button type="button" onClick={() => setComposeFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-indigo-400 hover:text-red-500"><FaTimes /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-4">
                 <button type="button" onClick={() => { setShowCompose(false); resetForm(); }} className="flex-1 py-4 text-sm font-bold text-slate-400">Discard</button>
                 <button type="submit" className="flex-[2] bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all">Send Message</button>

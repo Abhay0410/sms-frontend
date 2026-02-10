@@ -66,29 +66,6 @@ export default function AdminProfileManage() {
     }
   };
 
-  // const onSave = async () => {
-  //   try {
-  //     const formData = new FormData();
-  //     Object.entries(form).forEach(([key, value]) => {
-  //       if (value) formData.append(key, value);
-  //     });
-
-  //     if (photoFile) {
-  //       formData.append("profilePicture", photoFile);
-  //     }
-
-  //        const updatedAdmin = await api.uploadPut(API_ENDPOINTS.ADMIN.UPDATE(adminInfo.adminID), formData);
-
-  //        setAdminInfo(updatedAdmin);
-  //     toast.success("Profile updated successfully");
-  //     loadProfile();
-  //     setPhotoFile(null);
-  //     setPhotoPreview("");
-  //   } catch (e) {
-  //     toast.error(e.message || "Update failed");
-  //   }
-  // };
-
   const onSave = async () => {
     try {
       const formData = new FormData();
@@ -174,7 +151,6 @@ setAdminInfo(updatedAdmin);
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 p-4 md:p-6">
       <div className="mx-auto max-w-4xl">
-        <BackButton to="/admin/admin-dashboard" />
 
         {/* Header Section */}
         <div className="text-center mb-8">
@@ -199,13 +175,6 @@ setAdminInfo(updatedAdmin);
           </div>
           <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
             <div className="h-32 w-32 rounded-2xl border-4 border-slate-700 shadow-2xl overflow-hidden bg-slate-700">
-              {/* <OptimizedImage
-                src={photoUrl}
-                alt="Profile"
-                className="h-full w-full object-cover"
-                width={128}
-                height={128}
-              /> */}
               <img
                 src={photoUrl}
                 alt="Profile"

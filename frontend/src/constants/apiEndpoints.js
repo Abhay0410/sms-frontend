@@ -295,7 +295,9 @@ PAYROLL: {
       MY_SECTIONS: '/api/teacher/announcements/my-sections',
       MY_ANNOUNCEMENTS: '/api/teacher/announcements/my-announcements',
       CREATE: '/api/teacher/announcements',
+      UPDATE: (id) => `/api/teacher/announcements/${id}`,
       DELETE: (id) => `/api/teacher/announcements/${id}`,
+      TOGGLE_PIN: (id) => `/api/teacher/announcements/${id}/toggle-pin`,
     },
 MESSAGING: {
   GET_THREADS: '/api/teacher/messages',
@@ -304,6 +306,7 @@ MESSAGING: {
   CREATE_THREAD: '/api/teacher/messages/thread',
   GET_THREAD_BY_ID: (id) => `/api/teacher/messages/${id}`,
   REPLY: (id) => `/api/teacher/messages/${id}/reply`,
+  DELETE_MESSAGE: (threadId, messageId) => `/api/teacher/messages/${threadId}/message/${messageId}`,
 },
 MY_HR: {
 MARK_ATTENDANCE: '/api/teacher/hr/attendance',

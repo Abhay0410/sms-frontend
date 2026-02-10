@@ -16,7 +16,6 @@ import SetClassFees from "../../pages/admin/Admin_Features/feemanagement/SetClas
 import RecordPayment from "../../pages/admin/Admin_Features/feemanagement/RecordPayment.jsx";
 import PaymentHistory from "../../pages/admin/Admin_Features/feemanagement/PaymentHistory.jsx";
 import AdminResultManagement from "../../pages/admin/Admin_Features/ResultManagement/AdminResultManagement.jsx";
-import AdminViewResult from "../../pages/admin/Admin_Features/ResultManagement/AdminViewResult.jsx";
 import AdminAnnouncementPage from "../../pages/admin/Admin_Features/Communication/annoucment.jsx";
 import AdminRegister from "../../pages/admin/Admin_Features/UserRegistrations/AdminRegisterForm.jsx";
 import StaffAttendance from "../../pages/admin/Admin_Features/HRManagement/StaffAttendance.jsx";
@@ -49,7 +48,7 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       subTabs: [
         { title: "Class Management", path: "class-management" },
         { title: "Teacher Management", path: "teacher-management" },
-        { title: "Student Management", path: "student-management" },
+        // { title: "Student Management", path: "student-management" },
         { title: "Subject Management", path: "subject-management" },
         { title: "Timetable Management", path: "timetable-management" }
       ]
@@ -69,7 +68,6 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       icon: <FaFileAlt />,
       subTabs: [
         { title: "Manage Results", path: "result-management" },
-        { title: "View Results", path: "results/:id/view" }
       ]
     },
     {
@@ -143,7 +141,7 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         
         {/* Result Management Routes */}
         <Route path="result-management" element={<AdminResultManagement school={school} />} />
-        <Route path="results/:id/view" element={<AdminViewResult school={school} />} />
+        {/* <Route path="results/:id/view" element={<AdminViewResult school={school} />} /> */}
         
         {/* Communication */}
         <Route path="announcements" element={<AdminAnnouncementPage school={school} />} />

@@ -143,8 +143,8 @@ export default function TeacherManagement() {
 
   // Calculate statistics
   const totalTeachers = teachers.length;
-  const classTeachersCount = teachers.filter(t => t.assignments?.classTeacher?.length > 0).length;
-  const subjectTeachersCount = teachers.filter(t => t.assignments?.subjects?.length > 0).length;
+  // const classTeachersCount = teachers.filter(t => t.assignments?.classTeacher?.length > 0).length;
+  // const subjectTeachersCount = teachers.filter(t => t.assignments?.subjects?.length > 0).length;
 
   if (loading) {
     return (
@@ -208,7 +208,7 @@ export default function TeacherManagement() {
       </div>
 
       {/* ================= STATS CARDS ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
           <div className="flex items-center justify-between">
             <div>
@@ -253,7 +253,7 @@ export default function TeacherManagement() {
             {((subjectTeachersCount / totalTeachers) * 100 || 0).toFixed(1)}% of total
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* ================= DEPARTMENT FILTERS ================= */}
       <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">

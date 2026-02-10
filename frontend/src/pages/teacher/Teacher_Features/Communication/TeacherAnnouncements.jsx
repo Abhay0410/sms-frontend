@@ -3,23 +3,27 @@ import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api";
 import { 
   FaPlus, FaTrash, FaBell, FaUsers, FaSpinner, 
-  FaPaperclip, FaChevronDown, FaChevronUp, FaFilePdf, FaFileImage, FaGraduationCap 
+  FaPaperclip, FaChevronDown, FaChevronUp, FaFilePdf, FaFileImage, FaGraduationCap,
+  FaStar, FaRegStar, FaFile, FaTimes
 } from "react-icons/fa";
-import BackButton from "../../../../components/BackButton";
+
 
 const BACKEND_URL = import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
-
 export default function TeacherAnnouncements() {
   const [announcements, setAnnouncements] = useState([]);
   const [mySections, setMySections] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [previewFiles, setPreviewFiles] = useState([]);
 
   const [formData, setFormData] = useState({
     title: "",
     content: "",
     type: "GENERAL",
+    isPinned: false,
     targetAudience: { students: true, parents: false, specificClasses: [] }
   });
 
@@ -52,6 +56,22 @@ export default function TeacherAnnouncements() {
     loadSections(); 
   }, [loadData, loadSections]);
 
+  const handleFileChange = (e) => {
+    const selected = Array.from(e.target.files);
+    setFiles(selected);
+    setPreviewFiles([]); 
+    selected.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => setPreviewFiles(prev => [...prev, { src: reader.result, name: file.name }]);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeFile = (index) => {
+    setFiles(files.filter((_, i) => i !== index));
+    setPreviewFiles(previewFiles.filter((_, i) => i !== index));
+  };
+
   const handleClassToggle = (sec) => {
     setFormData(prev => {
       const current = [...prev.targetAudience.specificClasses];
@@ -79,14 +99,72 @@ export default function TeacherAnnouncements() {
     if (formData.targetAudience.specificClasses.length === 0) {
         return toast.warning("Please select at least one class");
     }
+    
+    const submitData = new FormData();
+    submitData.append("title", formData.title);
+    submitData.append("content", formData.content);
+    submitData.append("type", formData.type);
+    submitData.append("targetAudience", JSON.stringify(formData.targetAudience));
+    submitData.append("isPinned", formData.isPinned);
+    
+    files.forEach(file => submitData.append("attachments", file));
+
     try {
-      await api.post(API_ENDPOINTS.TEACHER.ANNOUNCEMENT.CREATE, formData);
+      await api.post(API_ENDPOINTS.TEACHER.ANNOUNCEMENT.CREATE, submitData);
       toast.success("Announcement Created!");
       setIsCreating(false);
+      setFiles([]);
+      setPreviewFiles([]);
+      setFormData({
+        title: "",
+        content: "",
+        type: "GENERAL",
+        isPinned: false,
+        targetAudience: { students: true, parents: false, specificClasses: [] }
+      });
       loadData();
     } catch (err) { 
       console.error("Submit Error:", err);
       toast.error(err.response?.data?.message || "Error creating announcement"); 
+    }
+  };
+
+  const togglePinAnnouncement = async (announcement) => {
+    try {
+      // Updated to use PATCH and correct endpoint from constants
+      await api.patch(API_ENDPOINTS.TEACHER.ANNOUNCEMENT.TOGGLE_PIN(announcement._id));
+      
+      setAnnouncements(prev => 
+        prev.map(a => a._id === announcement._id ? { ...a, isPinned: !a.isPinned } : a)
+      );
+      toast.success(announcement.isPinned ? "Announcement unpinned" : "Announcement pinned");
+    } catch (err) {
+      console.error("Pin error:", err);
+      toast.error("Failed to update announcement");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this announcement?")) return;
+    setDeleting(id);
+    try {
+      await api.delete(API_ENDPOINTS.TEACHER.ANNOUNCEMENT.DELETE(id));
+      setAnnouncements(prev => prev.filter(a => a._id !== id));
+      toast.success("Announcement deleted");
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete announcement");
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const getTypeColor = (type) => {
+    switch (type) {
+      case "URGENT": return "bg-rose-100 text-rose-700 border-rose-200";
+      case "EVENT": return "bg-amber-100 text-amber-700 border-amber-200";
+      case "ACADEMIC": return "bg-blue-100 text-blue-700 border-blue-200";
+      default: return "bg-indigo-50 text-indigo-600 border-indigo-100";
     }
   };
 
@@ -98,7 +176,7 @@ export default function TeacherAnnouncements() {
           <FaPlus /> New Broadcast
         </button>
       </div>
-<BackButton/>
+{/* <BackButton/> */}
       {isCreating ? (
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 mb-6 animate-in fade-in slide-in-from-top-5">
           <input className="w-full border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Announcement Title" required onChange={e => setFormData({...formData, title: e.target.value})} />
@@ -132,8 +210,36 @@ export default function TeacherAnnouncements() {
             </div>
           </div>
 
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 cursor-pointer bg-orange-50 px-4 py-2 rounded-lg border border-orange-100">
+              <input type="checkbox" checked={formData.isPinned} onChange={e => setFormData({...formData, isPinned: e.target.checked})} className="rounded text-orange-600 focus:ring-orange-500" />
+              <span className="text-sm font-bold text-orange-700 flex items-center gap-2"><FaStar/> Pin to Top</span>
+            </label>
+            
+            <label className="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors">
+              <FaPaperclip className="text-slate-500"/>
+              <span className="text-sm font-bold text-slate-600">Attach Files</span>
+              <input type="file" multiple hidden onChange={handleFileChange} />
+            </label>
+          </div>
+
+          {previewFiles.length > 0 && (
+            <div className="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
+              {previewFiles.map((f, i) => (
+                <div key={i} className="bg-white px-3 py-1.5 rounded-lg border border-slate-200 flex items-center gap-2 shadow-sm">
+                  <FaFile className="text-indigo-400 text-xs" />
+                  <span className="text-xs font-medium text-slate-700 truncate max-w-[150px]">{f.name}</span>
+                  <FaTimes 
+                    className="text-slate-400 hover:text-red-500 cursor-pointer text-xs" 
+                    onClick={() => removeFile(i)} 
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <button type="button" onClick={() => setIsCreating(false)} className="px-6 py-2 text-slate-400 font-bold hover:text-slate-600 transition-colors">Cancel</button>
+            <button type="button" onClick={() => { setIsCreating(false); setFiles([]); setPreviewFiles([]); }} className="px-6 py-2 text-slate-400 font-bold hover:text-slate-600 transition-colors">Cancel</button>
             <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2 rounded-xl font-bold shadow-lg shadow-indigo-100">Post Now</button>
           </div>
         </form>
@@ -150,21 +256,39 @@ export default function TeacherAnnouncements() {
                 <p className="text-slate-500 font-bold">No announcements found for your classes.</p>
             </div>
           ) : announcements.map(ann => (
-            <div key={ann._id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all group">
+            <div key={ann._id} className={`bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all group ${ann.isPinned ? 'bg-gradient-to-r from-orange-50/50 to-yellow-50/50 border-orange-100' : ''}`}>
               <div className="flex justify-between items-start">
-                <div>
-                    <h3 className="font-bold text-xl text-slate-900 group-hover:text-indigo-600 transition-colors">{ann.title}</h3>
+                <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      {ann.isPinned && <FaStar className="text-orange-400 text-sm" />}
+                      <h3 className="font-bold text-xl text-slate-900 group-hover:text-indigo-600 transition-colors">{ann.title}</h3>
+                    </div>
                     <div className="flex gap-3 mt-1 items-center">
-                        <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-indigo-100">{ann.type}</span>
+                        <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest border ${getTypeColor(ann.type)}`}>{ann.type}</span>
                         <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{new Date(ann.createdAt).toLocaleDateString()}</span>
                     </div>
                 </div>
-                <button 
-                    onClick={() => setExpandedId(expandedId === ann._id ? null : ann._id)}
-                    className={`p-2.5 rounded-xl transition-all ${expandedId === ann._id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
-                >
-                  {expandedId === ann._id ? <FaChevronUp /> : <FaChevronDown />}
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => togglePinAnnouncement(ann)}
+                    className={`p-2.5 rounded-xl transition-all ${ann.isPinned ? 'text-orange-500 bg-orange-50 hover:bg-orange-100' : 'text-slate-300 hover:text-orange-400 hover:bg-slate-50'}`}
+                  >
+                    {ann.isPinned ? <FaStar /> : <FaRegStar />}
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(ann._id)}
+                    disabled={deleting === ann._id}
+                    className="p-2.5 rounded-xl text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all disabled:opacity-50"
+                  >
+                    {deleting === ann._id ? <FaSpinner className="animate-spin"/> : <FaTrash />}
+                  </button>
+                  <button 
+                      onClick={() => setExpandedId(expandedId === ann._id ? null : ann._id)}
+                      className={`p-2.5 rounded-xl transition-all ${expandedId === ann._id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                  >
+                    {expandedId === ann._id ? <FaChevronUp /> : <FaChevronDown />}
+                  </button>
+                </div>
               </div>
               
               <p className={`text-slate-500 mt-4 text-sm leading-relaxed ${expandedId === ann._id ? '' : 'line-clamp-2'}`}>{ann.content}</p>
