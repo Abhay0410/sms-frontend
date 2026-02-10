@@ -37,7 +37,7 @@ console.log("Payrolls:", res.data);
   return (
     <div className="space-y-6">
       <BackButton />
-      <h2 className="text-2xl font-black text-slate-800">
+      <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
         Teacher Payroll History
       </h2>
 

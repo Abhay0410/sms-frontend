@@ -160,7 +160,7 @@ export default function AdminPayrollDashboard() {
       <div className="flex justify-between items-end">
         <div>
            <h1 className="text-4xl font-black text-slate-800 tracking-tight">Payroll Command Center</h1>
-           <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em] mt-2">Real-time Financial Overview</p>
+           <p className="text-slate-600 font-medium text-sm  mt-2">Real-time Financial Overview</p>
         </div>
         <div className="bg-indigo-50 px-6 py-3 rounded-2xl border border-indigo-100">
            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Processing Progress</p>

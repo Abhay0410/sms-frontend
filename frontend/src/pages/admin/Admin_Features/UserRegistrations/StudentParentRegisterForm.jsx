@@ -391,7 +391,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-6">
       <div className="mx-auto max-w-7xl">
         <div className="mt-6">
-          <h2 className="text-3xl font-extrabold text-gray-900">
+          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
             Register Student & Parent
           </h2>
           <p className="mt-2 text-sm text-slate-500 font-medium">

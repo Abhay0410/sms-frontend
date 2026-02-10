@@ -209,8 +209,8 @@ const handleAction = async (action) => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Leave Requests Management</h1>
-          <p className="text-slate-600 mt-1 flex items-center gap-2">
+          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Staff Leave Management</h1>
+          <p className="text-slate-600 mt-1 flex items-center gap-2 text-sm font-medium">
             <FaCalendarAlt className="text-teal-600" />
             Review and process staff leave applications
           </p>
