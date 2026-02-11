@@ -57,13 +57,6 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       ]
     },
     {
-      title: "Library Management", icon: <FaBookReader />, // ✅ NEW SECTION
-      subTabs: [
-        { title: "Book Inventory", path: "library-inventory" },
-        { title: "Issue & Return", path: "library-issue-return" },
-      ]
-    },
-    {
       title: "Fee Management",
       icon: <FaMoneyBill />,
       subTabs: [
@@ -97,6 +90,13 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         { title: "Payroll Dashboard", path: "payroll-dashboard" },
         { title: "Salary Setup", path: "salary-setup" },
         { title: "Monthly Pay-Run", path: "monthly-payrun" }
+      ]
+    },
+        {
+      title: "Library Management", icon: <FaBookReader />, // ✅ NEW SECTION
+      subTabs: [
+        { title: "Book Inventory", path: "library-inventory" },
+        { title: "Issue & Return", path: "library-issue-return" },
       ]
     },
     {
