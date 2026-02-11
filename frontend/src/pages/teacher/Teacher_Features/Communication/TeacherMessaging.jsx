@@ -129,11 +129,16 @@ const TeacherMessaging = () => {
 
   const handleReply = async (e) => {
     e.preventDefault();
-    if ((!replyMessage.trim() && replyFiles.length === 0) || !activeThread) return;
+    if (!activeThread) return;
+
+    if (!replyMessage.trim() && replyFiles.length === 0) {
+      return toast.warning("Please enter a message or attach a file");
+    }
+
     const threadId = activeThread._id;
     
     const submitData = new FormData();
-    submitData.append("message", replyMessage);
+    submitData.append("message", replyMessage.trim() || "Sent an attachment");
     replyFiles.forEach(file => submitData.append("attachments", file));
 
     try {
@@ -142,8 +147,8 @@ const TeacherMessaging = () => {
       setReplyFiles([]);
       await selectThread(threadId);
       await fetchThreads();
-    } catch  {
-      toast.error("Failed to send reply.");
+    } catch {
+      toast.error("Failed to send reply");
     }
   };
 

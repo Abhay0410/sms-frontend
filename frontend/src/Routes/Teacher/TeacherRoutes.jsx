@@ -5,7 +5,7 @@ import { FaChalkboardTeacher, FaClipboardList, FaCheckSquare, FaPlus, FaBell, Fa
 import TeacherDashboardPage from "../../pages/teacher/TeacherDashboardPage.jsx";
 import TeacherProfileManage from "../../pages/teacher/TeacherProfileManage.jsx";
 import GetTeacherClassesAndSubjects from "../../pages/teacher/Teacher_Features/GetTeacherClassesAndSubjects.jsx";
-import TeacherNotifications from "../../pages/teacher/Teacher_Features/TeacherNotifications.jsx";
+// import TeacherNotifications from "../../pages/teacher/Teacher_Features/TeacherNotifications.jsx";
 import SalaryStatus from "../../pages/teacher/Teacher_Features/HRManagement/SalaryStatus.jsx";
 import MarkAttendance from "../../pages/teacher/Teacher_Features/Attendance/MarkAttendance.jsx";
 import ViewMySchedule from "../../pages/teacher/Teacher_Features/ViewMySchedule.jsx";
@@ -41,11 +41,11 @@ const TeacherRoutes = () => {
         { title: "View Results", path: "view-results" }
       ]
     },
-    {
-      title: "Notifications",
-      icon: <FaBell />,
-      path: "notifications"
-    },
+    // {
+    //   title: "Notifications",
+    //   icon: <FaBell />,
+    //   path: "notifications"
+    // },
    {
       title: "HR Portal",
       icon: <FaCalendarAlt />, 
@@ -93,7 +93,7 @@ const TeacherRoutes = () => {
         <Route path="edit-result/:resultId" element={<EditResult />} />
         
         {/* Notifications */}
-        <Route path="notifications" element={<TeacherNotifications />} />
+        {/* <Route path="notifications" element={<TeacherNotifications />} /> */}
         
         {/* HR Management Routes */}
         <Route path="self-attendance" element={<StaffSelfAttendance />} />
