@@ -98,7 +98,7 @@ export default function PayrollManager() {
             <FaMoneyBillWave />
           </div>
           <div>
-            <h2 className="text-3xl font-black text-slate-800">
+            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
               Payroll Manager
             </h2>
             <p className="text-slate-500 text-sm">

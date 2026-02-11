@@ -374,7 +374,7 @@ const handleDownloadPDF = async (slipId) => {
       {/* HEADER & FILTERS */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Payroll Processing</h2>
+          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Payroll Processing</h2>
           <div className="flex gap-4 mt-2">
             <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} className="bg-white border border-slate-200 rounded-xl px-4 py-2 font-bold text-sm">
               {monthNames.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}

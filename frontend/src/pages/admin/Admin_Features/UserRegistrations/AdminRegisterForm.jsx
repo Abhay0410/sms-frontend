@@ -1031,7 +1031,7 @@ const handleSubmit = async (e) => {
       
 
         <div className="mt-6">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-800 tracking-tight">
+          <h1 className="text-4xl  font-extrabold text-gray-900 tracking-tight">
             Register Admin
           </h1>
          

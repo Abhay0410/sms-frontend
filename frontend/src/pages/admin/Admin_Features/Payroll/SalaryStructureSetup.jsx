@@ -144,7 +144,7 @@ export default function SalaryStructureSetup() {
           <FaCalculator size={28} />
         </div>
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Staff Salary Structuring</h1>
+          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Staff Salary Structuring</h1>
           <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2">
             <FaShieldAlt className="text-emerald-500" /> Compliance Year: 2026 • Indian Wage Code Policy
           </p>

@@ -157,7 +157,7 @@ setAdminInfo(updatedAdmin);
           <h1 className="text-4xl font-extrabold mt-6 bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
             Administrator Profile
           </h1>
-          <p className="text-gray-600 mt-2 font-medium">
+          <p className="text-slate-600 mt-2 font-medium text-sm">
             Manage your system credentials and personal records
           </p>
         </div>

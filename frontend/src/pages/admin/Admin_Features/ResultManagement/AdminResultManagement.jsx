@@ -242,7 +242,7 @@ const handleView = (resultId) => {
       
         
         <div className="mt-6 mb-6">
-          <h1 className="text-3xl font-extrabold text-slate-900">Result Management</h1>
+          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Result Management</h1>
           <p className="text-slate-600 text-sm font-medium mt-1">Manage, approve, publish, and download examination results</p>
         </div>
 

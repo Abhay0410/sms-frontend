@@ -110,8 +110,8 @@ export default function StaffAttendance() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Staff Attendance Management</h1>
-          <p className="text-slate-600 mt-1 flex items-center gap-2">
+          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Staff Attendance Management</h1>
+          <p className="text-slate-600 mt-1 flex items-center gap-2 font-medium text-sm">
             <FaCalendarAlt className="text-teal-600" />
             Monitoring attendance for {new Date(date).toLocaleDateString('en-US', { 
               weekday: 'long', 
