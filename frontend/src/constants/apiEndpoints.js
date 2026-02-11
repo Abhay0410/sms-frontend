@@ -241,6 +241,18 @@ PAYROLL: {
   DELETE_DRAFT: (id) => `/api/admin/payroll/${id}`,
 },
 
+LIBRARY: {
+  ALL_BOOKS: '/api/admin/library/inventory',
+  ADD_BOOK: '/api/admin/library/books',
+  UPDATE_BOOK: (id) => `/api/admin/library/books/${id}`,
+  DELETE_BOOK: (id) => `/api/admin/library/books/${id}`,
+  ISSUE_BOOK: '/api/admin/library/issue',
+  RETURN_BOOK: '/api/admin/library/return',
+  BOOK_DETAILS: (id) => `/api/admin/library/books/${id}`,
+  STATS: '/api/admin/library/stats',
+  RECENT_TRANSACTIONS: '/api/admin/library/recent',
+},
+
   },
 
   // ========================================

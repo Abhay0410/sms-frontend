@@ -1,7 +1,7 @@
 // src/Routes/Admin/AdminRoutes.jsx - UPDATED
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../../components/Layout";
-import { FaHome, FaUsers, FaBook, FaChartBar, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog ,FaWallet } from "react-icons/fa";
+import { FaHome, FaUsers, FaBook, FaChartBar, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog ,FaWallet,FaBookReader } from "react-icons/fa";
 import AdminDashboardPage from "../../pages/admin/AdminDashboardPage.jsx";
 import TeacherRegisterForm from "../../pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx";
 import AdminProfileManage from "../../pages/admin/AdminProfileManage.jsx";
@@ -24,6 +24,9 @@ import StaffAttendanceGrid from "../../pages/admin/Admin_Features/HRManagement/S
 import AdminPayrollDashboard from "../../pages/admin/Admin_Features/Payroll/AdminPayrollDashboard.jsx";
 import SalaryStructureSetup from "../../pages/admin/Admin_Features/Payroll/SalaryStructureSetup.jsx";
 import MonthlyPayRun from "../../pages/admin/Admin_Features/Payroll/MonthlyPayRun.jsx";
+
+import LibraryInventory from "../../pages/admin/Admin_Features/Library/LibraryInventory.jsx";
+import BookIssueReturn from "../../pages/admin/Admin_Features/Library/BookIssueReturn.jsx";
 
 const AdminRoutes = ({ school }) => { // ✅ Accept school prop
   // Define Sidebar Sections here
@@ -51,6 +54,13 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         // { title: "Student Management", path: "student-management" },
         { title: "Subject Management", path: "subject-management" },
         { title: "Timetable Management", path: "timetable-management" }
+      ]
+    },
+    {
+      title: "Library Management", icon: <FaBookReader />, // ✅ NEW SECTION
+      subTabs: [
+        { title: "Book Inventory", path: "library-inventory" },
+        { title: "Issue & Return", path: "library-issue-return" },
       ]
     },
     {
@@ -122,6 +132,9 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         <Route path="student-management" element={<StudentManagement school={school} />} />
         <Route path="subject-management" element={<SubjectManagement school={school} />} />
         <Route path="timetable-management" element={<TimetableManagement school={school} />} />
+
+        <Route path="library-inventory" element={<LibraryInventory school={school} />} />
+        <Route path="library-issue-return" element={<BookIssueReturn school={school} />} />
         
         {/* HR Management Routes */}
         <Route path="staff-attendance" element={<StaffAttendance />} />
