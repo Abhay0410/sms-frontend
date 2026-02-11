@@ -1,35 +1,37 @@
-// src/Routes/Admin/AdminRoutes.jsx - UPDATED
+// src/Routes/Admin/AdminRoutes.jsx - UPDATED WITH CODE SPLITTING
+import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../../components/Layout";
 import { FaHome, FaUsers, FaBook, FaChartBar, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog ,FaWallet,FaBookReader } from "react-icons/fa";
-import AdminDashboardPage from "../../pages/admin/AdminDashboardPage.jsx";
-import TeacherRegisterForm from "../../pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx";
-import AdminProfileManage from "../../pages/admin/AdminProfileManage.jsx";
-import StudentParentRegisterForm from "../../pages/admin/Admin_Features/UserRegistrations/StudentParentRegisterForm.jsx";
-import TeacherManagement from "../../pages/admin/Admin_Features/AcademicManagement/TeacherManagement.jsx";
-import ClassManagement from "../../pages/admin/Admin_Features/AcademicManagement/ClassManagement.jsx";
-import StudentManagement from "../../pages/admin/Admin_Features/AcademicManagement/StudentManagement.jsx";
-import SubjectManagement from "../../pages/admin/Admin_Features/AcademicManagement/SubjectManagement.jsx";
-import TimetableManagement from "../../pages/admin/Admin_Features/AcademicManagement/TimetableManagement.jsx";
-import FeeOverview from "../../pages/admin/Admin_Features/feemanagement/FeeOverview.jsx";
-import SetClassFees from "../../pages/admin/Admin_Features/feemanagement/SetClassFees.jsx";
-import RecordPayment from "../../pages/admin/Admin_Features/feemanagement/RecordPayment.jsx";
-import PaymentHistory from "../../pages/admin/Admin_Features/feemanagement/PaymentHistory.jsx";
-import AdminResultManagement from "../../pages/admin/Admin_Features/ResultManagement/AdminResultManagement.jsx";
-import AdminAnnouncementPage from "../../pages/admin/Admin_Features/Communication/annoucment.jsx";
-import AdminRegister from "../../pages/admin/Admin_Features/UserRegistrations/AdminRegisterForm.jsx";
-import StaffAttendance from "../../pages/admin/Admin_Features/HRManagement/StaffAttendance.jsx";
-import LeaveRequests from "../../pages/admin/Admin_Features/HRManagement/LeaveRequests.jsx";
-import StaffAttendanceGrid from "../../pages/admin/Admin_Features/HRManagement/StaffAttendanceGrid.jsx";
-import AdminPayrollDashboard from "../../pages/admin/Admin_Features/Payroll/AdminPayrollDashboard.jsx";
-import SalaryStructureSetup from "../../pages/admin/Admin_Features/Payroll/SalaryStructureSetup.jsx";
-import MonthlyPayRun from "../../pages/admin/Admin_Features/Payroll/MonthlyPayRun.jsx";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
-import LibraryInventory from "../../pages/admin/Admin_Features/Library/LibraryInventory.jsx";
-import BookIssueReturn from "../../pages/admin/Admin_Features/Library/BookIssueReturn.jsx";
+// Lazy load heavy components
+const AdminDashboardPage = lazy(() => import("../../pages/admin/AdminDashboardPage.jsx"));
+const TeacherRegisterForm = lazy(() => import("../../pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx"));
+const AdminProfileManage = lazy(() => import("../../pages/admin/AdminProfileManage.jsx"));
+const StudentParentRegisterForm = lazy(() => import("../../pages/admin/Admin_Features/UserRegistrations/StudentParentRegisterForm.jsx"));
+const TeacherManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/TeacherManagement.jsx"));
+const ClassManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/ClassManagement.jsx"));
+const StudentManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/StudentManagement.jsx"));
+const SubjectManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/SubjectManagement.jsx"));
+const TimetableManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/TimetableManagement.jsx"));
+const FeeOverview = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/FeeOverview.jsx"));
+const SetClassFees = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/SetClassFees.jsx"));
+const RecordPayment = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/RecordPayment.jsx"));
+const PaymentHistory = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/PaymentHistory.jsx"));
+const AdminResultManagement = lazy(() => import("../../pages/admin/Admin_Features/ResultManagement/AdminResultManagement.jsx"));
+const AdminAnnouncementPage = lazy(() => import("../../pages/admin/Admin_Features/Communication/annoucment.jsx"));
+const AdminRegister = lazy(() => import("../../pages/admin/Admin_Features/UserRegistrations/AdminRegisterForm.jsx"));
+const StaffAttendance = lazy(() => import("../../pages/admin/Admin_Features/HRManagement/StaffAttendance.jsx"));
+const LeaveRequests = lazy(() => import("../../pages/admin/Admin_Features/HRManagement/LeaveRequests.jsx"));
+const StaffAttendanceGrid = lazy(() => import("../../pages/admin/Admin_Features/HRManagement/StaffAttendanceGrid.jsx"));
+const AdminPayrollDashboard = lazy(() => import("../../pages/admin/Admin_Features/Payroll/AdminPayrollDashboard.jsx"));
+const SalaryStructureSetup = lazy(() => import("../../pages/admin/Admin_Features/Payroll/SalaryStructureSetup.jsx"));
+const MonthlyPayRun = lazy(() => import("../../pages/admin/Admin_Features/Payroll/MonthlyPayRun.jsx"));
+const LibraryInventory = lazy(() => import("../../pages/admin/Admin_Features/Library/LibraryInventory.jsx"));
+const BookIssueReturn = lazy(() => import("../../pages/admin/Admin_Features/Library/BookIssueReturn.jsx"));
 
-const AdminRoutes = ({ school }) => { // ✅ Accept school prop
-  // Define Sidebar Sections here
+const AdminRoutes = ({ school }) => {
   const sections = [
     { 
       title: "Dashboard", 
@@ -51,7 +53,6 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       subTabs: [
         { title: "Class Management", path: "class-management" },
         { title: "Teacher Management", path: "teacher-management" },
-        // { title: "Student Management", path: "student-management" },
         { title: "Subject Management", path: "subject-management" },
         { title: "Timetable Management", path: "timetable-management" }
       ]
@@ -80,7 +81,6 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         { title: "Staff Attendance", path: "staff-attendance" },
         { title: "Attendance Report", path: "attendance-matrix" },
         { title: "Leave Requests", path: "leave-requests" },  
-
       ]
     },
     {
@@ -92,8 +92,9 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         { title: "Monthly Pay-Run", path: "monthly-payrun" }
       ]
     },
-        {
-      title: "Library Management", icon: <FaBookReader />, // ✅ NEW SECTION
+    {
+      title: "Library Management", 
+      icon: <FaBookReader />,
       subTabs: [
         { title: "Book Inventory", path: "library-inventory" },
         { title: "Issue & Return", path: "library-issue-return" },
@@ -113,58 +114,157 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
 
   return (
     <Routes>
-      {/* All routes inside this Route will share the Sidebar and Layout */}
-      <Route element={<Layout sections={sections} title={`${school?.schoolName || 'Admin'} Panel`} role="admin" />}>
-        {/* ✅ index means exactly /school/:slug/admin/ */}
+      <Route element={
+        <Suspense fallback={<LoadingSpinner />}>
+          <Layout sections={sections} title={`${school?.schoolName || 'Admin'} Panel`} role="admin" />
+        </Suspense>
+      }>
         <Route index element={<Navigate to="admin-dashboard" replace />} />
         
-        {/* ✅ These paths are RELATIVE to /school/:slug/admin/ */}
-        <Route path="admin-dashboard" element={<AdminDashboardPage school={school} />} />  
+        {/* Wrap each route in Suspense for individual loading */}
+        <Route path="admin-dashboard" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdminDashboardPage school={school} />
+          </Suspense>
+        } />
         
-        {/* User Registration Routes */}
-        <Route path="register-teacher" element={<TeacherRegisterForm school={school} />} />
-        <Route path="register-student" element={<StudentParentRegisterForm school={school} />} />
-        <Route path="admin-register" element={<AdminRegister school={school} />} />
+        <Route path="register-teacher" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <TeacherRegisterForm school={school} />
+          </Suspense>
+        } />
         
-        {/* Academic Management Routes */}
-        <Route path="class-management" element={<ClassManagement school={school} />} />
-        <Route path="teacher-management" element={<TeacherManagement school={school} />} />
-        <Route path="student-management" element={<StudentManagement school={school} />} />
-        <Route path="subject-management" element={<SubjectManagement school={school} />} />
-        <Route path="timetable-management" element={<TimetableManagement school={school} />} />
-
-        <Route path="library-inventory" element={<LibraryInventory school={school} />} />
-        <Route path="library-issue-return" element={<BookIssueReturn school={school} />} />
+        <Route path="register-student" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <StudentParentRegisterForm school={school} />
+          </Suspense>
+        } />
         
-        {/* HR Management Routes */}
-        <Route path="staff-attendance" element={<StaffAttendance />} />
-        <Route path="attendance-matrix" element={<StaffAttendanceGrid />} />
-        <Route path="leave-requests" element={<LeaveRequests />} />
-        {/* <Route path="teacher-payroll-history/:teacherId" element={<TeacherPayrollHistory />} /> */}
-
-        <Route path="payroll-dashboard" element={<AdminPayrollDashboard school={school} />} />
-        <Route path="salary-setup" element={<SalaryStructureSetup school={school} />} />
-        <Route path="monthly-payrun" element={<MonthlyPayRun school={school} />} />
-
+        <Route path="admin-register" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdminRegister school={school} />
+          </Suspense>
+        } />
         
-
-        {/* Fee Management */}
-        <Route path="fee-overview" element={<FeeOverview school={school} />} />
-        <Route path="fee-record-payment" element={<RecordPayment school={school} />} />
-        <Route path="fee-history" element={<PaymentHistory school={school} />} />
-        <Route path="fee-structure" element={<SetClassFees school={school} />} />
+        <Route path="class-management" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <ClassManagement school={school} />
+          </Suspense>
+        } />
         
-        {/* Result Management Routes */}
-        <Route path="result-management" element={<AdminResultManagement school={school} />} />
-        {/* <Route path="results/:id/view" element={<AdminViewResult school={school} />} /> */}
+        <Route path="teacher-management" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <TeacherManagement school={school} />
+          </Suspense>
+        } />
         
-        {/* Communication */}
-        <Route path="announcements" element={<AdminAnnouncementPage school={school} />} />
+        <Route path="student-management" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <StudentManagement school={school} />
+          </Suspense>
+        } />
         
-        {/* Profile */}
-        <Route path="profile" element={<AdminProfileManage school={school} />} />
+        <Route path="subject-management" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <SubjectManagement school={school} />
+          </Suspense>
+        } />
         
-        {/* ❌ REMOVED: The catch-all here was also forcing reloads */}
+        <Route path="timetable-management" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <TimetableManagement school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="library-inventory" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <LibraryInventory school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="library-issue-return" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <BookIssueReturn school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="staff-attendance" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <StaffAttendance />
+          </Suspense>
+        } />
+        
+        <Route path="attendance-matrix" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <StaffAttendanceGrid />
+          </Suspense>
+        } />
+        
+        <Route path="leave-requests" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <LeaveRequests />
+          </Suspense>
+        } />
+        
+        <Route path="payroll-dashboard" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdminPayrollDashboard school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="salary-setup" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <SalaryStructureSetup school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="monthly-payrun" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <MonthlyPayRun school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="fee-overview" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <FeeOverview school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="fee-record-payment" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <RecordPayment school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="fee-history" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <PaymentHistory school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="fee-structure" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <SetClassFees school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="result-management" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdminResultManagement school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="announcements" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdminAnnouncementPage school={school} />
+          </Suspense>
+        } />
+        
+        <Route path="profile" element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdminProfileManage school={school} />
+          </Suspense>
+        } />
       </Route>
     </Routes>
   );
