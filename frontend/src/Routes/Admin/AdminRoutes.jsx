@@ -1,43 +1,59 @@
-// src/Routes/Admin/AdminRoutes.jsx - UPDATED WITH CODE SPLITTING
+// src/Routes/Admin/AdminRoutes.jsx - FINAL FIXED
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../../components/Layout";
-import { FaHome, FaUsers, FaBook, FaChartBar, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog ,FaWallet,FaBookReader } from "react-icons/fa";
 import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 
-// Lazy load heavy components
+// ✅ React Icons
+import { 
+  FaHome, FaUsers, FaBook, FaMoneyBill, FaFileAlt, 
+  FaBullhorn, FaUserCog, FaWallet, FaBookReader 
+} from "react-icons/fa";
+
+// ✅ SINGLE PAGE IMPORTS
 const AdminDashboardPage = lazy(() => import("../../pages/admin/AdminDashboardPage.jsx"));
-const TeacherRegisterForm = lazy(() => import("../../pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx"));
 const AdminProfileManage = lazy(() => import("../../pages/admin/AdminProfileManage.jsx"));
-const StudentParentRegisterForm = lazy(() => import("../../pages/admin/Admin_Features/UserRegistrations/StudentParentRegisterForm.jsx"));
-const TeacherManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/TeacherManagement.jsx"));
-const ClassManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/ClassManagement.jsx"));
-const StudentManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/StudentManagement.jsx"));
-const SubjectManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/SubjectManagement.jsx"));
-const TimetableManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/TimetableManagement.jsx"));
-const FeeOverview = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/FeeOverview.jsx"));
-const SetClassFees = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/SetClassFees.jsx"));
-const RecordPayment = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/RecordPayment.jsx"));
-const PaymentHistory = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/PaymentHistory.jsx"));
-const AdminResultManagement = lazy(() => import("../../pages/admin/Admin_Features/ResultManagement/AdminResultManagement.jsx"));
-const AdminAnnouncementPage = lazy(() => import("../../pages/admin/Admin_Features/Communication/annoucment.jsx"));
-const AdminRegister = lazy(() => import("../../pages/admin/Admin_Features/UserRegistrations/AdminRegisterForm.jsx"));
-const StaffAttendance = lazy(() => import("../../pages/admin/Admin_Features/HRManagement/StaffAttendance.jsx"));
-const LeaveRequests = lazy(() => import("../../pages/admin/Admin_Features/HRManagement/LeaveRequests.jsx"));
-const StaffAttendanceGrid = lazy(() => import("../../pages/admin/Admin_Features/HRManagement/StaffAttendanceGrid.jsx"));
-const AdminPayrollDashboard = lazy(() => import("../../pages/admin/Admin_Features/Payroll/AdminPayrollDashboard.jsx"));
-const SalaryStructureSetup = lazy(() => import("../../pages/admin/Admin_Features/Payroll/SalaryStructureSetup.jsx"));
-const MonthlyPayRun = lazy(() => import("../../pages/admin/Admin_Features/Payroll/MonthlyPayRun.jsx"));
-const LibraryInventory = lazy(() => import("../../pages/admin/Admin_Features/Library/LibraryInventory.jsx"));
-const BookIssueReturn = lazy(() => import("../../pages/admin/Admin_Features/Library/BookIssueReturn.jsx"));
+
+// ✅ IMPORTANT - YAHAN DEKHO - AdminAnnouncements, AdminAnnouncementPage NAHI
+const AdminAnnouncements = lazy(() => import("../../pages/admin/Admin_Features/Communication/announcement.jsx"));
+
+// ✅ ACADEMIC MANAGEMENT
+const ClassManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/academic.index.js").then(module => ({ default: module.ClassManagement })));
+const TeacherManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/academic.index.js").then(module => ({ default: module.TeacherManagement })));
+const SubjectManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/academic.index.js").then(module => ({ default: module.SubjectManagement })));
+const TimetableManagement = lazy(() => import("../../pages/admin/Admin_Features/AcademicManagement/academic.index.js").then(module => ({ default: module.TimetableManagement })));
+
+// ✅ FEE MANAGEMENT
+const FeeOverview = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/fee.index.js").then(module => ({ default: module.FeeOverview })));
+const RecordPayment = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/fee.index.js").then(module => ({ default: module.RecordPayment })));
+const PaymentHistory = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/fee.index.js").then(module => ({ default: module.PaymentHistory })));
+const SetClassFees = lazy(() => import("../../pages/admin/Admin_Features/feemanagement/fee.index.js").then(module => ({ default: module.SetClassFees })));
+
+// ✅ HR MANAGEMENT
+const StaffAttendance = lazy(() => import("../../pages/admin/Admin_Features/HRManagement/hr.index.js").then(module => ({ default: module.StaffAttendance })));
+const StaffAttendanceGrid = lazy(() => import("../../pages/admin/Admin_Features/HRManagement/hr.index.js").then(module => ({ default: module.StaffAttendanceGrid })));
+const LeaveRequests = lazy(() => import("../../pages/admin/Admin_Features/HRManagement/hr.index.js").then(module => ({ default: module.LeaveRequests })));
+
+// ✅ PAYROLL
+const AdminPayrollDashboard = lazy(() => import("../../pages/admin/Admin_Features/Payroll/payroll.index.js").then(module => ({ default: module.AdminPayrollDashboard })));
+const SalaryStructureSetup = lazy(() => import("../../pages/admin/Admin_Features/Payroll/payroll.index.js").then(module => ({ default: module.SalaryStructureSetup })));
+const MonthlyPayRun = lazy(() => import("../../pages/admin/Admin_Features/Payroll/payroll.index.js").then(module => ({ default: module.MonthlyPayRun })));
+
+// ✅ LIBRARY
+const LibraryInventory = lazy(() => import("../../pages/admin/Admin_Features/Library/library.index.js").then(module => ({ default: module.LibraryInventory })));
+const BookIssueReturn = lazy(() => import("../../pages/admin/Admin_Features/Library/library.index.js").then(module => ({ default: module.BookIssueReturn })));
+
+// ✅ REGISTRATIONS
+const TeacherRegisterForm = lazy(() => import("../../pages/admin/Admin_Features/UserRegistrations/registration.index.js").then(module => ({ default: module.TeacherRegisterForm })));
+const StudentParentRegisterForm = lazy(() => import("../../pages/admin/Admin_Features/UserRegistrations/registration.index.js").then(module => ({ default: module.StudentParentRegisterForm })));
+const AdminRegister = lazy(() => import("../../pages/admin/Admin_Features/UserRegistrations/registration.index.js").then(module => ({ default: module.AdminRegister })));
+
+// ✅ RESULT MANAGEMENT
+const AdminResultManagement = lazy(() => import("../../pages/admin/Admin_Features/ResultManagement/result.index.js").then(module => ({ default: module.AdminResultManagement })));
 
 const AdminRoutes = ({ school }) => {
   const sections = [
-    { 
-      title: "Dashboard", 
-      icon: <FaHome />, 
-      path: "admin-dashboard" 
-    },
+    { title: "Dashboard", icon: <FaHome />, path: "admin-dashboard" },
     { 
       title: "User Registration", 
       icon: <FaUsers />,
@@ -70,9 +86,7 @@ const AdminRoutes = ({ school }) => {
     {
       title: "Result Management",
       icon: <FaFileAlt />,
-      subTabs: [
-        { title: "Manage Results", path: "result-management" },
-      ]
+      subTabs: [{ title: "Manage Results", path: "result-management" }]
     },
     {
       title: "Staff HR",
@@ -80,7 +94,7 @@ const AdminRoutes = ({ school }) => {
       subTabs: [
         { title: "Staff Attendance", path: "staff-attendance" },
         { title: "Attendance Report", path: "attendance-matrix" },
-        { title: "Leave Requests", path: "leave-requests" },  
+        { title: "Leave Requests", path: "leave-requests" }
       ]
     },
     {
@@ -97,18 +111,18 @@ const AdminRoutes = ({ school }) => {
       icon: <FaBookReader />,
       subTabs: [
         { title: "Book Inventory", path: "library-inventory" },
-        { title: "Issue & Return", path: "library-issue-return" },
+        { title: "Issue & Return", path: "library-issue-return" }
       ]
     },
-    {
-      title: "Communication",
-      icon: <FaBullhorn />,
+    { 
+      title: "Communication", 
+      icon: <FaBullhorn />, 
       path: "announcements"
     },
-    {
-      title: "Profile",
-      icon: <FaUserCog />,
-      path: "profile"
+    { 
+      title: "Profile", 
+      icon: <FaUserCog />, 
+      path: "profile" 
     }
   ];
 
@@ -121,145 +135,135 @@ const AdminRoutes = ({ school }) => {
       }>
         <Route index element={<Navigate to="admin-dashboard" replace />} />
         
-        {/* Wrap each route in Suspense for individual loading */}
+        {/* DASHBOARD */}
         <Route path="admin-dashboard" element={
           <Suspense fallback={<LoadingSpinner />}>
             <AdminDashboardPage school={school} />
           </Suspense>
         } />
         
+        {/* REGISTRATIONS */}
         <Route path="register-teacher" element={
           <Suspense fallback={<LoadingSpinner />}>
             <TeacherRegisterForm school={school} />
           </Suspense>
         } />
-        
         <Route path="register-student" element={
           <Suspense fallback={<LoadingSpinner />}>
             <StudentParentRegisterForm school={school} />
           </Suspense>
         } />
-        
         <Route path="admin-register" element={
           <Suspense fallback={<LoadingSpinner />}>
             <AdminRegister school={school} />
           </Suspense>
         } />
         
+        {/* ACADEMIC */}
         <Route path="class-management" element={
           <Suspense fallback={<LoadingSpinner />}>
             <ClassManagement school={school} />
           </Suspense>
         } />
-        
         <Route path="teacher-management" element={
           <Suspense fallback={<LoadingSpinner />}>
             <TeacherManagement school={school} />
           </Suspense>
         } />
-        
-        <Route path="student-management" element={
-          <Suspense fallback={<LoadingSpinner />}>
-            <StudentManagement school={school} />
-          </Suspense>
-        } />
-        
         <Route path="subject-management" element={
           <Suspense fallback={<LoadingSpinner />}>
             <SubjectManagement school={school} />
           </Suspense>
         } />
-        
         <Route path="timetable-management" element={
           <Suspense fallback={<LoadingSpinner />}>
             <TimetableManagement school={school} />
           </Suspense>
         } />
         
+        {/* LIBRARY */}
         <Route path="library-inventory" element={
           <Suspense fallback={<LoadingSpinner />}>
             <LibraryInventory school={school} />
           </Suspense>
         } />
-        
         <Route path="library-issue-return" element={
           <Suspense fallback={<LoadingSpinner />}>
             <BookIssueReturn school={school} />
           </Suspense>
         } />
         
+        {/* HR */}
         <Route path="staff-attendance" element={
           <Suspense fallback={<LoadingSpinner />}>
             <StaffAttendance />
           </Suspense>
         } />
-        
         <Route path="attendance-matrix" element={
           <Suspense fallback={<LoadingSpinner />}>
             <StaffAttendanceGrid />
           </Suspense>
         } />
-        
         <Route path="leave-requests" element={
           <Suspense fallback={<LoadingSpinner />}>
             <LeaveRequests />
           </Suspense>
         } />
         
+        {/* PAYROLL */}
         <Route path="payroll-dashboard" element={
           <Suspense fallback={<LoadingSpinner />}>
             <AdminPayrollDashboard school={school} />
           </Suspense>
         } />
-        
         <Route path="salary-setup" element={
           <Suspense fallback={<LoadingSpinner />}>
             <SalaryStructureSetup school={school} />
           </Suspense>
         } />
-        
         <Route path="monthly-payrun" element={
           <Suspense fallback={<LoadingSpinner />}>
             <MonthlyPayRun school={school} />
           </Suspense>
         } />
         
+        {/* FEE */}
         <Route path="fee-overview" element={
           <Suspense fallback={<LoadingSpinner />}>
             <FeeOverview school={school} />
           </Suspense>
         } />
-        
         <Route path="fee-record-payment" element={
           <Suspense fallback={<LoadingSpinner />}>
             <RecordPayment school={school} />
           </Suspense>
         } />
-        
         <Route path="fee-history" element={
           <Suspense fallback={<LoadingSpinner />}>
             <PaymentHistory school={school} />
           </Suspense>
         } />
-        
         <Route path="fee-structure" element={
           <Suspense fallback={<LoadingSpinner />}>
             <SetClassFees school={school} />
           </Suspense>
         } />
         
+        {/* RESULT */}
         <Route path="result-management" element={
           <Suspense fallback={<LoadingSpinner />}>
             <AdminResultManagement school={school} />
           </Suspense>
         } />
         
+        {/* ✅ COMMUNICATION - FIXED: AdminAnnouncements component */}
         <Route path="announcements" element={
           <Suspense fallback={<LoadingSpinner />}>
-            <AdminAnnouncementPage school={school} />
+            <AdminAnnouncements school={school} />  {/* AdminAnnouncements, Page nahi */}
           </Suspense>
         } />
         
+        {/* PROFILE */}
         <Route path="profile" element={
           <Suspense fallback={<LoadingSpinner />}>
             <AdminProfileManage school={school} />
