@@ -9,7 +9,8 @@
     "tailwind:init": "tailwindcss init -p",
     "tailwind:build": "npx tailwindcss -i ./src/index.css -o ./dist/output.css --minify",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "analyze": "vite-bundle-analyzer"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

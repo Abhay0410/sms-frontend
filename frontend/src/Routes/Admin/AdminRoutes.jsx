@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../../components/Layout";
 import { FaHome, FaUsers, FaBook, FaChartBar, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog ,FaWallet,FaBookReader } from "react-icons/fa";
-import LoadingSpinner from "../../components/LoadingSpinner";
+import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 
 // Lazy load heavy components
 const AdminDashboardPage = lazy(() => import("../../pages/admin/AdminDashboardPage.jsx"));
