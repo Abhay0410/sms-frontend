@@ -5,54 +5,34 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    chunkSizeWarningLimit: 2000, // Increased to 2MB to silence warnings for larger chunks
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Normalize path separators to forward slashes for consistency
-          const normalizedId = id.replace(/\\/g, '/');
-
           // 1. Vendor Splitting (node_modules)
-          if (normalizedId.includes('/node_modules/')) {
+          // We use simple .includes() to avoid issues with path separators (/ vs \)
+          if (id.includes('node_modules')) {
+            
+            // Heavy libraries - Split these first
+            if (id.includes('react-icons')) return 'icons';
+            if (id.includes('recharts')) return 'charts';
+            if (id.includes('react-datepicker')) return 'date-libs';
+            if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf-libs';
+            if (id.includes('sweetalert2') || id.includes('react-toastify')) return 'ui-libs';
             
             // React core
-            if (normalizedId.includes('/react/') || normalizedId.includes('/react-dom/') || normalizedId.includes('/react-router/')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor';
             }
             
-            // Icons (Heavy!) - Split this out specifically
-            if (normalizedId.includes('/react-icons/')) {
-              return 'icons';
-            }
-            
-            // Charts
-            if (normalizedId.includes('/recharts/')) {
-              return 'charts';
-            }
-            
-            // Date Libraries
-            if (normalizedId.includes('/date-fns/') || normalizedId.includes('/react-datepicker/')) {
-              return 'date-libs';
-            }
-            
-            // UI Libraries
-            if (normalizedId.includes('/sweetalert2/') || normalizedId.includes('/react-toastify/')) {
-              return 'ui-libs';
-            }
-            
-            // PDF/Excel
-            if (normalizedId.includes('/jspdf/') || normalizedId.includes('/html2canvas/')) {
-              return 'pdf-libs';
-            }
-            
-            // All other vendors
+            // Everything else in node_modules goes to a single vendor chunk
             return 'vendor';
           }
           
           // 2. Admin Feature Splitting
-          // Groups everything in 'src/pages/admin/Admin_Features/FeatureName' into 'admin-feature-featurename'
-          if (normalizedId.includes('/src/pages/admin/Admin_Features/')) {
-            const match = normalizedId.match(/Admin_Features\/([^/]+)/);
+          // Groups files in 'src/pages/admin/Admin_Features/FeatureName'
+          if (id.includes('Admin_Features')) {
+            const match = id.match(/Admin_Features\/([^/]+)/);
             if (match && match[1]) {
               return `admin-feature-${match[1].toLowerCase()}`;
             }
@@ -60,8 +40,5 @@ export default defineConfig({
         }
       }
     }
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
   }
 })
