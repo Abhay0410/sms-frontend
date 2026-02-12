@@ -51,7 +51,18 @@ export default function TeacherProfileManage() {
       setForm({
         name: teacherData.name || "",
         phone: teacherData.phone || "",
-        address: teacherData.address || "",
+        // address: teacherData.address || "",
+          address: teacherData.address
+    ? [
+        teacherData.address.line1,
+        teacherData.address.line2,
+        teacherData.address.city,
+        teacherData.address.state,
+        teacherData.address.pincode,
+      ]
+        .filter(Boolean)
+        .join(", ")
+    : "",
         gender: teacherData.gender || "",
         dob: teacherData.dateOfBirth ? teacherData.dateOfBirth.split("T")[0] : "", 
         department: teacherData.department || "",
@@ -96,9 +107,9 @@ export default function TeacherProfileManage() {
     try {
       setUploadingPhoto(true);
       const formData = new FormData();
-      formData.append("photo", file);
+      formData.append("profilePicture", file);
 
-      await api.uploadPut(API_ENDPOINTS.TEACHER.AUTH.UPDATE_PROFILE, formData);
+      await api.uploadPut(API_ENDPOINTS.TEACHER.UPDATE_PROFILE, formData);
       
       toast.success("Profile photo updated successfully");
       await loadProfile(); 
@@ -115,17 +126,22 @@ export default function TeacherProfileManage() {
     try {
       setSaving(true);
       const formData = new FormData();
-      
+      const addressParts = form.address.split(",");
       // ✅ Explicitly append all fields to ensure they are sent
       formData.append("name", form.name);
       formData.append("phone", form.phone);
-      formData.append("address", form.address);
+      // formData.append("address", form.address);
+      formData.append("address[line1]", addressParts[0]?.trim() || "");
+      formData.append("address[line2]", addressParts[1]?.trim() || "");
+      formData.append("address[city]", addressParts[2]?.trim() || "");
+      formData.append("address[state]", addressParts[3]?.trim() || "");
+      formData.append("address[pincode]", addressParts[4]?.trim() || "");
       formData.append("gender", form.gender);
       formData.append("dateOfBirth", form.dob); 
       formData.append("department", form.department); 
       formData.append("subjects", form.subjects);
 
-      await api.uploadPut(API_ENDPOINTS.TEACHER.AUTH.UPDATE_PROFILE, formData);
+      await api.uploadPut(API_ENDPOINTS.TEACHER.UPDATE_PROFILE, formData);
       
       toast.success("Profile updated successfully");
       await loadProfile();
@@ -175,10 +191,20 @@ export default function TeacherProfileManage() {
   }
 
   //IMAGE 
-  const displayPhoto = photoPreview || 
-  (teacherInfo.profilePicture 
-    ? `${API_URL}/uploads/teachers/${teacherInfo.profilePicture}`
-    : `/assets/default-teacher-avatar.png`);
+  // const displayPhoto = photoPreview || 
+  // (teacherInfo.profilePicture 
+  //   ? `${API_URL}/uploads/teachers/${teacherInfo.profilePicture}`
+  //   : `/assets/default-teacher-avatar.png`);
+const displayPhoto =
+  photoPreview ||
+  (teacherInfo.profilePicture
+    ? teacherInfo.profilePicture.startsWith("http")
+      ? teacherInfo.profilePicture
+      : `${API_URL}/uploads/${teacherInfo.schoolId}/teachers/${teacherInfo.profilePicture}`
+    : "/assets/default-teacher-avatar.png");
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -195,11 +221,11 @@ export default function TeacherProfileManage() {
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 shadow-xl mb-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative">
-              <div className="relative h-32 w-32 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gray-200">
+              <div className="relative h-32 w-32 rounded-full shadow-2xl overflow-hidden bg-gray-200 flex items-center justify-center">
                 <OptimizedImage
                   src={displayPhoto}
                   alt="Profile"
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover  object-center"
                   width={128}
                   height={128}
                   onError={(e) => {
@@ -253,13 +279,13 @@ export default function TeacherProfileManage() {
               </h3>
               
               <div className="text-center mb-4">
-                <div className="relative h-24 w-24 rounded-full border-4 border-gray-100 mx-auto mb-3 overflow-hidden bg-gray-200">
+                <div className="relative h-32 w-32 rounded-full border-2 border-gray-100  overflow-hidden bg-gray-200 flex items-center justify-center">
                   <OptimizedImage
                     src={displayPhoto}
                     alt="Profile preview"
-                    className="h-full w-full object-cover"
-                    width={96}
-                    height={96}
+                    className="h-full w-full  object-cover object-center"
+                    width={128}
+                    height={128}
                     onError={(e) => {
                       e.target.src = '/assets/default-teacher-avatar.png';
                     }}

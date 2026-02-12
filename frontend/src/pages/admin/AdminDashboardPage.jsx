@@ -79,8 +79,8 @@ export default function AdminDashboardPage() {
       {/* Dynamic Header */}
       <div className="flex justify-between items-center bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight">School Insights</h1>
-          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest mt-1">Academic Session {currentYear}</p>
+          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">School Insights</h1>
+          <p className="text-slate-600 font-bold uppercase text-sm tracking-widest mt-1">Academic Session {currentYear}</p>
         </div>
         <button onClick={fetchRealStats} className="p-4 bg-slate-50 rounded-2xl hover:bg-red-50 text-slate-400 hover:text-red-600 transition-all active:scale-95 shadow-inner">
           <FaSync size={18} />

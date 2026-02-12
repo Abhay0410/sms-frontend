@@ -205,12 +205,12 @@ const handleAction = async (action) => {
   const stats = getStats();
 
   return (
-    <div className="space-y-6 p-4 md:p-6 bg-gradient-to-br from-slate-50 to-white min-h-screen">
+    <div className="space-y-6   bg-gradient-to-br from-slate-50 to-white min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Staff Leave Management</h1>
-          <p className="text-slate-600 mt-1 flex items-center gap-2 text-sm font-medium">
+          <p className="text-slate-600 flex items-center gap-2 text-sm font-medium">
             <FaCalendarAlt className="text-teal-600" />
             Review and process staff leave applications
           </p>

@@ -235,13 +235,13 @@ if (sortedClasses.length > 0 && !selectedClass)
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8">
+    <div className="min-h-screen bg-[#F8FAFC] px-4 md:px-6 pb-6 ">
       <style>{noScrollStyle}</style>
       <div className="mx-auto max-w-7xl">
         <BackButton to="/admin/admin-dashboard" />
 
         {/* Header Section */}
-        <div className="flex flex-col gap-6 md:flex-row md:items-center justify-between mt-6">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center justify-between  mt-1.5">
           <div>
             <h1 className="text-4xl  font-extrabold text-slate-900 tracking-tight">
               Curriculum Planner
@@ -273,7 +273,7 @@ if (sortedClasses.length > 0 && !selectedClass)
         </div>
 
         {/* ===== CLASS & SECTION SELECTOR CARDS ===== */}
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* ===== CLASS CARD ===== */}
           <div
             className={`relative bg-white p-10 rounded-[3rem] border overflow-hidden transition-all

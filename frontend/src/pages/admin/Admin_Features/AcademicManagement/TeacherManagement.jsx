@@ -1103,9 +1103,24 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl flex items-center justify-center font-bold text-white">
-            {teacher.name?.charAt(0) || "T"}
-          </div>
+          <div className="h-12 w-12 rounded-xl overflow-hidden bg-slate-200 flex items-center justify-center">
+  {teacher.profilePic ? (
+    <img
+      src={teacher.profilePic}
+      alt={teacher.name}
+      className="h-full w-full object-cover"
+      onError={(e) => {
+        e.target.onerror = null;
+        e.target.src = "/images/default-teacher.png";
+      }}
+    />
+  ) : (
+    <span className="font-bold text-slate-600">
+      {teacher.name?.charAt(0) || "T"}
+    </span>
+  )}
+</div>
+
           <div>
             <h3 className="font-semibold text-slate-900">{teacher.name}</h3>
             <p className="text-sm text-slate-500">ID: {teacher.teacherID}</p>
