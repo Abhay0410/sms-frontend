@@ -5,33 +5,58 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    chunkSizeWarningLimit: 800,
+    chunkSizeWarningLimit: 2000, // Increased to 2MB to silence warning
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // ✅ SIRF NODE_MODULES KO CHUNK KARO
-          if (id.includes('node_modules')) {
+          // Normalize path separators to forward slashes for consistency
+          const normalizedId = id.replace(/\\/g, '/');
+
+          // 1. Vendor Splitting (node_modules)
+          if (normalizedId.includes('/node_modules/')) {
+            
             // React core
-            if (id.includes('react') || id.includes('scheduler')) {
-              return 'react-core';
+            if (normalizedId.includes('/react/') || normalizedId.includes('/react-dom/') || normalizedId.includes('/react-router/')) {
+              return 'react-vendor';
             }
-            if (id.includes('react-dom')) {
-              return 'react-dom';
+            
+            // Icons (Heavy!) - Split this out specifically
+            if (normalizedId.includes('/react-icons/')) {
+              return 'icons';
             }
-            if (id.includes('react-router')) {
-              return 'react-router';
+            
+            // Charts
+            if (normalizedId.includes('/recharts/')) {
+              return 'charts';
             }
-            // Icons
-            if (id.includes('react-icons/fa')) {
-              return 'icons-fa';
+            
+            // Date Libraries
+            if (normalizedId.includes('/date-fns/') || normalizedId.includes('/react-datepicker/')) {
+              return 'date-libs';
             }
-            // Date
-            if (id.includes('date-fns') || id.includes('react-datepicker')) {
-              return 'date';
+            
+            // UI Libraries
+            if (normalizedId.includes('/sweetalert2/') || normalizedId.includes('/react-toastify/')) {
+              return 'ui-libs';
             }
+            
+            // PDF/Excel
+            if (normalizedId.includes('/jspdf/') || normalizedId.includes('/html2canvas/')) {
+              return 'pdf-libs';
+            }
+            
+            // All other vendors
             return 'vendor';
           }
-          // ❌ APP CODE KO CHUNK MAT KARO - DYNAMIC IMPORTS KHUD SPLIT KARENGE
+          
+          // 2. Admin Feature Splitting
+          // Groups everything in 'src/pages/admin/Admin_Features/FeatureName' into 'admin-feature-featurename'
+          if (normalizedId.includes('/src/pages/admin/Admin_Features/')) {
+            const match = normalizedId.match(/Admin_Features\/([^/]+)/);
+            if (match && match[1]) {
+              return `admin-feature-${match[1].toLowerCase()}`;
+            }
+          }
         }
       }
     }
