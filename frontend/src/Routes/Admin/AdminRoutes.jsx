@@ -20,7 +20,7 @@ import AdminAnnouncementPage from "../../pages/admin/Admin_Features/Communicatio
 import AdminRegister from "../../pages/admin/Admin_Features/UserRegistrations/AdminRegisterForm.jsx";
 import StaffAttendance from "../../pages/admin/Admin_Features/HRManagement/StaffAttendance.jsx";
 import LeaveRequests from "../../pages/admin/Admin_Features/HRManagement/LeaveRequests.jsx";
-
+import StaffAttendanceGrid from "../../pages/admin/Admin_Features/HRManagement/StaffAttendanceGrid.jsx";
 import AdminPayrollDashboard from "../../pages/admin/Admin_Features/Payroll/AdminPayrollDashboard.jsx";
 import SalaryStructureSetup from "../../pages/admin/Admin_Features/Payroll/SalaryStructureSetup.jsx";
 import MonthlyPayRun from "../../pages/admin/Admin_Features/Payroll/MonthlyPayRun.jsx";
@@ -76,7 +76,7 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       subTabs: [
         { title: "Staff Attendance", path: "staff-attendance" },
         { title: "Leave Requests", path: "leave-requests" },  
-
+        { title: "Attendance Grid", path: "staff-attandance-grid" },
       ]
     },
     {
@@ -125,6 +125,7 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         {/* HR Management Routes */}
         <Route path="staff-attendance" element={<StaffAttendance />} />
         <Route path="leave-requests" element={<LeaveRequests />} />
+        <Route path="staff-attandance-grid" element={<StaffAttendanceGrid/>} />
         {/* <Route path="teacher-payroll-history/:teacherId" element={<TeacherPayrollHistory />} /> */}
 
         <Route path="payroll-dashboard" element={<AdminPayrollDashboard school={school} />} />

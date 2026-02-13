@@ -294,7 +294,7 @@ export default function StaffAttendanceGrid() {
 
         {/* Matrix Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
