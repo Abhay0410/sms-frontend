@@ -94,8 +94,14 @@ const fetchData = useCallback(async () => {
             accuracy: position.coords.accuracy
           });
         },
-        () => {
+        (error) => {
+          console.error("Location error:", error);
           toast.warning("Location access denied. Attendance may require verification.");
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
         }
       );
     }
