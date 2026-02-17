@@ -1,7 +1,7 @@
 // src/Routes/Admin/AdminRoutes.jsx - UPDATED
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../../components/Layout";
-import { FaHome, FaUsers, FaBook, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog ,FaWallet } from "react-icons/fa";
+import { FaHome, FaUsers, FaBook, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog, FaWallet, FaBookReader } from "react-icons/fa";
 import AdminDashboardPage from "../../pages/admin/AdminDashboardPage.jsx";
 import TeacherRegisterForm from "../../pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx";
 import AdminProfileManage from "../../pages/admin/AdminProfileManage.jsx";
@@ -24,6 +24,8 @@ import StaffAttendanceGrid from "../../pages/admin/Admin_Features/HRManagement/S
 import AdminPayrollDashboard from "../../pages/admin/Admin_Features/Payroll/AdminPayrollDashboard.jsx";
 import SalaryStructureSetup from "../../pages/admin/Admin_Features/Payroll/SalaryStructureSetup.jsx";
 import MonthlyPayRun from "../../pages/admin/Admin_Features/Payroll/MonthlyPayRun.jsx";
+import BookIssueReturn from "../../pages/admin/Admin_Features/Library/BookIssueReturn.jsx";
+import LibraryInventory from "../../pages/admin/Admin_Features/Library/LibraryInventory.jsx";
 
 const AdminRoutes = ({ school }) => { // ✅ Accept school prop
   // Define Sidebar Sections here
@@ -89,6 +91,14 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       ]
     },
     {
+      title: "Library",
+      icon: <FaBookReader />,
+      subTabs: [
+        { title: "Book Circulation", path: "library-circulation" },
+        { title: "Inventory", path: "library-inventory" }
+      ]
+    },
+    {
       title: "Communication",
       icon: <FaBullhorn />,
       path: "announcements"
@@ -131,6 +141,10 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         <Route path="payroll-dashboard" element={<AdminPayrollDashboard school={school} />} />
         <Route path="salary-setup" element={<SalaryStructureSetup school={school} />} />
         <Route path="monthly-payrun" element={<MonthlyPayRun school={school} />} />
+
+        {/* Library Management */}
+        <Route path="library-circulation" element={<BookIssueReturn />} />
+        <Route path="library-inventory" element={<LibraryInventory />} />
 
         
 
