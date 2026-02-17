@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import api from "../../../../services/api";
 import { 
   FaSync, FaCircle, FaChevronLeft, FaChevronRight, 
-  FaSearch, FaFilter, FaEye, FaPrint, FaDownload,
+  FaSearch, FaFilter, FaPrint, FaDownload,
   FaUserCircle, FaCalendarAlt, FaUsers
 } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -15,7 +15,6 @@ export default function StaffAttendanceGrid() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
 
@@ -76,11 +75,6 @@ export default function StaffAttendanceGrid() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
-  // View employee details
-  const viewEmployeeDetails = (employee) => {
-    setSelectedEmployee(employee);
-  };
 
   // Export functions
   const exportToCSV = () => {
@@ -329,7 +323,7 @@ export default function StaffAttendanceGrid() {
                 </tr>
               </thead>
               
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-slate-200">
                 {loading ? (
                   <tr>
                     <td colSpan={data.daysInMonth + 2} className="p-16 text-center">
@@ -353,7 +347,7 @@ export default function StaffAttendanceGrid() {
                     const summary = getEmployeeSummary(row);
                     return (
                       <tr key={row._id} className="hover:bg-slate-50/80 transition-colors group">
-                        <td className="p-4 sticky left-0 bg-white z-10 shadow-[4px_0_8px_rgba(0,0,0,0.03)] border-r border-slate-50">
+                        <td className="p-4 sticky left-0 bg-white z-10 shadow-[4px_0_8px_rgba(0,0,0,0.03)] border-r border-slate-300">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-white font-bold">
                               {row.name?.charAt(0) || "U"}
@@ -363,13 +357,6 @@ export default function StaffAttendanceGrid() {
                               <p className="text-xs text-slate-500 font-medium">{row.designation}</p>
                               <p className="text-[10px] text-slate-400 uppercase tracking-wider">{row.displayID}</p>
                             </div>
-                            <button
-                              onClick={() => viewEmployeeDetails(row)}
-                              className="ml-auto text-slate-400 hover:text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                              title="View Details"
-                            >
-                              <FaEye />
-                            </button>
                           </div>
                         </td>
                         
@@ -382,7 +369,7 @@ export default function StaffAttendanceGrid() {
                           return (
                             <td 
                               key={i} 
-                              className={`p-2 text-center border-l border-slate-50 h-12 ${isToday ? 'bg-orange-50' : ''}`}
+                              className={`p-2 text-center border-l border-slate-300 h-12 ${isToday ? 'bg-orange-50' : ''}`}
                             >
                               {status ? (
                                 <div className="relative">
@@ -403,7 +390,7 @@ export default function StaffAttendanceGrid() {
                           );
                         })}
                         
-                        <td className="p-2 text-center border-l border-slate-50">
+                        <td className="p-2 text-center border-l border-slate-300">
                           <div className="flex flex-col gap-1 items-center">
                             <span className="text-xs font-bold text-emerald-600">{summary.present}</span>
                             <span className="text-xs font-bold text-rose-600">{summary.absent}</span>
@@ -516,51 +503,6 @@ export default function StaffAttendanceGrid() {
             </div>
           </div>
         </div>
-
-        {/* Selected Employee Details Modal */}
-        {selectedEmployee && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl">
-              <div className="p-6 bg-gradient-to-r from-slate-800 to-slate-900 text-white flex justify-between items-center rounded-t-2xl">
-                <div>
-                  <h3 className="text-xl font-bold">Attendance Details</h3>
-                  <p className="text-slate-300 text-sm">{selectedEmployee.name}</p>
-                </div>
-                <button
-                  onClick={() => setSelectedEmployee(null)}
-                  className="p-2 bg-white/10 rounded-full hover:bg-white/20"
-                >
-                  <FaCircle className="text-white text-lg" />
-                </button>
-              </div>
-              
-              <div className="p-6">
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="p-4 bg-slate-50 rounded-xl">
-                    <p className="text-sm text-slate-500">Designation</p>
-                    <p className="font-semibold text-slate-800">{selectedEmployee.designation || "N/A"}</p>
-                  </div>
-                  <div className="p-4 bg-slate-50 rounded-xl">
-                    <p className="text-sm text-slate-500">Employee ID</p>
-                    <p className="font-semibold text-slate-800">{selectedEmployee.displayID}</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-slate-700">Monthly Summary</h4>
-                  <div className="grid grid-cols-5 gap-2">
-                    {Object.entries(getEmployeeSummary(selectedEmployee)).map(([key, value]) => (
-                      <div key={key} className="text-center p-3 bg-white border border-slate-100 rounded-lg">
-                        <p className="text-2xl font-bold text-slate-800">{value}</p>
-                        <p className="text-xs text-slate-500 capitalize">{key.replace(/([A-Z])/g, ' $1')}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
