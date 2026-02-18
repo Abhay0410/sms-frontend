@@ -324,7 +324,7 @@ export default function PaymentHistory() {
             <FaReceipt />
           </div>
           <div>
-            <h2 className="text-4xl font-extrabold tracking-tight">Payment History</h2>
+            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Payment History</h2>
             <p className="text-slate-600 font-medium text-sm">View and manage all fee payment receipts</p>
           </div>
         </div>
