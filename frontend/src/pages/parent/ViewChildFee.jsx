@@ -272,7 +272,9 @@ export default function ViewChildFee() {
   const feeStructure = feeData?.feeStructure || null;
 
   const childPhotoUrl = childInfo?.profilePicture
-    ? `${API_URL}/uploads/${schoolId}/students/${childInfo.profilePicture}?t=${Date.now()}`
+    ? childInfo.profilePicture.startsWith("http")
+      ? childInfo.profilePicture
+      : `${API_URL}/uploads/${schoolId}/students/${childInfo.profilePicture}?t=${Date.now()}`
     : `https://ui-avatars.com/api/?name=${childInfo?.name}`;
 
   return (

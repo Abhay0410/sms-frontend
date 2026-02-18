@@ -112,7 +112,9 @@ export default function ChildrenDetails() {
   selectedChild?.schoolId || localStorage.getItem("schoolId");
 
 const childPhotoUrl = selectedChild?.profilePicture
-  ? `${API_URL}/uploads/${schoolId}/students/${selectedChild.profilePicture}?t=${Date.now()}`
+  ? selectedChild.profilePicture.startsWith("http")
+    ? selectedChild.profilePicture
+    : `${API_URL}/uploads/${schoolId}/students/${selectedChild.profilePicture}?t=${Date.now()}`
   : `https://ui-avatars.com/api/?name=${encodeURIComponent(
       selectedChild?.name || "Student"
     )}`;

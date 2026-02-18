@@ -189,7 +189,9 @@ export default function ViewChildTimetable() {
 
 
 const childPhotoUrl = currentChild?.profilePicture
-  ? `${API_URL}/uploads/${schoolId}/students/${currentChild.profilePicture}?t=${Date.now()}`
+  ? currentChild.profilePicture.startsWith("http")
+    ? currentChild.profilePicture
+    : `${API_URL}/uploads/${schoolId}/students/${currentChild.profilePicture}?t=${Date.now()}`
   : `https://ui-avatars.com/api/?name=${encodeURIComponent(
       displayChild?.name || "Student"
     )}`;
