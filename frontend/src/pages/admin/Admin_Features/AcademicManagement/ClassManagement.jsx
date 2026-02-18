@@ -265,7 +265,7 @@ export default function ClassManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8">
+    <div className="min-h-screen bg-[#F8FAFC] px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-7xl">
         <BackButton to="/admin/admin-dashboard" />
 

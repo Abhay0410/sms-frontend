@@ -14,6 +14,9 @@ import {
   FaChild,
 } from "react-icons/fa";
 
+const API_URL =
+  import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
+
 export default function ViewChildAttendance() {
   const [children, setChildren] = useState([]);
   const [selectedChild, setSelectedChild] = useState(null);
@@ -33,6 +36,8 @@ export default function ViewChildAttendance() {
       const childrenData = parent.children || [];
 
       setChildren(childrenData);
+      
+      localStorage.setItem("schoolId", parent.schoolId);
 
       if (childrenData.length > 0) {
         setSelectedChild(childrenData[0]);
@@ -138,6 +143,17 @@ export default function ViewChildAttendance() {
     }
   };
 
+const schoolId =
+  selectedChild?.schoolId || localStorage.getItem("schoolId");
+
+const childPhotoUrl = selectedChild?.profilePicture
+  ? `${API_URL}/uploads/${schoolId}/students/${selectedChild.profilePicture}?t=${Date.now()}`
+  : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      selectedChild?.name || "Student"
+    )}`;
+
+  
+
   if (loading && children.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50">
@@ -206,12 +222,8 @@ export default function ViewChildAttendance() {
           <div className="mt-6 rounded-2xl bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white shadow-lg">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
-                <OptimizedImage
-                  src={
-                    selectedChild.photo
-                      ? `/uploads/Student/${selectedChild.photo}`
-                      : `/assets/default-student-avatar.png`
-                  }
+                <img
+                  src={childPhotoUrl}
                   alt={selectedChild.name}
                   className="h-20 w-20 rounded-full object-cover border-4 border-white shadow-xl"
                   width={80}

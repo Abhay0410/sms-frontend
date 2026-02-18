@@ -411,12 +411,12 @@ export default function TimetableManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50 px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-7xl">
        
 
         {/* Header */}
-        <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className=" flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
             <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
               Timetable Management

@@ -264,11 +264,12 @@ LIBRARY: {
       LOGIN: '/api/auth/teacher/login',
       LOGOUT: '/api/auth/teacher/logout',
       PROFILE: '/api/auth/teacher/profile',
-      UPDATE_PROFILE: '/api/auth/teacher/profile',
+      // UPDATE_PROFILE: '/api/auth/teacher/profile',
       CHANGE_PASSWORD: '/api/auth/teacher/change-password',
       VALIDATE: '/api/auth/teacher/validate',
     },
 
+     UPDATE_PROFILE:'/api/auth/teacher/update-profile',
     // Dashboard
     DASHBOARD: '/api/teacher/dashboard',
 

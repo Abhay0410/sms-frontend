@@ -156,7 +156,7 @@ export default function AdminPayrollDashboard() {
   }, []);
 
   return (
-    <div className="p-8 space-y-10">
+    <div className=" space-y-10">
       <div className="flex justify-between items-end">
         <div>
            <h1 className="text-4xl font-black text-slate-800 tracking-tight">Payroll Command Center</h1>

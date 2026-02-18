@@ -23,6 +23,9 @@ import {
   FaChartBar // ✅ NEW: Added for Results
 } from "react-icons/fa";
 
+const API_URL =
+  import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
+
 export default function ChildrenDetails() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -43,6 +46,8 @@ export default function ChildrenDetails() {
     console.log("Resolved childrenData:", childrenData);
 
     setChildren(childrenData);
+
+     localStorage.setItem("schoolId", parent.schoolId);
 
     if (childrenData.length > 0) {
       setSelectedChild(childrenData[0]);
@@ -103,6 +108,15 @@ export default function ChildrenDetails() {
     }
   }, [selectedChild, loadAttendanceData, loadSubjectsData]);
 
+  const schoolId =
+  selectedChild?.schoolId || localStorage.getItem("schoolId");
+
+const childPhotoUrl = selectedChild?.profilePicture
+  ? `${API_URL}/uploads/${schoolId}/students/${selectedChild.profilePicture}?t=${Date.now()}`
+  : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      selectedChild?.name || "Student"
+    )}`;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50">
@@ -161,6 +175,7 @@ export default function ChildrenDetails() {
                 navigate={navigate}
                 attendanceData={attendanceData}
                 subjectsCount={subjectsCount}
+                 childPhotoUrl={childPhotoUrl}
               />
             )}
           </>
@@ -170,12 +185,12 @@ export default function ChildrenDetails() {
   );
 }
 
-function ChildDetailView({ child, navigate, attendanceData, subjectsCount }) {
+function ChildDetailView({ child, navigate, attendanceData, subjectsCount  ,childPhotoUrl}) {
   const isEnrolled = child.status === "ENROLLED";
   const isRegistered = child.status === "REGISTERED";
   const hasFeesDue = child.feeDetails && child.feeDetails.pendingAmount > 0;
 
-  const photoUrl = child.photo ? `/uploads/Student/${child.photo}` : `/assets/default-student-avatar.png`;
+ 
 
   const attendancePercentage = attendanceData?.attendancePercentage || 
     (attendanceData?.totalPresent && attendanceData?.totalDays 
@@ -195,7 +210,7 @@ function ChildDetailView({ child, navigate, attendanceData, subjectsCount }) {
             <div className="flex items-center gap-4">
               <div className="h-24 w-24 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100">
                 <OptimizedImage
-                  src={photoUrl}
+                  src={childPhotoUrl}
                   alt={child.name}
                   className="h-full w-full object-cover"
                   width={96}

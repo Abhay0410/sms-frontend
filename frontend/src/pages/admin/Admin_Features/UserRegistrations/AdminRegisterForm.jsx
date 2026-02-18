@@ -1025,12 +1025,12 @@ const handleSubmit = async (e) => {
   if (!school) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 md:px-6 pb-6 ">
       {/* ===== HEADER ===== */}
       <div className="max-w-6xl mx-auto mb-6">
       
 
-        <div className="mt-6">
+        <div className="">
           <h1 className="text-4xl  font-extrabold text-gray-900 tracking-tight">
             Register Admin
           </h1>

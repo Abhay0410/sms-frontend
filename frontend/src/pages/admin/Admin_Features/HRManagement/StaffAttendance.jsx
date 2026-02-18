@@ -106,7 +106,7 @@ export default function StaffAttendance() {
   };
 
   return (
-    <div className="space-y-6 p-4 md:p-6 bg-gradient-to-br from-slate-50 to-white min-h-screen">
+    <div className="space-y-6 p-2 bg-gradient-to-br from-slate-50 to-white min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 import BackButton from "../../components/BackButton";
 import OptimizedImage from "../../components/OptimizedImage";
 
+
 export default function StudentProfileManage() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
@@ -25,6 +26,10 @@ export default function StudentProfileManage() {
   const [studentInfo, setStudentInfo] = useState({});
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState("");
+
+  
+  // ✅ PROD-READY: Get URL from environment variables
+  const API_URL = import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
 
   useEffect(() => {
     loadProfile();
@@ -122,7 +127,7 @@ export default function StudentProfileManage() {
 
       // Add photo if selected
       if (photoFile) {
-        formData.append("photo", photoFile);
+        formData.append("profilePicture", photoFile);
       }
 
       const response = await api.put(API_ENDPOINTS.STUDENT.AUTH.PROFILE, formData, {
@@ -132,8 +137,9 @@ export default function StudentProfileManage() {
       });
 
       console.log("✅ Update successful:", response);
+     
       toast.success("Profile updated successfully");
-      loadProfile();
+     await loadProfile();
       setPhotoFile(null);
       setPhotoPreview("");
     } catch (e) {
@@ -177,8 +183,20 @@ export default function StudentProfileManage() {
     );
   }
 
-  const photoUrl = photoPreview || 
-    (studentInfo.profilePicture ? `/uploads/students/${studentInfo.profilePicture}` : `/assets/default-student-avatar.png`);
+  console.log("School ID:", studentInfo.schoolId);
+  
+      console.log("Profile Pic Value:", studentInfo.profilePicture);
+console.log("Base URL:", import.meta.env.VITE_REACT_APP_API_BASE_URL);
+ const photoUrl =
+  photoPreview ||
+  (studentInfo.profilePicture
+    ? `${API_URL}/uploads/${studentInfo.schoolId}/students/${studentInfo.profilePicture}`
+    : `/assets/default-student-avatar.png`);
+  // const photoUrl = photoPreview ||
+  // (studentInfo.profilePicture
+  //   ? `${import.meta.env.VITE_REACT_APP_API_BASE_URL}/${studentInfo.profilePicture}`
+  //   : `/assets/default-student-avatar.png`);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
@@ -216,6 +234,7 @@ export default function StudentProfileManage() {
             <div className="relative">
               <div className="h-32 w-32 rounded-2xl border-4 border-white shadow-2xl overflow-hidden">
                 <OptimizedImage
+                key={studentInfo.profilePicture}
                   src={photoUrl}
                   alt="Profile"
                   className="h-full w-full object-cover"

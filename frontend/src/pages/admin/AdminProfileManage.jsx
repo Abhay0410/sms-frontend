@@ -149,12 +149,12 @@ setAdminInfo(updatedAdmin);
       : `/assets/default-admin-avatar.png`);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-4xl">
 
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold mt-6 bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
+          <h1 className="text-4xl font-extrabold  bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
             Administrator Profile
           </h1>
           <p className="text-slate-600 mt-2 font-medium text-sm">

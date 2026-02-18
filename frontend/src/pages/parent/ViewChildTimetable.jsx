@@ -15,7 +15,17 @@ import {
   FaCoffee,
 } from "react-icons/fa";
 
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+const API_URL =
+  import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
 
 export default function ViewChildTimetable() {
   const [children, setChildren] = useState([]);
@@ -35,6 +45,9 @@ export default function ViewChildTimetable() {
       const childrenData = parent.children || [];
 
       console.log("👨‍👦 Children data:", childrenData);
+
+      localStorage.setItem("schoolId", parent.schoolId);
+
 
       setChildren(childrenData);
       if (childrenData.length > 0) {
@@ -63,7 +76,7 @@ export default function ViewChildTimetable() {
     try {
       setLoadingTimetable(true);
       const resp = await api.get(
-        API_ENDPOINTS.PARENT.TIMETABLE.CHILD(selectedChild._id)
+        API_ENDPOINTS.PARENT.TIMETABLE.CHILD(selectedChild._id),
       );
       const raw = resp?.data || resp;
       const data = raw.data || raw;
@@ -144,19 +157,20 @@ export default function ViewChildTimetable() {
   }
 
   const currentChild = selectedChild || children[0];
-  const displayChild =
-    timetableData?.child || {
-      name: currentChild.name,
-      studentID: currentChild.studentID,
-      className: currentChild.className,
-      section: currentChild.section,
-    };
+  // const schoolId = currentChild?.schoolId;
+
+  const displayChild = timetableData?.child || {
+    name: currentChild.name,
+    studentID: currentChild.studentID,
+    className: currentChild.className,
+    section: currentChild.section,
+  };
 
   // ---------- STUDENT-STYLE HELPERS ----------
   const getMaxPeriodsCount = () => {
     if (!timetableData?.timetable) return 8;
     const counts = timetableData.timetable.map(
-      (day) => day.periods?.length || 0
+      (day) => day.periods?.length || 0,
     );
     return Math.max(...counts, 8);
   };
@@ -169,6 +183,20 @@ export default function ViewChildTimetable() {
   };
 
   const maxPeriodsCount = getMaxPeriodsCount();
+
+  const schoolId =  localStorage.getItem("schoolId");
+
+
+
+const childPhotoUrl = currentChild?.profilePicture
+  ? `${API_URL}/uploads/${schoolId}/students/${currentChild.profilePicture}?t=${Date.now()}`
+  : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      displayChild?.name || "Student"
+    )}`;
+
+  console.log("schoolId:", schoolId);
+console.log("profilePicture:", currentChild?.profilePicture);
+console.log("Final Image URL:", childPhotoUrl);
 
   // ---------- UI ----------
   return (
@@ -211,17 +239,22 @@ export default function ViewChildTimetable() {
           <div className="mt-6 rounded-2xl bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white shadow-lg">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
-                <OptimizedImage
-                  src={
-                    currentChild.photo
-                      ? `/uploads/Student/${currentChild.photo}`
-                      : `/assets/default-student-avatar.png`
-                  }
-                  alt={displayChild.name}
-                  className="h-20 w-20 rounded-full object-cover border-4 border-white shadow-xl"
-                  width={80}
-                  height={80}
-                />
+                <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-white shadow-xl bg-white flex items-center justify-center">
+                  {currentChild.profilePicture ? (
+                    <OptimizedImage
+                      src={childPhotoUrl}
+                      alt={displayChild.name}
+                      className="h-full w-full object-cover"
+                      width={80}
+                      height={80}
+                    />
+                  ) : (
+                    <span className="text-2xl font-bold text-green-600">
+                      {displayChild.name?.charAt(0)?.toUpperCase()}
+                    </span>
+                  )}
+                </div>
+
                 <div>
                   <h3 className="text-2xl font-bold">{displayChild.name}</h3>
                   <p className="text-green-100 font-medium">
@@ -328,15 +361,9 @@ export default function ViewChildTimetable() {
                             if (
                               period.isBreak ||
                               period.breakType ||
-                              period.subject
-                                ?.toLowerCase()
-                                .includes("lunch") ||
-                              period.subject
-                                ?.toLowerCase()
-                                .includes("break") ||
-                              period.subject
-                                ?.toLowerCase()
-                                .includes("recess")
+                              period.subject?.toLowerCase().includes("lunch") ||
+                              period.subject?.toLowerCase().includes("break") ||
+                              period.subject?.toLowerCase().includes("recess")
                             ) {
                               const isLunch =
                                 period.subject
@@ -346,9 +373,7 @@ export default function ViewChildTimetable() {
                                   ?.toLowerCase()
                                   .includes("lunch");
                               const breakLabel =
-                                period.subject ||
-                                period.breakType ||
-                                "Break";
+                                period.subject || period.breakType || "Break";
 
                               return (
                                 <div
@@ -374,7 +399,7 @@ export default function ViewChildTimetable() {
 
                             // Regular period
                             const subject = timetableData.subjects?.find(
-                              (s) => s.subjectName === period.subject
+                              (s) => s.subjectName === period.subject,
                             );
                             const teacherName =
                               period.teacher?.name ||

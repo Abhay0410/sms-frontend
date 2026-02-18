@@ -138,7 +138,7 @@ export default function SalaryStructureSetup() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className=" max-w-6xl mx-auto">
       <div className="flex items-center gap-4 mb-10">
         <div className="h-16 w-16 bg-indigo-600 text-white rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-indigo-100">
           <FaCalculator size={28} />
