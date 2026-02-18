@@ -222,7 +222,7 @@ const displayPhoto =
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative">
               <div className="relative h-32 w-32 rounded-full shadow-2xl overflow-hidden bg-gray-200 flex items-center justify-center">
-                <OptimizedImage
+                <img
                   src={displayPhoto}
                   alt="Profile"
                   className="h-full w-full object-cover  object-center"
@@ -280,7 +280,7 @@ const displayPhoto =
               
               <div className="text-center mb-4">
                 <div className="relative h-32 w-32 rounded-full border-2 border-gray-100  overflow-hidden bg-gray-200 flex items-center justify-center">
-                  <OptimizedImage
+                  <img
                     src={displayPhoto}
                     alt="Profile preview"
                     className="h-full w-full  object-cover object-center"

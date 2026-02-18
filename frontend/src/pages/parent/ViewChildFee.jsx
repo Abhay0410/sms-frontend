@@ -15,12 +15,17 @@ import {
   FaPaperPlane,
 } from "react-icons/fa";
 
+const API_URL =
+  import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
+
 export default function ViewChildFee() {
   const [children, setChildren] = useState([]);
   const [selectedChild, setSelectedChild] = useState(null);
   const [feeData, setFeeData] = useState(null);
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [schoolId, setSchoolId] = useState(null);
+
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Payment form
@@ -36,50 +41,53 @@ export default function ViewChildFee() {
   });
 
   const loadChildren = useCallback(async () => {
-  try {
-    const resp = await api.get(API_ENDPOINTS.PARENT.AUTH.PROFILE);
-    console.log("👪 Parent PROFILE raw resp (ViewChildFee):", resp);
+    try {
+      const resp = await api.get(API_ENDPOINTS.PARENT.AUTH.PROFILE);
+      console.log("👪 Parent PROFILE raw resp (ViewChildFee):", resp);
 
-    const parent = resp?.data?.parent || resp?.parent || {};
-    const childrenData = Array.isArray(parent.children) ? parent.children : [];
+      const parent = resp?.data?.parent || resp?.parent || {};
+      setSchoolId(parent.schoolId);
+      const childrenData = Array.isArray(parent.children)
+        ? parent.children
+        : [];
 
-    setChildren(childrenData);
+      setChildren(childrenData);
 
-    if (childrenData.length > 0) {
-      setSelectedChild(childrenData[0]);
-    } else {
+      if (childrenData.length > 0) {
+        setSelectedChild(childrenData[0]);
+      } else {
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Load children error:", error);
+      toast.error(error.message || "Failed to load children");
+      setChildren([]);
+      setSelectedChild(null);
       setLoading(false);
     }
-  } catch (error) {
-    console.error("Load children error:", error);
-    toast.error(error.message || "Failed to load children");
-    setChildren([]);
-    setSelectedChild(null);
-    setLoading(false);
-  }
-}, []);
+  }, []);
 
   const loadChildFee = useCallback(async () => {
-  if (!selectedChild) return;
+    if (!selectedChild) return;
 
-  try {
-    setLoading(true);
-    const resp = await api.get(
-      API_ENDPOINTS.PARENT.FEE.CHILD_STATUS(selectedChild._id)
-    );
-    console.log("👶 Child fee raw resp:", resp);
+    try {
+      setLoading(true);
+      const resp = await api.get(
+        API_ENDPOINTS.PARENT.FEE.CHILD_STATUS(selectedChild._id),
+      );
+      console.log("👶 Child fee raw resp:", resp);
 
-    // Axios interceptor: resp = { success, message, data: {...} }
-    const data = resp?.data || resp;
-    setFeeData(data || null);
-  } catch (error) {
-    console.error("Child fee load error:", error);
-    toast.error(error.message || "Failed to load fee details");
-    setFeeData(null);
-  } finally {
-    setLoading(false);
-  }
-}, [selectedChild]);
+      // Axios interceptor: resp = { success, message, data: {...} }
+      const data = resp?.data || resp;
+      setFeeData(data || null);
+    } catch (error) {
+      console.error("Child fee load error:", error);
+      toast.error(error.message || "Failed to load fee details");
+      setFeeData(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedChild]);
 
   // Payment history directly from feeData.payments
   const loadPaymentHistory = useCallback(() => {
@@ -159,9 +167,7 @@ export default function ViewChildFee() {
 
       await api.post(API_ENDPOINTS.PARENT.FEE.SUBMIT_PAYMENT, payload);
 
-      toast.success(
-        "Payment submitted successfully! Awaiting admin approval."
-      );
+      toast.success("Payment submitted successfully! Awaiting admin approval.");
 
       // Reset form
       setPaymentForm({
@@ -186,7 +192,7 @@ export default function ViewChildFee() {
     try {
       const url = API_ENDPOINTS.PARENT.FEE.DOWNLOAD_RECEIPT(
         feePaymentId,
-        paymentId
+        paymentId,
       );
 
       const response = await api.get(url, {
@@ -265,6 +271,10 @@ export default function ViewChildFee() {
     : null;
   const feeStructure = feeData?.feeStructure || null;
 
+  const childPhotoUrl = childInfo?.profilePicture
+    ? `${API_URL}/uploads/${schoolId}/students/${childInfo.profilePicture}?t=${Date.now()}`
+    : `https://ui-avatars.com/api/?name=${childInfo?.name}`;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 md:p-8">
       <div className="mx-auto max-w-7xl">
@@ -305,17 +315,14 @@ export default function ViewChildFee() {
           <div className="mt-6 rounded-2xl bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white shadow-lg">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
-                <OptimizedImage
-                  src={
-                    childInfo.photo
-                      ? `/uploads/Student/${childInfo.photo}`
-                      : `/assets/default-student-avatar.png`
-                  }
+                <img
+                  src={childPhotoUrl}
                   alt={childInfo.name}
-                  className="h-20 w-20 rounded-full object-cover border-4 border-white shadow-xl"
+                  className="h-20 w-20 rounded-full object-cover border-2 border-white shadow-xl"
                   width={80}
                   height={80}
                 />
+
                 <div>
                   <h3 className="text-2xl font-bold">{childInfo.name}</h3>
                   <p className="text-green-100 font-medium">
@@ -374,7 +381,7 @@ export default function ViewChildFee() {
               </div>
               <span
                 className={`inline-block px-4 py-2 rounded-full text-sm font-bold border-2 ${getStatusColor(
-                  feeDetails.paymentStatus
+                  feeDetails.paymentStatus,
                 )}`}
               >
                 {feeDetails.paymentStatus?.replace("_", " ")}
@@ -427,7 +434,7 @@ export default function ViewChildFee() {
                           "dueDate",
                           "lateFeeAmount",
                           "lateFeeApplicableAfter",
-                        ].includes(key)
+                        ].includes(key),
                     )
                     .map(([key, value]) => (
                       <div
@@ -493,16 +500,15 @@ export default function ViewChildFee() {
                       <td className="p-4">
                         <span className="text-sm text-slate-700">
                           {payment.paymentDate
-                            ? new Date(
-                                payment.paymentDate
-                              ).toLocaleDateString("en-IN")
+                            ? new Date(payment.paymentDate).toLocaleDateString(
+                                "en-IN",
+                              )
                             : "-"}
                         </span>
                       </td>
                       <td className="p-4 text-right">
                         <span className="text-sm font-bold text-green-700">
-                          ₹
-                          {payment.amountPaid?.toLocaleString("en-IN") || 0}
+                          ₹{payment.amountPaid?.toLocaleString("en-IN") || 0}
                         </span>
                       </td>
                       <td className="p-4">
@@ -517,8 +523,8 @@ export default function ViewChildFee() {
                             payment.status === "APPROVED"
                               ? "bg-green-100 text-green-800"
                               : payment.status === "PENDING"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
                           }`}
                         >
                           {payment.status || "PAID"}
@@ -530,10 +536,7 @@ export default function ViewChildFee() {
                           !payment.status) && (
                           <button
                             onClick={() =>
-                              downloadReceipt(
-                                payment.feePaymentId,
-                                payment._id
-                              )
+                              downloadReceipt(payment.feePaymentId, payment._id)
                             }
                             className="text-green-600 hover:text-green-800 transition"
                           >

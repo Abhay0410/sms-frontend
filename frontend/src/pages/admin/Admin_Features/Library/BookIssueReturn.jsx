@@ -2,12 +2,23 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
-import { 
-  FaBookReader, FaExchangeAlt, FaUserGraduate, 
-  FaBarcode, FaSpinner, FaCheckCircle, FaHistory,
-  FaQrcode, FaSearch, FaClock, FaBookOpen,
-  FaTimes, FaArrowRight, FaUserCircle, FaBook,
-  FaChalkboardTeacher
+import {
+  FaBookReader,
+  FaExchangeAlt,
+  FaUserGraduate,
+  FaBarcode,
+  FaSpinner,
+  FaCheckCircle,
+  FaHistory,
+  FaQrcode,
+  FaSearch,
+  FaClock,
+  FaBookOpen,
+  FaTimes,
+  FaArrowRight,
+  FaUserCircle,
+  FaBook,
+  FaChalkboardTeacher,
 } from "react-icons/fa";
 
 export default function BookIssueReturn() {
@@ -15,13 +26,19 @@ export default function BookIssueReturn() {
   const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [recentTransactions, setRecentTransactions] = useState([]);
-  const [stats, setStats] = useState({ totalIssued: 0, totalReturned: 0, overdue: 0 });
+  const [stats, setStats] = useState({
+    totalIssued: 0,
+    totalReturned: 0,
+    overdue: 0,
+  });
   const [userType, setUserType] = useState("student");
-  
-  const [issueData, setIssueData] = useState({ 
-    userId: "", 
-    serialCode: "", 
-    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] 
+
+  const [issueData, setIssueData] = useState({
+    userId: "",
+    serialCode: "",
+    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0],
   });
   const [returnData, setReturnData] = useState({ serialCode: "" });
 
@@ -45,19 +62,32 @@ export default function BookIssueReturn() {
 
   const fetchLibraryStats = async () => {
     try {
-      const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY?.STATS || '/api/admin/library/stats');
-      setStats(response.data || { totalIssued: 0, totalReturned: 0, overdue: 0 });
+      const response = await api.get(
+        API_ENDPOINTS.ADMIN.LIBRARY?.STATS || "/api/admin/library/stats",
+      );
+      setStats(
+        response.data || { totalIssued: 0, totalReturned: 0, overdue: 0 },
+      );
     } catch (error) {
-      console.warn("Failed to fetch library stats (Backend endpoint missing):", error);
+      console.warn(
+        "Failed to fetch library stats (Backend endpoint missing):",
+        error,
+      );
     }
   };
 
   const fetchRecentTransactions = async () => {
     try {
-      const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY?.RECENT_TRANSACTIONS || '/api/admin/library/recent');
+      const response = await api.get(
+        API_ENDPOINTS.ADMIN.LIBRARY?.RECENT_TRANSACTIONS ||
+          "/api/admin/library/recent",
+      );
       setRecentTransactions(response.data || []);
     } catch (error) {
-      console.warn("Failed to fetch recent transactions (Backend endpoint missing):", error);
+      console.warn(
+        "Failed to fetch recent transactions (Backend endpoint missing):",
+        error,
+      );
     }
   };
 
@@ -65,19 +95,22 @@ export default function BookIssueReturn() {
     e.preventDefault();
     setLoading(true);
     try {
-      const endpoint = API_ENDPOINTS.ADMIN.LIBRARY?.ISSUE_BOOK || '/api/admin/library/issue';
-      
+      const endpoint =
+        API_ENDPOINTS.ADMIN.LIBRARY?.ISSUE_BOOK || "/api/admin/library/issue";
+
       const payload = {
         ...issueData,
-        userType // Backend requires userType
+        userType, // Backend requires userType
       };
 
       const response = await api.post(endpoint, payload);
       toast.success(response.data?.message || "Book issued successfully!");
-      setIssueData({ 
-        userId: "", 
-        serialCode: "", 
-        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] 
+      setIssueData({
+        userId: "",
+        serialCode: "",
+        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0],
       });
       fetchLibraryStats();
       fetchRecentTransactions();
@@ -92,7 +125,8 @@ export default function BookIssueReturn() {
     e.preventDefault();
     setLoading(true);
     try {
-      const endpoint = API_ENDPOINTS.ADMIN.LIBRARY?.RETURN_BOOK || '/api/admin/library/return';
+      const endpoint =
+        API_ENDPOINTS.ADMIN.LIBRARY?.RETURN_BOOK || "/api/admin/library/return";
       const response = await api.post(endpoint, returnData);
       toast.success(response.data?.message || "Book returned successfully!");
       setReturnData({ serialCode: "" });
@@ -108,21 +142,28 @@ export default function BookIssueReturn() {
   const simulateBarcodeScan = (type) => {
     setScanning(true);
     toast.info(`Point camera at ${type} barcode...`);
-    
+
     // Simulate scan delay
     setTimeout(() => {
-      const mockCode = type === 'student' ? `STU-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}` : `BK-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
-      
+      const mockCode =
+        type === "student"
+          ? `STU-${Math.floor(Math.random() * 10000)
+              .toString()
+              .padStart(4, "0")}`
+          : `BK-${Math.floor(Math.random() * 1000)
+              .toString()
+              .padStart(3, "0")}`;
+
       if (activeTab === "ISSUE") {
-        if (type === 'student') {
-          setIssueData(prev => ({ ...prev, userId: mockCode }));
+        if (type === "student") {
+          setIssueData((prev) => ({ ...prev, userId: mockCode }));
           toast.success(`Student scanned: ${mockCode}`);
         } else {
-          setIssueData(prev => ({ ...prev, serialCode: mockCode }));
+          setIssueData((prev) => ({ ...prev, serialCode: mockCode }));
           toast.success(`Book scanned: ${mockCode}`);
         }
       } else {
-        setReturnData(prev => ({ ...prev, serialCode: mockCode }));
+        setReturnData((prev) => ({ ...prev, serialCode: mockCode }));
         toast.success(`Book scanned: ${mockCode}`);
       }
       setScanning(false);
@@ -131,11 +172,11 @@ export default function BookIssueReturn() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -161,8 +202,12 @@ export default function BookIssueReturn() {
                 <FaBook className="text-white text-xl" />
               </div>
               <div>
-                <p className="text-slate-500 text-sm font-medium">Issued Today</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.totalIssued}</p>
+                <p className="text-slate-500 text-sm font-medium">
+                  Issued Today
+                </p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {stats.totalIssued}
+                </p>
               </div>
             </div>
           </div>
@@ -173,8 +218,12 @@ export default function BookIssueReturn() {
                 <FaCheckCircle className="text-white text-xl" />
               </div>
               <div>
-                <p className="text-slate-500 text-sm font-medium">Returned Today</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.totalReturned}</p>
+                <p className="text-slate-500 text-sm font-medium">
+                  Returned Today
+                </p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {stats.totalReturned}
+                </p>
               </div>
             </div>
           </div>
@@ -186,7 +235,9 @@ export default function BookIssueReturn() {
               </div>
               <div>
                 <p className="text-slate-500 text-sm font-medium">Overdue</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.overdue}</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {stats.overdue}
+                </p>
               </div>
             </div>
           </div>
@@ -239,7 +290,9 @@ export default function BookIssueReturn() {
                           type="button"
                           onClick={() => setUserType("student")}
                           className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                            userType === "student" ? "bg-white text-orange-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                            userType === "student"
+                              ? "bg-white text-orange-600 shadow-sm"
+                              : "text-slate-500 hover:text-slate-700"
                           }`}
                         >
                           <FaUserGraduate /> Student
@@ -248,7 +301,9 @@ export default function BookIssueReturn() {
                           type="button"
                           onClick={() => setUserType("teacher")}
                           className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                            userType === "teacher" ? "bg-white text-orange-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                            userType === "teacher"
+                              ? "bg-white text-orange-600 shadow-sm"
+                              : "text-slate-500 hover:text-slate-700"
                           }`}
                         >
                           <FaChalkboardTeacher /> Teacher
@@ -257,10 +312,12 @@ export default function BookIssueReturn() {
 
                       <div className="space-y-4">
                         <label className="block text-sm font-medium text-slate-700">
-                          {userType === 'student' ? 'Student ID / Admission No.' : 'Teacher ID / Employee No.'}
+                          {userType === "student"
+                            ? "Student ID / Admission No."
+                            : "Teacher ID / Employee No."}
                         </label>
                         <div className="relative group">
-                          {userType === 'student' ? (
+                          {userType === "student" ? (
                             <FaUserGraduate className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-orange-500" />
                           ) : (
                             <FaChalkboardTeacher className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-orange-500" />
@@ -269,13 +326,18 @@ export default function BookIssueReturn() {
                             ref={studentInputRef}
                             required
                             value={issueData.userId}
-                            onChange={(e) => setIssueData({ ...issueData, userId: e.target.value })}
+                            onChange={(e) =>
+                              setIssueData({
+                                ...issueData,
+                                userId: e.target.value,
+                              })
+                            }
                             className="w-full pl-12 pr-32 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
                             placeholder={`Enter ${userType} ID or scan barcode`}
                           />
                           <button
                             type="button"
-                            onClick={() => simulateBarcodeScan('student')}
+                            onClick={() => simulateBarcodeScan("student")}
                             disabled={scanning}
                             className="absolute right-2 top-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg text-sm font-medium hover:shadow-md transition-all disabled:opacity-50"
                           >
@@ -300,7 +362,12 @@ export default function BookIssueReturn() {
                             type="date"
                             required
                             value={issueData.dueDate}
-                            onChange={(e) => setIssueData({ ...issueData, dueDate: e.target.value })}
+                            onChange={(e) =>
+                              setIssueData({
+                                ...issueData,
+                                dueDate: e.target.value,
+                              })
+                            }
                             className="w-full pl-12 pr-4 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
                           />
                         </div>
@@ -316,13 +383,18 @@ export default function BookIssueReturn() {
                             ref={scanInputRef}
                             required
                             value={issueData.serialCode}
-                            onChange={(e) => setIssueData({ ...issueData, serialCode: e.target.value })}
+                            onChange={(e) =>
+                              setIssueData({
+                                ...issueData,
+                                serialCode: e.target.value,
+                              })
+                            }
                             className="w-full pl-12 pr-32 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
                             placeholder="Enter book serial or scan barcode"
                           />
                           <button
                             type="button"
-                            onClick={() => simulateBarcodeScan('book')}
+                            onClick={() => simulateBarcodeScan("book")}
                             disabled={scanning}
                             className="absolute right-2 top-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg text-sm font-medium hover:shadow-md transition-all disabled:opacity-50"
                           >
@@ -344,7 +416,8 @@ export default function BookIssueReturn() {
                       >
                         {loading ? (
                           <span className="flex items-center justify-center gap-2">
-                            <FaSpinner className="animate-spin" /> Processing Issue...
+                            <FaSpinner className="animate-spin" /> Processing
+                            Issue...
                           </span>
                         ) : (
                           "Confirm Book Issue"
@@ -368,13 +441,15 @@ export default function BookIssueReturn() {
                             ref={scanInputRef}
                             required
                             value={returnData.serialCode}
-                            onChange={(e) => setReturnData({ serialCode: e.target.value })}
+                            onChange={(e) =>
+                              setReturnData({ serialCode: e.target.value })
+                            }
                             className="w-full pl-12 pr-32 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all"
                             placeholder="Scan or enter book serial code"
                           />
                           <button
                             type="button"
-                            onClick={() => simulateBarcodeScan('book')}
+                            onClick={() => simulateBarcodeScan("book")}
                             disabled={scanning}
                             className="absolute right-2 top-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg text-sm font-medium hover:shadow-md transition-all disabled:opacity-50"
                           >
@@ -396,7 +471,8 @@ export default function BookIssueReturn() {
                       >
                         {loading ? (
                           <span className="flex items-center justify-center gap-2">
-                            <FaSpinner className="animate-spin" /> Processing Return...
+                            <FaSpinner className="animate-spin" /> Processing
+                            Return...
                           </span>
                         ) : (
                           "Confirm Book Return"
@@ -418,8 +494,12 @@ export default function BookIssueReturn() {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-semibold text-slate-800 group-hover:text-orange-700">Bulk Issue</p>
-                      <p className="text-xs text-slate-500">Issue multiple books</p>
+                      <p className="font-semibold text-slate-800 group-hover:text-orange-700">
+                        Bulk Issue
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Issue multiple books
+                      </p>
                     </div>
                     <FaArrowRight className="text-slate-300 group-hover:text-orange-500" />
                   </div>
@@ -430,8 +510,12 @@ export default function BookIssueReturn() {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-semibold text-slate-800 group-hover:text-emerald-700">Overdue List</p>
-                      <p className="text-xs text-slate-500">View overdue books</p>
+                      <p className="font-semibold text-slate-800 group-hover:text-emerald-700">
+                        Overdue List
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        View overdue books
+                      </p>
                     </div>
                     <FaArrowRight className="text-slate-300 group-hover:text-emerald-500" />
                   </div>
@@ -458,8 +542,12 @@ export default function BookIssueReturn() {
                 {recentTransactions.length === 0 ? (
                   <div className="text-center py-8">
                     <FaBookOpen className="text-4xl text-slate-200 mx-auto mb-3" />
-                    <p className="text-slate-500 font-medium">No recent transactions</p>
-                    <p className="text-sm text-slate-400 mt-1">Issued/returned books will appear here</p>
+                    <p className="text-slate-500 font-medium">
+                      No recent transactions
+                    </p>
+                    <p className="text-sm text-slate-400 mt-1">
+                      Issued/returned books will appear here
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -467,39 +555,59 @@ export default function BookIssueReturn() {
                       <div
                         key={index}
                         className={`p-4 rounded-xl border transition-all ${
-                          transaction.type === 'ISSUE'
-                            ? 'bg-gradient-to-r from-orange-50 to-orange-100/30 border-orange-200'
-                            : 'bg-gradient-to-r from-emerald-50 to-emerald-100/30 border-emerald-200'
+                          transaction.type === "ISSUE"
+                            ? "bg-gradient-to-r from-orange-50 to-orange-100/30 border-orange-200"
+                            : "bg-gradient-to-r from-emerald-50 to-emerald-100/30 border-emerald-200"
                         }`}
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${
-                              transaction.type === 'ISSUE' 
-                                ? 'bg-orange-100 text-orange-600' 
-                                : 'bg-emerald-100 text-emerald-600'
-                            }`}>
-                              {transaction.type === 'ISSUE' ? <FaExchangeAlt /> : <FaCheckCircle />}
+                            <div
+                              className={`p-2 rounded-lg ${
+                                transaction.type === "ISSUE"
+                                  ? "bg-orange-100 text-orange-600"
+                                  : "bg-emerald-100 text-emerald-600"
+                              }`}
+                            >
+                              {transaction.type === "ISSUE" ? (
+                                <FaExchangeAlt />
+                              ) : (
+                                <FaCheckCircle />
+                              )}
                             </div>
                             <div>
-                              <p className="font-semibold text-slate-900">{transaction.bookTitle || 'Unknown Book'}</p>
-                              <p className="text-xs text-slate-500">{transaction.bookCode}</p>
+                              <p className="font-semibold text-slate-900">
+                                {transaction.bookTitle || "Unknown Book"}
+                              </p>
+                              <p className="text-xs text-slate-500">
+                                {transaction.bookCode}
+                              </p>
                             </div>
                           </div>
-                          <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-                            transaction.type === 'ISSUE' 
-                              ? 'bg-orange-100 text-orange-700' 
-                              : 'bg-emerald-100 text-emerald-700'
-                          }`}>
+                          <span
+                            className={`text-xs font-bold px-2 py-1 rounded-full ${
+                              transaction.type === "ISSUE"
+                                ? "bg-orange-100 text-orange-700"
+                                : "bg-emerald-100 text-emerald-700"
+                            }`}
+                          >
                             {transaction.type}
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2">
-                            <FaUserCircle className="text-slate-400" />
-                            <span className="font-medium text-slate-700">{transaction.studentName}</span>
+                            {/* <FaUserCircle className="text-slate-400" /> */}
+                            <div className="w-4 h-4 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-semibold">
+                              {transaction.studentName?.charAt(0).toUpperCase()}
+                            </div>
+
+                            <span className="font-medium text-slate-700">
+                              {transaction.studentName}
+                            </span>
                           </div>
-                          <span className="text-slate-500">{formatDate(transaction.timestamp)}</span>
+                          <span className="text-slate-500">
+                            {formatDate(transaction.timestamp)}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -515,22 +623,34 @@ export default function BookIssueReturn() {
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500"></div>
                   <div>
-                    <p className="text-sm font-medium text-slate-700">Book Issue</p>
-                    <p className="text-xs text-slate-500">Student borrows a book</p>
+                    <p className="text-sm font-medium text-slate-700">
+                      Book Issue
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Student borrows a book
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500"></div>
                   <div>
-                    <p className="text-sm font-medium text-slate-700">Book Return</p>
-                    <p className="text-xs text-slate-500">Student returns a book</p>
+                    <p className="text-sm font-medium text-slate-700">
+                      Book Return
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Student returns a book
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500"></div>
                   <div>
-                    <p className="text-sm font-medium text-slate-700">Overdue</p>
-                    <p className="text-xs text-slate-500">Book not returned on time</p>
+                    <p className="text-sm font-medium text-slate-700">
+                      Overdue
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Book not returned on time
+                    </p>
                   </div>
                 </div>
               </div>

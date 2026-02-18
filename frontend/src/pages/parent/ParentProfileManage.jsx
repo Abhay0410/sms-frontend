@@ -78,7 +78,7 @@ export default function ParentProfileManage() {
       // ✅ FIXED: Use API_ENDPOINTS constant
       await api.uploadPut(API_ENDPOINTS.PARENT.AUTH.PROFILE, formData);
       toast.success("Profile updated successfully");
-       await loadProfile();
+      await loadProfile();
       setPhotoFile(null);
       setPhotoPreview("");
     } catch (e) {
@@ -129,15 +129,13 @@ export default function ParentProfileManage() {
   }
 
   // Photo URL logic
-const photoUrl =
-  photoPreview ||
-  (parentInfo.profilePicture
-    ? parentInfo.profilePicture.startsWith("http")
-      ? parentInfo.profilePicture
-      : `${API_URL}/uploads/${parentInfo.schoolId}/parents/${parentInfo.profilePicture}?t=${Date.now()}`
-    : "/assets/default-parent-avatar.png");
-
-
+  const photoUrl =
+    photoPreview ||
+    (parentInfo.profilePicture
+      ? parentInfo.profilePicture.startsWith("http")
+        ? parentInfo.profilePicture
+        : `${API_URL}/uploads/${parentInfo.schoolId}/parents/${parentInfo.profilePicture}?t=${Date.now()}`
+      : "/assets/default-parent-avatar.png");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50 p-4 md:p-6">
@@ -168,11 +166,10 @@ const photoUrl =
                 /> */}
 
                 <img
-  src={photoUrl}
-  alt="Profile"
-  className="h-full w-full object-cover"
-/>
-
+                  src={photoUrl}
+                  alt="Profile"
+                  className="h-full w-full object-cover"
+                />
               </div>
             </div>
 
@@ -209,10 +206,15 @@ const photoUrl =
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {children.map((child) => {
+
+                    console.log("Child:", child);
+                    console.log("SchoolId:", parentInfo.schoolId);
+                    console.log("ProfilePic:", child.profilePicture);
+
                     const childPhotoUrl = child.profilePicture
                       ? child.profilePicture.startsWith("http")
                         ? child.profilePicture
-                        : `${API_URL}/uploads/${parentInfo.schoolId}/students/${child.profilePicture}`
+                        : `${API_URL}/uploads/${parentInfo.schoolId}/students/${child.profilePicture}?t=${Date.now()}`
                       : "/assets/default-student-avatar.png";
 
                     return (
