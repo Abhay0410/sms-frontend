@@ -1,6 +1,6 @@
 // pages/parent/ViewChildResults.jsx
 import { useState, useEffect, useCallback } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../services/api";
 import BackButton from "../../components/BackButton";
@@ -8,19 +8,43 @@ import { FaDownload, FaSpinner, FaSearch, FaGraduationCap, FaAward, FaFilePdf, F
 
 export default function ViewChildResults() {
   const [searchParams] = useSearchParams();
-  const childId = searchParams.get('childId');
-  const navigate = useNavigate();
+  const urlChildId = searchParams.get('childId');
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
   const [childInfo, setChildInfo] = useState(null);
   const [filters, setFilters] = useState({ search: "" });
 
+  // New state to handle auto-selection if no ID in URL
+  const [selectedChildId, setSelectedChildId] = useState(urlChildId);
+
+  // 1. If no ID in URL, fetch children and select the first one
+  useEffect(() => {
+    if (!urlChildId) {
+      const fetchChildren = async () => {
+        try {
+          const resp = await api.get(API_ENDPOINTS.PARENT.AUTH.PROFILE);
+          const children = resp?.data?.parent?.children || resp?.parent?.children || [];
+          if (children.length > 0) {
+            setSelectedChildId(children[0]._id);
+          } else {
+            toast.error("No children found");
+            setLoading(false);
+          }
+        } catch (e) {
+          console.error(e);
+          setLoading(false);
+        }
+      };
+      fetchChildren();
+    }
+  }, [urlChildId]);
+
   const loadData = useCallback(async () => {
-    if (!childId) return navigate('/parent/children');
+    if (!selectedChildId) return;
     try {
       setLoading(true);
-      const res = await api.get(API_ENDPOINTS.PARENT.RESULT.CHILD(childId));
+      const res = await api.get(API_ENDPOINTS.PARENT.RESULT.CHILD(selectedChildId));
       
       // ✅ Correct extraction based on successResponse wrapper
       const resultsData = res?.data?.results || res?.results || [];
@@ -34,7 +58,7 @@ export default function ViewChildResults() {
     } finally {
       setLoading(false);
     }
-  }, [childId, navigate]);
+  }, [selectedChildId]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
