@@ -458,6 +458,7 @@ MARK_ATTENDANCE: '/api/teacher/hr/attendance',
   COMMON: {
     UPLOAD_FILE: '/api/upload',
     DOWNLOAD_FILE: (fileId) => `/api/download/${fileId}`,
+    GET_IMAGE: (filename) => `/api/uploads/${filename}`,
     SEARCH: '/api/search',
   },
 };

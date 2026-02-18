@@ -190,7 +190,9 @@ console.log("Base URL:", import.meta.env.VITE_REACT_APP_API_BASE_URL);
  const photoUrl =
   photoPreview ||
   (studentInfo.profilePicture
-    ? `${API_URL}/uploads/${studentInfo.schoolId}/students/${studentInfo.profilePicture}`
+    ? studentInfo.profilePicture.startsWith("http")
+      ? studentInfo.profilePicture
+      : `${API_URL}/uploads/${studentInfo.schoolId}/students/${studentInfo.profilePicture}`
     : `/assets/default-student-avatar.png`);
   // const photoUrl = photoPreview ||
   // (studentInfo.profilePicture

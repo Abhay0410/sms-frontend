@@ -7,6 +7,8 @@ import {
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 
+const API_URL = import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
+
 export default function StaffAttendanceGrid() {
   const [data, setData] = useState({ matrix: [], daysInMonth: 30, summary: {} });
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -22,6 +24,15 @@ export default function StaffAttendanceGrid() {
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
+
+  const currentSchoolId = useMemo(() => {
+    try {
+      const admin = JSON.parse(localStorage.getItem("admin") || "{}");
+      return admin.schoolId;
+    } catch {
+      return "";
+    }
+  }, []);
 
   // Fetch attendance matrix
   const fetchMatrix = useCallback(async () => {
@@ -97,6 +108,19 @@ export default function StaffAttendanceGrid() {
       leave: values.filter(v => v === 'LEAVE').length,
       total: values.length
     };
+  };
+
+  // Function to get profile image URL
+  const getProfileImageUrl = (employee) => {
+    if (!employee.profilePicture) return null;
+    
+    const schoolId = employee.schoolId || currentSchoolId;
+    
+    if (employee.profilePicture.startsWith("http")) {
+      return employee.profilePicture;
+    }
+    
+    return `${API_URL}/uploads/${schoolId}/teachers/${employee.profilePicture}`;
   };
 
   return (
@@ -345,12 +369,36 @@ export default function StaffAttendanceGrid() {
                 ) : (
                   paginatedData.map((row) => {
                     const summary = getEmployeeSummary(row);
+                    const profileImageUrl = getProfileImageUrl(row);
+                    
                     return (
                       <tr key={row._id} className="hover:bg-slate-50/80 transition-colors group">
                         <td className="p-4 sticky left-0 bg-white z-10 shadow-[4px_0_8px_rgba(0,0,0,0.03)] border-r border-slate-300">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-white font-bold">
-                              {row.name?.charAt(0) || "U"}
+                            <div className="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 overflow-hidden">
+                              {profileImageUrl ? (
+                                <img
+                                  src={profileImageUrl}
+                                  alt={row.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.style.display = 'none';
+                                    e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
+                                    // Add fallback text
+                                    const fallback = document.createElement('span');
+                                    fallback.className = 'text-sm font-bold text-slate-600';
+                                    fallback.textContent = row.name?.charAt(0) || 'U';
+                                    e.target.parentElement.appendChild(fallback);
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                                  <span className="text-sm font-bold text-slate-600">
+                                    {row.name?.charAt(0) || 'U'}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             <div>
                               <p className="font-bold text-slate-800">{row.name}</p>
@@ -369,7 +417,7 @@ export default function StaffAttendanceGrid() {
                           return (
                             <td 
                               key={i} 
-                              className={`p-2 text-center border-l border-slate-300 h-12 ${isToday ? 'bg-orange-50' : ''}`}
+                              className={`p-2 text-center border-l border-slate-300 h-14 ${isToday ? 'bg-orange-50' : ''}`}
                             >
                               {status ? (
                                 <div className="relative">
