@@ -10,15 +10,10 @@ import {
   FaClock,
   FaPlus,
   FaTimes,
-  FaEdit,
-  FaTrash,
-  FaChartBar,
   FaExclamationTriangle,
   FaFilter,
   FaSearch,
   FaSync,
-  FaCalendarAlt,
-  FaEye,
 } from "react-icons/fa";
 
 const DEPARTMENTS = [
@@ -146,12 +141,7 @@ export default function TeacherManagement() {
 
   // Calculate statistics
   const totalTeachers = teachers.length;
-  const classTeachersCount = teachers.filter(
-    (t) => t.assignments?.classTeacher?.length > 0,
-  ).length;
-  const subjectTeachersCount = teachers.filter(
-    (t) => t.assignments?.subjects?.length > 0,
-  ).length;
+  // Removed unused variables: classTeachersCount, subjectTeachersCount
 
   if (loading) {
     return (
@@ -412,11 +402,7 @@ export default function TeacherManagement() {
 
 // Teacher Card Component
 function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
-  const workload = teacher.totalWorkload || 0;
-  const maxWorkload = 30;
-  const workloadPercentage = (workload / maxWorkload) * 100;
-  const isOverloaded = workload > maxWorkload;
-  const isHighLoad = workload > maxWorkload * 0.8;
+  // Removed unused variables: workload, maxWorkload, workloadPercentage, isOverloaded, isHighLoad
   console.log("Profile Pic:", teacher.profilePicture);
   console.log(teacher.schoolId);
 
@@ -564,6 +550,10 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
             src={displayPhoto}
             alt={teacher.name}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "/assets/default-teacher-avatar.png";
+            }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-slate-600">

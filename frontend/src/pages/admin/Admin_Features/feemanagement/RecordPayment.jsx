@@ -845,7 +845,11 @@ export default function RecordPayment() {
                         <div className="flex items-center gap-3">
                           {student?.profilePicture ? (
                             <img
-                              src={`${API_URL}/uploads/${student.schoolId}/students/${student.profilePicture}`}
+                              src={
+                                student.profilePicture.startsWith("http")
+                                  ? student.profilePicture
+                                  : `${API_URL}/uploads/${student.schoolId}/students/${student.profilePicture}`
+                              }
                               alt={student.name}
                               className="w-10 h-10 rounded-full object-cover"
                               onError={(e) => {
