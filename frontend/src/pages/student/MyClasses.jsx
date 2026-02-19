@@ -90,7 +90,7 @@ export default function MyClasses() {
   const isRegistered = studentInfo.status === "REGISTERED";
 
   const viewTimetable = () => {
-  navigate('/student/timetable');
+  navigate('../timetable');
 }
 
   return (
