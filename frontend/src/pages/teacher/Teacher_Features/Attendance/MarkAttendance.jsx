@@ -1174,7 +1174,7 @@ export default function MarkAttendance() {
                     <option value="">Select a class</option>
                     {assignments.classes.map((cls) => (
                       <option key={cls.classId} value={cls.classId}>
-                        Class {cls.className} - Section {cls.section}
+                        Class {cls.className} 
                       </option>
                     ))}
                   </select>
