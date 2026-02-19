@@ -82,6 +82,21 @@ export default function StudentResults() {
     }
   };
 
+  const handleView = async (resultId) => {
+    try {
+      toast.info("Opening PDF...");
+      const response = await api.get(
+        API_ENDPOINTS.STUDENT.RESULT.DOWNLOAD(resultId),
+        { responseType: 'blob' }
+      );
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch {
+      toast.error("Failed to open result");
+    }
+  };
+
   const getStatusBadge = (status) => {
     const badges = { 
       PASS: "bg-emerald-100 text-emerald-800 border-emerald-200", 
@@ -201,13 +216,22 @@ export default function StudentResults() {
                       </td>
                       <td className="px-6 py-5 text-right">
                         {result.isPublished && (
-                          <button
-                            onClick={() => handleDownload(result._id)}
-                            className="p-3 bg-slate-900 text-white rounded-xl hover:bg-indigo-600 transition-all shadow-md group-hover:-translate-y-0.5 active:translate-y-0"
-                            title="Download Official PDF"
-                          >
-                            <FaDownload size={14} />
-                          </button>
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleView(result._id)}
+                              className="p-3 bg-white text-indigo-600 border border-indigo-200 rounded-xl hover:bg-indigo-50 transition-all shadow-sm group-hover:-translate-y-0.5 active:translate-y-0"
+                              title="View Result"
+                            >
+                              <FaEye size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDownload(result._id)}
+                              className="p-3 bg-slate-900 text-white rounded-xl hover:bg-indigo-600 transition-all shadow-md group-hover:-translate-y-0.5 active:translate-y-0"
+                              title="Download Official PDF"
+                            >
+                              <FaDownload size={14} />
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>

@@ -78,15 +78,43 @@ export default function ViewChildAttendance() {
 
         console.log("✅ Parent attendance data:", data);
 
+        // Client-side filtering fallback
+        let filteredRecords = data.records || [];
+
+        if (filterType === "month") {
+          filteredRecords = filteredRecords.filter((record) => {
+            const d = new Date(record.date);
+            return (
+              d.getMonth() + 1 === Number(month) && d.getFullYear() === Number(year)
+            );
+          });
+        } else if (filterType === "range" && startDate && endDate) {
+          const start = new Date(startDate);
+          start.setHours(0, 0, 0, 0);
+          const end = new Date(endDate);
+          end.setHours(23, 59, 59, 999);
+          filteredRecords = filteredRecords.filter((record) => {
+            const d = new Date(record.date);
+            return d >= start && d <= end;
+          });
+        }
+
+        // Recalculate stats based on filtered records
+        const totalDays = filteredRecords.length;
+        const totalPresent = filteredRecords.filter((r) => r.status === "PRESENT").length;
+        const totalAbsent = filteredRecords.filter((r) => r.status === "ABSENT").length;
+        const totalLate = filteredRecords.filter((r) => r.status === "LATE").length;
+        const attendancePercentage = totalDays > 0 ? ((totalPresent / totalDays) * 100).toFixed(1) : 0;
+
         setStats({
-          totalDays: data.summary?.totalClasses || 0,
-          totalPresent: data.summary?.totalPresent || 0,
-          totalAbsent: data.summary?.totalAbsent || 0,
-          totalLate: 0,
-          attendancePercentage: data.summary?.attendancePercentage || 0,
+          totalDays,
+          totalPresent,
+          totalAbsent,
+          totalLate,
+          attendancePercentage,
         });
 
-        setAttendance(data.records || []);
+        setAttendance(filteredRecords);
       } catch (error) {
         console.error("❌ Parent attendance error:", error);
         toast.error(error.message || "Failed to load attendance");

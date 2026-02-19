@@ -93,8 +93,8 @@ const TeacherMessaging = () => {
       submitData.append("includeStudents", formData.includeStudents);
       submitData.append("includeParents", formData.includeParents);
     } else {
-      submitData.append("studentIds", JSON.stringify(formData.studentIds));
-      submitData.append("parentIds", JSON.stringify(formData.parentIds));
+      formData.studentIds.forEach(id => submitData.append("studentIds", id));
+      formData.parentIds.forEach(id => submitData.append("parentIds", id));
     }
 
     composeFiles.forEach(file => submitData.append("attachments", file));
