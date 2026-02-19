@@ -127,38 +127,6 @@ const loadMySchedule = useCallback(async () => {
           </div>
         </div>
 
-        {/* Debug Info - Remove in production */}
-        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <details className="cursor-pointer">
-            <summary className="font-medium text-blue-800">Schedule Debug Info (Click to expand)</summary>
-            <div className="mt-2 p-3 bg-white rounded border">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
-                <div>
-                  <strong>Teacher:</strong> {teacher?.name || 'Not loaded'}
-                </div>
-                <div>
-                  <strong>Teacher ID:</strong> {teacher?.teacherID || 'N/A'}
-                </div>
-                <div>
-                  <strong>Academic Year:</strong> {academicYear}
-                </div>
-                <div>
-                  <strong>Total Classes:</strong> {totalClasses}
-                </div>
-              </div>
-              <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto max-h-40">
-                {JSON.stringify({
-                  teacher,
-                  scheduleData,
-                  hasData: !!scheduleData,
-                  daysWithClasses: scheduleData ? 
-                    Object.keys(scheduleData).filter(day => scheduleData[day]?.length > 0) : []
-                }, null, 2)}
-              </pre>
-            </div>
-          </details>
-        </div>
-
         {/* Teacher Info */}
         {teacher && (
           <div className="mt-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white shadow-lg">

@@ -1,7 +1,7 @@
 // Routes/Parent/ParentRoutes.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../../components/Layout";
-import { FaHome, FaChild, FaBook, FaCalendarCheck, FaMoneyCheckAlt, FaBullhorn, FaUserAlt, FaEnvelope } from "react-icons/fa";
+import { FaHome, FaChild, FaBook,  FaMoneyCheckAlt,  FaUserAlt, FaEnvelope } from "react-icons/fa";
 import ParentDashboardPage from "../../pages/parent/ParentDashboardPage.jsx";
 import ParentProfileManage from "../../pages/parent/ParentProfileManage.jsx";
 import ChildrenDetails from "../../pages/parent/ChildrenDetails";
