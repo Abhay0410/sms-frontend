@@ -222,7 +222,7 @@ export default function RecordPayment() {
               academicYear,
               search: searchTerm,
               page,
-              limit: 50,
+              limit: 5,
               status: filterStatus !== "ALL" ? filterStatus : undefined,
             },
           },
@@ -272,6 +272,7 @@ export default function RecordPayment() {
     },
     [academicYear, searchTerm, filterStatus],
   );
+  console.log("Pagination:", pagination);
 
   //   const school = (() => {
   //   try {

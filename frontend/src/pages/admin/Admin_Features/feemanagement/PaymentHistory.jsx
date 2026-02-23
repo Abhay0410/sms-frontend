@@ -37,7 +37,7 @@ export default function PaymentHistory() {
   const [downloadLoading, setDownloadLoading] = useState(null);
   
   // ✅ CHANGE ITEMS PER PAGE HERE:
-  const itemsPerPage = 10;
+  const itemsPerPage = 7;
   
   // Simple pagination states
   const [currentPage, setCurrentPage] = useState(1);

@@ -13,7 +13,7 @@ export default function StudentDashboardPage() {
     <div className="space-y-8">
       <div>
         <h2 className="text-4xl font-black text-slate-900 tracking-tighter">My Workspace</h2>
-        <p className="mt-2 text-slate-500 font-medium text-lg">Ready to continue your academic journey?</p>
+        <p className="mt-2 text-slate-500 font-medium ">Ready to continue your academic journey?</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
