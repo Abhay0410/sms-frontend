@@ -28,8 +28,25 @@ import BookIssueReturn from "../../pages/admin/Admin_Features/Library/BookIssueR
 import LibraryInventory from "../../pages/admin/Admin_Features/Library/LibraryInventory.jsx";
 
 const AdminRoutes = ({ school }) => { // ✅ Accept school prop
+  // 1. Logged in user ki details lein
+  const getAdminData = () => {
+    try {
+      const data = localStorage.getItem("admin");
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const adminData = getAdminData();
+  const designation = adminData?.designation || ""; 
+  // Force boolean conversion to avoid string "false" issues
+  const isSuperAdmin = adminData?.isSuperAdmin === true;
+
+  console.log("🔒 Access Control Check:", { designation, isSuperAdmin });
+
   // Define Sidebar Sections here
-  const sections = [
+  const allSections = [
     { 
       title: "Dashboard", 
       icon: <FaHome />, 
@@ -42,7 +59,8 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         { title: "Teacher Register", path: "register-teacher" },
         { title: "Student Register", path: "register-student" },
         { title: "Admin Register", path: "admin-register" }
-      ]
+      ],
+      visibleTo: ['Principal', 'Administrator']
     },
     {
       title: "Academic Management",
@@ -50,10 +68,11 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       subTabs: [
         { title: "Class Management", path: "class-management" },
         { title: "Teacher Management", path: "teacher-management" },
-        // { title: "Student Management", path: "student-management" },
+        { title: "Student Management", path: "student-management" },
         { title: "Subject Management", path: "subject-management" },
         { title: "Timetable Management", path: "timetable-management" }
-      ]
+      ],
+      visibleTo: ['Principal', 'Administrator', 'Vice Principal']
     },
     {
       title: "Fee Management",
@@ -63,14 +82,16 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         { title: "Record Payment", path: "fee-record-payment" },
         { title: "Payment History", path: "fee-history" },
         { title: "Set Class Fees", path: "fee-structure" }
-      ]
+      ],
+      visibleTo: ['Principal', 'Accountant']
     },
     {
       title: "Result Management",
       icon: <FaFileAlt />,
       subTabs: [
         { title: "Manage Results", path: "result-management" },
-      ]
+      ],
+      visibleTo: ['Principal', 'Administrator', 'Vice Principal']
     },
     {
       title: "Staff HR",
@@ -79,7 +100,8 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         { title: "Staff Attendance", path: "staff-attendance" },
         { title: "Leave Requests", path: "leave-requests" },  
         { title: "Attendance Grid", path: "staff-attandance-grid" },
-      ]
+      ],
+      visibleTo: ['Principal', 'Administrator', 'HR Manager']
     },
     {
       title: "Payroll & Salary",
@@ -88,7 +110,8 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         { title: "Payroll Dashboard", path: "payroll-dashboard" },
         { title: "Salary Setup", path: "salary-setup" },
         { title: "Monthly Pay-Run", path: "monthly-payrun" }
-      ]
+      ],
+      visibleTo: ['Principal', 'Accountant', 'HR Manager']
     },
     {
       title: "Library",
@@ -96,7 +119,8 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       subTabs: [
         { title: "Book Circulation", path: "library-circulation" },
         { title: "Inventory", path: "library-inventory" }
-      ]
+      ],
+      visibleTo: ['Principal', 'Librarian']
     },
     {
       title: "Communication",
@@ -110,10 +134,22 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
     }
   ];
 
+  // FILTER LOGIC: Super Admin sees all, others see their 'visibleTo' matches
+  const filteredSections = allSections.filter(section => {
+    // Principal ya SuperAdmin ko sab dikhao
+    if (isSuperAdmin || designation === 'Principal') return true;
+    
+    // Agar section ki visibility restricted nahi hai, toh sabko dikhao (Profile/Comm)
+    if (!section.visibleTo) return true;
+
+    // Check if user's designation is in the allowed list
+    return section.visibleTo.includes(designation);
+  });
+
   return (
     <Routes>
       {/* All routes inside this Route will share the Sidebar and Layout */}
-      <Route element={<Layout sections={sections} title={`${school?.schoolName || 'Admin'} Panel`} role="admin" />}>
+      <Route element={<Layout sections={filteredSections} title={`${school?.schoolName || 'Admin'} Panel`} role="admin" />}>
         {/* ✅ index means exactly /school/:slug/admin/ */}
         <Route index element={<Navigate to="admin-dashboard" replace />} />
         
@@ -121,9 +157,13 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         <Route path="admin-dashboard" element={<AdminDashboardPage school={school} />} />  
         
         {/* User Registration Routes */}
-        <Route path="register-teacher" element={<TeacherRegisterForm school={school} />} />
-        <Route path="register-student" element={<StudentParentRegisterForm school={school} />} />
-        <Route path="admin-register" element={<AdminRegister school={school} />} />
+        {(isSuperAdmin || ['Principal', 'Administrator'].includes(designation)) && (
+          <>
+            <Route path="register-teacher" element={<TeacherRegisterForm school={school} />} />
+            <Route path="register-student" element={<StudentParentRegisterForm school={school} />} />
+            <Route path="admin-register" element={<AdminRegister school={school} />} />
+          </>
+        )}
         
         {/* Academic Management Routes */}
         <Route path="class-management" element={<ClassManagement school={school} />} />
@@ -164,7 +204,6 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
         {/* Profile */}
         <Route path="profile" element={<AdminProfileManage school={school} />} />
         
-        {/* ❌ REMOVED: The catch-all here was also forcing reloads */}
       </Route>
     </Routes>
   );

@@ -148,6 +148,14 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
         localStorage.setItem("userRole", role);
         localStorage.setItem("selectedSchool", JSON.stringify(school));
         
+        // ✅ FIX: Admin data ko hamesha 'admin' key mein save karein 
+        // taaki AdminRoutes.jsx isse access kar sake
+        if (role === "admin") {
+          localStorage.setItem("admin", JSON.stringify(userData));
+        } else {
+          localStorage.setItem(role, JSON.stringify(userData));
+        }
+        
         // Update state
         setIsLoggedIn(true);
         setUserRole(role);

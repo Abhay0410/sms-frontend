@@ -10,6 +10,7 @@ import {
   FaCopy,
   FaUniversity,
   FaWallet,
+  FaChalkboardTeacher,
 } from "react-icons/fa";
 import Select from "react-select";
 import Swal from "sweetalert2";
@@ -55,6 +56,16 @@ const INDIAN_STATES = [
   "Lakshadweep",
   "Puducherry",
 ];
+
+const Input = ({ label, ...props }) => (
+  <div>
+    <label className="text-sm font-medium text-gray-700">{label}</label>
+    <input
+      {...props}
+      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+    />
+  </div>
+);
 
 export default function TeacherRegisterForm() {
   const [form, setForm] = useState({
@@ -487,99 +498,75 @@ if (profilePicture) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 md:px-6 pb-6 ">
-      <div className="mx-auto max-w-7xl">
-        <div className="">
-          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
-            Register Teacher
-          </h2>
-          <p className="mt-2 text-sm text-slate-500 font-medium">
-            Add a new teacher to the system
-          </p>
+    <div className="min-h-screen bg-slate-50 p-6 md:p-8">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-10 text-center md:text-left">
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
+            <FaChalkboardTeacher className="text-indigo-600" /> Teacher Enrollment
+          </h1>
+          <p className="text-slate-500 font-medium mt-2">Add a new teacher to the system</p>
         </div>
 
-        <form onSubmit={onSubmit} className="mt-6">
-          <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-            <h3 className="mb-6 text-xl font-semibold text-gray-900">
-              Teacher Information
-            </h3>
-
+        <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
+          <div className="p-1 bg-indigo-600"></div>
+          <form onSubmit={onSubmit} className="p-10 space-y-10">
+            
+            {/* Personal Details */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Full Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
+              <Input
+                  label="Full Name *"
                   name="name"
                   value={form.name}
                   onChange={onChange}
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   placeholder="Enter teacher's full name"
                   required
-                />
-              </div>
+              />
 
               {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email <span className="text-red-500">*</span>
-                </label>
-                <input
+              <Input
+                  label="Email *"
                   type="email"
                   name="email"
                   value={form.email}
                   onChange={onChange}
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   placeholder="teacher@example.com"
                   required
-                />
-              </div>
+              />
 
               {/* Phone */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number <span className="text-red-500">*</span>
-                </label>
-                <input
+              <Input
+                  label="Phone Number *"
                   type="tel"
                   name="phone"
                   pattern="[0-9]{10}"
                   maxLength="10"
                   value={form.phone}
                   onChange={onChange}
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   placeholder="10-digit phone number"
                   required
-                />
-              </div>
+              />
 
               {/* PAN Number */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  PAN Number
-                </label>
-                <input
+              <Input
+                  label="PAN Number"
                   type="text"
                   name="panNumber"
                   value={form.panNumber}
                   onChange={onChange}
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   placeholder="Enter PAN Number"
-                />
-              </div>
+              />
 
               {/* Gender */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="text-sm font-medium text-gray-700">
                   Gender <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="gender"
                   value={form.gender}
                   onChange={onChange}
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 >
                   <option value="">Select Gender</option>
@@ -591,7 +578,7 @@ if (profilePicture) {
 
               {/* Date of Birth */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="text-sm font-medium text-gray-700">
                   Date of Birth <span className="text-red-500">*</span>
                 </label>
                 <DatePicker
@@ -610,14 +597,14 @@ if (profilePicture) {
                   }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
               </div>
 
               {/* Joining Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="text-sm font-medium text-gray-700">
                   Joining Date <span className="text-red-500">*</span>
                 </label>
                 <DatePicker
@@ -636,27 +623,27 @@ if (profilePicture) {
                   }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
               </div>
 
               {/* Profile Picture */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Profile Picture
+              <div className="md:col-span-2">
+                <label className="text-sm font-bold text-slate-700 block mb-3">
+                  Upload Profile Picture
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => setProfilePicture(e.target.files[0])}
-                  className="w-full rounded-lg border border-gray-300 p-2"
+                  className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
                 />
               </div>
 
               {/* Qualification */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="md:col-span-2">
+                <label className="text-sm font-medium text-gray-700">
                   Qualification
                 </label>
 
@@ -669,7 +656,7 @@ if (profilePicture) {
                         onChange={(e) =>
                           handleQualificationChange(index, e.target.value)
                         }
-                        className="flex-1 rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                        className="flex-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder="e.g. B.Ed, M.Ed"
                       />
 
@@ -703,7 +690,7 @@ if (profilePicture) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Department */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="text-sm font-medium text-gray-700">
                       Department <span className="text-red-500">*</span>
                     </label>
 
@@ -712,7 +699,7 @@ if (profilePicture) {
                       value={form.department}
                       onChange={onChange}
                       required
-                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
                       <option value="" className="text-gray-600">
                         Select Department
@@ -727,7 +714,7 @@ if (profilePicture) {
 
                   {/* Subjects */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="text-sm font-medium text-gray-700">
                       Subjects
                     </label>
 
@@ -755,7 +742,7 @@ if (profilePicture) {
                         }}
                         placeholder="Select subjects"
                         className="basic-multi-select"
-                        classNamePrefix="select"
+                        classNamePrefix="mt-1 select"
                       />
                     ) : (
                       <p>No subjects available</p>
@@ -766,53 +753,42 @@ if (profilePicture) {
 
               {/* Address */}
               {/* Address Section */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Address <span className="text-red-500">*</span>
-                </label>
-
+              <div className="md:col-span-2 bg-slate-50 p-8 rounded-3xl border border-slate-100">
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Residential Information</h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {/* City */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Street Address <span className="text-red-500">*</span>
-                    </label>
-                    <input
+                  <div className="md:col-span-2">
+                    <Input
+                      label="Street Address *"
                       type="text"
                       name="street"
                       value={form.address.street}
                       onChange={onChange}
-                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                       placeholder="Enter street address"
                       required
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      City <span className="text-red-500">*</span>
-                    </label>
-                    <input
+                  <Input
+                      label="City *"
                       type="text"
                       name="city"
                       value={form.address.city}
                       onChange={onChange}
-                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                       placeholder="Enter city"
                       required
-                    />
-                  </div>
+                  />
 
                   {/* State */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="text-sm font-medium text-gray-700">
                       State <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="state"
                       value={form.address.state}
                       onChange={onChange}
-                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       required
                     >
                       <option value="">Select State</option>
@@ -825,42 +801,32 @@ if (profilePicture) {
                   </div>
 
                   {/* Country */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Country <span className="text-red-500">*</span>
-                    </label>
-                    <input
+                  <Input
+                      label="Country *"
                       type="text"
                       name="country"
                       value={form.address.country}
                       onChange={onChange}
-                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                       required
-                    />
-                  </div>
+                  />
 
                   {/* Pincode */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Pincode <span className="text-red-500">*</span>
-                    </label>
-                    <input
+                  <Input
+                      label="Pincode *"
                       type="text"
                       name="pincode"
                       pattern="[0-9]{6}"
                       maxLength="6"
                       value={form.address.pincode}
                       onChange={onChange}
-                      className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                       placeholder="Enter pincode"
                       required
-                    />
-                  </div>
+                  />
                 </div>
               </div>
 
               {/* 2. Payroll Statutory (2026 Logic) */}
-              <div className="md:col-span-2 bg-slate-900 p-8 rounded-3xl text-white shadow-xl mt-6">
+              <div className="md:col-span-2 bg-slate-900 p-8 rounded-3xl text-white shadow-xl">
                 <h3 className="text-sm font-black text-orange-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                   <FaWallet /> Statutory Compliance (PF/ESI)
                 </h3>
@@ -970,29 +936,24 @@ if (profilePicture) {
               </div>
             </div>
 
-            <div className="mt-8 flex justify-end">
+            <div className="flex justify-end pt-6">
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex items-center gap-2 rounded-lg bg-indigo-600 px-8 py-3 font-medium text-white transition hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 ${
-                  loading ? "opacity-60 cursor-not-allowed" : ""
-                }`}
+                className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {loading ? (
-                  <>
-                    <FaSpinner className="h-4 w-4 animate-spin" />
-                    Registering...
-                  </>
+                  <FaSpinner className="animate-spin" />
                 ) : (
                   <>
                     <FaCheck className="h-4 w-4" />
-                    Register Teacher
+                    Initialize Account
                   </>
                 )}
               </button>
             </div>
-          </div>
-        </form>
+            </form>
+        </div>
       </div>
     </div>
   );

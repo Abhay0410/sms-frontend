@@ -48,6 +48,16 @@ const INDIAN_STATES = [
   "Puducherry",
 ];
 
+const Input = ({ label, ...props }) => (
+  <div>
+    <label className="text-sm font-medium text-gray-700">{label}</label>
+    <input
+      {...props}
+      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+    />
+  </div>
+);
+
 export default function StudentParentRegisterForm() {
   const [loading, setLoading] = useState(false);
 
@@ -512,14 +522,14 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="text-sm font-medium text-gray-700">
                     Blood Group
                   </label>
                   <select
                     name="bloodGroup"
                     value={studentForm.bloodGroup}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">Select Blood Group</option>
                     <option value="A+">A+</option>
@@ -534,14 +544,14 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="text-sm font-medium text-gray-700">
                     Religion
                   </label>
                   <select
                     name="religion"
                     value={studentForm.religion}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">Select Religion</option>
                     <option value="Hinduism">Hinduism</option>
@@ -555,14 +565,14 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="text-sm font-medium text-gray-700">
                     Caste/Category
                   </label>
                   <select
                     name="caste"
                     value={studentForm.caste}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">Select Category</option>
                     <option value="General">General</option>
@@ -573,84 +583,63 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nationality
-                  </label>
-                  <input
+                <Input
+                    label="Nationality"
                     type="text"
                     name="nationality"
                     value={studentForm.nationality}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Indian"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Aadhar Number (Optional)
-                  </label>
-                  <input
+                <Input
+                    label="Aadhar Number (Optional)"
                     type="text"
                     name="aadharNumber"
                     value={studentForm.aadharNumber}
                     onChange={onStudentChange}
                     pattern="[0-9]{12}"
                     maxLength="12"
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="12-digit Aadhar"
-                  />
-                </div>
+                />
               </div>
             </div>
 
             {/* Address */}
-            <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-              <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                Address Details
-              </h3>
-
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Residential Information</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Street Address <span className="text-red-500">*</span>
-                  </label>
-                  <input
+                  <Input
+                    label="Street Address *"
                     type="text"
                     name="street"
                     value={studentForm.street}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Enter street address"
                     required
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    City <span className="text-red-500">*</span>
-                  </label>
-                  <input
+                <Input
+                    label="City *"
                     type="text"
                     name="city"
                     value={studentForm.city}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Enter city"
                     required
-                  />
-                </div>
+                />
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="text-sm font-medium text-gray-700">
                     State <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="state"
                     value={studentForm.state}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   >
                     <option value="">Select State</option>
@@ -662,230 +651,156 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Pincode <span className="text-red-500">*</span>
-                  </label>
-                  <input
+                <Input
+                    label="Pincode *"
                     type="text"
                     name="pincode"
                     value={studentForm.pincode}
                     onChange={onStudentChange}
                     pattern="[0-9]{6}"
                     maxLength="6"
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="6-digit pincode"
                     required
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Country
-                  </label>
-                  <input
+                <Input
+                    label="Country"
                     type="text"
                     name="country"
                     value={studentForm.country}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="India"
-                  />
-                </div>
+                />
               </div>
             </div>
 
             {/* Father's Details */}
-            <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-              <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                Father's Details
-              </h3>
-
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Father's Details</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Father's Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
+                <Input
+                    label="Father's Name *"
                     type="text"
                     name="fatherName"
                     value={studentForm.fatherName}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Enter father's name"
                     required
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Father's Phone
-                  </label>
-                  <input
+                <Input
+                    label="Father's Phone"
                     type="tel"
                     name="fatherPhone"
                     value={studentForm.fatherPhone}
                     onChange={onStudentChange}
                     pattern="[0-9]{10}"
                     maxLength="10"
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="10-digit phone"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Father's Email
-                  </label>
-                  <input
+                <Input
+                    label="Father's Email"
                     type="email"
                     name="fatherEmail"
                     value={studentForm.fatherEmail}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="father@example.com"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Father's Occupation
-                  </label>
-                  <input
+                <Input
+                    label="Father's Occupation"
                     type="text"
                     name="fatherOccupation"
                     value={studentForm.fatherOccupation}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Enter occupation"
-                  />
-                </div>
+                />
               </div>
             </div>
 
             {/* Mother's Details */}
-            <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-              <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                Mother's Details (Optional)
-              </h3>
-
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Mother's Details (Optional)</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mother's Name
-                  </label>
-                  <input
+                <Input
+                    label="Mother's Name"
                     type="text"
                     name="motherName"
                     value={studentForm.motherName}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Enter mother's name"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mother's Phone
-                  </label>
-                  <input
+                <Input
+                    label="Mother's Phone"
                     type="tel"
                     name="motherPhone"
                     value={studentForm.motherPhone}
                     onChange={onStudentChange}
                     pattern="[0-9]{10}"
                     maxLength="10"
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="10-digit phone"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mother's Email
-                  </label>
-                  <input
+                <Input
+                    label="Mother's Email"
                     type="email"
                     name="motherEmail"
                     value={studentForm.motherEmail}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="mother@example.com"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mother's Occupation
-                  </label>
-                  <input
+                <Input
+                    label="Mother's Occupation"
                     type="text"
                     name="motherOccupation"
                     value={studentForm.motherOccupation}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Enter occupation"
-                  />
-                </div>
+                />
               </div>
             </div>
 
             {/* Guardian Details (Optional) */}
-            <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-              <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                Guardian Details (Parent Account)
-              </h3>
-
+            <div className="bg-indigo-50/50 p-8 rounded-3xl border border-indigo-100">
+              <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Guardian Details (Parent Account)</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Guardian's Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
+                <Input
+                    label="Guardian's Name *"
                     type="text"
                     name="guardianName"
                     value={studentForm.guardianName}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Name of the guardian"
                     required
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Guardian's Email <span className="text-red-500">*</span>
-                  </label>
-                  <input
+                <Input
+                    label="Guardian's Email *"
                     type="email"
                     name="guardianEmail"
                     value={studentForm.guardianEmail}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="guardian@example.com"
                     required
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Guardian's Phone <span className="text-red-500">*</span>
-                  </label>
-                  <input
+                <Input
+                    label="Guardian's Phone *"
                     type="tel"
                     name="guardianPhone"
                     value={studentForm.guardianPhone}
                     onChange={onStudentChange}
                     pattern="[0-9]{10}"
                     maxLength="10"
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="10-digit phone"
                     required
-                  />
-                </div>
+                />
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="text-sm font-medium text-gray-700">
                     Relation with Student{" "}
                     <span className="text-red-500">*</span>
                   </label>
@@ -893,7 +808,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     name="guardianRelation"
                     value={studentForm.guardianRelation}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   >
                     <option value="">Select Relation</option>
@@ -906,53 +821,40 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Occupation
-                  </label>
-                  <input
+                <Input
+                    label="Occupation"
                     type="text"
                     name="guardianOccupation"
                     value={studentForm.guardianOccupation}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Guardian's occupation"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Annual Income
-                  </label>
-                  <input
+                <Input
+                    label="Annual Income"
                     type="number"
                     name="guardianIncome"
                     value={studentForm.guardianIncome}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Annual income"
-                  />
-                </div>
+                />
               </div>
             </div>
 
             {/* ✅ UPDATED Academic Information - NO SECTION */}
-            <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-              <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                Academic Information
-              </h3>
-
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Academic Information</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Class Dropdown */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="text-sm font-medium text-gray-700">
                     Class <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="className"
                     value={studentForm.className}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   >
                     <option value="">Select Class</option>
@@ -979,14 +881,14 @@ Parent Password: ${parentPassword || "Sent via email"}`;
 
                 {/* Academic Year Dropdown */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="text-sm font-medium text-gray-700">
                     Academic Year <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="academicYear"
                     value={studentForm.academicYear}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   >
                     <option value="">Select Year</option>
@@ -1002,15 +904,12 @@ Parent Password: ${parentPassword || "Sent via email"}`;
 
                 {/* Previous School */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Previous School (Optional)
-                  </label>
-                  <input
+                  <Input
+                    label="Previous School (Optional)"
                     type="text"
                     name="previousSchool"
                     value={studentForm.previousSchool}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Name of previous school (if any)"
                   />
                 </div>
@@ -1018,92 +917,66 @@ Parent Password: ${parentPassword || "Sent via email"}`;
             </div>
 
             {/* Medical Information */}
-            <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-              <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                Medical Information (Optional)
-              </h3>
-
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Medical Information (Optional)</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="text-sm font-medium text-gray-700">
                     Medical History
                   </label>
                   <textarea
                     name="medicalHistory"
                     value={studentForm.medicalHistory}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="Any known medical conditions"
                     rows="2"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Allergies
-                  </label>
-                  <input
+                <Input
+                    label="Allergies"
                     type="text"
                     name="allergies"
                     value={studentForm.allergies}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Comma-separated (e.g., Peanuts, Dust)"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Emergency Contact Name
-                  </label>
-                  <input
+                <Input
+                    label="Emergency Contact Name"
                     type="text"
                     name="emergencyContactName"
                     value={studentForm.emergencyContactName}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Emergency contact person"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Emergency Contact Phone
-                  </label>
-                  <input
+                <Input
+                    label="Emergency Contact Phone"
                     type="tel"
                     name="emergencyContactPhone"
                     value={studentForm.emergencyContactPhone}
                     onChange={onStudentChange}
                     pattern="[0-9]{10}"
                     maxLength="10"
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="10-digit phone"
-                  />
-                </div>
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Emergency Contact Relation
-                  </label>
-                  <input
+                <Input
+                    label="Emergency Contact Relation"
                     type="text"
                     name="emergencyContactRelation"
                     value={studentForm.emergencyContactRelation}
                     onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     placeholder="Relation with student"
-                  />
-                </div>
+                />
               </div>
             </div>
 
             {/* Transport & Hostel */}
-            <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-              <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                Transport & Hostel (Optional)
-              </h3>
-
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Transport & Hostel (Optional)</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Transport */}
                 <div className="space-y-4">
@@ -1122,33 +995,23 @@ Parent Password: ${parentPassword || "Sent via email"}`;
 
                   {studentForm.transportRequired && (
                     <>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Bus Route
-                        </label>
-                        <input
+                      <Input
+                          label="Bus Route"
                           type="text"
                           name="busRoute"
                           value={studentForm.busRoute}
                           onChange={onStudentChange}
-                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                           placeholder="Route number/name"
-                        />
-                      </div>
+                      />
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Pickup Point
-                        </label>
-                        <input
+                      <Input
+                          label="Pickup Point"
                           type="text"
                           name="pickupPoint"
                           value={studentForm.pickupPoint}
                           onChange={onStudentChange}
-                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                           placeholder="Pickup location"
-                        />
-                      </div>
+                      />
                     </>
                   )}
                 </div>
@@ -1170,62 +1033,47 @@ Parent Password: ${parentPassword || "Sent via email"}`;
 
                   {studentForm.hostelResident && (
                     <>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Hostel Block
-                        </label>
-                        <input
+                      <Input
+                          label="Hostel Block"
                           type="text"
                           name="hostelBlock"
                           value={studentForm.hostelBlock}
                           onChange={onStudentChange}
-                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                           placeholder="Block A, Block B, etc."
-                        />
-                      </div>
+                      />
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Room Number
-                        </label>
-                        <input
+                      <Input
+                          label="Room Number"
                           type="text"
                           name="roomNumber"
                           value={studentForm.roomNumber}
                           onChange={onStudentChange}
-                          className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                           placeholder="Room number"
-                        />
-                      </div>
+                      />
                     </>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 flex justify-end">
+            <div className="flex justify-end pt-6">
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex items-center gap-2 rounded-lg bg-green-600 px-8 py-3 font-medium text-white transition hover:bg-green-700 focus:ring-4 focus:ring-green-200 ${
-                  loading ? "opacity-60 cursor-not-allowed" : ""
-                }`}
+                className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {loading ? (
-                  <>
-                    <FaSpinner className="h-4 w-4 animate-spin" />
-                    Registering...
-                  </>
+                  <FaSpinner className="animate-spin" />
                 ) : (
                   <>
                     <FaCheck className="h-4 w-4" />
-                    Complete Registration
+                    Initialize Accounts
                   </>
                 )}
               </button>
             </div>
           </div>
-        </form>
+          </form>
       </div>
     </div>
   );
