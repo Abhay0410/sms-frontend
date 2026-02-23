@@ -1,7 +1,7 @@
 // pages/admin/Admin_Features/UserRegistrations/StudentParentRegisterForm.jsx
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { FaUser, FaUserTie, FaCheck, FaSpinner, FaCopy } from "react-icons/fa";
+import { FaUserGraduate, FaUserTie, FaCheck, FaSpinner, FaCopy } from "react-icons/fa";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import Swal from "sweetalert2";
@@ -398,26 +398,22 @@ Parent Password: ${parentPassword || "Sent via email"}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 md:px-6 pb-6 ">
-      <div className="mx-auto max-w-7xl">
-        <div className="">
-          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
-            Register Student & Parent
-          </h2>
-          <p className="mt-2 text-sm text-slate-500 font-medium">
-            Complete registration for both student and parent in a single form
-          </p>
+    <div className="min-h-screen bg-slate-50 p-6 md:p-8">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-10 text-center md:text-left">
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
+            <FaUserGraduate className="text-indigo-600" /> Student & Parent Enrollment
+          </h1>
+          <p className="text-slate-500 font-medium mt-2">Complete registration for both student and parent in a single form</p>
         </div>
 
-        <form onSubmit={onSubmit} className="mt-6">
-          {/* STUDENT FORM */}
-          <div className="space-y-8">
+        <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
+          <div className="p-1 bg-indigo-600"></div>
+          <form onSubmit={onSubmit} className="p-10 space-y-10">
+            
             {/* Basic Information */}
-            <div className="rounded-lg bg-white p-6 shadow-md md:p-8">
-              <h3 className="mb-6 text-xl font-semibold text-gray-900">
-                Basic Information
-              </h3>
-
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Basic Information</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1072,8 +1068,8 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                 )}
               </button>
             </div>
-          </div>
           </form>
+        </div>
       </div>
     </div>
   );
