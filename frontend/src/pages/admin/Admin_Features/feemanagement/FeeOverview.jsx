@@ -51,6 +51,7 @@ export default function FeeOverview() {
   });
 
   const [statistics, setStatistics] = useState(null);
+  const [allStudentsData, setAllStudentsData] = useState([]); // ✅ Sabhi students ka data store karne ke liye
   const [selectedMonth, setSelectedMonth] = useState("ALL");
   const [selectedClass, setSelectedClass] = useState("ALL");
   const [classList, setClassList] = useState([]);
@@ -58,10 +59,10 @@ export default function FeeOverview() {
   const [studentList, setStudentList] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
 
-  const getFormattedMonth = () =>
+  const getFormattedMonth = useCallback(() =>
     selectedMonth !== "ALL"
       ? selectedMonth.substring(0, 3).toUpperCase()
-      : undefined;
+      : undefined, [selectedMonth]);
   // Removed unused variable: studentsLoading
 
   // Get current month for default selection
@@ -134,7 +135,51 @@ export default function FeeOverview() {
     } finally {
       setStatsLoading(false);
     }
-  }, [academicYear, selectedMonth ,selectedClass]);
+  }, [academicYear, selectedClass, getFormattedMonth]);
+
+  // 1. Naya function jo sabhi students ko fetch karega status ke hisaab se nahi, balki poora
+  const loadAllFeeData = useCallback(async () => {
+    try {
+      const res = await api.get(API_ENDPOINTS.ADMIN.FEE.STUDENTS_WITH_FEES, {
+        params: {
+          academicYear,
+          month: getFormattedMonth(),
+          classId: selectedClass !== "ALL" ? selectedClass : undefined,
+          // status remove kar diya taaki saara data mile logic ke liye
+        },
+      });
+      const students = res?.data?.students || [];
+      setAllStudentsData(students);
+    } catch (err) {
+      console.error("Failed to load fee context", err);
+    }
+  }, [academicYear, selectedClass, getFormattedMonth]);
+
+  // 2. Dashboard Stats ko Override karne ke liye counting logic
+  const syncedStats = useMemo(() => {
+    if (!allStudentsData.length) return statistics;
+
+    // Filter logic exactly wahi jo aapke student list panel mein hai
+    const paidList = allStudentsData.filter(student => {
+       const monthKey = selectedMonth !== "ALL" ? selectedMonth.substring(0, 3).toUpperCase() : null;
+       const monthlyInst = monthKey ? student.feeDetails?.installments?.filter(i => i.name.toUpperCase().startsWith(monthKey)) : null;
+       
+       if (monthlyInst?.length) {
+         return monthlyInst.every(i => i.status === "PAID");
+       }
+       return student.feeDetails.status === "PAID";
+    });
+
+    const unpaidList = allStudentsData.filter(student => !paidList.find(p => p._id === student._id));
+
+    return {
+      ...statistics,
+      paymentStatus: {
+        paid: paidList.length,
+        unpaid: unpaidList.length
+      }
+    };
+  }, [allStudentsData, statistics, selectedMonth]);
 
   const loadStudentList = async (status) => {
     try {
@@ -163,13 +208,14 @@ useEffect(() => {
   if (academicYear) {
     loadClasses();
   }
-}, [academicYear]);
+}, [academicYear, loadClasses]);
 
 useEffect(() => {
   if (academicYear) {
     loadStatistics();
+    loadAllFeeData(); // ✅ Har bar data fetch karo taaki upar ke cards sync rahein
   }
-}, [academicYear, selectedMonth, selectedClass]);
+}, [academicYear, loadStatistics, loadAllFeeData]);
 
 useEffect(() => {
   if (statistics) {
@@ -392,7 +438,7 @@ useEffect(() => {
             <StatCard
               icon={<FaUsers />}
               label="Total Students"
-              value={statistics.totalStudents}
+              value={syncedStats?.totalStudents || 0}
               color="purple"
             />
             <StatCard
@@ -402,19 +448,19 @@ useEffect(() => {
                   ? "Annual Revenue"
                   : `${selectedMonth} Target`
               }
-              value={`₹${statistics.totalExpected.toLocaleString("en-IN")}`}
+              value={`₹${(syncedStats?.totalExpected || 0).toLocaleString("en-IN")}`}
               color="blue"
             />
             <StatCard
               icon={<FaCheckCircle />}
               label="Collected Amount"
-              value={`₹${statistics.totalCollected.toLocaleString("en-IN")}`}
+              value={`₹${(syncedStats?.totalCollected || 0).toLocaleString("en-IN")}`}
               color="emerald"
             />
             <StatCard
               icon={<FaExclamationCircle />}
-              label="Pending Dues"
-              value={`₹${statistics.totalPending.toLocaleString("en-IN")}`}
+              label="Pending Students"
+              value={syncedStats?.paymentStatus?.unpaid || 0} // ✅ Ab ye hamesha list se match karega
               color="rose"
             />
           </div>
@@ -444,7 +490,7 @@ useEffect(() => {
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{
-                        width: `${statistics?.collectionPercentage || 0}%`,
+                        width: `${syncedStats?.collectionPercentage || 0}%`,
                       }}
                       transition={{ duration: 1, ease: "easeOut" }}
                       className="h-full bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 rounded-full shadow-lg"
@@ -454,13 +500,13 @@ useEffect(() => {
                   <div className="flex justify-between text-sm font-medium">
                     <div className="text-slate-600">
                       <span className="font-bold">
-                        {statistics?.collectionPercentage || 0}%
+                        {syncedStats?.collectionPercentage || 0}%
                       </span>{" "}
                       collected
                     </div>
                     <div className="text-slate-600">
                       <span className="font-bold">
-                        {100 - (statistics?.collectionPercentage || 0)}%
+                        {100 - (syncedStats?.collectionPercentage || 0)}%
                       </span>{" "}
                       remaining
                     </div>
@@ -482,14 +528,14 @@ useEffect(() => {
                         strokeDasharray="464.96"
                         strokeDashoffset={
                           464.96 -
-                          (464.96 * (statistics?.collectionPercentage || 0)) /
+                          (464.96 * (syncedStats?.collectionPercentage || 0)) /
                             100
                         }
                         strokeLinecap="round"
                       />
                     </svg>
                     <span className="text-4xl font-black text-slate-900">
-                      {statistics?.collectionPercentage || 0}%
+                      {syncedStats?.collectionPercentage || 0}%
                     </span>
                   </div>
                 </div>
@@ -509,7 +555,7 @@ useEffect(() => {
                   ? "All dues cleared for academic year"
                   : `All ${selectedMonth} dues cleared`
               }
-              count={statistics?.paymentStatus?.paid || 0}
+              count={syncedStats?.paymentStatus?.paid || 0}
               color="emerald"
               isActive={selectedList === "paid"}
               onClick={() => loadStudentList("paid")}
@@ -522,7 +568,7 @@ useEffect(() => {
                   ? "Includes partial and overdue payments"
                   : `${selectedMonth} dues pending`
               }
-              count={statistics?.paymentStatus?.unpaid || 0}
+              count={syncedStats?.paymentStatus?.unpaid || 0}
               color="rose"
               isActive={selectedList === "unpaid"}
               onClick={() => loadStudentList("unpaid")}
