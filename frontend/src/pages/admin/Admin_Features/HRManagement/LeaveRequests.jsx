@@ -40,6 +40,11 @@ export default function LeaveRequests() {
     teacherName: "",
   });
   const [remarks, setRemarks] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pages: 1,
+    total: 0,
+  });
 
   const statusOptions = [
     {
@@ -96,58 +101,91 @@ export default function LeaveRequests() {
     },
   ];
 
-  const fetchRequests = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await api.get(API_ENDPOINTS.ADMIN.HR.LEAVE_REQUESTS);
-      const data = response.data || response;
-      const requestsArray = Array.isArray(data) ? data : [];
-      setRequests(requestsArray);
-      setFilteredRequests(requestsArray);
-    } catch (error) {
-      console.error("Load Error:", error);
-      if (error.response?.status !== 404) {
-        toast.error("Failed to load leave requests");
-      }
-      setRequests([]);
-      setFilteredRequests([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // const fetchRequests = useCallback(async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await api.get(API_ENDPOINTS.ADMIN.HR.LEAVE_REQUESTS);
+  //     const data = response.data || response;
+  //     const requestsArray = Array.isArray(data) ? data : [];
+  //     setRequests(requestsArray);
+  //     setFilteredRequests(requestsArray);
+  //   } catch (error) {
+  //     console.error("Load Error:", error);
+  //     if (error.response?.status !== 404) {
+  //       toast.error("Failed to load leave requests");
+  //     }
+  //     setRequests([]);
+  //     setFilteredRequests([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
+  const fetchRequests = useCallback(
+    async (page = 1) => {
+      try {
+        setLoading(true);
 
+        const response = await api.get(API_ENDPOINTS.ADMIN.HR.LEAVE_REQUESTS, {
+          params: {
+            page,
+            limit: 5,
+            status: statusFilter !== "ALL" ? statusFilter : undefined,
+            leaveType: leaveTypeFilter !== "ALL" ? leaveTypeFilter : undefined,
+            search: searchQuery || undefined,
+          },
+        });
+        console.log("FULL RESPONSE:", response.data);
+
+        console.log("Filters:", {
+          statusFilter,
+          leaveTypeFilter,
+          searchQuery,
+        });
+
+        const data = response.data?.data || response.data;
+
+        setRequests(data.leaves || []);
+        setPagination(data.pagination || {});
+      } catch (error) {
+        toast.error(error + "Failed to load leave requests");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [statusFilter, leaveTypeFilter, searchQuery],
+  );
   useEffect(() => {
     fetchRequests();
   }, [fetchRequests]);
 
   // Filter requests based on search and filters
-  useEffect(() => {
-    let filtered = [...requests];
+  // useEffect(() => {
+  //   let filtered = [...requests];
 
-    // Apply status filter
-    if (statusFilter !== "ALL") {
-      filtered = filtered.filter((req) => req.status === statusFilter);
-    }
+  //   // Apply status filter
+  //   if (statusFilter !== "ALL") {
+  //     filtered = filtered.filter((req) => req.status === statusFilter);
+  //   }
 
-    // Apply leave type filter
-    if (leaveTypeFilter !== "ALL") {
-      filtered = filtered.filter((req) => req.leaveType === leaveTypeFilter);
-    }
+  //   // Apply leave type filter
+  //   if (leaveTypeFilter !== "ALL") {
+  //     filtered = filtered.filter((req) => req.leaveType === leaveTypeFilter);
+  //   }
 
-    // Apply search filter
-    if (searchQuery.trim() !== "") {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (req) =>
-          req.teacherId?.name?.toLowerCase().includes(query) ||
-          req.reason?.toLowerCase().includes(query) ||
-          req.leaveType?.toLowerCase().includes(query) ||
-          req.teacherId?.teacherID?.toLowerCase().includes(query),
-      );
-    }
+  //   // Apply search filter
+  //   if (searchQuery.trim() !== "") {
+  //     const query = searchQuery.toLowerCase();
+  //     filtered = filtered.filter(
+  //       (req) =>
+  //         req.teacherId?.name?.toLowerCase().includes(query) ||
+  //         req.reason?.toLowerCase().includes(query) ||
+  //         req.leaveType?.toLowerCase().includes(query) ||
+  //         req.teacherId?.teacherID?.toLowerCase().includes(query),
+  //     );
+  //   }
 
-    setFilteredRequests(filtered);
-  }, [requests, statusFilter, leaveTypeFilter, searchQuery]);
+  //   setFilteredRequests(filtered);
+  // }, [requests, statusFilter, leaveTypeFilter, searchQuery]);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -413,7 +451,7 @@ export default function LeaveRequests() {
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-200 border-t-teal-600 mx-auto"></div>
             <p className="mt-4 text-slate-600">Loading leave requests...</p>
           </div>
-        ) : filteredRequests.length === 0 ? (
+        ) : requests.length === 0 ? (
           <div className="p-8 text-center">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <FaCalendarAlt className="h-8 w-8 text-slate-400" />
@@ -450,7 +488,7 @@ export default function LeaveRequests() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredRequests.map((req) => {
+                {requests.map((req) => {
                   const displayPhoto = req.teacherId?.profilePicture
                     ? req.teacherId.profilePicture.startsWith("http")
                       ? req.teacherId.profilePicture
@@ -601,6 +639,27 @@ export default function LeaveRequests() {
                 })}
               </tbody>
             </table>
+            <div className="flex justify-between items-center p-4">
+              <button
+                disabled={pagination.current === 1}
+                onClick={() => fetchRequests(pagination.current - 1)}
+                className="px-4 py-2 bg-slate-200 rounded-lg"
+              >
+                Previous
+              </button>
+
+              <span>
+                Page {pagination.current} of {pagination.pages}
+              </span>
+
+              <button
+                disabled={pagination.current === pagination.pages}
+                onClick={() => fetchRequests(pagination.current + 1)}
+                className="px-4 py-2 bg-slate-200 rounded-lg"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
 
