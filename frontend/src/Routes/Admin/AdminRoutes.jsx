@@ -26,6 +26,7 @@ import SalaryStructureSetup from "../../pages/admin/Admin_Features/Payroll/Salar
 import MonthlyPayRun from "../../pages/admin/Admin_Features/Payroll/MonthlyPayRun.jsx";
 import BookIssueReturn from "../../pages/admin/Admin_Features/Library/BookIssueReturn.jsx";
 import LibraryInventory from "../../pages/admin/Admin_Features/Library/LibraryInventory.jsx";
+import BulkImport from "../../pages/admin/Admin_Features/Settings/BulkImport.jsx";
 
 const AdminRoutes = ({ school }) => { // ✅ Accept school prop
   // 1. Logged in user ki details lein
@@ -58,7 +59,8 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
       subTabs: [
         { title: "Teacher Register", path: "register-teacher" },
         { title: "Student Register", path: "register-student" },
-        { title: "Admin Register", path: "admin-register" }
+        { title: "Admin Register", path: "admin-register" },
+        { title: "Bulk Import", path: "bulk-import" }
       ],
       visibleTo: ['Principal', 'Administrator']
     },
@@ -162,6 +164,7 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
             <Route path="register-teacher" element={<TeacherRegisterForm school={school} />} />
             <Route path="register-student" element={<StudentParentRegisterForm school={school} />} />
             <Route path="admin-register" element={<AdminRegister school={school} />} />
+            <Route path="bulk-import" element={<BulkImport school={school} />} />
           </>
         )}
         
