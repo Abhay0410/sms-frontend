@@ -363,8 +363,8 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
             <div className="text-xs text-indigo-600 space-y-1">
               <p><span className="font-medium">Admin:</span> ADM001 / Admin@123</p>
               <p><span className="font-medium">Teacher:</span> TCHR250001 / Teacher@123</p>
-              <p><span className="font-medium">Student:</span> STU250001 / Student@123</p>
-              <p><span className="font-medium">Parent:</span> PAR250001 / Parent@123</p>
+              <p><span className="font-medium">Student:</span> STU250001 / Student@0001</p>
+              <p><span className="font-medium">Parent:</span> PAR250001 / Parent@0001</p>
             </div>
             <p className="text-xs text-indigo-500 mt-2">
               ⚠️ These work only for <span className="font-bold">{school.schoolName}</span>
