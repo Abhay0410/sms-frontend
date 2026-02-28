@@ -440,7 +440,7 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
     : null;
 
   const assignmentCount = teacher.assignedClasses?.length || 0;
-  const classTeacherCount = teacher.assignedClasses?.filter(ac => ac.isClassTeacher).length || 0;
+  const classTeacherAssignments = teacher.assignedClasses?.filter(ac => ac.isClassTeacher) || [];
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden group">
@@ -480,9 +480,9 @@ function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
             </div>
           </div>
           
-          {classTeacherCount > 0 && (
+          {classTeacherAssignments.length > 0 && (
             <div className="mb-1 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold flex items-center gap-1 border border-emerald-100 shadow-sm">
-              <FaCheckCircle size={10} /> Class Teacher
+              <FaCheckCircle size={10} /> Class Teacher: {classTeacherAssignments.map(ac => `${ac.class?.className}-${ac.section}`).join(", ")}
             </div>
           )}
         </div>
@@ -561,7 +561,7 @@ function TeacherListItem({ teacher, onAssignClassTeacher, onAssignSubject }) {
     : null;
 
   const assignmentCount = teacher.assignedClasses?.length || 0;
-  const classTeacherCount = teacher.assignedClasses?.filter(ac => ac.isClassTeacher).length || 0;
+  const classTeacherAssignments = teacher.assignedClasses?.filter(ac => ac.isClassTeacher) || [];
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 hover:shadow-md transition-all p-4 group">
@@ -608,9 +608,9 @@ function TeacherListItem({ teacher, onAssignClassTeacher, onAssignSubject }) {
               <FaBook className="text-indigo-400" size={12} />
               <span className="font-medium text-gray-900">{assignmentCount}</span> assignments
             </span>
-            {classTeacherCount > 0 && (
+            {classTeacherAssignments.length > 0 && (
               <span className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1">
-                <FaCheckCircle size={10} /> Class Teacher
+                <FaCheckCircle size={10} /> Class Teacher: {classTeacherAssignments.map(ac => `${ac.class?.className}-${ac.section}`).join(", ")}
               </span>
             )}
           </div>

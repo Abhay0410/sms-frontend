@@ -310,6 +310,7 @@ export default function StudentManagement() {
                   <th className="p-4 text-left text-sm font-semibold text-slate-700">Class</th>
                   <th className="p-4 text-left text-sm font-semibold text-slate-700">Status</th>
                   <th className="p-4 text-left text-sm font-semibold text-slate-700">Parent</th>
+                  <th className="p-4 text-left text-sm font-black text-slate-700 uppercase tracking-wider">Final Result</th>
                   <th className="p-4 text-left text-sm font-semibold text-slate-700">Actions</th>
                 </tr>
               </thead>
@@ -353,6 +354,30 @@ export default function StudentManagement() {
                     </td>
                     <td className="p-4 text-sm text-slate-700">
                       {student.parentId?.name || "N/A"}
+                    </td>
+                    <td className="p-4">
+                      {student.finalResult ? (
+                        <div className="flex flex-col gap-1">
+                          <div className={`px-3 py-1 rounded-full text-[10px] font-black w-fit flex items-center gap-1.5 shadow-sm ${
+                            student.finalResult.result === 'PASS' 
+                              ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
+                              : 'bg-rose-50 text-rose-600 border border-rose-100'
+                          }`}>
+                            <div className={`h-1.5 w-1.5 rounded-full ${student.finalResult.result === 'PASS' ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
+                            {student.finalResult.result} ({student.finalResult.overallPercentage}%)
+                          </div>
+                          {!student.finalResult.isPublished && (
+                            <span className="text-[9px] text-amber-500 font-bold uppercase italic px-1">
+                              ⚠️ Draft Mode
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-slate-300 text-[10px] font-bold uppercase flex items-center gap-1">
+                           <div className="h-1 w-1 rounded-full bg-slate-200"></div>
+                           Pending Generation
+                        </div>
+                      )}
                     </td>
                     <td className="p-4">
                       <button className="text-blue-600 hover:text-blue-700">
@@ -403,6 +428,7 @@ export default function StudentManagement() {
               loadData();
             }}
             studentIds={selectedStudents}
+            students={students}
           />
         )}
       </div>
@@ -411,7 +437,7 @@ export default function StudentManagement() {
 }
 
 // Promote Modal Component
-function PromoteModal({ selectedCount, onClose, onSuccess, studentIds }) {
+function PromoteModal({ selectedCount, onClose, onSuccess, studentIds, students }) {
   const [newClassName, setNewClassName] = useState("");
   const [newAcademicYear, setNewAcademicYear] = useState("");
   const [resetSection, setResetSection] = useState(true);
@@ -420,6 +446,17 @@ function PromoteModal({ selectedCount, onClose, onSuccess, studentIds }) {
   const handlePromote = async (e) => {
     e.preventDefault();
 
+    // 🛡️ Safety Filter
+    const failStudents = students.filter(s => 
+      studentIds.includes(s._id) && (!s.finalResult || s.finalResult.result !== 'PASS')
+    );
+
+    if (failStudents.length > 0) {
+      const confirmText = `Warning: ${failStudents.length} student(s) have not cleared their FINAL exams. Are you sure you want to promote them?`;
+      if (!window.confirm(confirmText)) return;
+    }
+
+    // Actual API call starts here...
     try {
       setLoading(true);
 
