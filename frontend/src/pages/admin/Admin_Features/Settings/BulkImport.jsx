@@ -13,6 +13,12 @@ export default function BulkImport() {
   const [loading, setLoading] = useState(false);
   const [academicYear, setAcademicYear] = useState("2025-2026");
 
+  const sampleData = {
+    academic: "ClassName,ClassNumeric,SectionName,Subjects,Capacity\n10,10,A,\"Math,Science,English\",40\n9,9,B,\"Hindi,SST\",35",
+    teacher: "Name,TeacherID,Email,Phone,Designation,Department\nAbhay Singh,TCHR26001,abhay@school.com,9876543210,Senior Teacher,Science\nJohn Doe,TCHR26002,john@school.com,8877665544,Librarian,Library",
+    student: "Name,AdmissionID,RollNumber,Email,ClassName,Section,ParentName,ParentPhone,Gender,ParentID,ParentEmail\nAarav Sharma,STU26051,1,aarav@mail.com,10,B,Rajesh Sharma,9812345670,Male,PAR250001,rajesh@parent.com"
+  };
+
   // Instruction Data Map
   const instructions = {
     academic: {
@@ -82,6 +88,23 @@ export default function BulkImport() {
     }
   };
 
+  const handleDownloadSample = () => {
+    try {
+      const data = sampleData[importType];
+      const blob = new Blob([data], { type: "text/csv;charset=utf-8;" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `sample_${importType}_onboarding.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url); // Memory saaf karne ke liye
+    } catch (error) {
+      toast.error("Failed to generate sample file");
+    }
+  };
+
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
       {/* Header */}
@@ -114,8 +137,12 @@ export default function BulkImport() {
             </ul>
             
             <div className="mt-8 pt-8 border-t border-slate-100">
-               <button className="w-full py-4 px-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-black transition-all">
-                 <FaDownload /> Download Sample CSV
+               <button 
+                 type="button" 
+                 onClick={handleDownloadSample}
+                 className="w-full py-4 px-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 shadow-lg"
+               >
+                 <FaDownload /> Download Sample {importType.toUpperCase()} CSV
                </button>
             </div>
           </div>
