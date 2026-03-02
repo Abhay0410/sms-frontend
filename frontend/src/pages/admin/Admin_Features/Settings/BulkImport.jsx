@@ -100,7 +100,7 @@ export default function BulkImport() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url); // Memory saaf karne ke liye
-    } catch (error) {
+    } catch {
       toast.error("Failed to generate sample file");
     }
   };
