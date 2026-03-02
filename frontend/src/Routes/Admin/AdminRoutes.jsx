@@ -44,8 +44,6 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
   // Force boolean conversion to avoid string "false" issues
   const isSuperAdmin = adminData?.isSuperAdmin === true;
 
-  console.log("🔒 Access Control Check:", { designation, isSuperAdmin });
-
   // Define Sidebar Sections here
   const allSections = [
     { 
