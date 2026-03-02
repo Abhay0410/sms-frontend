@@ -64,7 +64,7 @@ export default function StudentParentRegisterForm() {
   const [studentForm, setStudentForm] = useState({
     studentName: "",
     studentEmail: "",
-    dateOfBirth: "",
+    dateOfBirth:null,
     gender: "",
     bloodGroup: "",
     religion: "",
@@ -208,6 +208,9 @@ export default function StudentParentRegisterForm() {
 
       const payload = {
         ...studentForm,
+        dateOfBirth: studentForm.dateOfBirth
+    ? studentForm.dateOfBirth.toISOString()
+    : undefined,
         // Map guardian fields to parent fields
         parentName: studentForm.guardianName,
         parentEmail: studentForm.guardianEmail,
