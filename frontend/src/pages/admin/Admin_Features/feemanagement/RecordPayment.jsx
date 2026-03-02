@@ -283,11 +283,15 @@ export default function RecordPayment() {
   // })();
 
   useEffect(() => {
+    // ✅ 1. Agar search term chota hai aur khali nahi hai, toh call mat karo
+    if (searchTerm.length > 0 && searchTerm.length < 3) return;
+
     const delaySearch = setTimeout(() => {
       loadStudents(1);
-    }, 500);
+    }, 700); // 700ms debounce perfect hota hai production ke liye
+
     return () => clearTimeout(delaySearch);
-  }, [loadStudents]);
+  }, [searchTerm, academicYear, filterStatus, loadStudents]);
 
   // --------- Helpers ----------
   const updateFormField = (field, value) => {

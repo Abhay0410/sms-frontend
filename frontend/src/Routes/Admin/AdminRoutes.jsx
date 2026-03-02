@@ -1,4 +1,5 @@
 // src/Routes/Admin/AdminRoutes.jsx - UPDATED
+import { useMemo } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../../components/Layout";
 import { FaHome, FaUsers, FaBook, FaMoneyBill, FaFileAlt, FaBullhorn, FaUserCog, FaWallet, FaBookReader } from "react-icons/fa";
@@ -30,22 +31,22 @@ import BulkImport from "../../pages/admin/Admin_Features/Settings/BulkImport.jsx
 
 const AdminRoutes = ({ school }) => { // ✅ Accept school prop
   // 1. Logged in user ki details lein
-  const getAdminData = () => {
+  const adminData = useMemo(() => {
     try {
       const data = localStorage.getItem("admin");
       return data ? JSON.parse(data) : null;
     } catch {
       return null;
     }
-  };
+  }, []);
 
-  const adminData = getAdminData();
   const designation = adminData?.designation || ""; 
   // Force boolean conversion to avoid string "false" issues
   const isSuperAdmin = adminData?.isSuperAdmin === true;
 
   // Define Sidebar Sections here
-  const allSections = [
+  const filteredSections = useMemo(() => {
+    const allSections = [
     { 
       title: "Dashboard", 
       icon: <FaHome />, 
@@ -135,7 +136,7 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
   ];
 
   // FILTER LOGIC: Super Admin sees all, others see their 'visibleTo' matches
-  const filteredSections = allSections.filter(section => {
+    return allSections.filter(section => {
     // Principal ya SuperAdmin ko sab dikhao
     if (isSuperAdmin || designation === 'Principal') return true;
     
@@ -145,6 +146,7 @@ const AdminRoutes = ({ school }) => { // ✅ Accept school prop
     // Check if user's designation is in the allowed list
     return section.visibleTo.includes(designation);
   });
+  }, [designation, isSuperAdmin]);
 
   return (
     <Routes>
