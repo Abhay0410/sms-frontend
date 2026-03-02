@@ -63,7 +63,7 @@ export default function PaymentHistory() {
         setHasMore(page < response.data.totalPages);
         setCurrentPage(page);
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to fetch payments");
     } finally {
       setLoading(false);
