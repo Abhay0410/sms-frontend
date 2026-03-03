@@ -23,6 +23,21 @@ import Swal from "sweetalert2";
 const API_URL =
   import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
 
+const MONTHS = [
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+  "January",
+  "February",
+  "March",
+];
+
 export default function RecordPayment() {
   const academicYears = useMemo(() => {
     const currentYear = new Date().getFullYear();
@@ -52,12 +67,15 @@ export default function RecordPayment() {
     pages: 1,
     total: 0,
   });
-  const [filterStatus, setFilterStatus] = useState("ALL");
   const [stats, setStats] = useState({
     totalPending: 0,
     totalPaid: 0,
     totalStudents: 0,
   });
+
+  const [selectedMonth, setSelectedMonth] = useState("ALL");
+  const [selectedClass, setSelectedClass] = useState("ALL");
+  const [classList, setClassList] = useState([]);
 
   // 🔥 State for Manual Month Selection
   const [selectedInsts, setSelectedInsts] = useState([]);
@@ -74,6 +92,46 @@ export default function RecordPayment() {
     sendNotification: true,
     generateReceipt: true,
   });
+
+  const getFormattedMonth = useCallback(
+    () =>
+      selectedMonth !== "ALL"
+        ? selectedMonth.substring(0, 3).toUpperCase()
+        : undefined,
+    [selectedMonth],
+  );
+
+  const getCurrentMonth = () => {
+    const monthNames = [
+      "JANUARY",
+      "FEBRUARY",
+      "MARCH",
+      "APRIL",
+      "MAY",
+      "JUNE",
+      "JULY",
+      "AUGUST",
+      "SEPTEMBER",
+      "OCTOBER",
+      "NOVEMBER",
+      "DECEMBER",
+    ];
+    const now = new Date();
+    return monthNames[now.getMonth()];
+  };
+
+  const loadClasses = useCallback(async () => {
+    try {
+      const res = await api.get(
+        `${API_ENDPOINTS.ADMIN.CLASS.STATISTICS}?academicYear=${academicYear}`,
+      );
+      const classData = res?.data?.classes || res?.data || [];
+      setClassList(classData);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load classes");
+    }
+  }, [academicYear]);
 
   // 🔥 Handle Selection Toggle (Click on Month Card)
   const toggleInstallment = (inst) => {
@@ -223,7 +281,8 @@ export default function RecordPayment() {
               search: searchTerm,
               page,
               limit: 5,
-              status: filterStatus !== "ALL" ? filterStatus : undefined,
+              month: getFormattedMonth(),
+              classId: selectedClass !== "ALL" ? selectedClass : undefined,
             },
           },
         );
@@ -270,7 +329,7 @@ export default function RecordPayment() {
         setLoading(false);
       }
     },
-    [academicYear, searchTerm, filterStatus],
+    [academicYear, searchTerm, getFormattedMonth, selectedClass],
   );
   console.log("Pagination:", pagination);
 
@@ -283,6 +342,12 @@ export default function RecordPayment() {
   // })();
 
   useEffect(() => {
+    if (academicYear) {
+      loadClasses();
+    }
+  }, [academicYear, loadClasses]);
+
+  useEffect(() => {
     // ✅ 1. Agar search term chota hai aur khali nahi hai, toh call mat karo
     if (searchTerm.length > 0 && searchTerm.length < 3) return;
 
@@ -291,7 +356,7 @@ export default function RecordPayment() {
     }, 700); // 700ms debounce perfect hota hai production ke liye
 
     return () => clearTimeout(delaySearch);
-  }, [searchTerm, academicYear, filterStatus, loadStudents]);
+  }, [searchTerm, academicYear, selectedMonth, selectedClass, loadStudents]);
 
   // --------- Helpers ----------
   const updateFormField = (field, value) => {
@@ -610,16 +675,6 @@ export default function RecordPayment() {
     return new Date(dateString).toLocaleDateString("en-GB");
   };
 
-  // Status filter options
-  const statusOptions = [
-    { value: "ALL", label: "All Students" },
-    { value: "PENDING", label: "Unpaid Only" },
-    { value: "PARTIALLY_PAID", label: "Partial Only" },
-    { value: "PAID", label: "Paid Only" },
-    { value: "OVERDUE", label: "Overdue" },
-    { value: "NOT_SET", label: "Fee Not Set" },
-  ];
-
   // Custom scrollbar styles
   const scrollbarStyles = `
     .custom-scrollbar::-webkit-scrollbar {
@@ -705,38 +760,160 @@ export default function RecordPayment() {
       </div>
 
       {/* Search & Filter Header */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
         <div className="flex-1 w-full relative">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-6 py-3 bg-slate-50 rounded-xl border-none focus:ring-3 focus:ring-purple-100 outline-none font-medium text-slate-700"
+            className="w-full pl-12 pr-6 py-3 bg-slate-50 rounded-xl border-2 border-transparent focus:ring-3 focus:ring-purple-200 focus:border-purple-300 outline-none font-medium text-slate-700 transition-all"
             placeholder="Search by student name, ID, or class..."
           />
         </div>
-        <div className="flex items-center gap-4">
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="p-3 bg-slate-50 rounded-xl border-none font-medium text-slate-700 outline-none min-w-[180px]"
-          >
-            {statusOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+      </div>
+
+      {/* Filters Section */}
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-[2.5rem] border border-purple-200 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="h-14 w-14 bg-white text-purple-600 rounded-2xl flex items-center justify-center shadow-md">
+              <FaFilter size={20} />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-slate-900">
+                Filter Students
+              </h3>
+              <p className="text-slate-500 text-sm font-medium mt-1">
+                Select month and class to filter students
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="
+                  rounded-2xl 
+                  border-2 
+                  border-slate-200 
+                  bg-white 
+                  pl-5 
+                  pr-10 
+                  py-3.5 
+                  font-bold 
+                  text-slate-700 
+                  outline-none 
+                  focus:ring-2 
+                  focus:ring-purple-500/20 
+                  focus:border-purple-500
+                  hover:border-slate-300
+                  transition-all
+                  shadow-sm
+                  appearance-none
+                  cursor-pointer
+                  min-w-[200px]
+                "
+              >
+                <option value="ALL">📊 Full Academic Year</option>
+                {MONTHS.map((m) => (
+                  <option key={m} value={m.toUpperCase()}>
+                    {m.toUpperCase() === getCurrentMonth()
+                      ? `📅 ${m} (Current)`
+                      : m}
+                  </option>
+                ))}
+              </select>
+
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="relative">
+              <select
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
+                className="
+                  rounded-2xl 
+                  border-2 
+                  border-slate-200 
+                  bg-white 
+                  pl-5 
+                  pr-10 
+                  py-3.5 
+                  font-bold 
+                  text-slate-700 
+                  outline-none 
+                  focus:ring-2 
+                  focus:ring-purple-500/20 
+                  focus:border-purple-500
+                  hover:border-slate-300
+                  transition-all
+                  shadow-sm
+                  appearance-none
+                  cursor-pointer
+                  min-w-[200px]
+                "
+              >
+                <option value="ALL">🏫 All Classes</option>
+                {classList.map((cls) => (
+                  <option key={cls._id} value={cls._id}>
+                    {cls.className}
+                  </option>
+                ))}
+              </select>
+
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
 
           <button
-            onClick={() => loadStudents(pagination.current)}
+            onClick={() => loadStudents(1)}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all font-bold uppercase text-xs tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+            className="
+                h-14 w-14 
+                bg-slate-900 
+                text-white 
+                rounded-2xl 
+                flex items-center justify-center 
+                hover:bg-purple-600 
+                transition-all
+                shadow-md
+                hover:shadow-lg
+              "
+            title="Refresh Students"
           >
-            <FiRefreshCw className={loading ? "animate-spin" : ""} />
-            Refresh
+            <FiRefreshCw className={loading ? "animate-spin" : ""} size={20} />
           </button>
+          </div>
         </div>
       </div>
 
@@ -952,10 +1129,10 @@ export default function RecordPayment() {
                 <tr>
                   <td colSpan="5" className="p-12 text-center">
                     <div className="text-slate-300 text-5xl mb-4">
-                      <FaExclamationCircle className="inline-block" />
+                      <FaSearch className="inline-block" />
                     </div>
                     <p className="text-slate-600 text-lg font-bold">
-                      {searchTerm || filterStatus !== "ALL"
+                      {searchTerm || selectedMonth !== "ALL" || selectedClass !== "ALL"
                         ? "No students found matching your criteria"
                         : "No students found for this academic year"}
                     </p>
@@ -966,8 +1143,8 @@ export default function RecordPayment() {
                       <button
                         onClick={() => {
                           setSearchTerm("");
-                          setFilterStatus("ALL");
-                          loadStudents(1);
+                          setSelectedMonth("ALL");
+                          setSelectedClass("ALL");
                         }}
                         className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 font-bold text-sm"
                       >
