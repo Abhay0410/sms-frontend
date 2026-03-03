@@ -307,37 +307,39 @@ export default function TeacherRegisterForm() {
 
       const formData = new FormData();
 
-formData.append("name", form.name);
-formData.append("email", form.email);
-formData.append("phone", form.phone);
-formData.append("gender", form.gender);
-formData.append("department", form.department);
-formData.append("panNumber", form.panNumber);
-formData.append("isActive", true);
+      formData.append("name", form.name);
+      formData.append("email", form.email);
+      formData.append("phone", form.phone);
+      formData.append("gender", form.gender);
+      formData.append("department", form.department);
+      formData.append("panNumber", form.panNumber);
+      formData.append("isActive", true);
 
-// dates
-formData.append("dateOfBirth", formatDateForBackend(form.dateOfBirth));
-formData.append("joiningDate", formatDateForBackend(form.joiningDate));
+      // dates
+      formData.append("dateOfBirth", formatDateForBackend(form.dateOfBirth));
+      formData.append("joiningDate", formatDateForBackend(form.joiningDate));
 
-// arrays / objects
-formData.append("qualification", JSON.stringify(form.qualification.filter(Boolean)));
-formData.append("subjects", JSON.stringify(form.subjects));
-formData.append("address", JSON.stringify(form.address));
-formData.append("salary", JSON.stringify(form.salary));
+      // arrays / objects
+      formData.append(
+        "qualification",
+        JSON.stringify(form.qualification.filter(Boolean)),
+      );
+      formData.append("subjects", JSON.stringify(form.subjects));
+      formData.append("address", JSON.stringify(form.address));
+      formData.append("salary", JSON.stringify(form.salary));
 
-// 🖼️ PROFILE PICTURE (🔥 MAIN POINT)
-if (profilePicture) {
-  formData.append("profilePicture", profilePicture);
-}
+      // 🖼️ PROFILE PICTURE (🔥 MAIN POINT)
+      if (profilePicture) {
+        formData.append("profilePicture", profilePicture);
+      }
 
- const resp =await api.post(
-  API_ENDPOINTS.ADMIN.TEACHER.CREATE,
-  formData,
-  {
-    headers: { "Content-Type": "multipart/form-data" }
-  }
-);
-
+      const resp = await api.post(
+        API_ENDPOINTS.ADMIN.TEACHER.CREATE,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
 
       // const payload = {
       //   name: form.name,
@@ -502,59 +504,75 @@ if (profilePicture) {
       <div className="max-w-5xl mx-auto">
         <div className="mb-10 text-center md:text-left">
           <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <FaChalkboardTeacher className="text-indigo-600" /> Teacher Enrollment
+            <FaChalkboardTeacher className="text-indigo-600" /> Teacher
+            Enrollment
           </h1>
-          <p className="text-slate-500 font-medium mt-2">Add a new teacher to the system</p>
+          <p className="text-slate-500 font-medium mt-2">
+            Add a new teacher to the system
+          </p>
         </div>
 
         <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
           <div className="p-1 bg-indigo-600"></div>
           <form onSubmit={onSubmit} className="p-10 space-y-10">
-            
             {/* Personal Details */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Full Name */}
               <Input
-                  label="Full Name *"
-                  name="name"
-                  value={form.name}
-                  onChange={onChange}
-                  placeholder="Enter teacher's full name"
-                  required
+                label="Full Name *"
+                name="name"
+                value={form.name}
+                onChange={onChange}
+                placeholder="Enter teacher's full name"
+                required
               />
 
               {/* Email */}
               <Input
-                  label="Email *"
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={onChange}
-                  placeholder="teacher@example.com"
-                  required
+                label="Email *"
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={onChange}
+                placeholder="teacher@example.com"
+                required
               />
 
               {/* Phone */}
               <Input
-                  label="Phone Number *"
-                  type="tel"
-                  name="phone"
-                  pattern="[0-9]{10}"
-                  maxLength="10"
-                  value={form.phone}
-                  onChange={onChange}
-                  placeholder="10-digit phone number"
-                  required
+                label="Phone Number *"
+                type="tel"
+                name="phone"
+                pattern="[0-9]{10}"
+                maxLength="10"
+                value={form.phone}
+                onChange={onChange}
+                placeholder="10-digit phone number"
+                required
               />
 
               {/* PAN Number */}
-              <Input
+              {/* <Input
                   label="PAN Number"
                   type="text"
                   name="panNumber"
                   value={form.panNumber}
                   onChange={onChange}
                   placeholder="Enter PAN Number"
+              /> */}
+              <Input
+                label="PAN Number"
+                type="text"
+                name="panNumber"
+                value={form.panNumber}
+                onChange={(e) => {
+                  const value = e.target.value.toUpperCase(); // auto uppercase
+                  if (value.length <= 10) {
+                    setForm((prev) => ({ ...prev, panNumber: value }));
+                  }
+                }}
+                placeholder="ABCDE1234F"
+                maxLength={10}
               />
 
               {/* Gender */}
@@ -754,7 +772,9 @@ if (profilePicture) {
               {/* Address */}
               {/* Address Section */}
               <div className="md:col-span-2 bg-slate-50 p-8 rounded-3xl border border-slate-100">
-                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Residential Information</h3>
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">
+                  Residential Information
+                </h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {/* City */}
                   <div className="md:col-span-2">
@@ -770,13 +790,13 @@ if (profilePicture) {
                   </div>
 
                   <Input
-                      label="City *"
-                      type="text"
-                      name="city"
-                      value={form.address.city}
-                      onChange={onChange}
-                      placeholder="Enter city"
-                      required
+                    label="City *"
+                    type="text"
+                    name="city"
+                    value={form.address.city}
+                    onChange={onChange}
+                    placeholder="Enter city"
+                    required
                   />
 
                   {/* State */}
@@ -802,25 +822,25 @@ if (profilePicture) {
 
                   {/* Country */}
                   <Input
-                      label="Country *"
-                      type="text"
-                      name="country"
-                      value={form.address.country}
-                      onChange={onChange}
-                      required
+                    label="Country *"
+                    type="text"
+                    name="country"
+                    value={form.address.country}
+                    onChange={onChange}
+                    required
                   />
 
                   {/* Pincode */}
                   <Input
-                      label="Pincode *"
-                      type="text"
-                      name="pincode"
-                      pattern="[0-9]{6}"
-                      maxLength="6"
-                      value={form.address.pincode}
-                      onChange={onChange}
-                      placeholder="Enter pincode"
-                      required
+                    label="Pincode *"
+                    type="text"
+                    name="pincode"
+                    pattern="[0-9]{6}"
+                    maxLength="6"
+                    value={form.address.pincode}
+                    onChange={onChange}
+                    placeholder="Enter pincode"
+                    required
                   />
                 </div>
               </div>
@@ -835,10 +855,31 @@ if (profilePicture) {
                     <label className="text-[10px] font-black uppercase text-slate-500">
                       Universal Account No (UAN)
                     </label>
-                    <input
+                    {/* <input
                       name="uanNumber"
                       onChange={onChange}
                       value={form.salary.uanNumber}
+                      className="w-full bg-slate-800 border-none p-4 rounded-xl text-white focus:ring-2 focus:ring-orange-500 transition-all"
+                    /> */}
+                    <input
+                      type="tel"
+                      name="uanNumber"
+                      value={form.salary.uanNumber}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, ""); // only digits
+                        if (value.length <= 12) {
+                          setForm((prev) => ({
+                            ...prev,
+                            salary: {
+                              ...prev.salary,
+                              uanNumber: value,
+                            },
+                          }));
+                        }
+                      }}
+                      maxLength={12}
+                      inputMode="numeric"
+                      placeholder="Enter 12 digit UAN"
                       className="w-full bg-slate-800 border-none p-4 rounded-xl text-white focus:ring-2 focus:ring-orange-500 transition-all"
                     />
                   </div>
@@ -899,7 +940,7 @@ if (profilePicture) {
                       className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                     />
                   </div>
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
                       Account Number
                     </label>
@@ -909,8 +950,38 @@ if (profilePicture) {
                       value={form.salary.bankDetails.accountNumber}
                       className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                     />
-                  </div>
+                  </div> */}
                   <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                      Account Number
+                    </label>
+
+                    <input
+                      type="tel"
+                      name="accountNumber"
+                      value={form.salary.bankDetails.accountNumber}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, ""); // only digits
+                        if (value.length <= 18) {
+                          setForm((prev) => ({
+                            ...prev,
+                            salary: {
+                              ...prev.salary,
+                              bankDetails: {
+                                ...prev.salary.bankDetails,
+                                accountNumber: value,
+                              },
+                            },
+                          }));
+                        }
+                      }}
+                      maxLength={18}
+                      inputMode="numeric"
+                      placeholder="Enter account number"
+                      className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                    />
+                  </div>
+                  {/* <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
                       IFSC Code
                     </label>
@@ -918,6 +989,35 @@ if (profilePicture) {
                       name="ifscCode"
                       onChange={onChange}
                       value={form.salary.bankDetails.ifscCode}
+                      className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                    />
+                  </div> */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                      IFSC Code
+                    </label>
+
+                    <input
+                      type="text"
+                      name="ifscCode"
+                      value={form.salary.bankDetails.ifscCode}
+                      onChange={(e) => {
+                        const value = e.target.value.toUpperCase(); // auto uppercase
+                        if (value.length <= 11) {
+                          setForm((prev) => ({
+                            ...prev,
+                            salary: {
+                              ...prev.salary,
+                              bankDetails: {
+                                ...prev.salary.bankDetails,
+                                ifscCode: value,
+                              },
+                            },
+                          }));
+                        }
+                      }}
+                      maxLength={11}
+                      placeholder="e.g. SBIN0001234"
                       className="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                     />
                   </div>
@@ -952,7 +1052,7 @@ if (profilePicture) {
                 )}
               </button>
             </div>
-            </form>
+          </form>
         </div>
       </div>
     </div>

@@ -311,7 +311,7 @@ export default function StudentManagement() {
                   <th className="p-4 text-left text-sm font-semibold text-slate-700">Status</th>
                   <th className="p-4 text-left text-sm font-semibold text-slate-700">Parent</th>
                   <th className="p-4 text-left text-sm font-black text-slate-700 uppercase tracking-wider">Final Result</th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">Actions</th>
+                  {/* <th className="p-4 text-left text-sm font-semibold text-slate-700">Actions</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -379,11 +379,11 @@ export default function StudentManagement() {
                         </div>
                       )}
                     </td>
-                    <td className="p-4">
+                    {/* <td className="p-4">
                       <button className="text-blue-600 hover:text-blue-700">
                         <FaEdit />
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

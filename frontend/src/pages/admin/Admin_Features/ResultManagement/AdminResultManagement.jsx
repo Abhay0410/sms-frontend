@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"; // ✅ Add this
+// import { useNavigate } from "react-router-dom"; // ✅ Add this
 import api, { API_ENDPOINTS } from "../../../../services/api";
 
 import {
@@ -17,7 +17,7 @@ import {
 } from "react-icons/fa";
 
 export default function AdminResultManagement() {
-  const navigate = useNavigate(); // ✅ Add this
+  // const navigate = useNavigate(); // ✅ Add this
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
@@ -107,10 +107,10 @@ export default function AdminResultManagement() {
   }, [results, filters]);
 
  // In AdminResultManagement.jsx
-const handleView = (resultId) => {
-  // ✅ Now use the correct absolute path
-  navigate(`/admin/results/${resultId}/view`);
-};
+// const handleView = (resultId) => {
+//   // ✅ Now use the correct absolute path
+//   navigate(`/admin/results/${resultId}/view`);
+// };
 
   const handleDownload = async (resultId) => {
     try {
@@ -502,13 +502,13 @@ const handleView = (resultId) => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2 flex-wrap">
-                          <button
+                          {/* <button
                             onClick={() => handleView(result._id)}
                             className="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
                             title="View Details"
                           >
                             <FaEye />
-                          </button>
+                          </button> */}
                           <button
                             onClick={() => handleDownload(result._id)}
                             className="p-2 rounded-lg bg-green-500 text-white hover:bg-green-600"

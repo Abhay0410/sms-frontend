@@ -5,6 +5,7 @@ import api from "../../services/api";
 import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 import BackButton from "../../components/BackButton";
 import OptimizedImage from "../../components/OptimizedImage";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const API_URL =
   import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
@@ -20,6 +21,9 @@ export default function ParentProfileManage() {
   const [children, setChildren] = useState([]);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState("");
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -206,7 +210,6 @@ export default function ParentProfileManage() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {children.map((child) => {
-
                     console.log("Child:", child);
                     console.log("SchoolId:", parentInfo.schoolId);
                     console.log("ProfilePic:", child.profilePicture);
@@ -351,7 +354,7 @@ export default function ParentProfileManage() {
               </h3>
 
               <div className="space-y-4">
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Phone Number
                   </label>
@@ -362,7 +365,24 @@ export default function ParentProfileManage() {
                     onChange={onChange}
                     placeholder="Enter phone number"
                   />
-                </div>
+                </div> */}
+
+                <input
+                  type="tel"
+                  name="phone"
+                  value={form.phone}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, ""); // only digits allowed
+                    if (value.length <= 10) {
+                      setForm((prev) => ({ ...prev, phone: value }));
+                    }
+                  }}
+                  maxLength={10}
+                  pattern="[0-9]{10}"
+                  inputMode="numeric"
+                  placeholder="Enter 10 digit phone number"
+                  className="w-full rounded-xl border border-gray-300 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                />
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -407,7 +427,7 @@ export default function ParentProfileManage() {
                 Change Password
               </h3>
               <div className="space-y-4">
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Current Password
                   </label>
@@ -419,9 +439,34 @@ export default function ParentProfileManage() {
                     onChange={onChangePw}
                     placeholder="Enter current password"
                   />
+                  
+                </div> */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Current Password
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type={showCurrent ? "text" : "password"}
+                      name="currentPassword"
+                      value={pw.currentPassword}
+                      onChange={onChangePw}
+                      placeholder="Enter current password"
+                      className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrent(!showCurrent)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showCurrent ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     New Password
                   </label>
@@ -433,9 +478,33 @@ export default function ParentProfileManage() {
                     onChange={onChangePw}
                     placeholder="Enter new password (min 6 characters)"
                   />
+                </div> */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    New Password
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type={showNew ? "text" : "password"}
+                      name="newPassword"
+                      value={pw.newPassword}
+                      onChange={onChangePw}
+                      placeholder="Enter new password (min 6 characters)"
+                      className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowNew(!showNew)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showNew ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Confirm Password
                   </label>
@@ -447,6 +516,30 @@ export default function ParentProfileManage() {
                     onChange={onChangePw}
                     placeholder="Confirm new password"
                   />
+                </div> */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm Password
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type={showConfirm ? "text" : "password"}
+                      name="confirm"
+                      value={pw.confirm}
+                      onChange={onChangePw}
+                      placeholder="Confirm new password"
+                      className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirm(!showConfirm)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showConfirm ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
                 </div>
 
                 <button
