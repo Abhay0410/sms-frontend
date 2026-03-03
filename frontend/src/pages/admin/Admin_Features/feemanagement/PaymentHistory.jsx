@@ -42,56 +42,29 @@ export default function PaymentHistory() {
   // Simple pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
-  const [allPayments, setAllPayments] = useState([]); // Store all fetched payments
   const [totalPayments, setTotalPayments] = useState(0); // Store total count
 
   // Fetch payment history
   const fetchPayments = useCallback(async (page = 1) => {
     try {
       setLoading(true);
-      setError(null);
+      const params = new URLSearchParams({
+        ...filters,
+        page: page,
+        limit: itemsPerPage
+      });
 
-      const params = new URLSearchParams();
-      if (filters.academicYear) params.append("academicYear", filters.academicYear);
-      if (filters.status) params.append("status", filters.status);
-      if (filters.className) params.append("className", filters.className);
-      if (filters.search) params.append("search", filters.search);
-      if (filters.month) params.append("month", filters.month);
-
-      console.log("Fetching payments with filters:", Object.fromEntries(params));
+      const response = await api.get(`${API_ENDPOINTS.ADMIN.FEE.ALL}?${params}`);
       
-      const response = await api.get(`${API_ENDPOINTS.ADMIN.FEE.ALL}?${params.toString()}`);
-      
-      console.log("API Response:", response);
-      
-      if (response && response.success) {
-        const fetchedPayments = response.data.payments || [];
-        setAllPayments(fetchedPayments);
-        setTotalPayments(fetchedPayments.length);
-        
-        // Client-side pagination - Now shows 10 items per page
-        const startIndex = (page - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const paginatedPayments = fetchedPayments.slice(startIndex, endIndex);
-        
-        setPayments(paginatedPayments);
-        setHasMore(endIndex < fetchedPayments.length);
+      if (response?.success) {
+        // ✅ Ab slice ki zaroorat nahi, backend ne data filter karke bheja hai
+        setPayments(response.data.payments);
+        setTotalPayments(response.data.total);
+        setHasMore(page < response.data.totalPages);
         setCurrentPage(page);
-        
-        console.log(`Page ${page}: Showing ${paginatedPayments.length} of ${fetchedPayments.length} payments (${itemsPerPage} per page)`);
-      } else {
-        setPayments([]);
-        setAllPayments([]);
-        setTotalPayments(0);
-        setHasMore(false);
       }
-    } catch (err) {
-      console.error("Error fetching payments:", err);
-      setError(err.message || "Failed to fetch payment history");
-      setPayments([]);
-      setAllPayments([]);
-      setTotalPayments(0);
-      setHasMore(false);
+    } catch {
+      toast.error("Failed to fetch payments");
     } finally {
       setLoading(false);
     }
@@ -273,15 +246,7 @@ export default function PaymentHistory() {
   // Pagination handlers
   const goToNextPage = () => {
     if (hasMore) {
-      const nextPage = currentPage + 1;
-      const startIndex = (nextPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedPayments = allPayments.slice(startIndex, endIndex);
-      
-      setPayments(paginatedPayments);
-      setHasMore(endIndex < allPayments.length);
-      setCurrentPage(nextPage);
-      
+      fetchPayments(currentPage + 1);
       // Scroll to top of table
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -289,15 +254,7 @@ export default function PaymentHistory() {
 
   const goToPrevPage = () => {
     if (currentPage > 1) {
-      const prevPage = currentPage - 1;
-      const startIndex = (prevPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedPayments = allPayments.slice(startIndex, endIndex);
-      
-      setPayments(paginatedPayments);
-      setHasMore(endIndex < allPayments.length);
-      setCurrentPage(prevPage);
-      
+      fetchPayments(currentPage - 1);
       // Scroll to top of table
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }

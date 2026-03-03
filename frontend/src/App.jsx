@@ -5,7 +5,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import api from "./services/api.js";
-import DebugRouter from "./components/DebugRouter.jsx"; // ✅ Add this import
 
 /* ──────────────────────────────────────────────────────────────
  * 🔄 Loading Component
@@ -164,9 +163,6 @@ export default function App() {
         pauseOnHover
         theme="light"
       />
-      
-      {/* ✅ Add DebugRouter here - outside Suspense for always visible logs */}
-      <DebugRouter />
       
       <Suspense fallback={<PageLoader />}>
         <Routes>

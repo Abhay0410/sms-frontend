@@ -100,11 +100,29 @@ export default function FeeOverview() {
   }
 }, [academicYear]);
 
+  const loadAllFeeData = useCallback(async () => {
+    try {
+      const res = await api.get(API_ENDPOINTS.ADMIN.FEE.STUDENTS_WITH_FEES, {
+        params: {
+          academicYear,
+          month: getFormattedMonth(),
+          classId: selectedClass !== "ALL" ? selectedClass : undefined,
+          // status remove kar diya taaki saara data mile logic ke liye
+        },
+      });
+      const students = res?.data?.students || [];
+      setAllStudentsData(students);
+    } catch (err) {
+      console.error("Failed to load fee context", err);
+    }
+  }, [academicYear, selectedClass, getFormattedMonth]);
+
   const loadStatistics = useCallback(async () => {
     try {
       setStatsLoading(true);
       if (!academicYear) return;
 
+      // ✅ 1. Pehle Stats fetch karo
       const response = await api.get(API_ENDPOINTS.ADMIN.FEE.STATISTICS, {
         params: {
           academicYear,
@@ -129,31 +147,17 @@ export default function FeeOverview() {
           overdue: Number(stats.paymentStatus?.overdue || 0),
         },
       });
+
+      // ✅ 2. Phir parallel mein list fetch karo agar zaroori ho
+      await loadAllFeeData();
+
     } catch (err) {
       console.error(err);
       toast.error("Statistics not available for this period");
     } finally {
       setStatsLoading(false);
     }
-  }, [academicYear, selectedClass, getFormattedMonth]);
-
-  // 1. Naya function jo sabhi students ko fetch karega status ke hisaab se nahi, balki poora
-  const loadAllFeeData = useCallback(async () => {
-    try {
-      const res = await api.get(API_ENDPOINTS.ADMIN.FEE.STUDENTS_WITH_FEES, {
-        params: {
-          academicYear,
-          month: getFormattedMonth(),
-          classId: selectedClass !== "ALL" ? selectedClass : undefined,
-          // status remove kar diya taaki saara data mile logic ke liye
-        },
-      });
-      const students = res?.data?.students || [];
-      setAllStudentsData(students);
-    } catch (err) {
-      console.error("Failed to load fee context", err);
-    }
-  }, [academicYear, selectedClass, getFormattedMonth]);
+  }, [academicYear, selectedClass, getFormattedMonth, loadAllFeeData]);
 
   // 2. Dashboard Stats ko Override karne ke liye counting logic
   const syncedStats = useMemo(() => {
@@ -213,9 +217,8 @@ useEffect(() => {
 useEffect(() => {
   if (academicYear) {
     loadStatistics();
-    loadAllFeeData(); // ✅ Har bar data fetch karo taaki upar ke cards sync rahein
   }
-}, [academicYear, loadStatistics, loadAllFeeData]);
+}, [academicYear, loadStatistics]);
 
 useEffect(() => {
   if (statistics) {
