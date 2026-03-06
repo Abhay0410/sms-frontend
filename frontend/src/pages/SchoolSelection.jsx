@@ -126,9 +126,9 @@ const SchoolSelection = ({ setSchool }) => {
                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-none">
                   SchoolPortal
                 </h1>
-                <p className="text-sm text-gray-600 font-medium leading-none">
+                {/* <p className="text-sm text-gray-600 font-medium leading-none">
                   by ZAGER DIGITAL SERVICES
-                </p>
+                </p> */}
               </div>
             </div>
             
