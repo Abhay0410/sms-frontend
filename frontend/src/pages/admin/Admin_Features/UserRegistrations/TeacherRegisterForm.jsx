@@ -867,7 +867,7 @@ export default function TeacherRegisterForm() {
                       value={form.salary.uanNumber}
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, ""); // only digits
-                        if (value.length <= 12) {
+                        if (value.length <= 18) {
                           setForm((prev) => ({
                             ...prev,
                             salary: {
@@ -877,7 +877,7 @@ export default function TeacherRegisterForm() {
                           }));
                         }
                       }}
-                      maxLength={12}
+                      maxLength={18}
                       inputMode="numeric"
                       placeholder="Enter 12 digit UAN"
                       className="w-full bg-slate-800 border-none p-4 rounded-xl text-white focus:ring-2 focus:ring-orange-500 transition-all"

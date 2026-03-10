@@ -24,6 +24,7 @@ export default function ParentProfileManage() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const[isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -278,6 +279,7 @@ export default function ParentProfileManage() {
                     onChange={onPhotoChange}
                     className="hidden"
                     id="photo-upload"
+                    disabled={!isEditing}
                   />
                   <label
                     htmlFor="photo-upload"
@@ -381,6 +383,7 @@ export default function ParentProfileManage() {
                   pattern="[0-9]{10}"
                   inputMode="numeric"
                   placeholder="Enter 10 digit phone number"
+                  disabled={!isEditing}
                   className="w-full rounded-xl border border-gray-300 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                 />
 
@@ -394,6 +397,7 @@ export default function ParentProfileManage() {
                     value={form.occupation}
                     onChange={onChange}
                     placeholder="Enter occupation"
+                    disabled={!isEditing}
                   />
                 </div>
 
@@ -408,16 +412,47 @@ export default function ParentProfileManage() {
                     onChange={onChange}
                     rows="3"
                     placeholder="Enter full address"
+                    disabled={!isEditing}
                   />
                 </div>
               </div>
 
-              <button
+              {!isEditing ?(
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="mt-6 w-full rounded-xl bg-gradient-to-r from-green-600 to-teal-600 px-6 py-3 text-white font-semibold hover:from-green-700 hover:to-teal-700 transition transform hover:scale-105 duration-200 shadow-lg"
+                >
+                  Edit
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="mt-6 w-full rounded-xl  bg-gray-600  px-6 py-3 text-white font-semibold hover:from-green-700 hover:to-teal-700 transition transform hover:scale-105 duration-200 shadow-lg"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={async () => {
+                      await onSave();
+                      setIsEditing(false);
+                    }}
+                    className="mt-6 w-full rounded-xl bg-gradient-to-r from-green-600 to-teal-600 px-6 py-3 text-white font-semibold hover:from-green-700 hover:to-teal-700 transition transform hover:scale-105 duration-200 shadow-lg"
+                  >
+                    Save All Changes
+                  </button>
+              
+                </>
+              )}
+
+              {/* <button
                 onClick={onSave}
                 className="mt-6 w-full rounded-xl bg-gradient-to-r from-green-600 to-teal-600 px-6 py-3 text-white font-semibold hover:from-green-700 hover:to-teal-700 transition transform hover:scale-105 duration-200 shadow-lg"
               >
                 Save All Changes
-              </button>
+              </button> */}
+
             </div>
 
             {/* Change Password */}
@@ -453,6 +488,7 @@ export default function ParentProfileManage() {
                       value={pw.currentPassword}
                       onChange={onChangePw}
                       placeholder="Enter current password"
+                      disabled={!isEditing}
                       className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                     />
 
@@ -490,6 +526,7 @@ export default function ParentProfileManage() {
                       name="newPassword"
                       value={pw.newPassword}
                       onChange={onChangePw}
+                      disabled={!isEditing}
                       placeholder="Enter new password (min 6 characters)"
                       className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                     />
@@ -529,6 +566,7 @@ export default function ParentProfileManage() {
                       value={pw.confirm}
                       onChange={onChangePw}
                       placeholder="Confirm new password"
+                      disabled={!isEditing}
                       className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                     />
 
@@ -543,8 +581,9 @@ export default function ParentProfileManage() {
                 </div>
 
                 <button
-                  onClick={changePassword}
-                  className="w-full rounded-xl bg-gray-900 px-6 py-3 text-white font-semibold hover:bg-gray-800 transition transform hover:scale-105 duration-200 shadow-lg"
+                  onClick={changePassword  }
+                  disabled={!isEditing}
+                  className="w-full rounded-xl bg-gray-900 px-6 py-3 text-white font-semibold hover:bg-gray-800 transition transform hover:scale-105 duration-200 shadow-lg disabled:bg-gray-400"
                 >
                   Update Password
                 </button>

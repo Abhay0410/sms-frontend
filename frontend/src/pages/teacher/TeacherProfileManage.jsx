@@ -14,6 +14,7 @@ export default function TeacherProfileManage() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // ✅ PROD-READY: Get URL from environment variables
   const API_URL =
@@ -133,13 +134,11 @@ export default function TeacherProfileManage() {
   };
 
   const onSave = async () => {
-
-     // ✅ PHONE VALIDATION — YAHAN LAGAO
-  if (!/^[0-9]{10}$/.test(form.phone)) {
-    toast.error("Phone number must be exactly 10 digits");
-    return;
-  }
-
+    // ✅ PHONE VALIDATION — YAHAN LAGAO
+    if (!/^[0-9]{10}$/.test(form.phone)) {
+      toast.error("Phone number must be exactly 10 digits");
+      return;
+    }
 
     try {
       setSaving(true);
@@ -352,6 +351,7 @@ export default function TeacherProfileManage() {
                     height={128}
                     onError={(e) => {
                       e.target.src = "/assets/default-teacher-avatar.png";
+
                     }}
                   />
                   {uploadingPhoto && (
@@ -372,7 +372,7 @@ export default function TeacherProfileManage() {
                   accept="image/*"
                   onChange={onPhotoChange}
                   className="hidden"
-                  disabled={uploadingPhoto}
+                  disabled={uploadingPhoto || !isEditing}
                 />
                 <div className="w-full text-center py-2 px-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors text-sm font-semibold bg-gray-50 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
                   {uploadingPhoto ? "Uploading..." : "Choose New Photo"}
@@ -423,12 +423,14 @@ export default function TeacherProfileManage() {
                       value={pw.currentPassword}
                       onChange={onChangePw}
                       placeholder="Enter current password"
+                      disabled={!isEditing}
                       className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     />
 
                     <button
                       type="button"
                       onClick={() => setShowCurrent(!showCurrent)}
+                      disabled={!isEditing}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                     >
                       <FaEye className="w-4 h-4" />
@@ -461,6 +463,7 @@ export default function TeacherProfileManage() {
                       value={pw.newPassword}
                       onChange={onChangePw}
                       placeholder="Enter new password"
+                      disabled={!isEditing}
                       className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     />
 
@@ -468,6 +471,7 @@ export default function TeacherProfileManage() {
                       type="button"
                       onClick={() => setShowNew(!showNew)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      disabled={!isEditing}
                     >
                       <FaEye className="w-4 h-4" />
                     </button>
@@ -498,6 +502,7 @@ export default function TeacherProfileManage() {
                       name="confirm"
                       value={pw.confirm}
                       onChange={onChangePw}
+                      disabled={!isEditing}
                       placeholder="Confirm new password"
                       className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     />
@@ -514,7 +519,7 @@ export default function TeacherProfileManage() {
 
                 <button
                   onClick={changePassword}
-                  disabled={changingPassword}
+                  disabled={changingPassword || !isEditing}
                   className="w-full bg-gray-900 text-white py-3 px-4 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 transition-colors font-medium flex items-center justify-center gap-2"
                 >
                   {changingPassword ? (
@@ -536,6 +541,7 @@ export default function TeacherProfileManage() {
                           strokeWidth={2}
                           d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                         />
+
                       </svg>
                       Update Password
                     </>
@@ -576,6 +582,7 @@ export default function TeacherProfileManage() {
                     value={form.name}
                     onChange={onChange}
                     placeholder="Enter your full name"
+                    disabled={!isEditing}
                   />
                 </div>
 
@@ -605,6 +612,7 @@ export default function TeacherProfileManage() {
                   pattern="[0-9]{10}"
                   inputMode="numeric"
                   placeholder="Enter 10 digit phone number"
+                  disabled={!isEditing}
                   className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                 />
 
@@ -618,6 +626,7 @@ export default function TeacherProfileManage() {
                     value={form.department}
                     onChange={onChange}
                     placeholder="Enter department"
+                    disabled={!isEditing}
                   />
                 </div>
 
@@ -630,6 +639,7 @@ export default function TeacherProfileManage() {
                     name="gender"
                     value={form.gender}
                     onChange={onChange}
+                    disabled={!isEditing}
                   >
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
@@ -648,6 +658,7 @@ export default function TeacherProfileManage() {
                     name="dob"
                     value={form.dob}
                     onChange={onChange}
+                    disabled={!isEditing}
                   />
                 </div>
 
@@ -661,6 +672,7 @@ export default function TeacherProfileManage() {
                     value={form.subjects}
                     onChange={onChange}
                     placeholder="Math, Physics, Chemistry"
+                    disabled={!isEditing}
                   />
                 </div>
               </div>
@@ -675,10 +687,11 @@ export default function TeacherProfileManage() {
                   value={form.address}
                   onChange={onChange}
                   rows="3"
+                  disabled={!isEditing}
                   placeholder="Enter your complete address"
                 />
               </div>
-
+              {/* 
               <div className="mt-8 flex justify-end">
                 <button
                   onClick={onSave}
@@ -709,6 +722,59 @@ export default function TeacherProfileManage() {
                     </>
                   )}
                 </button>
+
+                {!isEditing ? (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-indigo-600 text-white px-5 py-2 rounded-lg text-xs font-bold uppercase"
+                  >
+                    Edit
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="bg-gray-500 text-white px-5 py-2 rounded-lg text-xs font-bold uppercase"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div> */}
+              <div className="mt-8 flex justify-end gap-3">
+                {!isEditing ? (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium"
+                  >
+                    Edit Profile
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      className="bg-gray-500 text-white py-3 px-6 rounded-lg font-medium"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        await onSave();
+                        setIsEditing(false);
+                      }}
+                      disabled={saving}
+                      className="bg-indigo-600 text-white py-3 px-8 rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400 transition-colors font-medium flex items-center gap-2"
+                    >
+                      {saving ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Saving...
+                        </>
+                      ) : (
+                        "Save Changes"
+                      )}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

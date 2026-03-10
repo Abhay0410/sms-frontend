@@ -88,13 +88,13 @@ export default function StaffAttendanceGrid() {
   );
 
   // Export functions
-  const exportToCSV = () => {
-    toast.info("Export feature coming soon!");
-  };
+  // const exportToCSV = () => {
+  //   toast.info("Export feature coming soon!");
+  // };
 
-  const printReport = () => {
-    window.print();
-  };
+  // const printReport = () => {
+  //   window.print();
+  // };
 
   // Get attendance summary for employee
   const getEmployeeSummary = (employee) => {
@@ -226,19 +226,19 @@ export default function StaffAttendanceGrid() {
                   <FaFilter /> Filters
                 </button>
 
-                <button
+                {/* <button
                   onClick={exportToCSV}
                   className="px-5 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all"
                 >
                   <FaDownload /> Export
-                </button>
+                </button> */}
 
-                <button
+                {/* <button
                   onClick={printReport}
                   className="px-5 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all"
                 >
                   <FaPrint /> Print
-                </button>
+                </button> */}
 
                 <div className="flex items-center gap-3">
                   <select

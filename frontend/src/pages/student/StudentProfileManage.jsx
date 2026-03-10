@@ -9,6 +9,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function StudentProfileManage() {
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     phone: "",
     email: "",
@@ -372,6 +373,7 @@ export default function StudentProfileManage() {
                     onChange={onPhotoChange}
                     className="hidden"
                     id="photo-upload"
+                    disabled={!isEditing}
                   />
                   <label
                     htmlFor="photo-upload"
@@ -467,6 +469,7 @@ export default function StudentProfileManage() {
                     value={pw.currentPassword}
                     onChange={onChangePw}
                     placeholder="Current password"
+                    disabled={!isEditing}
                     className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
 
@@ -493,6 +496,7 @@ export default function StudentProfileManage() {
                     value={pw.newPassword}
                     onChange={onChangePw}
                     placeholder="New password (min 6 characters)"
+                    disabled={!isEditing}
                     className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
 
@@ -519,6 +523,7 @@ export default function StudentProfileManage() {
                     value={pw.confirm}
                     onChange={onChangePw}
                     placeholder="Confirm new password"
+                    disabled={!isEditing}
                     className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
 
@@ -532,7 +537,8 @@ export default function StudentProfileManage() {
                 </div>
                 <button
                   onClick={changePassword}
-                  className="w-full rounded-xl bg-gray-900 px-6 py-3 text-white font-semibold hover:bg-gray-800 transition shadow-lg"
+                  disabled={!isEditing}
+                  className="w-full rounded-xl bg-gray-900 px-6 py-3 text-white font-semibold hover:bg-gray-800 transition shadow-lg disabled:bg-gray-400"
                 >
                   Update Password
                 </button>
@@ -579,6 +585,7 @@ export default function StudentProfileManage() {
                     pattern="[0-9]{10}"
                     inputMode="numeric"
                     placeholder="Enter 10 digit phone number"
+                    disabled={!isEditing}
                     className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
 
@@ -593,6 +600,7 @@ export default function StudentProfileManage() {
                       value={form.email}
                       onChange={onChange}
                       placeholder="Enter email"
+                      disabled={!isEditing}
                     />
                   </div>
 
@@ -605,6 +613,7 @@ export default function StudentProfileManage() {
                       name="bloodGroup"
                       value={form.bloodGroup}
                       onChange={onChange}
+                      disabled={!isEditing}
                     >
                       <option value="">Select Blood Group</option>
                       <option value="A+">A+</option>
@@ -628,6 +637,7 @@ export default function StudentProfileManage() {
                       value={form.nationality}
                       onChange={onChange}
                       placeholder="Enter nationality"
+                      disabled={!isEditing}
                     />
                   </div>
                 </div>
@@ -651,6 +661,7 @@ export default function StudentProfileManage() {
                       onChange={onChange}
                       rows="2"
                       placeholder="Any medical conditions"
+                      disabled={!isEditing}
                     />
                   </div>
 
@@ -663,6 +674,7 @@ export default function StudentProfileManage() {
                       name="allergies"
                       value={form.allergies}
                       onChange={onChange}
+                      disabled={!isEditing}
                       placeholder="Comma-separated (e.g., Peanuts, Dust)"
                     />
                   </div>
@@ -678,6 +690,7 @@ export default function StudentProfileManage() {
                         value={form.emergencyContactName}
                         onChange={onChange}
                         placeholder="Contact person"
+                        disabled={!isEditing}
                       />
                     </div>
 
@@ -692,6 +705,7 @@ export default function StudentProfileManage() {
                         value={form.emergencyContactPhone}
                         onChange={onChange}
                         placeholder="Phone number"
+                        disabled={!isEditing}
                       />
                     </div>
 
@@ -705,6 +719,7 @@ export default function StudentProfileManage() {
                         value={form.emergencyContactRelation}
                         onChange={onChange}
                         placeholder="Relation"
+                        disabled={!isEditing}
                       />
                     </div>
                   </div>
@@ -724,6 +739,7 @@ export default function StudentProfileManage() {
                       name="transportRequired"
                       checked={form.transportRequired}
                       onChange={onChange}
+                      disabled={!isEditing}
                       className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <label className="ml-2 text-sm font-medium text-gray-700">
@@ -743,6 +759,7 @@ export default function StudentProfileManage() {
                           value={form.busRoute}
                           onChange={onChange}
                           placeholder="Route number/name"
+                          disabled={!isEditing}
                         />
                       </div>
 
@@ -756,6 +773,7 @@ export default function StudentProfileManage() {
                           value={form.pickupPoint}
                           onChange={onChange}
                           placeholder="Pickup location"
+                          disabled={!isEditing}
                         />
                       </div>
                     </div>
@@ -765,12 +783,33 @@ export default function StudentProfileManage() {
 
               {/* Save Button */}
               <div className="mt-8 pt-6 border-t border-gray-200">
-                <button
-                  onClick={onSave}
-                  className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 px-8 py-4 text-white font-semibold hover:from-blue-700 hover:to-cyan-700 transition shadow-lg"
-                >
-                  Save All Changes
-                </button>
+                {!isEditing ? (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold"
+                  >
+                    Edit
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      className="bg-gray-500 text-white px-5 py-2 rounded-lg font-semibold mr-2.5"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        await onSave();
+                        setIsEditing(false);
+                      }}
+                      className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 px-5 py-3 text-white font-semibold hover:from-blue-700 hover:to-cyan-700 transition shadow-lg"
+                    >
+                      Save All Changes
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
