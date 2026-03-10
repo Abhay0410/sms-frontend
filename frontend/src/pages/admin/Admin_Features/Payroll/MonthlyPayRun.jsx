@@ -146,22 +146,32 @@ export default function MonthlyPayRun() {
         manualAmount: manualAmounts[teacherId] ? Number(manualAmounts[teacherId]) : null
       };
       
-      await api.post(API_ENDPOINTS.ADMIN.PAYROLL.RUN_PAYROLL, payload);
+      const response = await api.post(API_ENDPOINTS.ADMIN.PAYROLL.RUN_PAYROLL, payload);
       
-      // ✅ Refresh data logic
-      toast.success("Salary Slip Generated!");
-      
-      // Clear force amount after success
-      setManualAmounts(prev => {
-          const newState = {...prev};
-          delete newState[teacherId];
-          return newState;
-      });
-      
-      // REFRESH BOTH TABLES
-      await loadData();
+      // 🚩 Logic: Check for partial failures even in 200 OK
+      if (response.data?.data?.failed?.length > 0) {
+        const errorMsg = response.data.data.failed[0].reason;
+        toast.error(`Failed: ${errorMsg}`);
+      } else {
+        toast.success("Salary Slip Generated!");
+        
+        // Clear force amount after success
+        setManualAmounts(prev => {
+            const newState = {...prev};
+            delete newState[teacherId];
+            return newState;
+        });
+        
+        // REFRESH BOTH TABLES
+        await loadData();
+      }
     } catch (err) {
-      toast.error(err?.message || "Generation failed");
+      // 🚩 Yahan backend ka res.status(400) catch hoga
+      const serverMsg = err?.response?.data?.message || "Salary structure not found!";
+      toast.error(serverMsg, {
+        position: "top-center",
+        autoClose: 5000
+      });
     } finally {
       setProcessingId(null);
     }

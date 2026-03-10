@@ -2,7 +2,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../services/api";
-import BackButton from "../../../components/BackButton";
 import {
   FaClock,
   FaBook,
@@ -34,19 +33,19 @@ const loadMySchedule = useCallback(async () => {
     setScheduleData(actualData.schedule);
       
       if (actualData.hasAssignments === false) {
-        toast.info("No classes assigned for this academic year");
+        toast.info("No classes assigned for this academic year", { toastId: "no-assignments" });
       } else if (!actualData.schedule || Object.keys(actualData.schedule).length === 0) {
-        toast.info("Schedule is empty for the selected academic year");
+        toast.info("Schedule is empty for the selected academic year", { toastId: "empty-schedule" });
       } else {
         const totalClasses = Object.values(actualData.schedule || {}).reduce(
           (total, daySchedule) => total + (daySchedule?.length || 0), 0
         );
-        toast.success(`Loaded schedule with ${totalClasses} classes`);
+        toast.success(`Loaded schedule with ${totalClasses} classes`, { toastId: "schedule-loaded" });
       }
     } catch (error) {
       console.error("❌ Failed to load schedule:", error);
       console.error("❌ Error details:", error.response?.data || error.message);
-      toast.error(error.message || "Failed to load schedule");
+      toast.error(error.message || "Failed to load schedule", { toastId: "schedule-error" });
     } finally {
       setLoading(false);
     }
@@ -83,10 +82,8 @@ const loadMySchedule = useCallback(async () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 p-4 md:p-8">
       <div className="mx-auto max-w-7xl">
-        <BackButton to="/teacher/teacher-dashboard" />
-
         {/* Header */}
-        <div className="mt-6">
+        <div>
           <h2 className="text-4xl font-bold text-slate-900 tracking-tight">My Teaching Schedule</h2>
           <p className="mt-2 text-slate-600 flex items-center gap-2">
             <FaCalendarWeek className="text-purple-600" />
