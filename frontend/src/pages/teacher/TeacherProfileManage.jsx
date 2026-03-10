@@ -4,15 +4,20 @@ import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../services/api";
 import BackButton from "../../components/BackButton";
 import OptimizedImage from "../../components/OptimizedImage";
+import { FaEye } from "react-icons/fa";
 
 export default function TeacherProfileManage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
   // ✅ PROD-READY: Get URL from environment variables
-  const API_URL = import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
+  const API_URL =
+    import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
 
   const [form, setForm] = useState({
     name: "",
@@ -33,7 +38,7 @@ export default function TeacherProfileManage() {
   const loadProfile = async () => {
     try {
       const resp = await api.get(API_ENDPOINTS.TEACHER.AUTH.PROFILE);
-      console.log("📥 Teacher Profile Response:", resp); 
+      console.log("📥 Teacher Profile Response:", resp);
 
       // ✅ ROBUST DATA EXTRACTION
       let teacherData = resp.teacher || resp.data?.teacher || resp.data || resp;
@@ -46,27 +51,31 @@ export default function TeacherProfileManage() {
       console.log("👤 Extracted Teacher Data:", teacherData);
 
       setTeacherInfo(teacherData);
-      
+
       // ✅ MAP FIELDS CORRECTLY
       setForm({
         name: teacherData.name || "",
         phone: teacherData.phone || "",
         // address: teacherData.address || "",
-          address: teacherData.address
-    ? [
-        teacherData.address.line1,
-        teacherData.address.line2,
-        teacherData.address.city,
-        teacherData.address.state,
-        teacherData.address.pincode,
-      ]
-        .filter(Boolean)
-        .join(", ")
-    : "",
+        address: teacherData.address
+          ? [
+              teacherData.address.line1,
+              teacherData.address.line2,
+              teacherData.address.city,
+              teacherData.address.state,
+              teacherData.address.pincode,
+            ]
+              .filter(Boolean)
+              .join(", ")
+          : "",
         gender: teacherData.gender || "",
-        dob: teacherData.dateOfBirth ? teacherData.dateOfBirth.split("T")[0] : "", 
+        dob: teacherData.dateOfBirth
+          ? teacherData.dateOfBirth.split("T")[0]
+          : "",
         department: teacherData.department || "",
-        subjects: Array.isArray(teacherData.subjects) ? teacherData.subjects.join(", ") : (teacherData.subjects || ""),
+        subjects: Array.isArray(teacherData.subjects)
+          ? teacherData.subjects.join(", ")
+          : teacherData.subjects || "",
       });
     } catch (error) {
       console.error("❌ Load profile error:", error);
@@ -76,18 +85,19 @@ export default function TeacherProfileManage() {
     }
   };
 
-  const onChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const onChange = (e) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
   const onPhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
         toast.error("Image size should be less than 2MB");
-        e.target.value = ""; 
+        e.target.value = "";
         return;
       }
 
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         toast.error("Please select a valid image file");
         e.target.value = "";
         return;
@@ -98,7 +108,7 @@ export default function TeacherProfileManage() {
         setPhotoPreview(e.target.result);
       };
       reader.readAsDataURL(file);
-      
+
       uploadPhoto(file);
     }
   };
@@ -110,9 +120,9 @@ export default function TeacherProfileManage() {
       formData.append("profilePicture", file);
 
       await api.uploadPut(API_ENDPOINTS.TEACHER.UPDATE_PROFILE, formData);
-      
+
       toast.success("Profile photo updated successfully");
-      await loadProfile(); 
+      await loadProfile();
       setPhotoPreview("");
     } catch (error) {
       toast.error(error.message || "Failed to upload photo");
@@ -123,6 +133,14 @@ export default function TeacherProfileManage() {
   };
 
   const onSave = async () => {
+
+     // ✅ PHONE VALIDATION — YAHAN LAGAO
+  if (!/^[0-9]{10}$/.test(form.phone)) {
+    toast.error("Phone number must be exactly 10 digits");
+    return;
+  }
+
+
     try {
       setSaving(true);
       const formData = new FormData();
@@ -137,12 +155,12 @@ export default function TeacherProfileManage() {
       formData.append("address[state]", addressParts[3]?.trim() || "");
       formData.append("address[pincode]", addressParts[4]?.trim() || "");
       formData.append("gender", form.gender);
-      formData.append("dateOfBirth", form.dob); 
-      formData.append("department", form.department); 
+      formData.append("dateOfBirth", form.dob);
+      formData.append("department", form.department);
       formData.append("subjects", form.subjects);
 
       await api.uploadPut(API_ENDPOINTS.TEACHER.UPDATE_PROFILE, formData);
-      
+
       toast.success("Profile updated successfully");
       await loadProfile();
     } catch (error) {
@@ -152,15 +170,20 @@ export default function TeacherProfileManage() {
     }
   };
 
-  const [pw, setPw] = useState({ currentPassword: "", newPassword: "", confirm: "" });
-  const onChangePw = (e) => setPw((s) => ({ ...s, [e.target.name]: e.target.value }));
+  const [pw, setPw] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirm: "",
+  });
+  const onChangePw = (e) =>
+    setPw((s) => ({ ...s, [e.target.name]: e.target.value }));
 
   const changePassword = async () => {
     if (pw.newPassword !== pw.confirm) {
       toast.error("Passwords do not match");
       return;
     }
-    
+
     if (pw.newPassword.length < 6) {
       toast.error("Password must be at least 6 characters");
       return;
@@ -190,21 +213,18 @@ export default function TeacherProfileManage() {
     );
   }
 
-  //IMAGE 
-  // const displayPhoto = photoPreview || 
-  // (teacherInfo.profilePicture 
+  //IMAGE
+  // const displayPhoto = photoPreview ||
+  // (teacherInfo.profilePicture
   //   ? `${API_URL}/uploads/teachers/${teacherInfo.profilePicture}`
   //   : `/assets/default-teacher-avatar.png`);
-const displayPhoto =
-  photoPreview ||
-  (teacherInfo.profilePicture
-    ? teacherInfo.profilePicture.startsWith("http")
-      ? teacherInfo.profilePicture
-      : `${API_URL}/uploads/${teacherInfo.schoolId}/teachers/${teacherInfo.profilePicture}`
-    : "/assets/default-teacher-avatar.png");
-
-
-
+  const displayPhoto =
+    photoPreview ||
+    (teacherInfo.profilePicture
+      ? teacherInfo.profilePicture.startsWith("http")
+        ? teacherInfo.profilePicture
+        : `${API_URL}/uploads/${teacherInfo.schoolId}/teachers/${teacherInfo.profilePicture}`
+      : "/assets/default-teacher-avatar.png");
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -214,7 +234,9 @@ const displayPhoto =
         {/* Header Section */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-          <p className="text-gray-600 mt-2">Manage your personal information and account settings</p>
+          <p className="text-gray-600 mt-2">
+            Manage your personal information and account settings
+          </p>
         </div>
 
         {/* Profile Overview Card */}
@@ -229,7 +251,7 @@ const displayPhoto =
                   width={128}
                   height={128}
                   onError={(e) => {
-                    e.target.src = '/assets/default-teacher-avatar.png';
+                    e.target.src = "/assets/default-teacher-avatar.png";
                   }}
                 />
                 {uploadingPhoto && (
@@ -239,27 +261,59 @@ const displayPhoto =
                 )}
               </div>
             </div>
-            
+
             <div className="text-white text-center md:text-left flex-1">
               <h2 className="text-3xl font-bold mb-2">{teacherInfo.name}</h2>
               <div className="space-y-1">
                 <p className="text-indigo-100 flex items-center justify-center md:justify-start gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
+                    />
                   </svg>
                   {teacherInfo.teacherID}
                 </p>
                 <p className="text-indigo-100 flex items-center justify-center md:justify-start gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
                   {teacherInfo.email}
                 </p>
                 <p className="text-indigo-100 flex items-center justify-center md:justify-start gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
                   </svg>
-                  {teacherInfo.department ? `Dept: ${teacherInfo.department}` : "No Department Assigned"}
+                  {teacherInfo.department
+                    ? `Dept: ${teacherInfo.department}`
+                    : "No Department Assigned"}
                 </p>
               </div>
             </div>
@@ -272,12 +326,22 @@ const displayPhoto =
             {/* Photo Upload Card */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <svg
+                  className="w-5 h-5 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 </svg>
                 Profile Photo
               </h3>
-              
+
               <div className="text-center mb-4">
                 <div className="relative h-32 w-32 rounded-full border-2 border-gray-100  overflow-hidden bg-gray-200 flex items-center justify-center">
                   <img
@@ -287,7 +351,7 @@ const displayPhoto =
                     width={128}
                     height={128}
                     onError={(e) => {
-                      e.target.src = '/assets/default-teacher-avatar.png';
+                      e.target.src = "/assets/default-teacher-avatar.png";
                     }}
                   />
                   {uploadingPhoto && (
@@ -319,14 +383,24 @@ const displayPhoto =
             {/* Change Password Card */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <svg
+                  className="w-5 h-5 text-gray-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
                 </svg>
                 Change Password
               </h3>
 
               <div className="space-y-4">
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
                   <input
                     className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
@@ -336,10 +410,36 @@ const displayPhoto =
                     onChange={onChangePw}
                     placeholder="Enter current password"
                   />
+                </div> */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Current Password
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type={showCurrent ? "text" : "password"}
+                      name="currentPassword"
+                      value={pw.currentPassword}
+                      onChange={onChangePw}
+                      placeholder="Enter current password"
+                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrent(!showCurrent)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      <FaEye className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                {/* <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    New Password
+                  </label>
                   <input
                     className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     type="password"
@@ -348,10 +448,36 @@ const displayPhoto =
                     onChange={onChangePw}
                     placeholder="Enter new password"
                   />
+                </div> */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    New Password
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type={showNew ? "text" : "password"}
+                      name="newPassword"
+                      value={pw.newPassword}
+                      onChange={onChangePw}
+                      placeholder="Enter new password"
+                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowNew(!showNew)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      <FaEye className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                {/* <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm Password
+                  </label>
                   <input
                     className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     type="password"
@@ -360,6 +486,30 @@ const displayPhoto =
                     onChange={onChangePw}
                     placeholder="Confirm new password"
                   />
+                </div> */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm Password
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type={showConfirm ? "text" : "password"}
+                      name="confirm"
+                      value={pw.confirm}
+                      onChange={onChangePw}
+                      placeholder="Confirm new password"
+                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirm(!showConfirm)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      <FaEye className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
                 <button
@@ -374,8 +524,18 @@ const displayPhoto =
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
                       </svg>
                       Update Password
                     </>
@@ -389,15 +549,27 @@ const displayPhoto =
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <svg
+                  className="w-5 h-5 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
                 </svg>
                 Personal Information
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
+                  </label>
                   <input
                     className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     name="name"
@@ -407,8 +579,10 @@ const displayPhoto =
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                {/* <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number
+                  </label>
                   <input
                     className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     name="phone"
@@ -416,10 +590,28 @@ const displayPhoto =
                     onChange={onChange}
                     placeholder="Enter phone number"
                   />
-                </div>
+                </div> */}
+                <input
+                  type="tel"
+                  name="phone"
+                  value={form.phone}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, ""); // only digits
+                    if (value.length <= 10) {
+                      setForm((prev) => ({ ...prev, phone: value }));
+                    }
+                  }}
+                  maxLength={10}
+                  pattern="[0-9]{10}"
+                  inputMode="numeric"
+                  placeholder="Enter 10 digit phone number"
+                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                />
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Department
+                  </label>
                   <input
                     className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     name="department"
@@ -430,7 +622,9 @@ const displayPhoto =
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Gender
+                  </label>
                   <select
                     className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     name="gender"
@@ -445,7 +639,9 @@ const displayPhoto =
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date of Birth
+                  </label>
                   <input
                     className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     type="date"
@@ -470,7 +666,9 @@ const displayPhoto =
               </div>
 
               <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Address
+                </label>
                 <textarea
                   className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                   name="address"
@@ -494,8 +692,18 @@ const displayPhoto =
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                       Save Changes
                     </>
