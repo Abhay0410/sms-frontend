@@ -48,18 +48,74 @@ const INDIAN_STATES = [
   "Puducherry",
 ];
 
-const Input = ({ label, ...props }) => (
-  <div>
-    <label className="text-sm font-medium text-gray-700">{label}</label>
+const GENDER_OPTIONS = ["Male", "Female", "Other"];
+const BLOOD_GROUP_OPTIONS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+const RELIGION_OPTIONS = ["Hinduism", "Islam", "Christianity", "Sikhism", "Buddhism", "Jainism", "Other"];
+const CASTE_OPTIONS = ["General", "OBC", "SC", "ST", "Other"];
+const RELATION_OPTIONS = ["Father", "Mother", "Grandparent", "Uncle", "Aunt", "Other"];
+const CLASS_OPTIONS = [
+  // Pre-primary classes
+  { value: "Nursery", label: "Nursery" },
+  { value: "LKG", label: "LKG" },
+  { value: "UKG", label: "UKG" },
+  // Classes 1-12
+  { value: "1", label: "Class 1" },
+  { value: "2", label: "Class 2" },
+  { value: "3", label: "Class 3" },
+  { value: "4", label: "Class 4" },
+  { value: "5", label: "Class 5" },
+  { value: "6", label: "Class 6" },
+  { value: "7", label: "Class 7" },
+  { value: "8", label: "Class 8" },
+  { value: "9", label: "Class 9" },
+  { value: "10", label: "Class 10" },
+  { value: "11", label: "Class 11" },
+  { value: "12", label: "Class 12" },
+];
+const ACADEMIC_YEAR_OPTIONS = ["2023-2024", "2024-2025", "2025-2026", "2026-2027"];
+
+const Input = ({ label, error, required, ...props }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-slate-700">
+      {label} {required && <span className="text-rose-500">*</span>}
+    </label>
     <input
       {...props}
-      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
+        error 
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+          : "border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      }`}
     />
+    {error && <span className="text-[11px] font-bold text-rose-600 animate-pulse">{error}</span>}
+  </div>
+);
+
+const Select = ({ label, error, required, options, ...props }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-slate-700">
+      {label} {required && <span className="text-rose-500">*</span>}
+    </label>
+    <select
+      {...props}
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
+        error 
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+          : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
+      }`}
+    >
+      <option value="">Select {label}</option>
+      {options.map(opt => (
+        <option key={opt.value || opt} value={opt.value || opt}>{opt.label || opt}</option>
+      ))}
+    </select>
+    {error && <span className="text-[11px] font-bold text-rose-600">{error}</span>}
   </div>
 );
 
 export default function StudentParentRegisterForm() {
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [studentForm, setStudentForm] = useState({
     studentName: "",
@@ -129,6 +185,11 @@ export default function StudentParentRegisterForm() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    // Clear the error for this specific field
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
   };
 
   const getCurrentAcademicYear = () => {
@@ -139,66 +200,65 @@ export default function StudentParentRegisterForm() {
   };
 
   const validateForm = () => {
-    // Student validation - ✅ UPDATED: No section required
-    if (!studentForm.studentName.trim()) {
-      toast.error("Student name is required");
-      return false;
-    }
-    if (!studentForm.fatherName.trim()) {
-      toast.error("Father's name is required");
-      return false;
-    }
-    if (!studentForm.className) {
-      toast.error("Class is required");
-      return false;
-    }
-    if (!studentForm.academicYear) {
-      toast.error("Academic year is required");
-      return false;
-    }
-
-    // Guardian/Parent validation
-    if (!studentForm.guardianName.trim()) {
-      toast.error("Guardian Name is required for Parent Account");
-      return false;
-    }
-    if (!studentForm.guardianEmail.trim()) {
-      toast.error("Guardian Email is required for Parent Account");
-      return false;
-    }
-    if (!studentForm.guardianPhone.trim()) {
-      toast.error("Guardian Phone is required");
-      return false;
-    }
-    if (!studentForm.guardianRelation) {
-      toast.error("Guardian Relation is required");
-      return false;
-    }
-
-    // Email validation
+    let tempErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (
-      studentForm.guardianEmail &&
-      !emailRegex.test(studentForm.guardianEmail)
-    ) {
-      toast.error("Please enter a valid guardian email address");
-      return false;
+    const phoneRegex = /^[0-9]{10}$/;
+
+    // Basic Info
+    if (!studentForm.studentName.trim()) tempErrors.studentName = "Student name is required";
+    if (!studentForm.dateOfBirth) tempErrors.dateOfBirth = "Date of birth is required";
+    if (!studentForm.gender) tempErrors.gender = "Gender is required";
+
+    // Address
+    if (!studentForm.street.trim()) tempErrors.street = "Street address is required";
+    if (!studentForm.city.trim()) tempErrors.city = "City is required";
+    if (!studentForm.state) tempErrors.state = "State is required";
+    if (!studentForm.pincode.trim()) tempErrors.pincode = "Pincode is required";
+
+    // Parent/Guardian Info
+    if (!studentForm.fatherName.trim()) tempErrors.fatherName = "Father's name is required";
+    if (!studentForm.guardianName.trim()) tempErrors.guardianName = "Guardian name is required";
+    
+    if (!studentForm.guardianEmail.trim()) {
+      tempErrors.guardianEmail = "Email is required";
+    } else if (!emailRegex.test(studentForm.guardianEmail)) {
+      tempErrors.guardianEmail = "Invalid email format";
     }
 
-    // Phone validation
-    const phoneRegex = /^[0-9]{10}$/;
-    if (
-      studentForm.guardianPhone &&
-      !phoneRegex.test(studentForm.guardianPhone.replace(/\D/g, ""))
-    ) {
-      toast.error("Please enter a valid 10-digit phone number");
+    if (!studentForm.guardianPhone.trim()) {
+      tempErrors.guardianPhone = "Phone is required";
+    } else if (!phoneRegex.test(studentForm.guardianPhone.replace(/\D/g, ""))) {
+      tempErrors.guardianPhone = "Must be 10 digits";
+    }
+
+    if (!studentForm.guardianRelation) tempErrors.guardianRelation = "Relation is required";
+
+    // Academic
+    if (!studentForm.className) tempErrors.className = "Class is required";
+    if (!studentForm.academicYear) tempErrors.academicYear = "Academic year is required";
+
+    setErrors(tempErrors);
+
+    // Scroll to the first error
+    const firstError = Object.keys(tempErrors)[0];
+    if (firstError) {
+      // Try to find element by name attribute
+      const element = document.getElementsByName(firstError)[0] || document.querySelector(`[name="${firstError}"]`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.focus();
+      } else if (firstError === 'dateOfBirth') {
+         // Fallback for DatePicker wrapper if needed
+         const dateEl = document.querySelector('.react-datepicker-wrapper');
+         if(dateEl) dateEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      toast.error("Please fix the highlighted errors");
       return false;
     }
 
     return true;
   };
 
-  // In your StudentParentRegisterForm.jsx - update the onSubmit function
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -208,193 +268,133 @@ export default function StudentParentRegisterForm() {
 
       const payload = {
         ...studentForm,
-        dateOfBirth: studentForm.dateOfBirth
-    ? studentForm.dateOfBirth.toISOString()
-    : undefined,
-        // Map guardian fields to parent fields
+        dateOfBirth: studentForm.dateOfBirth ? studentForm.dateOfBirth.toISOString() : undefined,
         parentName: studentForm.guardianName,
         parentEmail: studentForm.guardianEmail,
         parentPhone: studentForm.guardianPhone.replace(/\D/g, ""),
         parentRelation: studentForm.guardianRelation,
         parentOccupation: studentForm.guardianOccupation,
         parentQualification: studentForm.guardianQualification,
-        parentIncome: studentForm.guardianIncome
-          ? Number(studentForm.guardianIncome)
-          : undefined,
+        parentIncome: studentForm.guardianIncome ? Number(studentForm.guardianIncome) : undefined,
       };
 
-      const resp = await api.post(
-        API_ENDPOINTS.ADMIN.STUDENT.CREATE_WITH_PARENT,
-        payload,
-      );
+      const resp = await api.post(API_ENDPOINTS.ADMIN.STUDENT.CREATE_WITH_PARENT, payload);
 
-      console.log("RESP DATA 👉", resp.data);
+      // --- SUCCESS BLOCK ---
+      const { student, parent } = resp?.data?.data || resp?.data || {};
+      const sID = student?.studentID;
+      const sPass = student?.credentials?.password;
+      const pID = parent?.credentials?.parentID;
+      const pPass = parent?.credentials?.password;
 
-      // ✅ CORRECT EXTRACTION (FIX)
-      const studentID = resp?.data?.student?.studentID;
-      const studentPassword = resp?.data?.student?.credentials?.password;
-
-      const parentID = resp?.data?.parent?.credentials?.parentID;
-      const parentPassword = resp?.data?.parent?.credentials?.password;
-
-      //     Swal.fire({
-      //   icon: "success",
-      //   title: "Registration Successful",
-      //   html: `
-      //     <b>Student ID:</b> ${studentID}<br/>
-      //     <b>Parent ID:</b> ${parentID}<br/><br/>
-      //     <b> Passwords:</b><br/>
-      //     <code style="font-size:12px;color:#4f46e5">${studentPassword}</code><br/>
-      //     <code style="font-size:12px;color:#4f46e5">${parentPassword}</code><br/><br/>
-      //     <p style="font-size:12px;color:#b91c1c">
-      //       Credentials have been sent to the registered email / phone.
-      //     </p>
-      //   `,
-      //   confirmButtonText: "Done",
-      // });
-
-      // reset
       Swal.fire({
-        icon: "success",
-        title: "Registration Successful 🎉",
+        icon: 'success',
+        title: 'Enrollment Successful!',
         html: `
-    <div style="text-align:left; padding:10px 5px">
-
-      <div style="margin-bottom:12px">
-        <b style="color:#111827">Student ID:</b>
-        <span style="margin-left:6px; color:#2563eb">${studentID}</span>
-        <button id="copyStudentId" style="margin-left:10px; padding:2px 8px; font-size:12px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
-      </div>
-
-      <div style="margin-bottom:16px">
-        <b style="color:#111827">Parent ID:</b>
-        <span style="margin-left:6px; color:#2563eb">${parentID}</span>
-        <button id="copyParentId" style="margin-left:10px; padding:2px 8px; font-size:12px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
-      </div>
-
-      <hr style="margin:12px 0"/>
-
-      <b style="color:#111827">Login Credentials</b>
-
-      <div style="
-        background:#f9fafb;
-        border:1px solid #e5e7eb;
-        border-radius:8px;
-        padding:10px;
-        margin-top:8px;
-      ">
-        <div style="margin-bottom:8px">
-          <small style="color:#6b7280">Student Password</small><br/>
-          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef2ff; padding:6px; border-radius:6px;">
-            <code style="color:#4338ca; font-size:13px">
-              ${studentPassword || "Sent via email"}
-            </code>
-            <button id="copyStudentPass" style="padding:2px 8px; font-size:11px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
+          <div style="text-align: left; font-family: sans-serif;">
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 12px; margin-bottom: 12px;">
+               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                 <span style="color: #166534; font-size: 14px;"><b>Student ID:</b> ${sID}</span>
+                 <button id="copySID" style="font-size: 10px; padding: 2px 8px; background: white; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer; color: #166534;">Copy</button>
+               </div>
+               <div style="display: flex; justify-content: space-between; align-items: center;">
+                 <span style="color: #166534; font-size: 14px;"><b>Parent ID:</b> ${pID}</span>
+                 <button id="copyPID" style="font-size: 10px; padding: 2px 8px; background: white; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer; color: #166534;">Copy</button>
+               </div>
+            </div>
+            <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 12px;">
+               <p style="margin: 0 0 8px 0; font-size: 11px; color: #92400e; font-weight: 800; text-transform: uppercase;">Generated Access Keys:</p>
+               <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #e5e7eb;">
+                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                   <span style="font-size: 13px;"><b>Student:</b> <code style="color: #4338ca;">${sPass}</code></span>
+                   <button id="copySPass" style="font-size: 10px; padding: 2px 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; color: #4338ca;">Copy</button>
+                 </div>
+                 <div style="display: flex; justify-content: space-between; align-items: center;">
+                   <span style="font-size: 13px;"><b>Parent:</b> <code style="color: #4338ca;">${pPass}</code></span>
+                   <button id="copyPPass" style="font-size: 10px; padding: 2px 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; color: #4338ca;">Copy</button>
+                 </div>
+               </div>
+            </div>
+            <p style="color: #b91c1c; font-size: 11px; margin-top: 15px; font-weight: 600; text-align: center;">⚠️ Save these keys now. They are not stored in plain text.</p>
           </div>
-        </div>
-
-        <div>
-          <small style="color:#6b7280">Parent Password</small><br/>
-          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef2ff; padding:6px; border-radius:6px;">
-            <code style="color:#4338ca; font-size:13px">
-              ${parentPassword || "Sent via email"}
-            </code>
-            <button id="copyParentPass" style="padding:2px 8px; font-size:11px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
-          </div>
-        </div>
-      </div>
-
-      <button id="copyAllCredentials" style="
-        margin-top: 12px;
-        width: 100%;
-        padding: 8px;
-        background-color: #eef2ff;
-        color: #4338ca;
-        border: 1px solid #c7d2fe;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 600;
-      ">
-        Copy All Credentials
-      </button>
-
-      <p style="
-        font-size:12px;
-        color:#b91c1c;
-        margin-top:10px
-      ">
-       ⚠️ Please save these credentials. They will not be shown again.
-      </p>
-
-    </div>
-  `,
-        confirmButtonText: "Done",
-        confirmButtonColor: "#2563eb",
+        `,
+        confirmButtonText: 'Copy All & Close',
+        confirmButtonColor: '#2563eb',
         didOpen: () => {
-          const copyToClipboard = (text, label) => {
-            navigator.clipboard.writeText(text).then(() => {
-              Swal.showValidationMessage(`${label} copied`);
-            });
+          const copy = (text, label) => {
+            navigator.clipboard.writeText(text);
+            toast.success(`${label} copied!`);
           };
-
-          const allCredentials = `Student ID: ${studentID}
-Parent ID: ${parentID}
-
-Student Password: ${studentPassword || "Sent via email"}
-Parent Password: ${parentPassword || "Sent via email"}`;
-
-          document
-            .getElementById("copyAllCredentials")
-            ?.addEventListener("click", () => {
-              navigator.clipboard.writeText(allCredentials).then(() => {
-                Swal.showValidationMessage("Credentials copied to clipboard!");
-              });
-            });
-
-          document
-            .getElementById("copyStudentId")
-            ?.addEventListener("click", () =>
-              copyToClipboard(studentID, "Student ID"),
-            );
-          document
-            .getElementById("copyParentId")
-            ?.addEventListener("click", () =>
-              copyToClipboard(parentID, "Parent ID"),
-            );
-          document
-            .getElementById("copyStudentPass")
-            ?.addEventListener("click", () =>
-              copyToClipboard(studentPassword, "Student Password"),
-            );
-          document
-            .getElementById("copyParentPass")
-            ?.addEventListener("click", () =>
-              copyToClipboard(parentPassword, "Parent Password"),
-            );
+          document.getElementById('copySID').onclick = () => copy(sID, 'Student ID');
+          document.getElementById('copyPID').onclick = () => copy(pID, 'Parent ID');
+          document.getElementById('copySPass').onclick = () => copy(sPass, 'Student Password');
+          document.getElementById('copyPPass').onclick = () => copy(pPass, 'Parent Password');
         },
+        preConfirm: () => {
+          navigator.clipboard.writeText(`IDs: Student(${sID}), Parent(${pID}) | Keys: Student(${sPass}), Parent(${pPass})`);
+          toast.success("Credentials copied");
+        }
       });
 
-      setStudentForm((p) => ({
-        ...p,
-        studentName: "",
-        className: "",
-        guardianName: "",
-        guardianEmail: "",
-        guardianPhone: "",
-        guardianRelation: "",
-        guardianOccupation: "",
-        guardianQualification: "",
-        guardianIncome: "",
-      }));
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Registration Failed",
-        text:
-          err?.response?.data?.message ||
-          "Failed to register student and parent",
+      // Clear state
+      setStudentForm({
+        studentName: "", studentEmail: "", dateOfBirth: null, gender: "", bloodGroup: "", religion: "", caste: "", nationality: "Indian", aadharNumber: "",
+        street: "", city: "", state: "", pincode: "", country: "India", fatherName: "", fatherPhone: "", fatherEmail: "", fatherOccupation: "",
+        motherName: "", motherPhone: "", motherEmail: "", motherOccupation: "", guardianName: "", guardianPhone: "", guardianEmail: "",
+        guardianRelation: "", guardianOccupation: "", guardianQualification: "", guardianIncome: "", className: "", academicYear: "", previousSchool: "",
+        medicalHistory: "", allergies: "", emergencyContactName: "", emergencyContactPhone: "", emergencyContactRelation: "",
+        transportRequired: false, busRoute: "", pickupPoint: "", hostelResident: false, hostelBlock: "", roomNumber: ""
       });
+      setErrors({});
+
+    } catch (err) {
+      console.log("Full Error Object:", err); // Debugging ke liye
+
+      // 1. EXACT TARGETING: Backend se message nikalne ka sabse robust tarika
+      const serverMessage = err?.response?.data?.message || err?.message || "Registration Failed";
+      
+      // 2. Cleanup: "ValidationError:" prefix hatao agar backend bhej raha hai
+      const displayMsg = serverMessage.replace(/^ValidationError:\s*/i, "").trim();
+      
+      const mappedErrors = { ...errors };
+      const lowerReason = displayMsg.toLowerCase();
+
+      // 3. Field Highlighting (Inputs ko red karne ke liye)
+      if (lowerReason.includes("student email")) {
+        mappedErrors.studentEmail = "This email is already registered.";
+      } else if (lowerReason.includes("aadhar")) {
+        mappedErrors.aadharNumber = "Aadhar number already exists.";
+      } else if (lowerReason.includes("parent email") || lowerReason.includes("guardian email")) {
+        mappedErrors.guardianEmail = "This parent email is already in use.";
+      } else if (lowerReason.includes("class") && lowerReason.includes("not found")) {
+        mappedErrors.className = "Class configuration not found.";
+      }
+
+      setErrors(mappedErrors);
+
+      // 4. THE POPUP: Ab ye pakka displayMsg (Reason) hi dikhayega
+      Swal.fire({
+        icon: "warning",
+        title: "Conflict Detected",
+        html: `
+            <div style="text-align: left; background: #fff7ed; padding: 16px; border-radius: 12px; border: 1px solid #ffedd5;">
+                <span style="color: #9a3412; font-weight: 800; font-size: 11px; text-transform: uppercase;">Reason:</span>
+                <p style="color: #7c2d12; font-size: 14px; margin-top: 8px; line-height: 1.5; font-weight: 600;">
+                    ${displayMsg}
+                </p>
+            </div>
+        `,
+        confirmButtonColor: "#4f46e5",
+        confirmButtonText: "Review Details"
+      });
+
+      // 5. Scroll to error
+      const firstError = Object.keys(mappedErrors).find(key => mappedErrors[key]);
+      if (firstError) {
+        const el = document.getElementsByName(firstError)[0] || document.querySelector(`[name="${firstError}"]`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
     } finally {
       setLoading(false);
     }
@@ -418,169 +418,90 @@ Parent Password: ${parentPassword || "Sent via email"}`;
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Basic Information</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="studentName"
-                    value={studentForm.studentName}
-                    onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    placeholder="Enter student's full name"
-                    required
-                  />
-                </div>
+                <Input
+                  label="Full Name"
+                  name="studentName"
+                  value={studentForm.studentName}
+                  onChange={onStudentChange}
+                  error={errors.studentName}
+                  placeholder="Enter student's full name"
+                  required
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email (Optional)
-                  </label>
-                  <input
-                    type="email"
-                    name="studentEmail"
-                    value={studentForm.studentEmail}
-                    onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    placeholder="student@example.com"
-                  />
-                </div>
+                <Input
+                  label="Email (Optional)"
+                  type="email"
+                  name="studentEmail"
+                  value={studentForm.studentEmail}
+                  onChange={onStudentChange}
+                  error={errors.studentEmail}
+                  placeholder="student@example.com"
+                />
 
-                {/* <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-slate-700">
                     Date of Birth <span className="text-red-500">*</span>
                   </label>
-                  <DatePicker
-                    selected={(() => {
-                      if (!studentForm.dateOfBirth) return null;
-                      const [day, month, year] =
-                        studentForm.dateOfBirth.split("/");
-                      if (!day || !month || !year) return null;
-                      const date = new Date(year, month - 1, day);
-                      return isNaN(date.getTime()) ? null : date;
-                    })()}
-                    // onChange={(date) => {
-                    //   const formatted = date ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}` : "";
-                    //   setStudentForm(prev => ({...prev, dateOfBirth: formatted}));
-                    // }}
-
-                    onChange={(date) => {
-                      setStudentForm((prev) => ({
-                        ...prev,
-                        dateOfBirth: date, // ✅ store Date object
-                      }));
-                    }}
-                    dateFormat="dd/MM/yyyy"
-                    placeholderText="DD/MM/YYYY"
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    required
-                  />
-                </div> */}
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date of Birth <span className="text-red-500">*</span>
-                  </label>
-
-                  <DatePicker
-                    selected={studentForm.dateOfBirth} // ✅ direct Date
-                    onChange={(date) =>
-                      setStudentForm((prev) => ({
-                        ...prev,
-                        dateOfBirth: date, // ✅ Date object
-                      }))
-                    }
-                    dateFormat="dd/MM/yyyy"
-                    placeholderText="DD/MM/YYYY"
-                    maxDate={new Date()} // ✅ future DOB block
-                    showYearDropdown
-                    showMonthDropdown
-                    dropdownMode="select"
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    required
-                  />
+                  <div className={errors.dateOfBirth ? "date-error-wrapper" : ""}>
+                    <DatePicker
+                      selected={studentForm.dateOfBirth} 
+                      onChange={(date) => {
+                        setStudentForm((prev) => ({ ...prev, dateOfBirth: date }));
+                        setErrors((prev) => ({ ...prev, dateOfBirth: null }));
+                      }}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="DD/MM/YYYY"
+                      maxDate={new Date()}
+                      showYearDropdown
+                      showMonthDropdown
+                      dropdownMode="select"
+                      className={`w-full rounded-lg border p-3 outline-none transition-all ${
+                        errors.dateOfBirth 
+                          ? "border-rose-500 bg-rose-50/30" 
+                          : "border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                      }`}
+                      required
+                    />
+                  </div>
+                  {errors.dateOfBirth && <span className="text-[11px] font-bold text-rose-600">{errors.dateOfBirth}</span>}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Gender <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="gender"
-                    value={studentForm.gender}
-                    onChange={onStudentChange}
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                    required
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
+                <Select
+                  label="Gender"
+                  name="gender"
+                  value={studentForm.gender}
+                  onChange={onStudentChange}
+                  options={GENDER_OPTIONS}
+                  error={errors.gender}
+                  required
+                />
 
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Blood Group
-                  </label>
-                  <select
-                    name="bloodGroup"
-                    value={studentForm.bloodGroup}
-                    onChange={onStudentChange}
-                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    <option value="">Select Blood Group</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                  </select>
-                </div>
+                <Select
+                  label="Blood Group"
+                  name="bloodGroup"
+                  value={studentForm.bloodGroup}
+                  onChange={onStudentChange}
+                  options={BLOOD_GROUP_OPTIONS}
+                  error={errors.bloodGroup}
+                />
 
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Religion
-                  </label>
-                  <select
-                    name="religion"
-                    value={studentForm.religion}
-                    onChange={onStudentChange}
-                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    <option value="">Select Religion</option>
-                    <option value="Hinduism">Hinduism</option>
-                    <option value="Islam">Islam</option>
-                    <option value="Christianity">Christianity</option>
-                    <option value="Sikhism">Sikhism</option>
-                    <option value="Buddhism">Buddhism</option>
-                    <option value="Jainism">Jainism</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
+                <Select
+                  label="Religion"
+                  name="religion"
+                  value={studentForm.religion}
+                  onChange={onStudentChange}
+                  options={RELIGION_OPTIONS}
+                  error={errors.religion}
+                />
 
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Caste/Category
-                  </label>
-                  <select
-                    name="caste"
-                    value={studentForm.caste}
-                    onChange={onStudentChange}
-                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="General">General</option>
-                    <option value="OBC">OBC</option>
-                    <option value="SC">SC</option>
-                    <option value="ST">ST</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
+                <Select
+                  label="Caste/Category"
+                  name="caste"
+                  value={studentForm.caste}
+                  onChange={onStudentChange}
+                  options={CASTE_OPTIONS}
+                  error={errors.caste}
+                />
 
                 <Input
                     label="Nationality"
@@ -589,6 +510,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.nationality}
                     onChange={onStudentChange}
                     placeholder="Indian"
+                    error={errors.nationality}
                 />
 
                 <Input
@@ -600,6 +522,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     pattern="[0-9]{12}"
                     maxLength="12"
                     placeholder="12-digit Aadhar"
+                    error={errors.aadharNumber}
                 />
               </div>
             </div>
@@ -610,48 +533,40 @@ Parent Password: ${parentPassword || "Sent via email"}`;
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <Input
-                    label="Street Address *"
+                    label="Street Address"
                     type="text"
                     name="street"
                     value={studentForm.street}
                     onChange={onStudentChange}
                     placeholder="Enter street address"
                     required
+                    error={errors.street}
                   />
                 </div>
 
                 <Input
-                    label="City *"
+                    label="City"
                     type="text"
                     name="city"
                     value={studentForm.city}
                     onChange={onStudentChange}
                     placeholder="Enter city"
                     required
+                    error={errors.city}
                 />
 
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    State <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="state"
-                    value={studentForm.state}
-                    onChange={onStudentChange}
-                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    required
-                  >
-                    <option value="">Select State</option>
-                    {INDIAN_STATES.map((st) => (
-                      <option key={st} value={st}>
-                        {st}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  label="State"
+                  name="state"
+                  value={studentForm.state}
+                  onChange={onStudentChange}
+                  options={INDIAN_STATES}
+                  error={errors.state}
+                  required
+                />
 
                 <Input
-                    label="Pincode *"
+                    label="Pincode"
                     type="text"
                     name="pincode"
                     value={studentForm.pincode}
@@ -660,6 +575,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     maxLength="6"
                     placeholder="6-digit pincode"
                     required
+                    error={errors.pincode}
                 />
 
                 <Input
@@ -669,6 +585,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.country}
                     onChange={onStudentChange}
                     placeholder="India"
+                    error={errors.country}
                 />
               </div>
             </div>
@@ -678,13 +595,14 @@ Parent Password: ${parentPassword || "Sent via email"}`;
               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Father's Details</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <Input
-                    label="Father's Name *"
+                    label="Father's Name"
                     type="text"
                     name="fatherName"
                     value={studentForm.fatherName}
                     onChange={onStudentChange}
                     placeholder="Enter father's name"
                     required
+                    error={errors.fatherName}
                 />
 
                 <Input
@@ -696,6 +614,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     pattern="[0-9]{10}"
                     maxLength="10"
                     placeholder="10-digit phone"
+                    error={errors.fatherPhone}
                 />
 
                 <Input
@@ -705,6 +624,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.fatherEmail}
                     onChange={onStudentChange}
                     placeholder="father@example.com"
+                    error={errors.fatherEmail}
                 />
 
                 <Input
@@ -714,6 +634,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.fatherOccupation}
                     onChange={onStudentChange}
                     placeholder="Enter occupation"
+                    error={errors.fatherOccupation}
                 />
               </div>
             </div>
@@ -729,6 +650,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.motherName}
                     onChange={onStudentChange}
                     placeholder="Enter mother's name"
+                    error={errors.motherName}
                 />
 
                 <Input
@@ -740,6 +662,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     pattern="[0-9]{10}"
                     maxLength="10"
                     placeholder="10-digit phone"
+                    error={errors.motherPhone}
                 />
 
                 <Input
@@ -749,6 +672,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.motherEmail}
                     onChange={onStudentChange}
                     placeholder="mother@example.com"
+                    error={errors.motherEmail}
                 />
 
                 <Input
@@ -758,121 +682,125 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.motherOccupation}
                     onChange={onStudentChange}
                     placeholder="Enter occupation"
+                    error={errors.motherOccupation}
                 />
               </div>
             </div>
 
             {/* Guardian Details (Optional) */}
-            <div className="bg-indigo-50/50 p-8 rounded-3xl border border-indigo-100">
-              <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-6">Guardian Details (Parent Account)</h3>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <Input
-                    label="Guardian's Name *"
-                    type="text"
-                    name="guardianName"
-                    value={studentForm.guardianName}
-                    onChange={onStudentChange}
-                    placeholder="Name of the guardian"
-                    required
-                />
+           {/* Parent/Guardian Information */}
+<div className="bg-purple-50/30 p-8 rounded-2xl border border-purple-200">
+  <div className="flex items-center gap-2 mb-6">
+    <div className="w-1 h-6 bg-purple-500 rounded-full"></div>
+    <h3 className="text-sm font-bold text-purple-800 uppercase tracking-wider">Guardian Account Details</h3>
+  </div>
+  
+  <div className="grid md:grid-cols-2 gap-5">
+    {/* Left Column */}
+    <div className="space-y-4">
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Full Name *</label>
+        <input
+          type="text"
+          name="guardianName"
+          value={studentForm.guardianName}
+          onChange={onStudentChange}
+          className={`w-full px-4 py-2.5 rounded-xl border ${errors.guardianName ? 'border-red-400 bg-red-50' : 'border-gray-200'} focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition`}
+          placeholder="Parent's full name"
+        />
+        {errors.guardianName && <p className="text-xs text-red-500 mt-1">{errors.guardianName}</p>}
+      </div>
 
-                <Input
-                    label="Guardian's Email *"
-                    type="email"
-                    name="guardianEmail"
-                    value={studentForm.guardianEmail}
-                    onChange={onStudentChange}
-                    placeholder="guardian@example.com"
-                    required
-                />
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Email Address *</label>
+        <input
+          type="email"
+          name="guardianEmail"
+          value={studentForm.guardianEmail}
+          onChange={onStudentChange}
+          className={`w-full px-4 py-2.5 rounded-xl border ${errors.guardianEmail ? 'border-red-400 bg-red-50' : 'border-gray-200'} focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition`}
+          placeholder="parent@example.com"
+        />
+        {errors.guardianEmail && <p className="text-xs text-red-500 mt-1">{errors.guardianEmail}</p>}
+      </div>
 
-                <Input
-                    label="Guardian's Phone *"
-                    type="tel"
-                    name="guardianPhone"
-                    value={studentForm.guardianPhone}
-                    onChange={onStudentChange}
-                    pattern="[0-9]{10}"
-                    maxLength="10"
-                    placeholder="10-digit phone"
-                    required
-                />
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Phone Number *</label>
+        <input
+          type="tel"
+          name="guardianPhone"
+          value={studentForm.guardianPhone}
+          onChange={onStudentChange}
+          className={`w-full px-4 py-2.5 rounded-xl border ${errors.guardianPhone ? 'border-red-400 bg-red-50' : 'border-gray-200'} focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition`}
+          placeholder="10-digit mobile number"
+          maxLength="10"
+        />
+        {errors.guardianPhone && <p className="text-xs text-red-500 mt-1">{errors.guardianPhone}</p>}
+      </div>
+    </div>
 
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Relation with Student{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="guardianRelation"
-                    value={studentForm.guardianRelation}
-                    onChange={onStudentChange}
-                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    required
-                  >
-                    <option value="">Select Relation</option>
-                    <option value="Father">Father</option>
-                    <option value="Mother">Mother</option>
-                    <option value="Grandparent">Grandparent</option>
-                    <option value="Uncle">Uncle</option>
-                    <option value="Aunt">Aunt</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
+    {/* Right Column */}
+    <div className="space-y-4">
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Relationship *</label>
+        <select
+          name="guardianRelation"
+          value={studentForm.guardianRelation}
+          onChange={onStudentChange}
+          className={`w-full px-4 py-2.5 rounded-xl border ${errors.guardianRelation ? 'border-red-400 bg-red-50' : 'border-gray-200'} focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition appearance-none bg-white`}
+          style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\' stroke=\'%236b7280\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1.25rem' }}
+        >
+          <option value="">Select relationship</option>
+          {RELATION_OPTIONS.map(opt => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+        {errors.guardianRelation && <p className="text-xs text-red-500 mt-1">{errors.guardianRelation}</p>}
+      </div>
 
-                <Input
-                    label="Occupation"
-                    type="text"
-                    name="guardianOccupation"
-                    value={studentForm.guardianOccupation}
-                    onChange={onStudentChange}
-                    placeholder="Guardian's occupation"
-                />
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Occupation</label>
+        <input
+          type="text"
+          name="guardianOccupation"
+          value={studentForm.guardianOccupation}
+          onChange={onStudentChange}
+          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition"
+          placeholder="e.g., Teacher, Business, etc."
+        />
+      </div>
 
-                <Input
-                    label="Annual Income"
-                    type="number"
-                    name="guardianIncome"
-                    value={studentForm.guardianIncome}
-                    onChange={onStudentChange}
-                    placeholder="Annual income"
-                />
-              </div>
-            </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Annual Income (₹)</label>
+        <input
+          type="number"
+          name="guardianIncome"
+          value={studentForm.guardianIncome}
+          onChange={onStudentChange}
+          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition"
+          placeholder="e.g., 500000"
+        />
+      </div>
+    </div>
+  </div>
+  
+  <p className="text-xs text-gray-400 mt-4 italic">* Required fields</p>
+</div>
 
             {/* ✅ UPDATED Academic Information - NO SECTION */}
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Academic Information</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {/* Class Dropdown */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Class <span className="text-red-500">*</span>
-                  </label>
-                  <select
+                  <Select
+                    label="Class"
                     name="className"
                     value={studentForm.className}
                     onChange={onStudentChange}
-                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    options={CLASS_OPTIONS}
+                    error={errors.className}
                     required
-                  >
-                    <option value="">Select Class</option>
-                    <option value="Nursery">Nursery</option>
-                    <option value="LKG">LKG</option>
-                    <option value="UKG">UKG</option>
-                    <option value="1">Class 1</option>
-                    <option value="2">Class 2</option>
-                    <option value="3">Class 3</option>
-                    <option value="4">Class 4</option>
-                    <option value="5">Class 5</option>
-                    <option value="6">Class 6</option>
-                    <option value="7">Class 7</option>
-                    <option value="8">Class 8</option>
-                    <option value="9">Class 9</option>
-                    <option value="10">Class 10</option>
-                    <option value="11">Class 11</option>
-                    <option value="12">Class 12</option>
-                  </select>
+                  />
                   <p className="mt-1 text-xs text-gray-500">
                     💡 Section will be assigned later in Class Management
                   </p>
@@ -880,22 +808,15 @@ Parent Password: ${parentPassword || "Sent via email"}`;
 
                 {/* Academic Year Dropdown */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Academic Year <span className="text-red-500">*</span>
-                  </label>
-                  <select
+                  <Select
+                    label="Academic Year"
                     name="academicYear"
                     value={studentForm.academicYear}
                     onChange={onStudentChange}
-                    className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    options={ACADEMIC_YEAR_OPTIONS}
+                    error={errors.academicYear}
                     required
-                  >
-                    <option value="">Select Year</option>
-                    <option value="2023-2024">2023-2024</option>
-                    <option value="2024-2025">2024-2025</option>
-                    <option value="2025-2026">2025-2026</option>
-                    <option value="2026-2027">2026-2027</option>
-                  </select>
+                  />
                   <p className="mt-1 text-xs text-gray-500">
                     Current: {getCurrentAcademicYear()}
                   </p>
@@ -910,6 +831,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.previousSchool}
                     onChange={onStudentChange}
                     placeholder="Name of previous school (if any)"
+                    error={errors.previousSchool}
                   />
                 </div>
               </div>
@@ -940,6 +862,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.allergies}
                     onChange={onStudentChange}
                     placeholder="Comma-separated (e.g., Peanuts, Dust)"
+                    error={errors.allergies}
                 />
 
                 <Input
@@ -949,6 +872,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.emergencyContactName}
                     onChange={onStudentChange}
                     placeholder="Emergency contact person"
+                    error={errors.emergencyContactName}
                 />
 
                 <Input
@@ -960,6 +884,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     pattern="[0-9]{10}"
                     maxLength="10"
                     placeholder="10-digit phone"
+                    error={errors.emergencyContactPhone}
                 />
 
                 <Input
@@ -969,6 +894,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                     value={studentForm.emergencyContactRelation}
                     onChange={onStudentChange}
                     placeholder="Relation with student"
+                    error={errors.emergencyContactRelation}
                 />
               </div>
             </div>
@@ -1001,6 +927,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                           value={studentForm.busRoute}
                           onChange={onStudentChange}
                           placeholder="Route number/name"
+                          error={errors.busRoute}
                       />
 
                       <Input
@@ -1010,6 +937,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                           value={studentForm.pickupPoint}
                           onChange={onStudentChange}
                           placeholder="Pickup location"
+                          error={errors.pickupPoint}
                       />
                     </>
                   )}
@@ -1039,6 +967,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                           value={studentForm.hostelBlock}
                           onChange={onStudentChange}
                           placeholder="Block A, Block B, etc."
+                          error={errors.hostelBlock}
                       />
 
                       <Input
@@ -1048,6 +977,7 @@ Parent Password: ${parentPassword || "Sent via email"}`;
                           value={studentForm.roomNumber}
                           onChange={onStudentChange}
                           placeholder="Room number"
+                          error={errors.roomNumber}
                       />
                     </>
                   )}
