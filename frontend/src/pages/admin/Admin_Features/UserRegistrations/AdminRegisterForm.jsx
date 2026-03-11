@@ -26,13 +26,42 @@ const ADMIN_ROLES = [
   { designation: "HR Manager", department: "HR", isSuper: false }
 ];
 
-const Input = ({ label, ...props }) => (
-  <div>
-    <label className="text-sm font-medium text-gray-700">{label}</label>
+const FormInput = ({ label, error, required, ...props }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-slate-700">
+      {label} {required && <span className="text-rose-500">*</span>}
+    </label>
     <input
       {...props}
-      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
+        error 
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+          : "border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      }`}
     />
+    {error && <span className="text-[11px] font-bold text-rose-600 animate-pulse">{error}</span>}
+  </div>
+);
+
+const FormSelect = ({ label, error, required, options, ...props }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-slate-700">
+      {label} {required && <span className="text-rose-500">*</span>}
+    </label>
+    <select
+      {...props}
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
+        error 
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+          : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
+      }`}
+    >
+      <option value="">Select {label}</option>
+      {options.map(opt => (
+        <option key={opt.value || opt} value={opt.value || opt}>{opt.label || opt}</option>
+      ))}
+    </select>
+    {error && <span className="text-[11px] font-bold text-rose-600">{error}</span>}
   </div>
 );
 
@@ -40,6 +69,7 @@ const AdminRegisterForm = () => {
   const navigate = useNavigate();
   const [school, setSchool] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [form, setForm] = useState({
     name: "",
@@ -129,60 +159,82 @@ const AdminRegisterForm = () => {
         const { adminID, password } = res.data;
         Swal.fire({
           icon: "success",
-          title: "Staff Account Created",
+          title: "Account Created Successfully",
           html: `
             <div class="text-left p-4 bg-slate-50 rounded-xl border border-slate-200">
-               <div class="mb-3 flex items-center justify-between">
-                 <div>
-                   <strong class="text-slate-700">Member ID:</strong> 
-                   <code class="text-indigo-600 font-bold ml-2">${adminID}</code>
-                 </div>
-                 <button id="copyAdminId" class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-all shadow-sm">Copy</button>
-               </div>
-               
-               <div class="mb-4 flex items-center justify-between">
-                 <div>
-                   <strong class="text-slate-700">Password:</strong> 
-                   <code class="text-indigo-600 font-bold ml-2">${password}</code>
-                 </div>
-                 <button id="copyPassword" class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-all shadow-sm">Copy</button>
-               </div>
-
-               <button id="copyAll" class="w-full py-2.5 bg-indigo-50 text-indigo-700 rounded-xl text-sm font-bold hover:bg-indigo-100 transition-colors border border-indigo-100 flex items-center justify-center gap-2">
-                 Copy All Credentials
-               </button>
-
-               <p class="mt-4 text-[10px] text-rose-500 font-bold uppercase italic text-center">Please save these credentials for first login.</p>
+               <p class="mb-2"><strong>Member ID:</strong> <code class="text-indigo-600">${adminID}</code></p>
+               <p class="mb-4"><strong>Temp Password:</strong> <code class="text-indigo-600">${password}</code></p>
+               <p class="text-[11px] text-rose-500 font-bold italic text-center">⚠️ Save these keys now. They won't be shown again.</p>
             </div>
           `,
           confirmButtonColor: "#4f46e5",
-          confirmButtonText: "Done",
-          didOpen: () => {
-            const copyToClipboard = (text, label) => {
-              navigator.clipboard.writeText(text).then(() => {
-                Swal.showValidationMessage(`${label} copied`);
-              });
-            };
-
-            document.getElementById("copyAdminId")?.addEventListener("click", () => copyToClipboard(adminID, "Member ID"));
-            document.getElementById("copyPassword")?.addEventListener("click", () => copyToClipboard(password, "Password"));
-            document.getElementById("copyAll")?.addEventListener("click", () => {
-              const allCreds = `Member ID: ${adminID}\nPassword: ${password}`;
-              copyToClipboard(allCreds, "All credentials");
-            });
+          confirmButtonText: "Copy & Done",
+          preConfirm: () => {
+            navigator.clipboard.writeText(`ID: ${adminID}, Pass: ${password}`);
+            toast.success("Credentials copied");
           }
         });
 
-        // Reset form
+        // Reset form and errors
         setForm({
-          name: "", email: "", phone: "", dateOfBirth: "", gender: "", designation: "", 
-          department: "", joiningDate: "", isSuperAdmin: false,
+          name: "",
+          email: "",
+          phone: "",
+          dateOfBirth: "",
+          gender: "",
+          designation: "",
+          department: "",
+          joiningDate: "",
+          isSuperAdmin: false,
           address: { street: "", city: "", state: "", pincode: "", country: "India" },
           profilePictureFile: null,
         });
+        setErrors({});
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message);
+      // --- THE ROBUST ERROR PARSER ---
+      const serverData = err?.response?.data;
+      let actualReason = "Account Creation Failed";
+
+      // Priority 1: Check nested errors array from errorHandler.js
+      if (serverData?.errors && Array.isArray(serverData.errors)) {
+        actualReason = serverData.errors[0].message || serverData.errors[0];
+      } else {
+        actualReason = serverData?.message || err.message;
+      }
+
+      const cleanReason = actualReason.replace("ValidationError:", "").trim();
+      const mappedErrors = { ...errors };
+      const lowerMsg = cleanReason.toLowerCase();
+
+      // Field Highlighting
+      if (lowerMsg.includes("email")) mappedErrors.email = "Work email already in use.";
+      if (lowerMsg.includes("phone")) mappedErrors.phone = "Phone number already exists.";
+      if (lowerMsg.includes("designation")) mappedErrors.designation = "Please select a role.";
+
+      setErrors(mappedErrors);
+
+      Swal.fire({
+        icon: "warning",
+        title: "Registration Requirements",
+        html: `
+            <div style="text-align: left; background: #fff7ed; padding: 16px; border-radius: 12px; border: 1px solid #ffedd5;">
+                <span style="color: #9a3412; font-weight: 800; font-size: 11px; text-transform: uppercase;">Detailed Reason:</span>
+                <p style="color: #7c2d12; font-size: 14px; margin-top: 8px; line-height: 1.5; font-weight: 600;">
+                    ${cleanReason}
+                </p>
+            </div>
+        `,
+        confirmButtonColor: "#4f46e5",
+        confirmButtonText: "Check Field"
+      });
+
+      // Auto-scroll logic
+      const firstField = Object.keys(mappedErrors).find(key => mappedErrors[key]);
+      if (firstField) {
+        const el = document.getElementsByName(firstField)[0] || document.querySelector(`[name="${firstField}"]`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     } finally {
       setLoading(false);
     }
@@ -216,13 +268,14 @@ const AdminRegisterForm = () => {
                   name="designation"
                   value={form.designation}
                   onChange={handleChange}
-                  className="w-full mt-2 p-3.5 border-2 border-indigo-100 bg-white rounded-xl focus:border-indigo-500 focus:ring-0 outline-none font-bold text-indigo-900"
+                  className={`w-full mt-2 p-3.5 border-2 bg-white rounded-xl focus:border-indigo-500 focus:ring-0 outline-none font-bold text-indigo-900 ${errors.designation ? 'border-rose-500' : 'border-indigo-100'}`}
                 >
                   <option value="">-- Choose Access Role --</option>
                   {ADMIN_ROLES.map(role => (
                     <option key={role.designation} value={role.designation}>{role.designation}</option>
                   ))}
                 </select>
+                {errors.designation && <span className="text-[11px] font-bold text-rose-600 animate-pulse mt-1">{errors.designation}</span>}
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-700">Auto-Assigned Department</label>
@@ -232,16 +285,38 @@ const AdminRegisterForm = () => {
 
             {/* Personal Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input label="Staff Member Full Name *" name="name" value={form.name} onChange={handleChange} required placeholder="John Doe" />
-              <Input label="Work Email Address *" name="email" type="email" value={form.email} onChange={handleChange} required placeholder="email@school.com" />
-              <Input label="Contact Number *" name="phone" value={form.phone} onChange={handleChange} required placeholder="9876543210" />
+              <FormInput 
+                label="Staff Member Full Name *" 
+                name="name" 
+                value={form.name} 
+                onChange={handleChange} 
+                required 
+                placeholder="John Doe" 
+                error={errors.name}
+              />
+              <FormInput 
+                label="Work Email Address *" 
+                name="email" 
+                type="email" 
+                value={form.email} 
+                onChange={handleChange} 
+                required 
+                placeholder="email@school.com" 
+                error={errors.email}
+              />
+              <FormInput 
+                label="Contact Number *" 
+                name="phone" 
+                value={form.phone} 
+                onChange={handleChange} 
+                required 
+                placeholder="9876543210" 
+                error={errors.phone}
+              />
               
               <div>
                 <label className="text-sm font-medium text-slate-700">Gender</label>
-                <select name="gender" value={form.gender} onChange={handleChange} className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg">
-                  <option value="">Select</option>
-                  <option>Male</option><option>Female</option><option>Other</option>
-                </select>
+                <FormSelect name="gender" value={form.gender} onChange={handleChange} options={["Male", "Female", "Other"]} />
               </div>
 
               <div>
@@ -277,16 +352,13 @@ const AdminRegisterForm = () => {
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Residential Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2"><Input label="Street Address" name="street" value={form.address.street} onChange={handleAddressChange} /></div>
-                <Input label="City" name="city" value={form.address.city} onChange={handleAddressChange} />
+                <div className="md:col-span-2"><FormInput label="Street Address" name="street" value={form.address.street} onChange={handleAddressChange} /></div>
+                <FormInput label="City" name="city" value={form.address.city} onChange={handleAddressChange} />
                 <div>
                   <label className="text-sm font-medium text-slate-700">State</label>
-                  <select name="state" value={form.address.state} onChange={handleAddressChange} className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg">
-                    <option value="">Select State</option>
-                    {INDIAN_STATES.map(st => <option key={st} value={st}>{st}</option>)}
-                  </select>
+                  <FormSelect name="state" value={form.address.state} onChange={handleAddressChange} options={INDIAN_STATES} />
                 </div>
-                <Input label="Pincode" name="pincode" value={form.address.pincode} onChange={handleAddressChange} />
+                <FormInput label="Pincode" name="pincode" value={form.address.pincode} onChange={handleAddressChange} />
               </div>
             </div>
 

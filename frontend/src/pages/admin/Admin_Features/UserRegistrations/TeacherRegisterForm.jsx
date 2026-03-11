@@ -57,13 +57,42 @@ const INDIAN_STATES = [
   "Puducherry",
 ];
 
-const Input = ({ label, ...props }) => (
-  <div>
-    <label className="text-sm font-medium text-gray-700">{label}</label>
+const Input = ({ label, error, required, ...props }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-slate-700">
+      {label} {required && <span className="text-rose-500">*</span>}
+    </label>
     <input
       {...props}
-      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
+        error 
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+          : "border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      }`}
     />
+    {error && <span className="text-[11px] font-bold text-rose-600 animate-pulse">{error}</span>}
+  </div>
+);
+
+const FormSelect = ({ label, error, required, options, ...props }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-slate-700">
+      {label} {required && <span className="text-rose-500">*</span>}
+    </label>
+    <select
+      {...props}
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
+        error 
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+          : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
+      }`}
+    >
+      <option value="">Select {label}</option>
+      {options.map(opt => (
+        <option key={opt.value || opt} value={opt.value || opt}>{opt.label || opt}</option>
+      ))}
+    </select>
+    {error && <span className="text-[11px] font-bold text-rose-600">{error}</span>}
   </div>
 );
 
@@ -129,6 +158,7 @@ export default function TeacherRegisterForm() {
   // ];
 
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [allSubjects, setAllSubjects] = useState([]);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
@@ -162,6 +192,10 @@ export default function TeacherRegisterForm() {
 
   const onChange = (e) => {
     const { name, value } = e.target;
+
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
 
     if (["street", "city", "state", "country", "pincode"].includes(name)) {
       setForm((prev) => ({
@@ -229,65 +263,44 @@ export default function TeacherRegisterForm() {
   };
 
   const validateForm = () => {
-    if (!form.name.trim()) {
-      toast.error("Full Name is required");
-      return false;
-    }
-
-    // Email validation
+    const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!form.email.trim()) {
-      toast.error("Email is required");
-      return false;
-    }
-    if (!emailRegex.test(form.email)) {
-      toast.error("Please enter a valid email address");
-      return false;
-    }
-
-    // Phone validation
-    if (!form.phone.trim()) {
-      toast.error("Phone number is required");
-      return false;
-    }
     const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(form.phone.replace(/\D/g, ""))) {
-      toast.error("Please enter a valid 10-digit phone number");
-      return false;
+    const panRegex = /[A-Z]{5}[0-9]{4}[A-Z]{1}/;
+    const pincodeRegex = /^[0-9]{6}$/;
+
+    if (!form.name.trim()) newErrors.name = "Full Name is required";
+    if (!form.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(form.email)) {
+      newErrors.email = "Invalid email format";
+    }
+    if (!form.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!phoneRegex.test(form.phone)) {
+      newErrors.phone = "Must be 10 digits";
+    }
+    if (form.panNumber && !panRegex.test(form.panNumber)) {
+        newErrors.panNumber = "Invalid PAN format (e.g., ABCDE1234F)";
+    }
+    if (!form.gender) newErrors.gender = "Gender is required";
+    if (!form.dateOfBirth) newErrors.dateOfBirth = "Date of Birth is required";
+    if (!form.joiningDate) newErrors.joiningDate = "Joining Date is required";
+    if (!form.department) newErrors.department = "Department is required";
+    if (!form.address.street.trim()) newErrors.street = "Street Address is required";
+    if (!form.address.city.trim()) newErrors.city = "City is required";
+    if (!form.address.state) newErrors.state = "State is required";
+    if (!form.address.pincode.trim()) {
+        newErrors.pincode = "Pincode is required";
+    } else if (!pincodeRegex.test(form.address.pincode)) {
+        newErrors.pincode = "Pincode must be 6 digits";
     }
 
-    if (!form.gender) {
-      toast.error("Gender is required");
-      return false;
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+        toast.error("Please fix the highlighted errors.");
+        return false;
     }
-    if (!form.dateOfBirth) {
-      toast.error("Date of Birth is required");
-      return false;
-    }
-    if (!form.joiningDate) {
-      toast.error("Joining Date is required");
-      return false;
-    }
-    if (!form.department) {
-      toast.error("Department is required");
-      return false;
-    }
-
-    // Address validation
-    if (
-      !form.address.street.trim() ||
-      !form.address.city.trim() ||
-      !form.address.state ||
-      !form.address.pincode.trim()
-    ) {
-      toast.error("Please fill all address fields");
-      return false;
-    }
-    if (!/^[0-9]{6}$/.test(form.address.pincode.replace(/\D/g, ""))) {
-      toast.error("Please enter a valid 6-digit Pincode");
-      return false;
-    }
-
     return true;
   };
 
@@ -297,8 +310,7 @@ export default function TeacherRegisterForm() {
 
     try {
       setLoading(true);
-
-      // Convert DD/MM/YYYY to YYYY-MM-DD for backend
+      
       const formatDateForBackend = (dateStr) => {
         if (!dateStr) return null;
         const [day, month, year] = dateStr.split("/");
@@ -306,7 +318,6 @@ export default function TeacherRegisterForm() {
       };
 
       const formData = new FormData();
-
       formData.append("name", form.name);
       formData.append("email", form.email);
       formData.append("phone", form.phone);
@@ -314,24 +325,14 @@ export default function TeacherRegisterForm() {
       formData.append("department", form.department);
       formData.append("panNumber", form.panNumber);
       formData.append("isActive", true);
-
-      // dates
       formData.append("dateOfBirth", formatDateForBackend(form.dateOfBirth));
       formData.append("joiningDate", formatDateForBackend(form.joiningDate));
-
-      // arrays / objects
-      formData.append(
-        "qualification",
-        JSON.stringify(form.qualification.filter(Boolean)),
-      );
+      formData.append("qualification", JSON.stringify(form.qualification.filter(Boolean)));
       formData.append("subjects", JSON.stringify(form.subjects));
       formData.append("address", JSON.stringify(form.address));
       formData.append("salary", JSON.stringify(form.salary));
 
-      // 🖼️ PROFILE PICTURE (🔥 MAIN POINT)
-      if (profilePicture) {
-        formData.append("profilePicture", profilePicture);
-      }
+      if (profilePicture) formData.append("profilePicture", profilePicture);
 
       const resp = await api.post(
         API_ENDPOINTS.ADMIN.TEACHER.CREATE,
@@ -341,123 +342,35 @@ export default function TeacherRegisterForm() {
         },
       );
 
-      // const payload = {
-      //   name: form.name,
-      //   email: form.email,
-      //   phone: form.phone,
-      //   address: form.address,
-      //   gender: form.gender,
-      //   dateOfBirth: formatDateForBackend(form.dateOfBirth),
-      //   qualification: form.qualification.filter(Boolean),
-      //   joiningDate: formatDateForBackend(form.joiningDate),
-      //   panNumber: form.panNumber,
-      //   salary: form.salary,
-
-      //   subjects: form.subjects, // ✅ array
-      //   department: form.department,
-      //   isActive: true,
-      // };
-
-      // console.log("📤 Creating teacher:", payload);
-
-      // const resp = await api.post(API_ENDPOINTS.ADMIN.TEACHER.CREATE, payload);
-      // console.log("📥 Raw API Response:", resp);
-
-      // ✅ FIX: Normalize the data structure
-      // 1. Check if 'teacher' is a top-level property
-      // 2. Check if 'data' is the wrapper (common in axios/api helpers)
-      // 3. Fallback to the response itself
-      let teacherData = resp.teacher || resp.data || resp;
-
-      // Handle nested data scenario (e.g., { data: { teacher: {...} } })
-      if (teacherData.teacher) {
-        teacherData = teacherData.teacher;
-      }
-
-      // Ensure credentials exist (sometimes they are at the root of the response)
-      if (
-        !teacherData.credentials &&
-        (resp.credentials || resp.data?.credentials)
-      ) {
-        teacherData.credentials = resp.credentials || resp.data?.credentials;
-      }
-
-      console.log("👤 Final Teacher Object:", teacherData);
-
-      const teacherID = teacherData.teacherID || "N/A";
-      const password =
-        teacherData.credentials?.password ||
-        teacherData.credentials?.defaultPassword ||
-        "Teacher@123";
+      // --- SUCCESS BLOCK ---
+      const teacherData = resp?.data?.teacher || resp?.data || resp;
+      const tID = teacherData.teacherID;
+      const tPass = teacherData.credentials?.password || "Teacher@123";
 
       Swal.fire({
         icon: "success",
         title: "Teacher Registered Successfully 🎉",
         html: `
-    <div style="text-align:left; padding:10px 5px">
-      <div style="margin-bottom:12px">
-        <b style="color:#111827">Teacher ID:</b>
-        <span style="margin-left:6px; color:#2563eb">${teacherID}</span>
-        <button id="copyTeacherId" style="margin-left:10px; padding:2px 8px; font-size:12px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
-      </div>
-
-      <hr style="margin:12px 0"/>
-
-      <b style="color:#111827">Login Credentials</b>
-
-      <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:10px; margin-top:8px;">
-        <div style="margin-bottom:8px">
-          <small style="color:#6b7280">Password</small><br/>
-          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef2ff; padding:6px; border-radius:6px;">
-            <code style="color:#4338ca; font-size:13px">
-              ${password}
-            </code>
-            <button id="copyTeacherPass" style="padding:2px 8px; font-size:11px; cursor:pointer; border:1px solid #ccc; border-radius:4px;">Copy</button>
+          <div style="text-align: left; padding: 10px;">
+            <div style="background: #f0fdf4; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+              <p style="margin: 0; color: #166534;"><b>Teacher ID:</b> ${tID}</p>
+            </div>
+            <div style="background: #fffbeb; padding: 12px; border-radius: 8px;">
+              <p style="margin: 0 0 5px 0; font-size: 11px; color: #92400e;"><b>TEMPORARY PASSWORD:</b></p>
+              <code style="display: block; background: white; padding: 8px; border-radius: 4px; color: #4338ca;">${tPass}</code>
+            </div>
+            <p style="font-size: 11px; color: #b91c1c; margin-top: 15px; font-weight: 600;">⚠️ Please save these credentials now.</p>
           </div>
-        </div>
-      </div>
-
-      <button id="copyAllCredentials" style="margin-top: 12px; width: 100%; padding: 8px; background-color: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">
-        Copy All Credentials
-      </button>
-
-      <p style="font-size:12px; color:#b91c1c; margin-top:10px">
-       ⚠️ Please save these credentials. They will not be shown again.
-      </p>
-    </div>
-  `,
-        confirmButtonText: "Done",
+        `,
+        confirmButtonText: "Copy & Close",
         confirmButtonColor: "#4f46e5",
-        didOpen: () => {
-          const copyToClipboard = (text, label) => {
-            navigator.clipboard.writeText(text).then(() => {
-              Swal.showValidationMessage(`${label} copied`);
-            });
-          };
-          const allCredentials = `Teacher ID: ${teacherID}\nPassword: ${password}`;
-
-          document
-            .getElementById("copyAllCredentials")
-            ?.addEventListener("click", () => {
-              navigator.clipboard
-                .writeText(allCredentials)
-                .then(() => Swal.showValidationMessage("Credentials copied!"));
-            });
-
-          document
-            .getElementById("copyTeacherId")
-            ?.addEventListener("click", () =>
-              copyToClipboard(teacherID, "Teacher ID"),
-            );
-          document
-            .getElementById("copyTeacherPass")
-            ?.addEventListener("click", () =>
-              copyToClipboard(password, "Password"),
-            );
+        preConfirm: () => {
+          navigator.clipboard.writeText(`Teacher ID: ${tID} | Pass: ${tPass}`);
+          toast.success("Copied to clipboard");
         },
       });
 
-      // Reset form
+      // Reset form on success
       setForm({
         name: "",
         email: "",
@@ -490,10 +403,56 @@ export default function TeacherRegisterForm() {
           esiNumber: "",
         },
       });
+      setErrors({});
+      setProfilePicture(null);
+
     } catch (err) {
-      console.error("❌ Registration error:", err);
-      const msg = err?.message || "Failed to register teacher";
-      toast.error(msg);
+      // --- THE ROBUST ERROR PARSER ---
+      const serverData = err?.response?.data;
+      let actualReason = "Teacher Registration Failed";
+
+      // Logic: Extract from errors array (backend fix) or direct message
+      if (serverData?.errors && Array.isArray(serverData.errors)) {
+        actualReason = serverData.errors[0].message || serverData.errors[0];
+      } else {
+        actualReason = serverData?.message || err.message;
+      }
+
+      const cleanReason = actualReason.replace("ValidationError:", "").trim();
+      const mappedErrors = { ...errors };
+      const lowerMsg = cleanReason.toLowerCase();
+
+      // Mapping conflicts to specific teacher fields
+      if (lowerMsg.includes("email")) mappedErrors.email = "Email already registered.";
+      if (lowerMsg.includes("phone")) mappedErrors.phone = "Phone number already exists.";
+      if (lowerMsg.includes("pan")) mappedErrors.panNumber = "PAN card already registered.";
+      if (lowerMsg.includes("department")) mappedErrors.department = "Select a valid department.";
+
+      setErrors(mappedErrors);
+
+      Swal.fire({
+        icon: "warning",
+        title: "Conflict Detected",
+        html: `
+            <div style="text-align: left; background: #fff7ed; padding: 16px; border-radius: 12px; border: 1px solid #ffedd5;">
+                <span style="color: #9a3412; font-weight: 800; font-size: 11px; text-transform: uppercase;">Detailed Reason:</span>
+                <p style="color: #7c2d12; font-size: 14px; margin-top: 8px; line-height: 1.5; font-weight: 600;">
+                    ${cleanReason}
+                </p>
+            </div>
+        `,
+        confirmButtonColor: "#4f46e5",
+        confirmButtonText: "Review Details"
+      });
+
+      // Auto-scroll logic
+      const firstError = Object.keys(mappedErrors).find(key => mappedErrors[key]);
+      if (firstError) {
+        const el = document.getElementsByName(firstError)[0] || document.querySelector(`[name="${firstError}"]`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => el?.focus(), 500);
+      }
+
     } finally {
       setLoading(false);
     }
@@ -519,28 +478,30 @@ export default function TeacherRegisterForm() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Full Name */}
               <Input
-                label="Full Name *"
+                label="Full Name"
                 name="name"
                 value={form.name}
                 onChange={onChange}
                 placeholder="Enter teacher's full name"
                 required
+                error={errors.name}
               />
 
               {/* Email */}
               <Input
-                label="Email *"
+                label="Email"
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={onChange}
                 placeholder="teacher@example.com"
                 required
+                error={errors.email}
               />
 
               {/* Phone */}
               <Input
-                label="Phone Number *"
+                label="Phone Number"
                 type="tel"
                 name="phone"
                 pattern="[0-9]{10}"
@@ -549,6 +510,7 @@ export default function TeacherRegisterForm() {
                 onChange={onChange}
                 placeholder="10-digit phone number"
                 required
+                error={errors.phone}
               />
 
               {/* PAN Number */}
@@ -573,30 +535,23 @@ export default function TeacherRegisterForm() {
                 }}
                 placeholder="ABCDE1234F"
                 maxLength={10}
+                error={errors.panNumber}
               />
 
               {/* Gender */}
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Gender <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="gender"
-                  value={form.gender}
-                  onChange={onChange}
-                  className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  required
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+              <FormSelect
+                label="Gender"
+                name="gender"
+                value={form.gender}
+                onChange={onChange}
+                options={["Male", "Female", "Other"]}
+                required
+                error={errors.gender}
+              />
 
               {/* Date of Birth */}
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className={`text-sm font-semibold ${errors.dateOfBirth ? 'text-rose-500' : 'text-slate-700'}`}>
                   Date of Birth <span className="text-red-500">*</span>
                 </label>
                 <DatePicker
@@ -612,17 +567,23 @@ export default function TeacherRegisterForm() {
                       ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`
                       : "";
                     setForm((prev) => ({ ...prev, dateOfBirth: formatted }));
+                    if (errors.dateOfBirth) setErrors(prev => ({ ...prev, dateOfBirth: null }));
                   }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
-                  className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${
+                    errors.dateOfBirth 
+                      ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+                      : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
+                  }`}
                   required
                 />
+                {errors.dateOfBirth && <span className="text-[11px] font-bold text-rose-600">{errors.dateOfBirth}</span>}
               </div>
 
               {/* Joining Date */}
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className={`text-sm font-semibold ${errors.joiningDate ? 'text-rose-500' : 'text-slate-700'}`}>
                   Joining Date <span className="text-red-500">*</span>
                 </label>
                 <DatePicker
@@ -638,12 +599,18 @@ export default function TeacherRegisterForm() {
                       ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`
                       : "";
                     setForm((prev) => ({ ...prev, joiningDate: formatted }));
+                    if (errors.joiningDate) setErrors(prev => ({ ...prev, joiningDate: null }));
                   }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
-                  className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${
+                    errors.joiningDate 
+                      ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+                      : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
+                  }`}
                   required
                 />
+                {errors.joiningDate && <span className="text-[11px] font-bold text-rose-600">{errors.joiningDate}</span>}
               </div>
 
               {/* Profile Picture */}
@@ -708,31 +675,20 @@ export default function TeacherRegisterForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Department */}
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Department <span className="text-red-500">*</span>
-                    </label>
-
-                    <select
+                    <FormSelect
+                      label="Department"
                       name="department"
                       value={form.department}
                       onChange={onChange}
                       required
-                      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="" className="text-gray-600">
-                        Select Department
-                      </option>
-                      {DEPARTMENT_OPTIONS.map((dept, index) => (
-                        <option key={index} value={dept}>
-                          {dept}
-                        </option>
-                      ))}
-                    </select>
+                      options={DEPARTMENT_OPTIONS}
+                      error={errors.department}
+                    />
                   </div>
 
                   {/* Subjects */}
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className={`text-sm font-semibold ${errors.subjects ? 'text-rose-500' : 'text-slate-700'}`}>
                       Subjects
                     </label>
 
@@ -759,12 +715,13 @@ export default function TeacherRegisterForm() {
                           }));
                         }}
                         placeholder="Select subjects"
-                        className="basic-multi-select"
+                        className={`basic-multi-select mt-1 ${errors.subjects ? 'react-select-error' : ''}`}
                         classNamePrefix="mt-1 select"
                       />
                     ) : (
                       <p>No subjects available</p>
                     )}
+                    {errors.subjects && <span className="text-[11px] font-bold text-rose-600">{errors.subjects}</span>}
                   </div>
                 </div>
               </div>
@@ -779,60 +736,53 @@ export default function TeacherRegisterForm() {
                   {/* City */}
                   <div className="md:col-span-2">
                     <Input
-                      label="Street Address *"
+                      label="Street Address"
                       type="text"
                       name="street"
                       value={form.address.street}
                       onChange={onChange}
                       placeholder="Enter street address"
                       required
+                      error={errors.street}
                     />
                   </div>
 
                   <Input
-                    label="City *"
+                    label="City"
                     type="text"
                     name="city"
                     value={form.address.city}
                     onChange={onChange}
                     placeholder="Enter city"
                     required
+                    error={errors.city}
                   />
 
                   {/* State */}
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      State <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="state"
-                      value={form.address.state}
-                      onChange={onChange}
-                      className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      required
-                    >
-                      <option value="">Select State</option>
-                      {INDIAN_STATES.map((st) => (
-                        <option key={st} value={st}>
-                          {st}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <FormSelect
+                    label="State"
+                    name="state"
+                    value={form.address.state}
+                    onChange={onChange}
+                    options={INDIAN_STATES}
+                    required
+                    error={errors.state}
+                  />
 
                   {/* Country */}
                   <Input
-                    label="Country *"
+                    label="Country"
                     type="text"
                     name="country"
                     value={form.address.country}
                     onChange={onChange}
                     required
+                    error={errors.country}
                   />
 
                   {/* Pincode */}
                   <Input
-                    label="Pincode *"
+                    label="Pincode"
                     type="text"
                     name="pincode"
                     pattern="[0-9]{6}"
@@ -841,6 +791,7 @@ export default function TeacherRegisterForm() {
                     onChange={onChange}
                     placeholder="Enter pincode"
                     required
+                    error={errors.pincode}
                   />
                 </div>
               </div>

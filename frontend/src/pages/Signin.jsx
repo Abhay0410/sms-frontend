@@ -12,12 +12,20 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
   const navigate = useNavigate();
   
   // State for form
-  const [role, setRole] = useState("admin");
+  const [role, setRole] = useState(() => {
+    const savedRole = localStorage.getItem("loginRole");
+    return ["admin", "teacher", "student", "parent"].includes(savedRole) ? savedRole : "admin";
+  });
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchingSchool, setFetchingSchool] = useState(true);
+
+  // Persist selected role to localStorage to prevent reset on error/refresh
+  useEffect(() => {
+    localStorage.setItem("loginRole", role);
+  }, [role]);
 
   // 1. FETCH SCHOOL BY SLUG FROM URL OR LOCAL STORAGE
   useEffect(() => {
