@@ -157,18 +157,18 @@ export default function StudentManagement() {
         <div className="">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2">
-              <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
+              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
                 Student Management
               </h2>
-              <p className="text-base text-slate-600 flex items-center gap-2">
+              <p className="font-medium text-gray-500  text-sm flex items-center gap-1 mt-1">
                 <FaUserGraduate className="text-blue-600" />
                 Manage all students, bulk operations, and promotions
               </p>
-            </div>
+            </div>  
           </div>
 
           {/* Statistics */}
-          {statistics && (
+          {/* {statistics && (
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="rounded-2xl bg-white p-4 shadow-md border border-slate-100">
                 <p className="text-sm text-slate-600">Total Students</p>
@@ -187,7 +187,7 @@ export default function StudentManagement() {
                 <p className="text-3xl font-bold text-blue-900">{statistics.byStatus?.ALUMNI || 0}</p>
               </div>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Filters */}
@@ -310,7 +310,7 @@ export default function StudentManagement() {
                   <th className="p-4 text-left text-sm font-semibold text-slate-700">Class</th>
                   <th className="p-4 text-left text-sm font-semibold text-slate-700">Status</th>
                   <th className="p-4 text-left text-sm font-semibold text-slate-700">Parent</th>
-                  <th className="p-4 text-left text-sm font-black text-slate-700 uppercase tracking-wider">Final Result</th>
+                  <th className="p-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">Final Result</th>
                   {/* <th className="p-4 text-left text-sm font-semibold text-slate-700">Actions</th> */}
                 </tr>
               </thead>
@@ -358,7 +358,7 @@ export default function StudentManagement() {
                     <td className="p-4">
                       {student.finalResult ? (
                         <div className="flex flex-col gap-1">
-                          <div className={`px-3 py-1 rounded-full text-[10px] font-black w-fit flex items-center gap-1.5 shadow-sm ${
+                          <div className={`px-3 py-1 rounded-full text-[10px] font-bold w-fit flex items-center gap-1.5 shadow-sm ${
                             student.finalResult.result === 'PASS' 
                               ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
                               : 'bg-rose-50 text-rose-600 border border-rose-100'

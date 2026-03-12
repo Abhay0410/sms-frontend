@@ -57,17 +57,17 @@ const StudentMessaging = () => {
   useEffect(() => { scrollRef.current?.scrollIntoView({ behavior: "smooth" }); }, [activeThread]);
 
   return (
-    <div className="p-4 bg-slate-50 min-h-screen">
+    <div className=" bg-slate-50 min-h-screen">
       <div className="mb-4 flex items-center justify-between px-2">
         <div className="flex items-center gap-4">
           <BackButton />
-          <h2 className="text-2xl font-bold flex items-center gap-2 text-slate-800">
+          <h2 className="text-3xl font-bold flex items-center gap-2 text-slate-800">
             <FaInbox className="text-indigo-600" /> Communications
           </h2>
         </div>
       </div>
 
-      <div className="flex h-[82vh] bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-2xl m-2">
+      <div className="flex h-[82vh] bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xl m-2">
         {/* Sidebar */}
         <div className="w-80 border-r flex flex-col bg-slate-50/50">
           <div className="p-6 border-b bg-white">

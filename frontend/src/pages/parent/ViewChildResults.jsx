@@ -86,13 +86,13 @@ export default function ViewChildResults() {
   if (loading) return <div className="min-h-screen flex items-center justify-center"><FaSpinner className="animate-spin text-slate-900" size={32}/></div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-10 font-bold uppercase text-xs tracking-tight">
+    <div className="min-h-screen bg-slate-50  font-bold uppercase text-xs tracking-tight">
       <div className="max-w-6xl mx-auto">
         <BackButton to={`/parent/children`} />
-        <div className="mt-8 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="mt-5 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tighter leading-none">OFFICIAL TRANSCRIPT</h1>
-            <p className="text-slate-500 mt-2 tracking-normal capitalize flex items-center gap-2">
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tighter leading-none">OFFICIAL TRANSCRIPT</h1>
+            <p className="text-gray-500 mt-2 tracking-normal font-medium capitalize flex items-center gap-2">
               <FaGraduationCap className="text-indigo-600" />
               {childInfo?.name} • CLASS {childInfo?.className} {childInfo?.section}
             </p>
@@ -118,7 +118,7 @@ export default function ViewChildResults() {
                 <th className="px-8 py-6 text-right tracking-widest uppercase font-black">Download</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50 font-black">
+            <tbody className="divide-y divide-slate-50 font-bold">
               {filteredResults.length === 0 ? (
                 <tr><td colSpan="4" className="py-20 text-center text-slate-300">No published records found</td></tr>
               ) : (

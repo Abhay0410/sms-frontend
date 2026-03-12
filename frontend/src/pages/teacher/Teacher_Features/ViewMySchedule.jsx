@@ -80,12 +80,12 @@ const loadMySchedule = useCallback(async () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 ">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div>
-          <h2 className="text-4xl font-bold text-slate-900 tracking-tight">My Teaching Schedule</h2>
-          <p className="mt-2 text-slate-600 flex items-center gap-2">
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">My Teaching Schedule</h2>
+          <p className="mt-1 text-gray-600 flex  font-medium items-center gap-2">
             <FaCalendarWeek className="text-purple-600" />
             View your weekly teaching schedule
           </p>

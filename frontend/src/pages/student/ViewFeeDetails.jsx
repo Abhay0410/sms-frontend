@@ -122,14 +122,14 @@ export default function ViewFeeDetails() {
   const paymentHistory = feeData?.payments || [];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50  ">
       <div className="mx-auto max-w-7xl">
         <BackButton to="/student/student-dashboard" />
 
         {/* Header */}
-        <div className="mt-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Fee Details</h1>
-          <p className="mt-2 text-gray-600">View your fee structure and payment history</p>
+        <div className="mt-6 mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Fee Details</h1>
+          <p className="mt-1 font-medium text-gray-600">View your fee structure and payment history</p>
         </div>
 
         {/* Student Info Card */}

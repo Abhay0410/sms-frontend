@@ -226,14 +226,14 @@ export default function TeacherProfileManage() {
       : "/assets/default-teacher-avatar.png");
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50 ">
       <div className="mx-auto max-w-4xl">
         <BackButton to="/teacher/teacher-dashboard" />
 
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">My Profile</h1>
+          <p className="text-gray-600 mt-2 font-medium ">
             Manage your personal information and account settings
           </p>
         </div>

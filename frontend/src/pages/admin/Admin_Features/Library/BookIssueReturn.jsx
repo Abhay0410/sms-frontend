@@ -181,21 +181,21 @@ export default function BookIssueReturn() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+        <div className="mb-4">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
             Book Circulation
           </h1>
-          <p className="text-slate-500 text-sm font-medium flex items-center gap-2">
+          <p className="text-gray-500 text-sm font-medium flex items-center gap-2 mt-1">
             <FaBookReader className="text-orange-500" />
             Issue and return books with barcode scanning
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100">
             <div className="flex items-center gap-4">
               <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-3 rounded-xl">
@@ -241,7 +241,7 @@ export default function BookIssueReturn() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

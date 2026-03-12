@@ -150,10 +150,10 @@ export default function AdminProfileManage() {
       <div className="mx-auto max-w-4xl">
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold  bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
+          <h1 className="text-3xl font-bold  bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
             Administrator Profile
           </h1>
-          <p className="text-slate-600 mt-2 font-medium text-sm">
+          <p className="text-gray-500 mt-2 font-medium text-sm">
             Manage your system credentials and personal records
           </p>
         </div>
@@ -179,7 +179,7 @@ export default function AdminProfileManage() {
             </div>
 
             <div className="text-white text-center md:text-left flex-1">
-              <h3 className="text-3xl font-black mb-2 uppercase tracking-tight">
+              <h3 className="text-3xl font-bold mb-2 uppercase tracking-tight">
                 {adminInfo.name}
               </h3>
               <div className="space-y-1 font-medium opacity-90">
@@ -194,7 +194,7 @@ export default function AdminProfileManage() {
         </div>
 
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-gray-900 uppercase tracking-tight">
+          <h3 className="text-xl font-bold text-gray-900 uppercase tracking-tight mt-1">
             Personal Profile Details
           </h3>
         </div>
@@ -301,7 +301,7 @@ export default function AdminProfileManage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Full Name
                   </label>
                   <input
@@ -314,7 +314,7 @@ export default function AdminProfileManage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Phone Number
                   </label>
                   <input
@@ -327,7 +327,7 @@ export default function AdminProfileManage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Designation
                   </label>
                   <input
@@ -340,7 +340,7 @@ export default function AdminProfileManage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Department
                   </label>
                   <input
@@ -353,7 +353,7 @@ export default function AdminProfileManage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Gender
                   </label>
                   <select
@@ -371,7 +371,7 @@ export default function AdminProfileManage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Date of Birth
                   </label>
                   <input
@@ -386,7 +386,7 @@ export default function AdminProfileManage() {
               </div>
 
               <div className="mt-6">
-                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                   Residential Address
                 </label>
                 <textarea
@@ -421,7 +421,7 @@ export default function AdminProfileManage() {
                         await onSave();
                         setIsEditing(false);
                       }}
-                      className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 px-10 py-4 text-white font-black uppercase tracking-widest text-xs hover:from-indigo-700 hover:to-blue-700 transition shadow-xl transform active:scale-95"
+                      className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 px-10 py-4 text-white font-bold uppercase tracking-widest text-xs hover:from-indigo-700 hover:to-blue-700 transition shadow-xl transform active:scale-95"
                     >
                       Save Profile Changes
                     </button>

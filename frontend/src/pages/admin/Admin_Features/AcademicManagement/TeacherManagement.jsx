@@ -148,7 +148,7 @@ export default function TeacherManagement() {
             <div className="h-16 w-16 rounded-full border-4 border-indigo-100"></div>
             <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
           </div>
-          <p className="mt-6 text-lg font-black text-slate-700">LOADING FACULTY...</p>
+          <p className="mt-6 text-lg font-bold text-slate-700">LOADING FACULTY...</p>
         </div>
       </div>
     );
@@ -156,8 +156,23 @@ export default function TeacherManagement() {
 
   return (
     <div className="h-screen bg-slate-50 flex flex-col overflow-hidden font-sans text-slate-900">
+
+       <div className="flex items-center gap-4">
+              <div className="h-14 w-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 transform -rotate-2 hover:rotate-0 transition-all duration-300">
+                <FaChalkboardTeacher className="text-white text-2xl" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+                  Teacher Management
+                </h1>
+                <p className="text-gray-500 text-sm font-medium mt-1">
+                  Manage faculty members and their academic assignments
+                </p>
+              </div>
+            </div>
+
       {/* Top Bar - Floating */}
-      <div className="bg-white border-b px-8 py-4 flex items-center justify-between gap-6 shadow-sm z-20 rounded-b-[2rem]">
+      <div className="bg-white border-b px-8 py-4 flex items-center justify-between gap-6 shadow-sm z-20 rounded-b-[1rem] mt-6">
         <div className="relative flex-1 max-w-2xl">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input 
@@ -198,7 +213,7 @@ export default function TeacherManagement() {
           </button>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest mr-2">View:</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mr-2">View:</span>
             <div className="flex bg-slate-100 p-1 rounded-xl">
               <button 
                 className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`} 
@@ -242,7 +257,7 @@ export default function TeacherManagement() {
                       {teacher.profilePicture ? (
                         <img src={getProfilePic(teacher)} alt={teacher.name} className="h-full w-full object-cover" />
                       ) : (
-                        <span className="text-sm font-black text-slate-400">{teacher.name?.charAt(0)}</span>
+                        <span className="text-sm font-bold text-slate-400">{teacher.name?.charAt(0)}</span>
                       )}
                     </div>
                     <div className="min-w-0">
@@ -308,7 +323,7 @@ export default function TeacherManagement() {
                 
                 {/* Avatar with Status Dot */}
                 <div className="relative">
-                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center font-black text-indigo-600 text-xl border-2 border-white shadow-sm overflow-hidden">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center font-bold text-indigo-600 text-xl border-2 border-white shadow-sm overflow-hidden">
                     {teacher.profilePicture ? (
                       <img src={getProfilePic(teacher)} alt={teacher.name} className="h-full w-full object-cover" />
                     ) : (
@@ -321,7 +336,7 @@ export default function TeacherManagement() {
                 {/* Teacher Info */}
                 <div className="min-w-0 flex-1">
                   <h4 className="text-[15px] font-bold text-slate-900 truncate">{teacher.name}</h4>
-                  <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
                     {teacher.department || "Faculty"}
                   </p>
                   <p className="text-[10px] font-mono text-slate-400 mt-1">{teacher.teacherID}</p>
@@ -341,7 +356,7 @@ export default function TeacherManagement() {
               >
                 <FaChevronLeft size={12} />
               </button>
-              <span className="text-xs font-black text-slate-400 tracking-widest">
+              <span className="text-xs font-bold text-slate-400 tracking-widest">
                 PAGE {currentPage} / {totalPages}
               </span>
               <button 
@@ -364,7 +379,7 @@ export default function TeacherManagement() {
               <div className="flex items-start justify-between">
                 <div className="flex gap-8">
                   {/* Large Avatar */}
-                  <div className="h-32 w-32 rounded-[2.5rem] bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center text-5xl font-black text-indigo-200 border-4 border-white shadow-xl overflow-hidden">
+                  <div className="h-32 w-32 rounded-[2.5rem] bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center text-5xl font-bold text-indigo-200 border-4 border-white shadow-xl overflow-hidden">
                     {selectedTeacher.profilePicture ? (
                       <img src={getProfilePic(selectedTeacher)} alt={selectedTeacher.name} className="h-full w-full object-cover" />
                     ) : (
@@ -374,7 +389,7 @@ export default function TeacherManagement() {
 
                   {/* Name & Contact */}
                   <div className="pt-2">
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tight">{selectedTeacher.name}</h2>
+                    <h2 className="text-3xl font-bold text-slate-900 tracking-tight">{selectedTeacher.name}</h2>
                     <div className="flex flex-col gap-2 mt-3">
                       <span className="flex items-center gap-3 text-slate-500 font-bold text-sm">
                         <FaEnvelope className="text-indigo-400" size={14} /> {selectedTeacher.email}
@@ -394,14 +409,14 @@ export default function TeacherManagement() {
                 </div>
 
                 {/* Teacher ID Badge */}
-                <div className="bg-slate-100 px-5 py-2 rounded-2xl font-black text-sm text-slate-500 tracking-widest border border-slate-200">
+                <div className="bg-slate-100 px-5 py-2 rounded-2xl font-bold text-sm text-slate-500 tracking-widest border border-slate-200">
                   {selectedTeacher.teacherID}
                 </div>
               </div>
 
               {/* Administrative Roles & Action Buttons */}
               <div>
-                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
                   Administrative Roles
                 </h3>
                 <div className="flex flex-wrap items-center justify-between gap-4">
@@ -410,13 +425,13 @@ export default function TeacherManagement() {
                     <div className="flex gap-2 flex-wrap">
                       {selectedTeacher.assignedClasses?.length > 0 ? (
                         selectedTeacher.assignedClasses.map((ac, idx) => (
-                          <span key={idx} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase tracking-wider border border-slate-200">
+                          <span key={idx} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-wider border border-slate-200">
                             {ac.class?.className}-{ac.section}
                           </span>
                         ))
                       ) : <span className="text-xs text-slate-400 italic">No assignments</span>}
                       {selectedTeacher.department && (
-                        <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-100">Subject Lead</span>
+                        <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold uppercase tracking-wider border border-emerald-100">Subject Lead</span>
                       )}
                     </div>
                   </div>
@@ -425,13 +440,13 @@ export default function TeacherManagement() {
                   <div className="flex gap-3">
                     <button
                       onClick={() => openAssignModal(selectedTeacher, "classTeacher")}
-                      className="px-5 py-2.5 bg-white border-2 border-indigo-200 text-indigo-700 rounded-xl hover:bg-indigo-50 transition-all text-xs font-black flex items-center gap-2"
+                      className="px-5 py-2.5 bg-white border-2 border-indigo-200 text-indigo-700 rounded-xl hover:bg-indigo-50 transition-all text-xs font-bold flex items-center gap-2"
                     >
                       <FaChalkboardTeacher size={14} /> Assign Class Teacher
                     </button>
                     <button
                       onClick={() => openAssignModal(selectedTeacher, "subject")}
-                      className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all text-xs font-black flex items-center gap-2 shadow-lg shadow-indigo-200"
+                      className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-200"
                     >
                       <FaBook size={14} /> Assign Subject
                     </button>
@@ -441,7 +456,7 @@ export default function TeacherManagement() {
 
               {/* Schedule Summary - Day vs Period */}
               <div className="w-full xl:w-[65%]">
-                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
                   Schedule Summary
                 </h3>
                 <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
@@ -454,9 +469,9 @@ export default function TeacherManagement() {
                     <table className="w-full text-[9px] text-center border-collapse">
                       <thead className="bg-slate-50 border-b border-slate-100">
                         <tr>
-                          <th className="p-3 border-r border-slate-100 font-black text-slate-400">Day</th>
+                          <th className="p-3 border-r border-slate-100 font-bold text-slate-400">Day</th>
                           {[1, 2, 3, 4, 5, 6, 7, 8].map(p => (
-                            <th key={p} className="p-2 border-r border-slate-100 font-black text-slate-400 w-[10%]">P{p}</th>
+                            <th key={p} className="p-2 border-r border-slate-100 font-bold text-slate-400 w-[10%]">P{p}</th>
                           ))}
                         </tr>
                       </thead>
@@ -465,7 +480,7 @@ export default function TeacherManagement() {
                           const daySchedule = teacherSchedule[day] || [];
                           return (
                             <tr key={day} className="border-b border-slate-100 last:border-0 h-12">
-                              <td className="p-2 border-r border-slate-100 font-black bg-slate-50/30 text-slate-500 uppercase tracking-widest text-[8px]">
+                              <td className="p-2 border-r border-slate-100 font-bold bg-slate-50/30 text-slate-500 uppercase tracking-widest text-[8px]">
                                 {day.slice(0, 3)}
                               </td>
                               {[1, 2, 3, 4, 5, 6, 7, 8].map(p => {
@@ -501,7 +516,7 @@ export default function TeacherManagement() {
                 
                 {/* Activity Feed */}
                 <div className="lg:col-span-5">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
                     Activity Feed
                   </h3>
                   <div className="space-y-6 border-l-2 border-slate-100 ml-2 pl-6">
@@ -513,7 +528,7 @@ export default function TeacherManagement() {
                     ].map((act, idx) => (
                       <div key={idx} className="relative">
                         <div className={`absolute -left-[31px] top-1 h-3 w-3 rounded-full border-2 border-white ${act.color}`}></div>
-                        <p className="text-xs text-slate-600 font-black tracking-tight leading-relaxed">
+                        <p className="text-xs text-slate-600 font-bold tracking-tight leading-relaxed">
                           {act.text}
                         </p>
                       </div>
@@ -523,7 +538,7 @@ export default function TeacherManagement() {
 
                 {/* Professional Development */}
                 <div className="lg:col-span-7">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
                     Professional Development
                   </h3>
                   <div className="grid grid-cols-2 gap-4">

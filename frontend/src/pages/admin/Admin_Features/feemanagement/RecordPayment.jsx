@@ -380,7 +380,7 @@ export default function RecordPayment() {
     const fd = student.feeDetails;
     if (!fd) {
       return (
-        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-black uppercase">
+        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-bold uppercase">
           No Fee Set
         </span>
       );
@@ -392,14 +392,14 @@ export default function RecordPayment() {
 
     if (status === "NOT_SET" && !classHasFeeStructure) {
       return (
-        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-black uppercase">
+        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-bold uppercase">
           No Fee Set
         </span>
       );
     }
     if (status === "ERROR") {
       return (
-        <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full border border-gray-200 text-xs font-black uppercase">
+        <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full border border-gray-200 text-xs font-bold uppercase">
           Error
         </span>
       );
@@ -410,34 +410,34 @@ export default function RecordPayment() {
 
     if (isPaid || status === "PAID") {
       return (
-        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black uppercase">
+        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold uppercase">
           Paid
         </span>
       );
     }
     if (status === "PARTIALLY_PAID") {
       return (
-        <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-black uppercase">
+        <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase">
           Partial
         </span>
       );
     }
     if (status === "OVERDUE") {
       return (
-        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-black uppercase">
+        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-bold uppercase">
           Overdue
         </span>
       );
     }
     if (classHasFeeStructure && !fd.feePaymentId) {
       return (
-        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full border border-blue-200 text-xs font-black uppercase">
+        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full border border-blue-200 text-xs font-bold uppercase">
           Class Fee Set
         </span>
       );
     }
     return (
-      <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-black uppercase">
+      <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase">
         Pending
       </span>
     );
@@ -733,10 +733,10 @@ export default function RecordPayment() {
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             Fee Collection
           </h1>
-          <p className="text-sm font-medium text-slate-600 mt-2">
+          <p className="text-sm font-medium   text-gray-600 mt-1">
             Record payments and manage transactions
           </p>
         </div>
@@ -774,14 +774,14 @@ export default function RecordPayment() {
       </div>
 
       {/* Filters Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-[2.5rem] border border-purple-200 shadow-sm">
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-2xl border border-purple-200 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 bg-white text-purple-600 rounded-2xl flex items-center justify-center shadow-md">
               <FaFilter size={20} />
             </div>
             <div>
-              <h3 className="text-xl font-black text-slate-900">
+              <h3 className="text-xl font-bold text-slate-900">
                 Filter Students
               </h3>
               <p className="text-slate-500 text-sm font-medium mt-1">
@@ -918,14 +918,14 @@ export default function RecordPayment() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gradient-to-br from-white to-purple-50 p-5 rounded-2xl border border-purple-100 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600 uppercase tracking-wider font-bold">
                 Total Students
               </p>
-              <p className="text-2xl font-black text-slate-900 mt-1">
+              <p className="text-2xl font-bold text-slate-900 mt-1">
                 {stats.totalStudents}
               </p>
             </div>
@@ -941,7 +941,7 @@ export default function RecordPayment() {
               <p className="text-sm text-slate-600 uppercase tracking-wider font-bold">
                 Total Pending
               </p>
-              <p className="text-2xl font-black text-red-600 mt-1">
+              <p className="text-2xl font-bold text-red-600 mt-1">
                 ₹{stats.totalPending.toLocaleString("en-IN")}
               </p>
             </div>
@@ -957,7 +957,7 @@ export default function RecordPayment() {
               <p className="text-sm text-slate-600 uppercase tracking-wider font-bold">
                 Total Collected
               </p>
-              <p className="text-2xl font-black text-emerald-600 mt-1">
+              <p className="text-2xl font-bold text-emerald-600 mt-1">
                 ₹{stats.totalPaid.toLocaleString("en-IN")}
               </p>
             </div>
@@ -966,7 +966,7 @@ export default function RecordPayment() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Table */}
       <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden relative min-h-[400px]">
@@ -984,19 +984,19 @@ export default function RecordPayment() {
           <table className="w-full">
             <thead>
               <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                <th className="p-5 text-left text-xs font-black uppercase tracking-widest text-slate-500">
+                <th className="p-5 text-left text-xs font-bold uppercase tracking-widest text-slate-500">
                   Student Details
                 </th>
-                <th className="p-5 text-left text-xs font-black uppercase tracking-widest text-slate-500">
+                <th className="p-5 text-left text-xs font-bold uppercase tracking-widest text-slate-500">
                   Class Info
                 </th>
-                <th className="p-5 text-right text-xs font-black uppercase tracking-widest text-slate-500">
+                <th className="p-5 text-right text-xs font-bold uppercase tracking-widest text-slate-500">
                   Fee Summary
                 </th>
-                <th className="p-5 text-center text-xs font-black uppercase tracking-widest text-slate-500">
+                <th className="p-5 text-center text-xs font-bold uppercase tracking-widest text-slate-500">
                   Status
                 </th>
-                <th className="p-5 text-center text-xs font-black uppercase tracking-widest text-slate-500">
+                <th className="p-5 text-center text-xs font-bold uppercase tracking-widest text-slate-500">
                   Action
                 </th>
               </tr>
@@ -1227,11 +1227,11 @@ export default function RecordPayment() {
             <div className="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-xl flex items-center justify-center text-xl font-black shadow-lg">
+                  <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-xl flex items-center justify-center text-xl font-bold shadow-lg">
                     {selectedStudent.name?.charAt(0)}
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-slate-900">
+                    <h3 className="text-xl font-bold text-slate-900">
                       {selectedStudent.name}
                     </h3>
                     <div className="flex flex-wrap items-center gap-2 mt-1">
@@ -1255,7 +1255,7 @@ export default function RecordPayment() {
                     <p className="text-xs font-bold text-slate-500">
                       Pending Amount
                     </p>
-                    <p className="text-xl font-black text-red-600">
+                    <p className="text-xl font-bold text-red-600">
                       ₹
                       {getSafeFeeNumbers(
                         selectedStudent.feeDetails,
@@ -1278,7 +1278,7 @@ export default function RecordPayment() {
               {/* Left Column: Month Selection Grid */}
               <div className="lg:col-span-4 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                  <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <FaCalendarAlt className="text-purple-600" />
                     Select Installments
                   </h4>
@@ -1355,7 +1355,7 @@ export default function RecordPayment() {
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="font-black text-slate-900">
+                              <p className="font-bold text-slate-900">
                                 ₹{pendingForThis.toLocaleString("en-IN")}
                               </p>
                               <p className="text-xs text-slate-400">
@@ -1401,7 +1401,7 @@ export default function RecordPayment() {
                       <span className="text-sm text-purple-600 font-medium">
                         Total Amount:
                       </span>
-                      <span className="text-lg font-black text-purple-900">
+                      <span className="text-lg font-bold text-purple-900">
                         ₹
                         {selectedInsts
                           .reduce(
@@ -1441,7 +1441,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("amountPaid", e.target.value)
                         }
-                        className="w-full bg-slate-50 rounded-xl pl-12 pr-6 py-4 text-xl font-black focus:ring-3 focus:ring-purple-100 outline-none transition-all border-2 border-slate-200 focus:border-purple-500"
+                        className="w-full bg-slate-50 rounded-xl pl-12 pr-6 py-4 text-xl font-bold focus:ring-3 focus:ring-purple-100 outline-none transition-all border-2 border-slate-200 focus:border-purple-500"
                         required
                         placeholder="0.00"
                       />
@@ -1621,7 +1621,7 @@ export default function RecordPayment() {
               {/* Right Column: Allocation Preview */}
               <div className="lg:col-span-4 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-5 text-white flex flex-col shadow-xl">
                 <div className="mb-6">
-                  <h4 className="text-sm font-black text-slate-100 flex items-center gap-2">
+                  <h4 className="text-sm font-bold text-slate-100 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></div>
                     Allocation Preview
                   </h4>
@@ -1645,7 +1645,7 @@ export default function RecordPayment() {
                                   {item.name}
                                 </span>
                                 <span
-                                  className={`text-[10px] font-black uppercase tracking-tighter px-2 py-1 rounded ${
+                                  className={`text-[10px] font-bold uppercase tracking-tighter px-2 py-1 rounded ${
                                     item.status === "PAID"
                                       ? "bg-emerald-400/20 text-emerald-300"
                                       : item.status === "ADVANCE"
@@ -1673,7 +1673,7 @@ export default function RecordPayment() {
                               )}
                             </div>
                             <div className="text-right">
-                              <p className="font-black text-lg text-white">
+                              <p className="font-bold text-lg text-white">
                                 ₹{item.amount.toLocaleString("en-IN")}
                               </p>
                               {item.neededAmount &&
@@ -1714,7 +1714,7 @@ export default function RecordPayment() {
                         <span className="text-sm font-bold text-slate-300">
                           Balance Remaining
                         </span>
-                        <span className="text-xl font-black text-purple-300">
+                        <span className="text-xl font-bold text-purple-300">
                           ₹
                           {Math.max(
                             0,
@@ -1727,7 +1727,7 @@ export default function RecordPayment() {
                         <span className="text-sm text-slate-400">
                           Total Payment
                         </span>
-                        <span className="text-2xl font-black text-white">
+                        <span className="text-2xl font-bold text-white">
                           ₹
                           {(Number(paymentForm.amountPaid) || 0).toLocaleString(
                             "en-IN",

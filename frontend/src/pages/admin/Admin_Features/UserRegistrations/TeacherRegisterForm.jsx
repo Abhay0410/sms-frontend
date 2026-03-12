@@ -459,19 +459,19 @@ export default function TeacherRegisterForm() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-8">
+    <div className="min-h-screen bg-slate-50 ">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-10 text-center md:text-left">
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
+        <div className="mb-4 text-center md:text-left">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
             <FaChalkboardTeacher className="text-indigo-600" /> Teacher
             Enrollment
           </h1>
-          <p className="text-slate-500 font-medium mt-2">
+          <p className="text-slate-500 text-sm font-medium mt-1">
             Add a new teacher to the system
           </p>
         </div>
 
-        <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
           <div className="p-1 bg-indigo-600"></div>
           <form onSubmit={onSubmit} className="p-10 space-y-10">
             {/* Personal Details */}
@@ -729,7 +729,7 @@ export default function TeacherRegisterForm() {
               {/* Address */}
               {/* Address Section */}
               <div className="md:col-span-2 bg-slate-50 p-8 rounded-3xl border border-slate-100">
-                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">
                   Residential Information
                 </h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -798,12 +798,12 @@ export default function TeacherRegisterForm() {
 
               {/* 2. Payroll Statutory (2026 Logic) */}
               <div className="md:col-span-2 bg-slate-900 p-8 rounded-3xl text-white shadow-xl">
-                <h3 className="text-sm font-black text-orange-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-orange-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                   <FaWallet /> Statutory Compliance (PF/ESI)
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-500">
+                    <label className="text-[10px] font-bold uppercase text-slate-500">
                       Universal Account No (UAN)
                     </label>
                     {/* <input
@@ -835,7 +835,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-500">
+                    <label className="text-[10px] font-bold uppercase text-slate-500">
                       PF Member ID
                     </label>
                     <input
@@ -846,7 +846,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-500">
+                    <label className="text-[10px] font-bold uppercase text-slate-500">
                       Payment Mode
                     </label>
                     <select
@@ -865,12 +865,12 @@ export default function TeacherRegisterForm() {
 
               {/* 3. Bank Details */}
               <div className="md:col-span-2 bg-slate-50 p-8 rounded-3xl shadow-sm border border-slate-200">
-                <h3 className="text-sm font-black text-emerald-600 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-emerald-600 uppercase tracking-widest mb-6 flex items-center gap-2">
                   <FaUniversity /> Banking Credentials
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">
                       Account Holder Name
                     </label>
                     <input
@@ -881,7 +881,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">
                       Bank Name
                     </label>
                     <input
@@ -892,7 +892,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   {/* <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">
                       Account Number
                     </label>
                     <input
@@ -903,7 +903,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div> */}
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">
                       Account Number
                     </label>
 
@@ -933,7 +933,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   {/* <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">
                       IFSC Code
                     </label>
                     <input
@@ -944,7 +944,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div> */}
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">
                       IFSC Code
                     </label>
 
@@ -973,7 +973,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   <div className="space-y-2 lg:col-span-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">
                       Branch Name
                     </label>
                     <input
@@ -991,7 +991,7 @@ export default function TeacherRegisterForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {loading ? (
                   <FaSpinner className="animate-spin" />

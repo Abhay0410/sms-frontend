@@ -384,7 +384,7 @@ const handleDownloadPDF = async (slipId) => {
       {/* HEADER & FILTERS */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Payroll Processing</h2>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Payroll Processing</h2>
           <div className="flex gap-4 mt-2">
             <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} className="bg-white border border-slate-200 rounded-xl px-4 py-2 font-bold text-sm">
               {monthNames.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
@@ -422,10 +422,10 @@ const handleDownloadPDF = async (slipId) => {
 
       {/* TABLE 1: PENDING FOR GENERATION */}
       <section>
-        <h3 className="text-xs font-black uppercase text-indigo-600 tracking-widest mb-4 flex items-center gap-2">
+        <h3 className="text-xs font-bold uppercase text-indigo-600 tracking-widest mb-4 flex items-center gap-2">
             <FaSpinner className="animate-pulse" /> Pending Generation ({stats.length})
         </h3>
-        <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-slate-100">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
             <table className="w-full text-left">
             <thead className="bg-slate-900 text-white text-[10px] uppercase font-bold tracking-wider">
                 <tr>
@@ -444,12 +444,12 @@ const handleDownloadPDF = async (slipId) => {
                         <p className="text-[10px] text-slate-500 font-medium">ID: {row.teacherID}</p>
                     </td>
                     <td className="p-6 text-center">
-                        <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-black text-xs">{row.attendanceFactor}x</span>
+                        <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-bold text-xs">{row.attendanceFactor}x</span>
                     </td>
                     <td className="p-6">
                         <input 
                             type="number" placeholder="Force Gross Amount" 
-                            className="w-full p-2.5 bg-orange-50/30 border-2 border-orange-100 rounded-xl font-black text-orange-600 outline-none focus:border-orange-400 text-center transition-all"
+                            className="w-full p-2.5 bg-orange-50/30 border-2 border-orange-100 rounded-xl font-bold text-orange-600 outline-none focus:border-orange-400 text-center transition-all"
                             value={manualAmounts[row.id] || ""}
                             onChange={(e) => handleManualAmountChange(row.id, e.target.value)}
                         />
@@ -462,14 +462,14 @@ const handleDownloadPDF = async (slipId) => {
                                 <input type="text" placeholder="Reason" className="flex-1 border rounded-lg p-1 text-[10px] italic" value={ex.remark} onChange={(e) => handleExtraFieldChange(row.id, i, "remark", e.target.value)} />
                             </div>
                             ))}
-                            <button onClick={() => handleAddExtraRow(row.id)} className="text-[9px] font-black text-indigo-500 hover:text-indigo-700 uppercase tracking-tighter transition-colors">+ Add Line Item</button>
+                            <button onClick={() => handleAddExtraRow(row.id)} className="text-[9px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-tighter transition-colors">+ Add Line Item</button>
                         </div>
                     </td>
                     <td className="p-6 text-right">
                         <button 
                             onClick={() => handleGenerateSlip(row.id)} 
                             disabled={processingId === row.id} 
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-100 transition-all flex items-center gap-2 ml-auto"
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-emerald-100 transition-all flex items-center gap-2 ml-auto"
                         >
                             {processingId === row.id ? <FaSpinner className="animate-spin" /> : <><FaCheckCircle /> Generate</>}
                         </button>
@@ -483,13 +483,13 @@ const handleDownloadPDF = async (slipId) => {
       </section>
 
       {/* TABLE 2: PROCESSED SLIPS */}
-      <section className="bg-slate-50 rounded-[2.5rem] border border-slate-200 p-8 shadow-inner">
-        <h3 className="font-black uppercase text-xs text-slate-500 mb-6 flex items-center gap-2 tracking-widest">
+      <section className="bg-slate-50 rounded-2xl border border-slate-200 p-8 shadow-inner">
+        <h3 className="font-bold uppercase text-xs text-slate-500 mb-6 flex items-center gap-2 tracking-widest">
             <FaHistory className="text-slate-400" /> Processed Salary Slips ({processedSlips.length})
         </h3>
         <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
             <table className="w-full text-left">
-              <thead className="bg-slate-50 text-slate-400 text-[9px] uppercase font-black tracking-widest border-b">
+              <thead className="bg-slate-50 text-slate-400 text-[9px] uppercase font-bold tracking-widest border-b">
                 <tr>
                     <th className="p-5">Employee</th>
                     <th className="p-5 text-center">Net Payout</th>
@@ -505,10 +505,10 @@ const handleDownloadPDF = async (slipId) => {
                         <p className="font-bold text-slate-800">{slip.employeeName}</p>
                         <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">Ref: {slip._id.slice(-6)}</p>
                     </td>
-                    <td className="p-5 text-center text-indigo-600 font-black text-base">₹{slip.netSalary.toLocaleString()}</td>
+                    <td className="p-5 text-center text-indigo-600 font-bold text-base">₹{slip.netSalary.toLocaleString()}</td>
                     <td className="p-5 text-center text-xs font-bold text-slate-500 uppercase">{monthNames[slip.month - 1]} {slip.year}</td>
                     <td className="p-5 text-center">
-                        <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${slip.paymentStatus === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>
+                        <span className={`px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase ${slip.paymentStatus === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>
                             {slip.paymentStatus}
                         </span>
                     </td>
@@ -538,17 +538,17 @@ const handleDownloadPDF = async (slipId) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="text-sm text-slate-500 font-semibold">Pending Staff</div>
-          <div className="text-3xl font-black text-indigo-600 mt-2">{stats.length}</div>
+          <div className="text-3xl font-bold text-indigo-600 mt-2">{stats.length}</div>
           <div className="text-xs text-slate-400 mt-1">Awaiting salary generation</div>
         </div>
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="text-sm text-slate-500 font-semibold">Processed Slips</div>
-          <div className="text-3xl font-black text-emerald-600 mt-2">{processedSlips.length}</div>
+          <div className="text-3xl font-bold text-emerald-600 mt-2">{processedSlips.length}</div>
           <div className="text-xs text-slate-400 mt-1">Successfully generated</div>
         </div>
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="text-sm text-slate-500 font-semibold">Total Salary</div>
-          <div className="text-3xl font-black text-slate-800 mt-2">
+          <div className="text-3xl font-bold text-slate-800 mt-2">
             ₹{processedSlips.reduce((sum, slip) => sum + (slip.netSalary || 0), 0).toLocaleString('en-IN')}
           </div>
           <div className="text-xs text-slate-400 mt-1">Total processed amount</div>
@@ -562,7 +562,7 @@ const handleDownloadPDF = async (slipId) => {
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white flex justify-between items-center">
               <div>
-                <h3 className="text-2xl font-black uppercase tracking-tight">Salary Slip</h3>
+                <h3 className="text-2xl font-bold uppercase tracking-tight">Salary Slip</h3>
                 <div className="flex items-center gap-4 mt-2">
                   <p className="text-sm font-bold">{selectedSlipData.employee.name}</p>
                   <span className="text-xs bg-white/20 px-3 py-1 rounded-full">
@@ -615,7 +615,7 @@ const handleDownloadPDF = async (slipId) => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Earnings */}
                 <div className="space-y-4">
-                  <h4 className="text-sm font-black uppercase text-emerald-600 tracking-widest border-b pb-3">Earnings</h4>
+                  <h4 className="text-sm font-bold uppercase text-emerald-600 tracking-widest border-b pb-3">Earnings</h4>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-slate-700">Basic Pay</span>
@@ -629,7 +629,7 @@ const handleDownloadPDF = async (slipId) => {
                       <span className="text-slate-700">Special Allowance</span>
                       <span className="font-bold">₹{displayCurrency(selectedSlipData.slip.earnings.specialAllowance)}</span>
                     </div>
-                    <div className="flex justify-between pt-3 border-t border-slate-200 text-lg font-black text-emerald-700">
+                    <div className="flex justify-between pt-3 border-t border-slate-200 text-lg font-bold text-emerald-700">
                       <span>Gross Salary</span>
                       <span>₹{displayCurrency(selectedSlipData.slip.grossSalary)}</span>
                     </div>
@@ -638,7 +638,7 @@ const handleDownloadPDF = async (slipId) => {
 
                 {/* Deductions */}
                 <div className="space-y-4">
-                  <h4 className="text-sm font-black uppercase text-rose-600 tracking-widest border-b pb-3">Deductions</h4>
+                  <h4 className="text-sm font-bold uppercase text-rose-600 tracking-widest border-b pb-3">Deductions</h4>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-slate-700">EPF (Employee Contribution)</span>
@@ -652,7 +652,7 @@ const handleDownloadPDF = async (slipId) => {
                       <span className="text-slate-700">Tax Deducted at Source (TDS)</span>
                       <span className="font-bold text-rose-600">-₹{displayCurrency(selectedSlipData.slip.deductions.tds)}</span>
                     </div>
-                    <div className="flex justify-between pt-3 border-t border-slate-200 text-lg font-black text-rose-700">
+                    <div className="flex justify-between pt-3 border-t border-slate-200 text-lg font-bold text-rose-700">
                       <span>Total Deductions</span>
                       <span>-₹{displayCurrency(
                         (selectedSlipData.slip.deductions.epfEmployee || 0) +
@@ -669,7 +669,7 @@ const handleDownloadPDF = async (slipId) => {
                 <div className="flex flex-col md:flex-row justify-between items-center">
                   <div>
                     <p className="text-sm font-bold uppercase opacity-90">Net Take-Home Pay</p>
-                    <h2 className="text-4xl font-black mt-2">₹{displayCurrency(selectedSlipData.slip.netSalary)}</h2>
+                    <h2 className="text-4xl font-bold mt-2">₹{displayCurrency(selectedSlipData.slip.netSalary)}</h2>
                     <p className="text-sm opacity-90 mt-2">Payable via {selectedSlipData.employee.paymentMode}</p>
                   </div>
                   <div className="flex gap-3 mt-6 md:mt-0">

@@ -174,7 +174,7 @@ const TeacherMessaging = () => {
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           {/* <BackButton /> */}
-          <h2 className="text-2xl font-bold flex items-center gap-2 text-slate-800">
+          <h2 className="text-3xl font-bold flex items-center gap-2 text-slate-900">
             <FaInbox className="text-indigo-600" /> Communications
           </h2>
         </div>

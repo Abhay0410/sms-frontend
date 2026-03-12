@@ -106,12 +106,12 @@ export default function StaffAttendance() {
   };
 
   return (
-    <div className="space-y-6 p-2 bg-gradient-to-br from-slate-50 to-white min-h-screen">
+    <div className="space-y-6  bg-gradient-to-br from-slate-50 to-white min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Staff Attendance Management</h1>
-          <p className="text-slate-600 mt-1 flex items-center gap-2 font-medium text-sm">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Staff Attendance Management</h1>
+          <p className="text-gray-600 mt-1 flex items-center gap-2 font-medium text-sm">
             <FaCalendarAlt className="text-teal-600" />
             Monitoring attendance for {new Date(date).toLocaleDateString('en-US', { 
               weekday: 'long', 
@@ -153,7 +153,7 @@ export default function StaffAttendance() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {statusOptions.map((status) => (
           <div key={status.value} className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
             <div className="flex items-center justify-between">
@@ -170,7 +170,7 @@ export default function StaffAttendance() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Filter Section */}
       <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">

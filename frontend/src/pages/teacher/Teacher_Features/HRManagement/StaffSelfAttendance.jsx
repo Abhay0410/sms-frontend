@@ -168,12 +168,12 @@ const fetchData = useCallback(async () => {
   };
 
   return (
-    <div className="space-y-6 p-4 md:p-6 bg-gradient-to-br from-slate-50 to-white min-h-screen">
+    <div className="space-y-6  bg-gradient-to-br from-slate-50 to-white min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Daily Attendance</h1>
-          <p className="text-slate-600 mt-1 flex items-center gap-2">
+          <p className="text-gray-500  font-medium mt-1 flex items-center gap-2">
             <FaCalendarAlt className="text-teal-600" />
             Mark your presence for {new Date().toLocaleDateString('en-US', { 
               weekday: 'long', 

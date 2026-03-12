@@ -94,13 +94,13 @@ export default function MyClasses() {
 }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50  p-4">
       <div className="mx-auto max-w-6xl">
         <BackButton to="/student/student-dashboard" />
 
-        <div className="mt-6">
+        <div className="mt-4">
           <h2 className="text-3xl font-bold text-gray-900">My Classes</h2>
-          <p className="mt-2 text-gray-600">Your academic class and section details</p>
+          <p className="mt-2 font-medium text-gray-600">Your academic class and section details</p>
         </div>
 
         {/* Student Status Banner */}
@@ -143,14 +143,14 @@ export default function MyClasses() {
             <div className="space-y-6">
               {/* Class & Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 p-6 border border-blue-100">
+                <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 p-6 border border-blue-100">
                   <p className="text-sm font-medium text-gray-600 mb-2">Class</p>
                   <p className="text-4xl font-bold text-blue-600">
                     {studentInfo.className}
                   </p>
                 </div>
 
-                <div className="rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 p-6 border border-purple-100">
+                <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 p-6 border border-purple-100">
                   <p className="text-sm font-medium text-gray-600 mb-2">Section</p>
                   <p className="text-4xl font-bold text-purple-600">
                     {studentInfo.section || 'Not Assigned'}
@@ -160,7 +160,7 @@ export default function MyClasses() {
 
               {/* Roll Number */}
               {isEnrolled && studentInfo.rollNumber && (
-                <div className="rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 p-6 border border-green-100">
+                <div className="rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-6 border border-green-100">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600 mb-1">Roll Number</p>

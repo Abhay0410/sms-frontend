@@ -124,21 +124,21 @@ export default function StaffAttendanceGrid() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+        <div className="mb-4">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
             Staff Attendance Matrix
           </h1>
-          <p className="text-slate-500 text-sm font-medium flex items-center gap-2">
+          <p className="text-gray-500 text-sm font-medium flex items-center gap-2 mt-1">
             <FaCalendarAlt className="text-orange-500" />
             Monthly overview for {monthNames[month-1]} {year}
           </p>
         </div>
 
         {/* Stats Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100">
             <div className="flex items-center gap-4">
               <div className="bg-gradient-to-r from-emerald-500 to-green-500 p-3 rounded-xl">
@@ -190,7 +190,7 @@ export default function StaffAttendanceGrid() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Controls */}
         <div className="bg-white rounded-2xl shadow-lg border border-slate-100 mb-6">

@@ -216,16 +216,16 @@ export default function StudentProfileManage() {
   //   : `/assets/default-student-avatar.png`);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 ">
       <div className="mx-auto max-w-4xl">
         <BackButton to="/student/student-dashboard" />
 
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mt-6 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold mt-6 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
             My Profile
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 font-medium mt-1">
             Manage your personal information and preferences
           </p>
         </div>

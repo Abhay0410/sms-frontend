@@ -141,15 +141,15 @@ export default function ChildrenDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 ">
       <div className="mx-auto max-w-7xl">
         <BackButton to="/parent/parent-dashboard" />
 
-        <div className="mt-6">
-          <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
+        <div className="mt-4">
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
             My Children
           </h2>
-          <p className="mt-2 text-slate-600 flex items-center gap-2">
+          <p className="mt-1 text-gray-600 font-medium flex items-center gap-2">
             <FaUserGraduate className="text-green-600" />
             Academic details and class information for your children
           </p>
@@ -248,7 +248,7 @@ function ChildDetailView({
               </div>
 
               <div className="text-white">
-                <h3 className="text-3xl font-bold">{child.name}</h3>
+                <h3 className="text-2xl font-bold">{child.name}</h3>
                 <p className="text-white/90 font-medium text-lg">
                   {child.studentID}
                 </p>
