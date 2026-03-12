@@ -5,7 +5,8 @@ import api, { API_ENDPOINTS } from "../../../../services/api";
 import {
   FaChalkboardTeacher, FaEnvelope, FaPhone, FaSearch, FaSync, 
   FaThLarge, FaList, FaCheckCircle, FaUserTie, FaMusic, FaBook, 
-  FaCalendarAlt, FaSpinner, FaGraduationCap, FaCheck, FaTimes, FaChevronLeft, FaChevronRight
+  FaCalendarAlt, FaSpinner, FaGraduationCap, FaCheck, FaTimes, FaChevronLeft, FaChevronRight,
+  FaEye, FaPlus
 } from "react-icons/fa";
 
 const API_URL = import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
@@ -219,15 +220,81 @@ export default function TeacherManagement() {
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar - Fixed Width */}
-        <div className="w-[360px] bg-white border-r flex flex-col">
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className={`bg-white border-r flex flex-col transition-all duration-300 ${viewMode === 'list' ? 'w-full' : 'w-[360px]'}`}>
+          <div className={`flex-1 overflow-y-auto custom-scrollbar ${viewMode === 'list' ? 'p-6 space-y-2' : ''}`}>
           {paginatedTeachers.length === 0 ? (
             <div className="p-8 text-center mt-10">
               <FaUserTie className="text-4xl text-slate-300 mx-auto mb-3" />
               <p className="text-sm font-bold text-slate-400">No faculty members found</p>
             </div>
           ) : (
-            paginatedTeachers.map(teacher => (
+            paginatedTeachers.map(teacher => 
+              viewMode === 'list' ? (
+                // LIST VIEW ROW
+                <div 
+                  key={teacher._id}
+                  className="group flex items-center px-6 h-20 border border-slate-100 rounded-2xl hover:bg-indigo-50/30 hover:shadow-sm transition-all cursor-pointer bg-white"
+                  onClick={() => { setSelectedTeacher(teacher); setViewMode('grid'); }}
+                >
+                  {/* Col 1: Identity (30%) */}
+                  <div className="w-[30%] flex items-center gap-4 px-2">
+                    <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
+                      {teacher.profilePicture ? (
+                        <img src={getProfilePic(teacher)} alt={teacher.name} className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-sm font-black text-slate-400">{teacher.name?.charAt(0)}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-sm font-bold text-slate-900 truncate">{teacher.name}</h4>
+                      <p className="text-[10px] font-mono text-slate-400">{teacher.teacherID}</p>
+                    </div>
+                  </div>
+
+                  {/* Col 2: Department (20%) */}
+                  <div className="w-[20%] px-2 flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-emerald-400"></div>
+                    <span className="text-xs font-bold text-slate-600 truncate">{teacher.department || "General"}</span>
+                  </div>
+
+                  {/* Col 3: Contact (25%) */}
+                  <div className="w-[25%] px-2 flex flex-col justify-center">
+                    <div className="flex items-center gap-2 text-[11px] text-slate-600 truncate">
+                      <FaEnvelope size={10} className="text-slate-400 shrink-0" /> {teacher.email}
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5 truncate">
+                      <FaPhone size={10} className="text-slate-400 shrink-0" /> {teacher.phone || "N/A"}
+                    </div>
+                  </div>
+
+                  {/* Col 4: Assignments (15%) */}
+                  <div className="w-[15%] px-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold hover:bg-indigo-100 hover:text-indigo-700 transition-colors">
+                      <FaChalkboardTeacher size={10} />
+                      {teacher.assignedClasses?.length || 0} Classes
+                    </span>
+                  </div>
+
+                  {/* Col 5: Quick Actions (10%) */}
+                  <div className="w-[10%] px-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); openAssignModal(teacher, 'subject'); }}
+                      className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                      title="Assign Subject"
+                    >
+                      <FaPlus size={12} />
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setSelectedTeacher(teacher); setViewMode('grid'); }}
+                      className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+                      title="View Profile"
+                    >
+                      <FaEye size={12} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+              // GRID VIEW CARD (Existing)
               <div 
                 key={teacher._id}
                 onClick={() => setSelectedTeacher(teacher)}
@@ -289,7 +356,7 @@ export default function TeacherManagement() {
         </div>
 
         {/* Right Panel - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-12 bg-white custom-scrollbar">
+        <div className={`flex-1 overflow-y-auto p-12 bg-white custom-scrollbar ${viewMode === 'list' ? 'hidden' : 'block'}`}>
           {selectedTeacher ? (
             <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
               
