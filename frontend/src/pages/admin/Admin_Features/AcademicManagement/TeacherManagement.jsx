@@ -3,33 +3,11 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api";
 import {
-  FaUserTie,
-  FaChalkboardTeacher,
-  FaBook,
-  FaTimes,
-  FaFilter,
-  FaSearch,
-  FaSync,
-  FaEnvelope,
-  FaPhone,
-  FaCheckCircle,
-  FaExclamationCircle,
+  FaChalkboardTeacher, FaEnvelope, FaPhone, FaSearch, FaSync, 
+  FaThLarge, FaList, FaCheckCircle, FaUserTie, FaMusic, FaBook, 
+  FaCalendarAlt, FaSpinner, FaGraduationCap, FaCheck, FaTimes, FaChevronLeft, FaChevronRight,
+  FaEye, FaPlus
 } from "react-icons/fa";
-
-const DEPARTMENTS = [
-  "All",
-  "Mathematics",
-  "Science",
-  "Languages",
-  "Social Science",
-  "Computer Science",
-  "Environmental Studies",
-  "Physical Education",
-  "Arts & Craft",
-  "Music",
-  "Library",
-  "Primary Education",
-];
 
 const API_URL = import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
 
@@ -37,18 +15,24 @@ export default function TeacherManagement() {
   const [teachers, setTeachers] = useState([]);
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [academicYear, setAcademicYear] = useState("2025-2026");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [viewMode, setViewMode] = useState("grid");
+  const [teacherSchedule, setTeacherSchedule] = useState({});
+  const [loadingSchedule, setLoadingSchedule] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState("All");
+  const [academicYear, setAcademicYear] = useState("2025-2026");
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assignmentType, setAssignmentType] = useState(null);
-  const [selectedDepartment, setSelectedDepartment] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState("grid"); // grid or list
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
+  const DEPARTMENTS = ["All", "Science", "Mathematics", "Chemistry", "Physics", "English", "Hindi", "Social Studies", "Computer Science", "Physical Education"];
+
+  // Load teachers and classes
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      
       const teachersUrl = `${API_ENDPOINTS.ADMIN.TEACHER_MANAGEMENT.LIST}?academicYear=${academicYear}`;
       const classesUrl = `${API_ENDPOINTS.ADMIN.CLASS.LIST}?academicYear=${academicYear}`;
 
@@ -70,17 +54,55 @@ export default function TeacherManagement() {
 
       setTeachers(teacherList);
       setClasses(classList);
+      if (teacherList.length > 0 && !selectedTeacher) {
+        setSelectedTeacher(teacherList[0]);
+      }
     } catch (error) {
       console.error("Error loading data:", error);
       toast.error("Failed to load data");
     } finally {
       setLoading(false);
     }
+  }, [academicYear, selectedTeacher]);
+
+  // ✅ FIXED: Schedule Fetching with correct API
+  const fetchTeacherSchedule = useCallback(async (teacherId) => {
+    try {
+      setLoadingSchedule(true);
+      // Using the exact API you mentioned
+      const resp = await api.get(`/api/admin/teacher-management/teacher-schedule?teacherId=${teacherId}&academicYear=${academicYear}`);
+      
+      // Extract schedule data from response
+      const scheduleData = resp.data?.schedule || resp.schedule || {};
+      
+      // Ensure all days exist
+      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const formattedSchedule = {};
+      days.forEach(day => {
+        formattedSchedule[day] = scheduleData[day] || [];
+      });
+      
+      setTeacherSchedule(formattedSchedule);
+    } catch (error) {
+      console.error("Schedule fetch failed:", error);
+      // Create empty schedule structure
+      const emptySchedule = {};
+      ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].forEach(day => {
+        emptySchedule[day] = [];
+      });
+      setTeacherSchedule(emptySchedule);
+    } finally {
+      setLoadingSchedule(false);
+    }
   }, [academicYear]);
 
+  useEffect(() => { loadData(); }, [loadData]);
+  
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (selectedTeacher?._id) {
+      fetchTeacherSchedule(selectedTeacher._id);
+    }
+  }, [selectedTeacher, academicYear, fetchTeacherSchedule]);
 
   const openAssignModal = (teacher, type) => {
     setSelectedTeacher(teacher);
@@ -88,325 +110,444 @@ export default function TeacherManagement() {
     setShowAssignModal(true);
   };
 
-  // Filter teachers based on department and search
+  // Filter teachers
   const filteredTeachers = useMemo(() => {
-    return teachers
-      .filter((teacher) =>
-        selectedDepartment === "All" || teacher.department === selectedDepartment
-      )
-      .filter((teacher) =>
-        searchQuery === "" ||
-        teacher.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        teacher.teacherID?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        teacher.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        teacher.department?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+    return teachers.filter(t => 
+      (selectedDepartment === "All" || t.department === selectedDepartment) &&
+      (t.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+       t.teacherID?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+       t.email?.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
   }, [teachers, selectedDepartment, searchQuery]);
 
-  // Calculate statistics
-  const statistics = useMemo(() => {
-    const total = teachers.length;
-    const withClassTeacher = teachers.filter(t => 
-      t.assignedClasses?.some(ac => ac.isClassTeacher)
-    ).length;
-    const withSubject = teachers.filter(t => 
-      t.assignedClasses?.length > 0
-    ).length;
-    const unassigned = teachers.filter(t => 
-      !t.assignedClasses || t.assignedClasses.length === 0
-    ).length;
-    
-    const departmentCounts = {};
-    teachers.forEach(t => {
-      if (t.department) {
-        departmentCounts[t.department] = (departmentCounts[t.department] || 0) + 1;
-      }
-    });
+  // Pagination logic
+  const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
+  const paginatedTeachers = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredTeachers.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredTeachers, currentPage, itemsPerPage]);
 
-    return { total, withClassTeacher, withSubject, unassigned, departmentCounts };
-  }, [teachers]);
+  // Reset page on filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedDepartment, searchQuery]);
+
+  // Profile Picture URL
+  const getProfilePic = (t) => {
+    if (!t?.profilePicture) return null;
+    return t.profilePicture.startsWith("http") 
+      ? t.profilePicture 
+      : `${API_URL}/uploads/${t.schoolId}/teachers/${t.profilePicture}`;
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center bg-[#F8FAFC]">
         <div className="text-center">
           <div className="relative">
             <div className="h-16 w-16 rounded-full border-4 border-indigo-100"></div>
             <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
           </div>
-          <p className="mt-6 text-lg font-medium text-slate-700">Loading teachers...</p>
-          <p className="text-sm text-slate-500 mt-2">Please wait while we fetch the data</p>
+          <p className="mt-6 text-lg font-black text-slate-700">LOADING FACULTY...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 px-4 md:px-8 pb-10 font-sans">
-      <div className="mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="pt-10 pb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="h-14 w-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 transform -rotate-2 hover:rotate-0 transition-all duration-300">
-                <FaChalkboardTeacher className="text-white text-2xl" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-                  Teacher Management
-                </h1>
-                <p className="text-gray-500 text-sm font-medium mt-1">
-                  Manage faculty members and their academic assignments
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 bg-white p-1.5 rounded-xl border border-gray-200 shadow-sm">
-              <select
-                value={academicYear}
-                onChange={(e) => setAcademicYear(e.target.value)}
-                className="px-4 py-2 bg-gray-50 border-transparent rounded-lg text-sm font-medium text-gray-700 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all cursor-pointer hover:bg-gray-100"
-              >
-                <option value="2023-2024">2023-2024</option>
-                <option value="2024-2025">2024-2025</option>
-                <option value="2025-2026">2025-2026</option>
-              </select>
+    <div className="h-screen bg-slate-50 flex flex-col overflow-hidden font-sans text-slate-900">
+      {/* Top Bar - Floating */}
+      <div className="bg-white border-b px-8 py-4 flex items-center justify-between gap-6 shadow-sm z-20 rounded-b-[2rem]">
+        <div className="relative flex-1 max-w-2xl">
+          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+          <input 
+            type="text" 
+            placeholder="Search by name, ID, email, or department..." 
+            className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all text-sm font-medium"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <select 
+            className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 outline-none cursor-pointer"
+            value={selectedDepartment}
+            onChange={(e) => setSelectedDepartment(e.target.value)}
+          >
+            {DEPARTMENTS.map(dept => (
+              <option key={dept} value={dept}>{dept}</option>
+            ))}
+          </select>
 
-              <button
-                onClick={loadData}
-                disabled={loading}
-                className="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-all disabled:opacity-50"
-                title="Refresh Data"
+          <select
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 outline-none cursor-pointer"
+          >
+            <option value="2023-2024">2023-2024</option>
+            <option value="2024-2025">2024-2025</option>
+            <option value="2025-2026">2025-2026</option>
+          </select>
+
+          <button
+            onClick={loadData}
+            className="p-2.5 bg-slate-100 rounded-xl hover:bg-slate-200 transition-all"
+          >
+            <FaSync className={loading ? "animate-spin" : ""} size={16} />
+          </button>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-black text-slate-400 uppercase tracking-widest mr-2">View:</span>
+            <div className="flex bg-slate-100 p-1 rounded-xl">
+              <button 
+                className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`} 
+                onClick={() => setViewMode('list')}
               >
-                <FaSync className={loading ? "animate-spin" : ""} size={16} />
+                <FaList size={16} />
+              </button>
+              <button 
+                className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`} 
+                onClick={() => setViewMode('grid')}
+              >
+                <FaThLarge size={16} />
               </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden">
-            <div className="absolute right-0 top-0 h-24 w-24 bg-indigo-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110 opacity-50"></div>
-            <div className="relative">
-              <div className="flex items-center justify-between mb-3">
-                <div className="h-10 w-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <FaUserTie size={18} />
-                </div>
-                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-                  +{filteredTeachers.length} active
-                </span>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Teachers</p>
-                <p className="text-2xl font-bold text-gray-900">{statistics.total}</p>
-              </div>
+      {/* Main Layout */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Sidebar - Fixed Width */}
+        <div className={`bg-white border-r flex flex-col transition-all duration-300 ${viewMode === 'list' ? 'w-full' : 'w-[360px]'}`}>
+          <div className={`flex-1 overflow-y-auto custom-scrollbar ${viewMode === 'list' ? 'p-6 space-y-2' : ''}`}>
+          {paginatedTeachers.length === 0 ? (
+            <div className="p-8 text-center mt-10">
+              <FaUserTie className="text-4xl text-slate-300 mx-auto mb-3" />
+              <p className="text-sm font-bold text-slate-400">No faculty members found</p>
             </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden">
-            <div className="absolute right-0 top-0 h-24 w-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110 opacity-50"></div>
-            <div className="relative">
-              <div className="flex items-center justify-between mb-3">
-                <div className="h-10 w-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <FaChalkboardTeacher size={18} />
-                </div>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Class Teachers</p>
-                <p className="text-2xl font-bold text-gray-900">{statistics.withClassTeacher}</p>
-              </div>
-            </div>
-            <div className="mt-2 flex items-center gap-2 text-xs text-gray-500 font-medium">
-              <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${(statistics.withClassTeacher / statistics.total) * 100 || 0}%` }}></div>
-              </div>
-              <span>{Math.round((statistics.withClassTeacher / statistics.total) * 100 || 0)}%</span>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden">
-            <div className="absolute right-0 top-0 h-24 w-24 bg-violet-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110 opacity-50"></div>
-            <div className="relative">
-              <div className="flex items-center justify-between mb-3">
-                <div className="h-10 w-10 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <FaBook size={18} />
-                </div>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Subject Teachers</p>
-                <p className="text-2xl font-bold text-gray-900">{statistics.withSubject}</p>
-              </div>
-            </div>
-            <div className="mt-2 text-xs text-gray-500 font-medium">
-              {statistics.withSubject - statistics.withClassTeacher} subject-only assignments
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden">
-            <div className="absolute right-0 top-0 h-24 w-24 bg-amber-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110 opacity-50"></div>
-            <div className="relative">
-              <div className="flex items-center justify-between mb-3">
-                <div className={`h-10 w-10 rounded-xl ${statistics.unassigned > 0 ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  {statistics.unassigned > 0 ? <FaExclamationCircle size={18} /> : <FaCheckCircle size={18} />}
-                </div>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Unassigned</p>
-                <p className="text-2xl font-bold text-gray-900">{statistics.unassigned}</p>
-              </div>
-            </div>
-            <div className="mt-2 text-xs text-gray-500 font-medium">
-              {statistics.unassigned > 0 ? 'Teachers need assignment' : 'All teachers assigned'}
-            </div>
-          </div>
-        </div>
-
-        {/* Action Bar */}
-        <div className="bg-white rounded-2xl p-5 mb-8 border border-gray-100 shadow-sm">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            {/* Left side - Search and Filters */}
-            <div className="flex-1 flex items-center gap-3 w-full">
-              <div className="relative flex-1 max-w-md">
-                <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                <input
-                  type="text"
-                  placeholder="Search by name, ID, email, or department..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all focus:bg-white"
-                />
-              </div>
-              
-              <select
-                value={selectedDepartment}
-                onChange={(e) => setSelectedDepartment(e.target.value)}
-                className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 cursor-pointer hover:bg-white transition-all"
-              >
-                {DEPARTMENTS.map((dept) => (
-                  <option key={dept} value={dept}>{dept}</option>
-                ))}
-              </select>
-
-              <div className="flex bg-gray-100 p-1 rounded-xl">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                    viewMode === "grid" 
-                      ? "bg-white text-indigo-600 shadow-sm" 
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+          ) : (
+            paginatedTeachers.map(teacher => 
+              viewMode === 'list' ? (
+                // LIST VIEW ROW
+                <div 
+                  key={teacher._id}
+                  className="group flex items-center px-6 h-20 border border-slate-100 rounded-2xl hover:bg-indigo-50/30 hover:shadow-sm transition-all cursor-pointer bg-white"
+                  onClick={() => { setSelectedTeacher(teacher); setViewMode('grid'); }}
                 >
-                  Grid
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                    viewMode === "list" 
-                      ? "bg-white text-indigo-600 shadow-sm" 
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  List
-                </button>
+                  {/* Col 1: Identity (30%) */}
+                  <div className="w-[30%] flex items-center gap-4 px-2">
+                    <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
+                      {teacher.profilePicture ? (
+                        <img src={getProfilePic(teacher)} alt={teacher.name} className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-sm font-black text-slate-400">{teacher.name?.charAt(0)}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-sm font-bold text-slate-900 truncate">{teacher.name}</h4>
+                      <p className="text-[10px] font-mono text-slate-400">{teacher.teacherID}</p>
+                    </div>
+                  </div>
+
+                  {/* Col 2: Department (20%) */}
+                  <div className="w-[20%] px-2 flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-emerald-400"></div>
+                    <span className="text-xs font-bold text-slate-600 truncate">{teacher.department || "General"}</span>
+                  </div>
+
+                  {/* Col 3: Contact (25%) */}
+                  <div className="w-[25%] px-2 flex flex-col justify-center">
+                    <div className="flex items-center gap-2 text-[11px] text-slate-600 truncate">
+                      <FaEnvelope size={10} className="text-slate-400 shrink-0" /> {teacher.email}
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5 truncate">
+                      <FaPhone size={10} className="text-slate-400 shrink-0" /> {teacher.phone || "N/A"}
+                    </div>
+                  </div>
+
+                  {/* Col 4: Assignments (15%) */}
+                  <div className="w-[15%] px-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold hover:bg-indigo-100 hover:text-indigo-700 transition-colors">
+                      <FaChalkboardTeacher size={10} />
+                      {teacher.assignedClasses?.length || 0} Classes
+                    </span>
+                  </div>
+
+                  {/* Col 5: Quick Actions (10%) */}
+                  <div className="w-[10%] px-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); openAssignModal(teacher, 'subject'); }}
+                      className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                      title="Assign Subject"
+                    >
+                      <FaPlus size={12} />
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setSelectedTeacher(teacher); setViewMode('grid'); }}
+                      className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+                      title="View Profile"
+                    >
+                      <FaEye size={12} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+              // GRID VIEW CARD (Existing)
+              <div 
+                key={teacher._id}
+                onClick={() => setSelectedTeacher(teacher)}
+                className={`p-5 flex items-center gap-4 cursor-pointer transition-all border-b relative ${
+                  selectedTeacher?._id === teacher._id ? 'bg-indigo-50/40' : 'hover:bg-slate-50'
+                }`}
+              >
+                {selectedTeacher?._id === teacher._id && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600"></div>
+                )}
+                
+                {/* Avatar with Status Dot */}
+                <div className="relative">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center font-black text-indigo-600 text-xl border-2 border-white shadow-sm overflow-hidden">
+                    {teacher.profilePicture ? (
+                      <img src={getProfilePic(teacher)} alt={teacher.name} className="h-full w-full object-cover" />
+                    ) : (
+                      teacher.name?.charAt(0)
+                    )}
+                  </div>
+                  <div className="absolute -top-1 -right-1 h-3 w-3 bg-purple-500 rounded-full border-2 border-white"></div>
+                </div>
+
+                {/* Teacher Info */}
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-[15px] font-bold text-slate-900 truncate">{teacher.name}</h4>
+                  <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                    {teacher.department || "Faculty"}
+                  </p>
+                  <p className="text-[10px] font-mono text-slate-400 mt-1">{teacher.teacherID}</p>
+                </div>
               </div>
-            </div>
+            ))
+          )}
           </div>
 
-          {/* Active filters display */}
-          {(selectedDepartment !== "All" || searchQuery) && (
-            <div className="mt-3 flex items-center gap-2 text-xs">
-              <span className="text-gray-500 font-medium">Active filters:</span>
-              {selectedDepartment !== "All" && (
-                <span className="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full flex items-center gap-1 border border-indigo-100">
-                  <FaFilter size={10} /> {selectedDepartment}
-                </span>
-              )}
-              {searchQuery && (
-                <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full flex items-center gap-1 border border-blue-100">
-                  <FaSearch size={10} /> "{searchQuery}"
-                </span>
-              )}
-              <button
-                onClick={() => {
-                  setSelectedDepartment("All");
-                  setSearchQuery("");
-                }}
-                className="text-gray-400 hover:text-gray-600 hover:underline transition-colors ml-2"
+          {/* Pagination Bar */}
+          {filteredTeachers.length > 0 && (
+            <div className="p-3 border-t bg-slate-50 flex items-center justify-between">
+              <button 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm disabled:opacity-30 transition-all"
               >
-                Clear all
+                <FaChevronLeft size={12} />
+              </button>
+              <span className="text-xs font-black text-slate-400 tracking-widest">
+                PAGE {currentPage} / {totalPages}
+              </span>
+              <button 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm disabled:opacity-30 transition-all"
+              >
+                <FaChevronRight size={12} />
               </button>
             </div>
           )}
         </div>
 
-        {/* Teachers Grid/List */}
-        {filteredTeachers.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-200 p-16 text-center shadow-sm">
-            <div className="h-24 w-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-              <FaUserTie className="h-12 w-12 text-gray-300" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No Teachers Found</h3>
-            <p className="text-gray-500 mb-8 max-w-md mx-auto">
-              {searchQuery
-                ? "No teachers match your search criteria"
-                : `No teachers found in ${selectedDepartment} department`}
-            </p>
-            <button
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedDepartment("All");
-              }}
-              className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 font-medium"
-            >
-              Clear Filters
-            </button>
-          </div>
-        ) : (
-          <div className={viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" 
-            : "space-y-4"
-          }>
-            {filteredTeachers.map((teacher) => (
-              viewMode === "grid" ? (
-                <TeacherCard
-                  key={teacher._id}
-                  teacher={teacher}
-                  onAssignClassTeacher={() => openAssignModal(teacher, "classTeacher")}
-                  onAssignSubject={() => openAssignModal(teacher, "subject")}
-                />
-              ) : (
-                <TeacherListItem
-                  key={teacher._id}
-                  teacher={teacher}
-                  onAssignClassTeacher={() => openAssignModal(teacher, "classTeacher")}
-                  onAssignSubject={() => openAssignModal(teacher, "subject")}
-                />
-              )
-            ))}
-          </div>
-        )}
+        {/* Right Panel - Scrollable */}
+        <div className={`flex-1 overflow-y-auto p-12 bg-white custom-scrollbar ${viewMode === 'list' ? 'hidden' : 'block'}`}>
+          {selectedTeacher ? (
+            <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
+              
+              {/* Profile Header */}
+              <div className="flex items-start justify-between">
+                <div className="flex gap-8">
+                  {/* Large Avatar */}
+                  <div className="h-32 w-32 rounded-[2.5rem] bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center text-5xl font-black text-indigo-200 border-4 border-white shadow-xl overflow-hidden">
+                    {selectedTeacher.profilePicture ? (
+                      <img src={getProfilePic(selectedTeacher)} alt={selectedTeacher.name} className="h-full w-full object-cover" />
+                    ) : (
+                      selectedTeacher.name?.charAt(0)
+                    )}
+                  </div>
 
-        {/* Summary Footer */}
-        {filteredTeachers.length > 0 && (
-          <div className="mt-8 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600 font-medium">
-                Showing <span className="font-semibold text-indigo-700">{filteredTeachers.length}</span> of{" "}
-                <span className="font-semibold">{statistics.total}</span> teachers
+                  {/* Name & Contact */}
+                  <div className="pt-2">
+                    <h2 className="text-4xl font-black text-slate-900 tracking-tight">{selectedTeacher.name}</h2>
+                    <div className="flex flex-col gap-2 mt-3">
+                      <span className="flex items-center gap-3 text-slate-500 font-bold text-sm">
+                        <FaEnvelope className="text-indigo-400" size={14} /> {selectedTeacher.email}
+                      </span>
+                      <div className="flex gap-8">
+                        <span className="flex items-center gap-3 text-slate-500 font-bold text-sm">
+                          <FaPhone className="text-indigo-400" size={14} /> {selectedTeacher.phone || "N/A"}
+                        </span>
+                        {selectedTeacher.alternatePhone && (
+                          <span className="flex items-center gap-3 text-slate-500 font-bold text-sm">
+                            <FaPhone className="text-slate-300" size={14} /> {selectedTeacher.alternatePhone}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Teacher ID Badge */}
+                <div className="bg-slate-100 px-5 py-2 rounded-2xl font-black text-sm text-slate-500 tracking-widest border border-slate-200">
+                  {selectedTeacher.teacherID}
+                </div>
               </div>
-              <div className="flex items-center gap-4 text-sm">
-                <span className="text-gray-600">
-                  Department: <span className="font-semibold text-indigo-700">{selectedDepartment}</span>
-                </span>
-                <span className="text-gray-600 hidden sm:inline">
-                  <span className="font-semibold text-emerald-600">{statistics.withClassTeacher}</span> Class Teachers •{" "}
-                  <span className="font-semibold text-blue-600">{statistics.withSubject}</span> Subject Teachers
-                </span>
+
+              {/* Administrative Roles & Action Buttons */}
+              <div>
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                  Administrative Roles
+                </h3>
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-slate-500">Current Assignments:</span>
+                    <div className="flex gap-2 flex-wrap">
+                      {selectedTeacher.assignedClasses?.length > 0 ? (
+                        selectedTeacher.assignedClasses.map((ac, idx) => (
+                          <span key={idx} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase tracking-wider border border-slate-200">
+                            {ac.class?.className}-{ac.section}
+                          </span>
+                        ))
+                      ) : <span className="text-xs text-slate-400 italic">No assignments</span>}
+                      {selectedTeacher.department && (
+                        <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-100">Subject Lead</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons - Added Back */}
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => openAssignModal(selectedTeacher, "classTeacher")}
+                      className="px-5 py-2.5 bg-white border-2 border-indigo-200 text-indigo-700 rounded-xl hover:bg-indigo-50 transition-all text-xs font-black flex items-center gap-2"
+                    >
+                      <FaChalkboardTeacher size={14} /> Assign Class Teacher
+                    </button>
+                    <button
+                      onClick={() => openAssignModal(selectedTeacher, "subject")}
+                      className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all text-xs font-black flex items-center gap-2 shadow-lg shadow-indigo-200"
+                    >
+                      <FaBook size={14} /> Assign Subject
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Schedule Summary - Day vs Period */}
+              <div className="w-full xl:w-[65%]">
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                  Schedule Summary
+                </h3>
+                <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                  {loadingSchedule ? (
+                    <div className="p-8 text-center">
+                      <FaSpinner className="animate-spin text-indigo-600 text-2xl mx-auto mb-2" />
+                      <p className="text-xs text-slate-400">Loading schedule...</p>
+                    </div>
+                  ) : (
+                    <table className="w-full text-[9px] text-center border-collapse">
+                      <thead className="bg-slate-50 border-b border-slate-100">
+                        <tr>
+                          <th className="p-3 border-r border-slate-100 font-black text-slate-400">Day</th>
+                          {[1, 2, 3, 4, 5, 6, 7, 8].map(p => (
+                            <th key={p} className="p-2 border-r border-slate-100 font-black text-slate-400 w-[10%]">P{p}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map(day => {
+                          const daySchedule = teacherSchedule[day] || [];
+                          return (
+                            <tr key={day} className="border-b border-slate-100 last:border-0 h-12">
+                              <td className="p-2 border-r border-slate-100 font-black bg-slate-50/30 text-slate-500 uppercase tracking-widest text-[8px]">
+                                {day.slice(0, 3)}
+                              </td>
+                              {[1, 2, 3, 4, 5, 6, 7, 8].map(p => {
+                                const period = daySchedule.find(s => s.periodNumber === p);
+                                return (
+                                  <td key={p} className="border-r border-slate-100 last:border-0 p-1 align-middle">
+                                    {period ? (
+                                      <div className="bg-indigo-50/50 p-1 rounded-md h-full flex flex-col justify-center items-center">
+                                        <div className="font-bold text-indigo-700 leading-none mb-0.5">
+                                          {period.className?.slice(0, 3)}-{period.section}
+                                        </div>
+                                        <div className="text-[7px] text-slate-400 uppercase font-bold">
+                                          {period.subject?.slice(0, 3)}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <span className="text-slate-200 font-light">—</span>
+                                    )}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+
+              {/* Bottom Grid - Activity Feed & Professional Development */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pt-4 border-t border-slate-100">
+                
+                {/* Activity Feed */}
+                <div className="lg:col-span-5">
+                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                    Activity Feed
+                  </h3>
+                  <div className="space-y-6 border-l-2 border-slate-100 ml-2 pl-6">
+                    {[
+                      { text: "Graded 20 assignments", color: "bg-indigo-500" },
+                      { text: "Uploaded Science Syllabus", color: "bg-emerald-500" },
+                      { text: "Marked attendance for Class 4-C", color: "bg-amber-500" },
+                      { text: "Completed Training Certification", color: "bg-purple-500" },
+                    ].map((act, idx) => (
+                      <div key={idx} className="relative">
+                        <div className={`absolute -left-[31px] top-1 h-3 w-3 rounded-full border-2 border-white ${act.color}`}></div>
+                        <p className="text-xs text-slate-600 font-black tracking-tight leading-relaxed">
+                          {act.text}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Professional Development */}
+                <div className="lg:col-span-7">
+                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                    Professional Development
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="flex gap-4 items-start bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <div className="h-2 w-2 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
+                        <p className="text-[11px] text-slate-500 font-bold leading-relaxed">
+                          Completed Training Certification on Digital Management 2026
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center">
+                <FaUserTie className="text-6xl text-slate-300 mx-auto mb-4" />
+                <p className="text-lg font-medium text-slate-400">Select a teacher to view details</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Assignment Modal */}
@@ -418,7 +559,6 @@ export default function TeacherManagement() {
           academicYear={academicYear}
           onClose={() => {
             setShowAssignModal(false);
-            setSelectedTeacher(null);
             setAssignmentType(null);
           }}
           onSuccess={() => {
@@ -427,217 +567,29 @@ export default function TeacherManagement() {
           }}
         />
       )}
-    </div>
-  );
-}
 
-// Teacher Card Component (Grid View)
-function TeacherCard({ teacher, onAssignClassTeacher, onAssignSubject }) {
-  const displayPhoto = teacher.profilePicture
-    ? teacher.profilePicture.startsWith("http")
-      ? teacher.profilePicture
-      : `${API_URL}/uploads/${teacher.schoolId}/teachers/${teacher.profilePicture}`
-    : null;
-
-  const assignmentCount = teacher.assignedClasses?.length || 0;
-  const classTeacherAssignments = teacher.assignedClasses?.filter(ac => ac.isClassTeacher) || [];
-
-  return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden group">
-      {/* Header with gradient */}
-      <div className="h-24 bg-gradient-to-r from-indigo-600 to-violet-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-white/5 opacity-30 pattern-grid-lg"></div>
-        <div className="absolute top-3 right-3">
-           <span className="px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-md border border-white/10 text-white text-xs font-semibold tracking-wide">
-             {teacher.teacherID}
-           </span>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="px-5 relative flex-1 flex flex-col">
-        {/* Avatar & Badge */}
-        <div className="-mt-12 mb-3 flex justify-between items-end">
-          <div className="relative">
-            <div className="h-20 w-20 rounded-2xl overflow-hidden bg-white border-4 border-white shadow-md">
-              {displayPhoto ? (
-                <img
-                  src={displayPhoto}
-                  alt={teacher.name}
-                  className="h-full w-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/assets/default-teacher-avatar.png";
-                  }}
-                />
-              ) : (
-                <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-violet-50">
-                  <span className="text-2xl font-bold text-indigo-600">
-                    {teacher.name?.charAt(0) || "T"}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {classTeacherAssignments.length > 0 && (
-            <div className="mb-1 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold flex items-center gap-1 border border-emerald-100 shadow-sm">
-              <FaCheckCircle size={10} /> Class Teacher: {classTeacherAssignments.map(ac => `${ac.class?.className}-${ac.section}`).join(", ")}
-            </div>
-          )}
-        </div>
-
-        {/* Info */}
-        <div className="mb-4">
-          <h3 className="text-lg font-bold text-gray-900 leading-tight mb-1 line-clamp-1" title={teacher.name}>{teacher.name}</h3>
-          <p className="text-sm font-medium text-indigo-600">{teacher.department || "General Department"}</p>
-        </div>
-
-        {/* Contact Info */}
-        <div className="space-y-2 mb-5">
-          <div className="flex items-center gap-2.5 text-sm text-gray-600">
-            <div className="w-6 flex justify-center"><FaEnvelope className="text-gray-400" size={14} /></div>
-            <span className="truncate">{teacher.email}</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-sm text-gray-600">
-            <div className="w-6 flex justify-center"><FaPhone className="text-gray-400" size={14} /></div>
-            <span>{teacher.phone || "N/A"}</span>
-          </div>
-        </div>
-
-        {/* Assignments */}
-        {assignmentCount > 0 && (
-          <div className="mb-5 bg-gray-50 rounded-xl p-3 border border-gray-100">
-            <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-200">
-              <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Assignments</span>
-              <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">{assignmentCount}</span>
-            </div>
-            <div className="space-y-2 max-h-20 overflow-y-auto pr-1 custom-scrollbar">
-              {teacher.assignedClasses?.slice(0, 3).map((ac, idx) => (
-                <div key={idx} className="flex items-center justify-between text-xs">
-                  <span className="text-gray-700 font-medium truncate max-w-[70%]">
-                    <span className="text-indigo-600 font-bold">{ac.class?.className}-{ac.section}</span> • {ac.subject}
-                  </span>
-                  {ac.isClassTeacher && (
-                    <FaCheckCircle className="text-emerald-500" title="Class Teacher" />
-                  )}
-                </div>
-              ))}
-              {assignmentCount > 3 && (
-                <p className="text-xs text-indigo-500 font-medium text-center pt-1">+{assignmentCount - 3} more</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="mt-auto pb-5 pt-2 flex gap-3">
-          <button
-            onClick={onAssignClassTeacher}
-            className="flex-1 py-2.5 bg-white border border-indigo-200 text-indigo-700 rounded-xl hover:bg-indigo-50 transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-sm"
-          >
-            <FaChalkboardTeacher size={14} />
-            Class Teacher
-          </button>
-          <button
-            onClick={onAssignSubject}
-            className="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-indigo-200"
-          >
-            <FaBook size={14} />
-            Subject
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Teacher List Item Component (List View)
-function TeacherListItem({ teacher, onAssignClassTeacher, onAssignSubject }) {
-  const displayPhoto = teacher.profilePicture
-    ? teacher.profilePicture.startsWith("http")
-      ? teacher.profilePicture
-      : `${API_URL}/uploads/${teacher.schoolId}/teachers/${teacher.profilePicture}`
-    : null;
-
-  const assignmentCount = teacher.assignedClasses?.length || 0;
-  const classTeacherAssignments = teacher.assignedClasses?.filter(ac => ac.isClassTeacher) || [];
-
-  return (
-    <div className="bg-white rounded-2xl border border-gray-200 hover:shadow-md transition-all p-4 group">
-      <div className="flex items-center gap-4">
-        {/* Avatar */}
-        <div className="h-14 w-14 rounded-xl overflow-hidden bg-gradient-to-br from-indigo-50 to-violet-50 flex-shrink-0 border border-gray-100">
-          {displayPhoto ? (
-            <img
-              src={displayPhoto}
-              alt={teacher.name}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center">
-              <span className="text-xl font-bold text-indigo-600">
-                {teacher.name?.charAt(0) || "T"}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 mb-1">
-            <h4 className="font-bold text-gray-900 text-lg">{teacher.name}</h4>
-            <span className="text-xs text-gray-400 font-mono bg-gray-50 px-2 py-0.5 rounded border border-gray-100">{teacher.teacherID}</span>
-            {teacher.department && (
-              <span className="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full font-medium border border-indigo-100">
-                {teacher.department}
-              </span>
-            )}
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600">
-            <span className="flex items-center gap-1">
-              <FaEnvelope className="text-gray-400" size={12} />
-              {teacher.email}
-            </span>
-            <span className="flex items-center gap-1">
-              <FaPhone className="text-gray-400" size={12} />
-              {teacher.phone || "N/A"}
-            </span>
-            <span className="flex items-center gap-1">
-              <FaBook className="text-indigo-400" size={12} />
-              <span className="font-medium text-gray-900">{assignmentCount}</span> assignments
-            </span>
-            {classTeacherAssignments.length > 0 && (
-              <span className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1">
-                <FaCheckCircle size={10} /> Class Teacher: {classTeacherAssignments.map(ac => `${ac.class?.className}-${ac.section}`).join(", ")}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={onAssignClassTeacher}
-            className="px-4 py-2 bg-white border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-50 transition-all text-sm font-medium"
-          >
-            + Class Teacher
-          </button>
-          <button
-            onClick={onAssignSubject}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium shadow-sm"
-          >
-            + Subject
-          </button>
-        </div>
-      </div>
+      {/* Custom Scrollbar Styles */}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: #e2e8f0;
+          border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: #cbd5e1;
+        }
+      `}</style>
     </div>
   );
 }
 
 // Assignment Modal Component
-function AssignmentModal({ teacher, classes, type, onClose, onSuccess }) {
+function AssignmentModal({ teacher, classes, type, academicYear, onClose, onSuccess }) {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSection, setSelectedSection] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -659,7 +611,7 @@ function AssignmentModal({ teacher, classes, type, onClose, onSuccess }) {
       try {
         setLoadingSubjects(true);
         const response = await api.get(
-          `${API_ENDPOINTS.ADMIN.TEACHER_MANAGEMENT.AVAILABLE_SUBJECTS}?classId=${selectedClass}&sectionName=${selectedSection}`,
+          `${API_ENDPOINTS.ADMIN.TEACHER_MANAGEMENT.AVAILABLE_SUBJECTS}?classId=${selectedClass}&sectionName=${selectedSection}&academicYear=${academicYear}`,
         );
 
         const subjects = response?.data?.availableSubjects || response?.availableSubjects || [];
@@ -674,7 +626,7 @@ function AssignmentModal({ teacher, classes, type, onClose, onSuccess }) {
     };
 
     fetchAvailableSubjects();
-  }, [selectedClass, selectedSection, type]);
+  }, [selectedClass, selectedSection, type, academicYear]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -697,13 +649,19 @@ function AssignmentModal({ teacher, classes, type, onClose, onSuccess }) {
         : API_ENDPOINTS.ADMIN.TEACHER_MANAGEMENT.ASSIGN_SUBJECT_TEACHER;
 
       const payload = type === "classTeacher"
-        ? { classId: selectedClass, sectionName: selectedSection, teacherId: teacher._id }
+        ? { 
+            classId: selectedClass, 
+            sectionName: selectedSection, 
+            teacherId: teacher._id,
+            academicYear 
+          }
         : {
             classId: selectedClass,
             sectionName: selectedSection,
             subjectName: selectedSubject,
             teacherId: teacher._id,
             hoursPerWeek: parseInt(hoursPerWeek),
+            academicYear
           };
 
       await api.put(endpoint, payload);
@@ -716,19 +674,18 @@ function AssignmentModal({ teacher, classes, type, onClose, onSuccess }) {
 
       onSuccess();
     } catch (error) {
-      toast.error(error.message || "Failed to assign teacher");
+      toast.error(error.response?.data?.message || error.message || "Failed to assign teacher");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-all">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl transform transition-all scale-100">
+    <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
         {/* Header */}
-        <div className="p-6 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-t-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-          <div className="flex items-start justify-between relative z-10">
+        <div className="p-6 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-t-2xl">
+          <div className="flex items-start justify-between">
             <div>
               <h3 className="text-xl font-bold">
                 {type === "classTeacher" ? "Assign Class Teacher" : "Assign Subject Teacher"}
@@ -739,9 +696,8 @@ function AssignmentModal({ teacher, classes, type, onClose, onSuccess }) {
               </p>
             </div>
             <button
-              type="button"
               onClick={onClose}
-              className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all text-white"
+              className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all"
             >
               <FaTimes size={14} />
             </button>
@@ -849,7 +805,7 @@ function AssignmentModal({ teacher, classes, type, onClose, onSuccess }) {
               disabled={loading || (type === "subject" && availableSubjects.length === 0)}
               className="flex-1 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200"
             >
-              {loading ? "Assigning..." : "Assign Teacher"}
+              {loading ? "Assigning..." : "Assign"}
             </button>
           </div>
         </form>
