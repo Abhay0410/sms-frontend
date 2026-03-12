@@ -52,7 +52,7 @@ export const API_ENDPOINTS = {
     TEACHER: {
       ALL: "/api/admin/teachers",
       COUNTS: "/api/admin/teachers/counts",
-      LIST: "/api/admin/teachers/list",
+      LIST: "/api/admin/teachers/list",  
       CREATE: "/api/admin/teachers",
       GET_BY_ID: (id) => `/api/admin/teachers/${id}`,
       UPDATE: (id) => `/api/admin/teachers/${id}`,
@@ -65,6 +65,7 @@ export const API_ENDPOINTS = {
     // Teacher Management (Advanced)
     TEACHER_MANAGEMENT: {
       LIST: "/api/admin/teacher-management/list",
+      GET_SCHEDULE: (id) => `/api/admin/teacher-management/teacher-schedule?teacherId=${id}`,
       TEACHERS: "/api/admin/teacher-management/teachers",
       ASSIGNMENTS: (id) => `/api/admin/teacher-management/${id}/assignments`,
       SECTION_TEACHERS: "/api/admin/teacher-management/section-teachers",
