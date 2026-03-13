@@ -228,7 +228,7 @@ export default function TeacherProfileManage() {
   return (
     <div className="min-h-screen bg-gray-50 ">
       <div className="mx-auto max-w-4xl">
-        <BackButton to="/teacher/teacher-dashboard" />
+        {/* <BackButton to="/teacher/teacher-dashboard" /> */}
 
         {/* Header Section */}
         <div className="text-center mb-8">

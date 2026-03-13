@@ -143,9 +143,9 @@ export default function ChildrenDetails() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 ">
       <div className="mx-auto max-w-7xl">
-        <BackButton to="/parent/parent-dashboard" />
+        {/* <BackButton to="/parent/parent-dashboard" /> */}
 
-        <div className="mt-4">
+        <div className="">
           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
             My Children
           </h2>

@@ -88,8 +88,8 @@ export default function ViewChildResults() {
   return (
     <div className="min-h-screen bg-slate-50  font-bold uppercase text-xs tracking-tight">
       <div className="max-w-6xl mx-auto">
-        <BackButton to={`/parent/children`} />
-        <div className="mt-5 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        {/* <BackButton to={`/parent/children`} /> */}
+        <div className=" mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 tracking-tighter leading-none">OFFICIAL TRANSCRIPT</h1>
             <p className="text-gray-500 mt-2 tracking-normal font-medium capitalize flex items-center gap-2">

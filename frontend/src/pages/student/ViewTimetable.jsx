@@ -76,10 +76,10 @@ export default function ViewTimetable() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50  p-4">
       <div className="mx-auto max-w-7xl">
-        <BackButton to="/student/student-dashboard" />
+        {/* <BackButton to="/student/student-dashboard" /> */}
 
         {/* Header */}
-        <div className="mt-4">
+        <div className="">
           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
             My Timetable
           </h2>

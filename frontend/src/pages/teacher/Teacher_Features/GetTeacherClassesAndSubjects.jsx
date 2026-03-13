@@ -58,11 +58,11 @@ export default function GetTeacherClassesAndSubjects() {
   return (
     <div className="min-h-screen bg-gray-50 ">
       <div className="mx-auto max-w-6xl">
-        <BackButton to="/teacher/teacher-dashboard" />
+        {/* <BackButton to="/teacher/teacher-dashboard" /> */}
         
         {/* Teacher Info Header */}
         {data.teacher && (
-          <div className=" mt-3 mb-4 p-4 bg-white rounded-xl shadow-lg">
+          <div className=" mb-4 p-4 bg-white rounded-xl shadow-lg">
             <h2 className="text-3xl font-bold text-slate-900 mb-1 tracking-tight">
               {data.teacher.name}
             </h2>

@@ -143,16 +143,16 @@ export default function ParentProfileManage() {
       : "/assets/default-parent-avatar.png");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50 ">
       <div className="mx-auto max-w-4xl">
-        <BackButton to="/parent/parent-dashboard" />
+        {/* <BackButton to="/parent/parent-dashboard" /> */}
 
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mt-6 bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold mt-4 bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
             My Profile
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 font-medium mt-1">
             Manage your personal information and preferences
           </p>
         </div>
@@ -179,7 +179,7 @@ export default function ParentProfileManage() {
             </div>
 
             <div className="text-white text-center md:text-left flex-1">
-              <h3 className="text-3xl font-bold mb-2">{parentInfo.name}</h3>
+              <h3 className="text-2xl font-bold mb-2">{parentInfo.name}</h3>
               <div className="space-y-1">
                 <p className="text-green-100 font-medium">
                   {parentInfo.parentID}

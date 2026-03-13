@@ -96,9 +96,9 @@ export default function MyClasses() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50  p-4">
       <div className="mx-auto max-w-6xl">
-        <BackButton to="/student/student-dashboard" />
+        {/* <BackButton to="/student/student-dashboard" /> */}
 
-        <div className="mt-4">
+        <div className="">
           <h2 className="text-3xl font-bold text-gray-900">My Classes</h2>
           <p className="mt-2 font-medium text-gray-600">Your academic class and section details</p>
         </div>

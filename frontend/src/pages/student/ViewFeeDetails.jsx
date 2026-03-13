@@ -124,10 +124,10 @@ export default function ViewFeeDetails() {
   return (
     <div className="min-h-screen bg-gray-50  ">
       <div className="mx-auto max-w-7xl">
-        <BackButton to="/student/student-dashboard" />
+        {/* <BackButton to="/student/student-dashboard" /> */}
 
         {/* Header */}
-        <div className="mt-6 mb-6">
+        <div className=" mb-6">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Fee Details</h1>
           <p className="mt-1 font-medium text-gray-600">View your fee structure and payment history</p>
         </div>

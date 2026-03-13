@@ -244,8 +244,8 @@ export default function CreateResult() {
   return (
     <div className="min-h-screen bg-slate-50 ">
       <div className="max-w-7xl mx-auto">
-        <BackButton to="/teacher/teacher-dashboard" />
-        <div className="mt-4 mb-4">
+        {/* <BackButton to="/teacher/teacher-dashboard" /> */}
+        <div className=" mb-4">
           <h1 className="text-3xl font-bold text-slate-900">Create Result</h1>
           <p className="text-gray-600  font-medium mt-1">Enter marks for student examination</p>
         </div>

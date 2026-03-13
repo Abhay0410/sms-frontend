@@ -215,10 +215,10 @@ const childPhotoUrl = selectedChild?.profilePicture
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-3 ">
       <div className="mx-auto max-w-7xl">
-        <BackButton to="/parent/parent-dashboard" />
+        {/* <BackButton to="/parent/parent-dashboard" /> */}
 
         {/* Header */}
-        <div className="mt-6">
+        <div className="">
           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
             Child&apos;s Attendance
           </h2>

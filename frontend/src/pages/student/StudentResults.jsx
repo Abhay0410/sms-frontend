@@ -122,10 +122,10 @@ export default function StudentResults() {
   return (
     <div className="min-h-screen bg-slate-50 ">
       <div className="max-w-6xl mx-auto">
-        <BackButton to="/student/student-dashboard" />
+        {/* <BackButton to="/student/student-dashboard" /> */}
         
-        <div className="mt-4 mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight uppercase">Academic Statement</h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight ">Academic Statement</h1>
           <p className="text-slate-500 font-medium">Official examination records and performance history.</p>
         </div>
 

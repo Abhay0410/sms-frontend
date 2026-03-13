@@ -139,10 +139,10 @@ export default function ViewAttendance() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 ">
       <div className="mx-auto max-w-6xl">
-        <BackButton to="/student/student-dashboard" />
+        {/* <BackButton to="/student/student-dashboard" /> */}
 
         {/* Header Section */}
-        <div className="mt-4">
+        <div className="">
           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
             My Attendance
           </h2>

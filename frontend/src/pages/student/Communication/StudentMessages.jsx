@@ -60,7 +60,7 @@ const StudentMessaging = () => {
     <div className=" bg-slate-50 min-h-screen">
       <div className="mb-4 flex items-center justify-between px-2">
         <div className="flex items-center gap-4">
-          <BackButton />
+          {/* <BackButton /> */}
           <h2 className="text-3xl font-bold flex items-center gap-2 text-slate-800">
             <FaInbox className="text-indigo-600" /> Communications
           </h2>
