@@ -1,7 +1,7 @@
 // src/components/layout/Sidebar.jsx - UPDATED WITH SCHOOL SLUG
 import React, { useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { FaBars, FaHome, FaSignOutAlt, FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { FaHome, FaSignOutAlt, FaChevronDown, FaChevronRight, FaTimes } from "react-icons/fa";
 import useLogout from "../hooks/useLogout";
 
 const Sidebar = ({ 
@@ -79,7 +79,7 @@ const Sidebar = ({
           </div>
         </div>
         <button className="md:hidden text-slate-400" onClick={() => setIsOpen(false)}>
-          <FaBars size={24} />
+          <FaTimes size={24} />
         </button>
       </div>
 
