@@ -54,12 +54,16 @@ export default function StudentManagement() {
 
       const [studentsResp, statsResp] = await Promise.all([
         api.get(`${API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.LIST}?${params}`),
-        api.get(`${API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.STATISTICS}?academicYear=${filters.academicYear}`),
+        api.get(
+          `${API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.STATISTICS}?academicYear=${filters.academicYear}`,
+        ),
       ]);
 
-      const studentData = studentsResp?.students || studentsResp?.data?.students || [];
-      const paginationData = studentsResp?.pagination || studentsResp?.data?.pagination || {};
-      
+      const studentData =
+        studentsResp?.students || studentsResp?.data?.students || [];
+      const paginationData =
+        studentsResp?.pagination || studentsResp?.data?.pagination || {};
+
       setStudents(studentData);
       setPagination(paginationData);
       setStatistics(statsResp?.data || statsResp);
@@ -79,7 +83,7 @@ export default function StudentManagement() {
     setSelectedStudents((prev) =>
       prev.includes(studentId)
         ? prev.filter((id) => id !== studentId)
-        : [...prev, studentId]
+        : [...prev, studentId],
     );
   };
 
@@ -97,7 +101,11 @@ export default function StudentManagement() {
       return;
     }
 
-    if (!window.confirm(`Update status to ${status} for ${selectedStudents.length} students?`)) {
+    if (
+      !window.confirm(
+        `Update status to ${status} for ${selectedStudents.length} students?`,
+      )
+    ) {
       return;
     }
 
@@ -121,7 +129,11 @@ export default function StudentManagement() {
       return;
     }
 
-    if (!window.confirm(`Delete ${selectedStudents.length} students? This cannot be undone!`)) {
+    if (
+      !window.confirm(
+        `Delete ${selectedStudents.length} students? This cannot be undone!`,
+      )
+    ) {
       return;
     }
 
@@ -143,7 +155,9 @@ export default function StudentManagement() {
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
-          <p className="mt-6 text-lg font-medium text-slate-700">Loading students...</p>
+          <p className="mt-6 text-lg font-medium text-slate-700">
+            Loading students...
+          </p>
         </div>
       </div>
     );
@@ -152,19 +166,18 @@ export default function StudentManagement() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-7xl">
-        
         {/* Header */}
-        <div className="">
+        <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+              <h2 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
                 Student Management
               </h2>
               <p className="font-medium text-gray-500  text-sm flex items-center gap-1 mt-1">
                 <FaUserGraduate className="text-blue-600" />
                 Manage all students, bulk operations, and promotions
               </p>
-            </div>  
+            </div>
           </div>
 
           {/* Statistics */}
@@ -191,16 +204,18 @@ export default function StudentManagement() {
         </div>
 
         {/* Filters */}
-        <div className="mt-6 rounded-2xl bg-white p-6 shadow-md border border-slate-100">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="mt-6 rounded-2xl bg-white p-6 shadow-sm border border-slate-200">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Academic Year
               </label>
               <select
                 value={filters.academicYear}
-                onChange={(e) => setFilters({ ...filters, academicYear: e.target.value })}
-                className="w-full rounded-lg border-2 border-slate-200 p-2 focus:border-blue-500 focus:outline-none"
+                onChange={(e) =>
+                  setFilters({ ...filters, academicYear: e.target.value })
+                }
+                className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition"
               >
                 <option value="2023-2024">2023-2024</option>
                 <option value="2024-2025">2024-2025</option>
@@ -209,10 +224,14 @@ export default function StudentManagement() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Status</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Status
+              </label>
               <select
                 value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                onChange={(e) =>
+                  setFilters({ ...filters, status: e.target.value })
+                }
                 className="w-full rounded-lg border-2 border-slate-200 p-2 focus:border-blue-500 focus:outline-none"
               >
                 <option value="">All Statuses</option>
@@ -224,10 +243,14 @@ export default function StudentManagement() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Class</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Class
+              </label>
               <select
                 value={filters.className}
-                onChange={(e) => setFilters({ ...filters, className: e.target.value })}
+                onChange={(e) =>
+                  setFilters({ ...filters, className: e.target.value })
+                }
                 className="w-full rounded-lg border-2 border-slate-200 p-2 focus:border-blue-500 focus:outline-none"
               >
                 <option value="">All Classes</option>
@@ -240,13 +263,17 @@ export default function StudentManagement() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-2">Search</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Search
+              </label>
               <div className="relative">
                 <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={filters.search}
-                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                  onChange={(e) =>
+                    setFilters({ ...filters, search: e.target.value })
+                  }
                   className="w-full rounded-lg border-2 border-slate-200 p-2 pl-10 focus:border-blue-500 focus:outline-none"
                   placeholder="Search by name, ID, or email..."
                 />
@@ -259,7 +286,8 @@ export default function StudentManagement() {
         {selectedStudents.length > 0 && (
           <div className="mt-6 rounded-2xl bg-blue-50 p-4 border-2 border-blue-200 flex items-center justify-between">
             <p className="text-blue-900 font-semibold">
-              {selectedStudents.length} student{selectedStudents.length !== 1 ? "s" : ""} selected
+              {selectedStudents.length} student
+              {selectedStudents.length !== 1 ? "s" : ""} selected
             </p>
             <div className="flex gap-2">
               <button
@@ -293,30 +321,45 @@ export default function StudentManagement() {
         )}
 
         {/* Student Table */}
-        <div className="mt-6 rounded-2xl bg-white shadow-md border border-slate-100 overflow-hidden">
-          <div className="overflow-x-auto">
+<div className="mt-6 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden">          <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
                 <tr>
                   <th className="p-4 text-left">
                     <input
                       type="checkbox"
-                      checked={students.length > 0 && selectedStudents.length === students.length}
+                      checked={
+                        students.length > 0 &&
+                        selectedStudents.length === students.length
+                      }
                       onChange={toggleAll}
                       className="h-4 w-4 rounded border-slate-300"
                     />
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">Student</th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">Class</th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">Status</th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">Parent</th>
-                  <th className="p-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">Final Result</th>
+                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                    Student
+                  </th>
+                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                    Class
+                  </th>
+                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                    Status
+                  </th>
+                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                    Parent
+                  </th>
+                  <th className="p-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">
+                    Final Result
+                  </th>
                   {/* <th className="p-4 text-left text-sm font-semibold text-slate-700">Actions</th> */}
                 </tr>
               </thead>
               <tbody>
                 {students.map((student) => (
-                  <tr key={student._id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <tr
+                    key={student._id}
+                   className="border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-150"
+                  >
                     <td className="p-4">
                       <input
                         type="checkbox"
@@ -326,13 +369,24 @@ export default function StudentManagement() {
                       />
                     </td>
                     <td className="p-4">
-                      <div>
-                        <p className="font-semibold text-slate-900">{student.name}</p>
-                        <p className="text-sm text-slate-600">{student.studentID}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold">
+                          {student.name?.charAt(0)}
+                        </div>
+
+                        <div>
+                          <p className="font-semibold text-slate-900">
+                            {student.name}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {student.studentID}
+                          </p>
+                        </div>
                       </div>
                     </td>
                     <td className="p-4 text-slate-700">
-                      {student.className} {student.section && `- ${student.section}`}
+                      {student.className}{" "}
+                      {student.section && `- ${student.section}`}
                       {student.rollNumber && (
                         <span className="block text-sm text-slate-500">
                           Roll: {student.rollNumber}
@@ -341,12 +395,12 @@ export default function StudentManagement() {
                     </td>
                     <td className="p-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        className={`px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide${
                           student.status === "ENROLLED"
                             ? "bg-green-100 text-green-800"
                             : student.status === "REGISTERED"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-slate-100 text-slate-800"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-slate-100 text-slate-800"
                         }`}
                       >
                         {student.status}
@@ -358,13 +412,18 @@ export default function StudentManagement() {
                     <td className="p-4">
                       {student.finalResult ? (
                         <div className="flex flex-col gap-1">
-                          <div className={`px-3 py-1 rounded-full text-[10px] font-bold w-fit flex items-center gap-1.5 shadow-sm ${
-                            student.finalResult.result === 'PASS' 
-                              ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
-                              : 'bg-rose-50 text-rose-600 border border-rose-100'
-                          }`}>
-                            <div className={`h-1.5 w-1.5 rounded-full ${student.finalResult.result === 'PASS' ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
-                            {student.finalResult.result} ({student.finalResult.overallPercentage}%)
+                          <div
+                            className={`px-3 py-1 rounded-full text-[10px] font-bold w-fit flex items-center gap-1.5 shadow-sm ${
+                              student.finalResult.result === "PASS"
+                                ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                                : "bg-rose-50 text-rose-600 border border-rose-100"
+                            }`}
+                          >
+                            <div
+                              className={`h-1.5 w-1.5 rounded-full ${student.finalResult.result === "PASS" ? "bg-emerald-500" : "bg-rose-500"}`}
+                            ></div>
+                            {student.finalResult.result} (
+                            {student.finalResult.overallPercentage}%)
                           </div>
                           {!student.finalResult.isPublished && (
                             <span className="text-[9px] text-amber-500 font-bold uppercase italic px-1">
@@ -374,8 +433,8 @@ export default function StudentManagement() {
                         </div>
                       ) : (
                         <div className="text-slate-300 text-[10px] font-bold uppercase flex items-center gap-1">
-                           <div className="h-1 w-1 rounded-full bg-slate-200"></div>
-                           Pending Generation
+                          <div className="h-1 w-1 rounded-full bg-slate-200"></div>
+                          Pending Generation
                         </div>
                       )}
                     </td>
@@ -394,21 +453,36 @@ export default function StudentManagement() {
           {pagination.totalPages > 1 && (
             <div className="p-4 flex items-center justify-between border-t border-slate-200">
               <p className="text-sm text-slate-600">
-                Showing {((pagination.currentPage - 1) * pagination.perPage) + 1} to{" "}
-                {Math.min(pagination.currentPage * pagination.perPage, pagination.total)} of {pagination.total}
+                Showing {(pagination.currentPage - 1) * pagination.perPage + 1}{" "}
+                to{" "}
+                {Math.min(
+                  pagination.currentPage * pagination.perPage,
+                  pagination.total,
+                )}{" "}
+                of {pagination.total}
               </p>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setPagination({ ...pagination, currentPage: pagination.currentPage - 1 })}
+                  onClick={() =>
+                    setPagination({
+                      ...pagination,
+                      currentPage: pagination.currentPage - 1,
+                    })
+                  }
                   disabled={pagination.currentPage === 1}
-                  className="px-3 py-1 rounded border disabled:opacity-50"
+                  className="px-4 py-1.5 text-sm rounded-lg border border-slate-300 hover:bg-slate-100 transition disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
-                  onClick={() => setPagination({ ...pagination, currentPage: pagination.currentPage + 1 })}
+                  onClick={() =>
+                    setPagination({
+                      ...pagination,
+                      currentPage: pagination.currentPage + 1,
+                    })
+                  }
                   disabled={pagination.currentPage === pagination.totalPages}
-                  className="px-3 py-1 rounded border disabled:opacity-50"
+                  className="px-4 py-1.5 text-sm rounded-lg border border-slate-300 hover:bg-slate-100 transition disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -437,7 +511,13 @@ export default function StudentManagement() {
 }
 
 // Promote Modal Component
-function PromoteModal({ selectedCount, onClose, onSuccess, studentIds, students }) {
+function PromoteModal({
+  selectedCount,
+  onClose,
+  onSuccess,
+  studentIds,
+  students,
+}) {
   const [newClassName, setNewClassName] = useState("");
   const [newAcademicYear, setNewAcademicYear] = useState("");
   const [resetSection, setResetSection] = useState(true);
@@ -447,8 +527,10 @@ function PromoteModal({ selectedCount, onClose, onSuccess, studentIds, students 
     e.preventDefault();
 
     // 🛡️ Safety Filter
-    const failStudents = students.filter(s => 
-      studentIds.includes(s._id) && (!s.finalResult || s.finalResult.result !== 'PASS')
+    const failStudents = students.filter(
+      (s) =>
+        studentIds.includes(s._id) &&
+        (!s.finalResult || s.finalResult.result !== "PASS"),
     );
 
     if (failStudents.length > 0) {
@@ -482,9 +564,12 @@ function PromoteModal({ selectedCount, onClose, onSuccess, studentIds, students 
         <div className="border-b border-slate-100 p-6 bg-gradient-to-r from-green-50 to-blue-50">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-slate-900">Promote Students</h3>
+              <h3 className="text-2xl font-bold text-slate-900">
+                Promote Students
+              </h3>
               <p className="mt-2 text-sm text-slate-600">
-                Promoting {selectedCount} student{selectedCount !== 1 ? "s" : ""}
+                Promoting {selectedCount} student
+                {selectedCount !== 1 ? "s" : ""}
               </p>
             </div>
             <button
@@ -541,7 +626,8 @@ function PromoteModal({ selectedCount, onClose, onSuccess, studentIds, students 
               className="h-4 w-4 rounded border-slate-300"
             />
             <label className="text-sm text-slate-700">
-              Reset section and roll number (students will need to be reassigned)
+              Reset section and roll number (students will need to be
+              reassigned)
             </label>
           </div>
 
