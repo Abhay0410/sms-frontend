@@ -70,7 +70,7 @@ export default function TeacherManagement() {
     try {
       setLoadingSchedule(true);
       // Using the exact API you mentioned
-      const resp = await api.get(`/api/admin/teacher-management/teacher-schedule?teacherId=${teacherId}&academicYear=${academicYear}`);
+      const resp = await api.get(`${API_ENDPOINTS.ADMIN.TEACHER_MANAGEMENT.GET_SCHEDULE(teacherId)}&academicYear=${academicYear}`);
       
       // Extract schedule data from response
       const scheduleData = resp.data?.schedule || resp.schedule || {};

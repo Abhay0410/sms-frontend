@@ -9,23 +9,23 @@ import {
   FaBarcode,
   FaSpinner,
   FaCheckCircle,
-  FaHistory,
-  FaQrcode,
-  FaSearch,
   FaClock,
   FaBookOpen,
   FaTimes,
   FaArrowRight,
-  FaUserCircle,
   FaBook,
   FaChalkboardTeacher,
+  FaListUl,
 } from "react-icons/fa";
 
 export default function BookIssueReturn() {
   const [activeTab, setActiveTab] = useState("ISSUE");
   const [loading, setLoading] = useState(false);
-  const [scanning, setScanning] = useState(false);
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [issuedBooks, setIssuedBooks] = useState([]); // List for the modal
+  const [showIssuedModal, setShowIssuedModal] = useState(false);
+  const [issuedModalFilter, setIssuedModalFilter] = useState("ALL"); // ALL or OVERDUE
+
   const [stats, setStats] = useState({
     totalIssued: 0,
     totalReturned: 0,
@@ -36,16 +36,13 @@ export default function BookIssueReturn() {
   const [issueData, setIssueData] = useState({
     userId: "",
     serialCode: "",
-    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   });
   const [returnData, setReturnData] = useState({ serialCode: "" });
 
   const scanInputRef = useRef(null);
   const studentInputRef = useRef(null);
 
-  // Focus on input when tab changes
   useEffect(() => {
     if (activeTab === "ISSUE") {
       studentInputRef.current?.focus();
@@ -54,7 +51,6 @@ export default function BookIssueReturn() {
     }
   }, [activeTab]);
 
-  // Fetch stats and recent transactions
   useEffect(() => {
     fetchLibraryStats();
     fetchRecentTransactions();
@@ -62,32 +58,36 @@ export default function BookIssueReturn() {
 
   const fetchLibraryStats = async () => {
     try {
-      const response = await api.get(
-        API_ENDPOINTS.ADMIN.LIBRARY?.STATS || "/api/admin/library/stats",
-      );
-      setStats(
-        response.data || { totalIssued: 0, totalReturned: 0, overdue: 0 },
-      );
+      const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY?.STATS || "/api/admin/library/stats");
+      setStats(response.data || { totalIssued: 0, totalReturned: 0, overdue: 0 });
     } catch (error) {
-      console.warn(
-        "Failed to fetch library stats (Backend endpoint missing):",
-        error,
-      );
+      console.warn("Stats fetch failed", error);
     }
   };
 
   const fetchRecentTransactions = async () => {
     try {
-      const response = await api.get(
-        API_ENDPOINTS.ADMIN.LIBRARY?.RECENT_TRANSACTIONS ||
-          "/api/admin/library/recent",
-      );
+      const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY?.RECENT_TRANSACTIONS || "/api/admin/library/recent");
       setRecentTransactions(response.data || []);
     } catch (error) {
-      console.warn(
-        "Failed to fetch recent transactions (Backend endpoint missing):",
-        error,
-      );
+      console.warn("Transactions fetch failed", error);
+    }
+  };
+
+  const handleFetchIssuedList = async (filterType = "ALL") => {
+    setLoading(true);
+    try {
+      // 🚩 Change: Call ACTIVE_ISSUES instead of RECENT
+      const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY.ACTIVE_ISSUES);
+      const data = response.data || [];
+      
+      setIssuedBooks(data); 
+      setIssuedModalFilter(filterType);
+      setShowIssuedModal(true);
+    } catch  {
+      toast.error("Failed to load list");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,16 +95,9 @@ export default function BookIssueReturn() {
     e.preventDefault();
     setLoading(true);
     try {
-      const endpoint =
-        API_ENDPOINTS.ADMIN.LIBRARY?.ISSUE_BOOK || "/api/admin/library/issue";
-
-      const payload = {
-        ...issueData,
-        userType, // Backend requires userType
-      };
-
-      const response = await api.post(endpoint, payload);
-      toast.success(response.data?.message || "Book issued successfully!");
+      const payload = { ...issueData, userType };
+      const response = await api.post(API_ENDPOINTS.ADMIN.LIBRARY?.ISSUE_BOOK, payload);
+      toast.success(response.data?.message || "Book issued!");
       setIssueData({
         userId: "",
         serialCode: "",
@@ -125,10 +118,8 @@ export default function BookIssueReturn() {
     e.preventDefault();
     setLoading(true);
     try {
-      const endpoint =
-        API_ENDPOINTS.ADMIN.LIBRARY?.RETURN_BOOK || "/api/admin/library/return";
-      const response = await api.post(endpoint, returnData);
-      toast.success(response.data?.message || "Book returned successfully!");
+      const response = await api.post(API_ENDPOINTS.ADMIN.LIBRARY?.RETURN_BOOK, returnData);
+      toast.success(response.data?.message || "Book returned!");
       setReturnData({ serialCode: "" });
       fetchLibraryStats();
       fetchRecentTransactions();
@@ -139,525 +130,245 @@ export default function BookIssueReturn() {
     }
   };
 
-  const simulateBarcodeScan = (type) => {
-    setScanning(true);
-    toast.info(`Point camera at ${type} barcode...`);
-
-    // Simulate scan delay
-    setTimeout(() => {
-      const mockCode =
-        type === "student"
-          ? `STU-${Math.floor(Math.random() * 10000)
-              .toString()
-              .padStart(4, "0")}`
-          : `BK-${Math.floor(Math.random() * 1000)
-              .toString()
-              .padStart(3, "0")}`;
-
-      if (activeTab === "ISSUE") {
-        if (type === "student") {
-          setIssueData((prev) => ({ ...prev, userId: mockCode }));
-          toast.success(`Student scanned: ${mockCode}`);
-        } else {
-          setIssueData((prev) => ({ ...prev, serialCode: mockCode }));
-          toast.success(`Book scanned: ${mockCode}`);
-        }
-      } else {
-        setReturnData((prev) => ({ ...prev, serialCode: mockCode }));
-        toast.success(`Book scanned: ${mockCode}`);
-      }
-      setScanning(false);
-    }, 1500);
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 p-6 font-sans">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
             Book Circulation
           </h1>
           <p className="text-slate-500 text-sm font-medium flex items-center gap-2">
             <FaBookReader className="text-orange-500" />
-            Issue and return books with barcode scanning
+            Manage issues and returns
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100">
-            <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-3 rounded-xl">
-                <FaBook className="text-white text-xl" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {[
+            { label: "Issued Items", val: stats.totalIssued, icon: <FaBook />, color: "from-emerald-500 to-teal-500" },
+            { label: "Returned Today", val: stats.totalReturned, icon: <FaCheckCircle />, color: "from-cyan-500 to-blue-500" },
+            { label: "Overdue Books", val: stats.overdue, icon: <FaClock />, color: "from-orange-500 to-red-500" },
+          ].map((s, i) => (
+            <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center gap-5">
+              <div className={`bg-gradient-to-r ${s.color} p-4 rounded-2xl shadow-lg shadow-slate-200`}>
+                <div className="text-white text-2xl">{s.icon}</div>
               </div>
               <div>
-                <p className="text-slate-500 text-sm font-medium">
-                  Issued Today
-                </p>
-                <p className="text-2xl font-bold text-slate-900">
-                  {stats.totalIssued}
-                </p>
+                <p className="text-slate-400 text-xs font-black uppercase tracking-widest">{s.label}</p>
+                <p className="text-3xl font-black text-slate-900">{s.val}</p>
               </div>
             </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100">
-            <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-3 rounded-xl">
-                <FaCheckCircle className="text-white text-xl" />
-              </div>
-              <div>
-                <p className="text-slate-500 text-sm font-medium">
-                  Returned Today
-                </p>
-                <p className="text-2xl font-bold text-slate-900">
-                  {stats.totalReturned}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100">
-            <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-xl">
-                <FaClock className="text-white text-xl" />
-              </div>
-              <div>
-                <p className="text-slate-500 text-sm font-medium">Overdue</p>
-                <p className="text-2xl font-bold text-slate-900">
-                  {stats.overdue}
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Issue/Return Forms */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {/* Tab Navigation */}
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-              <div className="flex border-b border-slate-100">
+            <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+              <div className="flex bg-slate-50/50 p-2">
                 <button
                   onClick={() => setActiveTab("ISSUE")}
-                  className={`flex-1 py-4 text-center font-semibold transition-all ${
+                  className={`flex-1 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 ${
                     activeTab === "ISSUE"
-                      ? "bg-gradient-to-r from-orange-600 to-red-600 text-white"
-                      : "text-slate-600 hover:bg-slate-50"
+                      ? "bg-white shadow-md text-orange-600" : "text-slate-400"
                   }`}
                 >
-                  <div className="flex items-center justify-center gap-2">
-                    <FaExchangeAlt /> Issue Book
-                  </div>
+                  <FaExchangeAlt /> Issue Book
                 </button>
                 <button
                   onClick={() => setActiveTab("RETURN")}
-                  className={`flex-1 py-4 text-center font-semibold transition-all ${
+                  className={`flex-1 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 ${
                     activeTab === "RETURN"
-                      ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
-                      : "text-slate-600 hover:bg-slate-50"
+                      ? "bg-white shadow-md text-emerald-600" : "text-slate-400"
                   }`}
                 >
-                  <div className="flex items-center justify-center gap-2">
-                    <FaCheckCircle /> Return Book
-                  </div>
+                  <FaCheckCircle /> Return Book
                 </button>
               </div>
 
-              {/* Forms */}
-              <div className="p-8">
+              <div className="p-10">
                 {activeTab === "ISSUE" ? (
-                  <div className="animate-fadeIn">
-                    <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                      <FaExchangeAlt className="text-orange-600" /> Issue Book
-                    </h3>
-                    <form onSubmit={handleIssue} className="space-y-8">
-                      {/* User Type Toggle */}
-                      <div className="flex gap-2 p-1 bg-slate-100 rounded-xl w-fit">
-                        <button
-                          type="button"
-                          onClick={() => setUserType("student")}
-                          className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                            userType === "student"
-                              ? "bg-white text-orange-600 shadow-sm"
-                              : "text-slate-500 hover:text-slate-700"
-                          }`}
-                        >
-                          <FaUserGraduate /> Student
+                  <form onSubmit={handleIssue} className="space-y-6">
+                    <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit">
+                      {['student', 'teacher'].map(type => (
+                        <button key={type} type="button" onClick={() => setUserType(type)} className={`px-6 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${userType === type ? "bg-white text-orange-600 shadow-sm" : "text-slate-400"}`}>
+                          {type}
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setUserType("teacher")}
-                          className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                            userType === "teacher"
-                              ? "bg-white text-orange-600 shadow-sm"
-                              : "text-slate-500 hover:text-slate-700"
-                          }`}
-                        >
-                          <FaChalkboardTeacher /> Teacher
-                        </button>
+                      ))}
+                    </div>
+                    <div>
+                      <label className="text-xs font-black text-slate-500 uppercase ml-1">User ID</label>
+                      <div className="relative mt-2">
+                        <FaUserGraduate className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                        <input ref={studentInputRef} required value={issueData.userId} onChange={e => setIssueData({...issueData, userId: e.target.value})} className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-orange-500 focus:bg-white outline-none transition-all font-bold" placeholder={`Scan or enter ${userType} ID`} />
                       </div>
-
-                      <div className="space-y-4">
-                        <label className="block text-sm font-medium text-slate-700">
-                          {userType === "student"
-                            ? "Student ID / Admission No."
-                            : "Teacher ID / Employee No."}
-                        </label>
-                        <div className="relative group">
-                          {userType === "student" ? (
-                            <FaUserGraduate className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-orange-500" />
-                          ) : (
-                            <FaChalkboardTeacher className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-orange-500" />
-                          )}
-                          <input
-                            ref={studentInputRef}
-                            required
-                            value={issueData.userId}
-                            onChange={(e) =>
-                              setIssueData({
-                                ...issueData,
-                                userId: e.target.value,
-                              })
-                            }
-                            className="w-full pl-12 pr-32 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
-                            placeholder={`Enter ${userType} ID or scan barcode`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => simulateBarcodeScan("student")}
-                            disabled={scanning}
-                            className="absolute right-2 top-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg text-sm font-medium hover:shadow-md transition-all disabled:opacity-50"
-                          >
-                            {scanning ? (
-                              <FaSpinner className="animate-spin" />
-                            ) : (
-                              <>
-                                <FaQrcode className="inline mr-2" /> Scan
-                              </>
-                            )}
-                          </button>
-                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="text-xs font-black text-slate-500 uppercase ml-1">Due Date</label>
+                        <input type="date" required value={issueData.dueDate} onChange={e => setIssueData({...issueData, dueDate: e.target.value})} className="w-full mt-2 p-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-orange-500 focus:bg-white outline-none font-bold" />
                       </div>
-
-                      <div className="space-y-4">
-                        <label className="block text-sm font-medium text-slate-700">
-                          Due Date
-                        </label>
-                        <div className="relative group">
-                          <FaClock className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-orange-500" />
-                          <input
-                            type="date"
-                            required
-                            value={issueData.dueDate}
-                            onChange={(e) =>
-                              setIssueData({
-                                ...issueData,
-                                dueDate: e.target.value,
-                              })
-                            }
-                            className="w-full pl-12 pr-4 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
-                          />
-                        </div>
+                      <div>
+                        <label className="text-xs font-black text-slate-500 uppercase ml-1">Book Serial</label>
+                        <input required value={issueData.serialCode} onChange={e => setIssueData({...issueData, serialCode: e.target.value})} className="w-full mt-2 p-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-orange-500 focus:bg-white outline-none font-bold" placeholder="BK-000" />
                       </div>
-
-                      <div className="space-y-4">
-                        <label className="block text-sm font-medium text-slate-700">
-                          Book Serial Code
-                        </label>
-                        <div className="relative group">
-                          <FaBarcode className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-orange-500" />
-                          <input
-                            ref={scanInputRef}
-                            required
-                            value={issueData.serialCode}
-                            onChange={(e) =>
-                              setIssueData({
-                                ...issueData,
-                                serialCode: e.target.value,
-                              })
-                            }
-                            className="w-full pl-12 pr-32 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
-                            placeholder="Enter book serial or scan barcode"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => simulateBarcodeScan("book")}
-                            disabled={scanning}
-                            className="absolute right-2 top-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg text-sm font-medium hover:shadow-md transition-all disabled:opacity-50"
-                          >
-                            {scanning ? (
-                              <FaSpinner className="animate-spin" />
-                            ) : (
-                              <>
-                                <FaQrcode className="inline mr-2" /> Scan
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-
-                      <button
-                        type="submit"
-                        disabled={loading || scanning}
-                        className="w-full py-4 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl font-bold hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {loading ? (
-                          <span className="flex items-center justify-center gap-2">
-                            <FaSpinner className="animate-spin" /> Processing
-                            Issue...
-                          </span>
-                        ) : (
-                          "Confirm Book Issue"
-                        )}
-                      </button>
-                    </form>
-                  </div>
+                    </div>
+                    <button type="submit" disabled={loading} className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg shadow-slate-200">
+                      {loading ? <FaSpinner className="animate-spin mx-auto" /> : "Confirm Circulation"}
+                    </button>
+                  </form>
                 ) : (
-                  <div className="animate-fadeIn">
-                    <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                      <FaCheckCircle className="text-emerald-600" /> Return Book
-                    </h3>
-                    <form onSubmit={handleReturn} className="space-y-8">
-                      <div className="space-y-4">
-                        <label className="block text-sm font-medium text-slate-700">
-                          Book Serial Code
-                        </label>
-                        <div className="relative group">
-                          <FaBarcode className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-emerald-500" />
-                          <input
-                            ref={scanInputRef}
-                            required
-                            value={returnData.serialCode}
-                            onChange={(e) =>
-                              setReturnData({ serialCode: e.target.value })
-                            }
-                            className="w-full pl-12 pr-32 py-3.5 border-2 border-slate-200 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all"
-                            placeholder="Scan or enter book serial code"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => simulateBarcodeScan("book")}
-                            disabled={scanning}
-                            className="absolute right-2 top-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg text-sm font-medium hover:shadow-md transition-all disabled:opacity-50"
-                          >
-                            {scanning ? (
-                              <FaSpinner className="animate-spin" />
-                            ) : (
-                              <>
-                                <FaQrcode className="inline mr-2" /> Scan
-                              </>
-                            )}
-                          </button>
-                        </div>
+                  <form onSubmit={handleReturn} className="space-y-6 animate-in fade-in">
+                    <div>
+                      <label className="text-xs font-black text-slate-500 uppercase ml-1">Scan Book Barcode</label>
+                      <div className="relative mt-2">
+                        <FaBarcode className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
+                        <input ref={scanInputRef} required value={returnData.serialCode} onChange={e => setReturnData({serialCode: e.target.value})} className="w-full pl-12 pr-4 py-5 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-emerald-500 focus:bg-white outline-none font-bold text-lg" placeholder="BK-X-000" />
                       </div>
-
-                      <button
-                        type="submit"
-                        disabled={loading || scanning}
-                        className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-bold hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {loading ? (
-                          <span className="flex items-center justify-center gap-2">
-                            <FaSpinner className="animate-spin" /> Processing
-                            Return...
-                          </span>
-                        ) : (
-                          "Confirm Book Return"
-                        )}
-                      </button>
-                    </form>
-                  </div>
+                    </div>
+                    <button type="submit" className="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100">
+                      Process Return
+                    </button>
+                  </form>
                 )}
               </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-gradient-to-r from-slate-50 to-orange-50 p-6 rounded-2xl border border-slate-200">
-              <h4 className="font-bold text-slate-900 mb-4">Quick Actions</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => setActiveTab("ISSUE")}
-                  className="p-4 bg-white rounded-xl border border-slate-200 hover:border-orange-300 hover:shadow-md transition-all text-left group"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-slate-800 group-hover:text-orange-700">
-                        Bulk Issue
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        Issue multiple books
-                      </p>
-                    </div>
-                    <FaArrowRight className="text-slate-300 group-hover:text-orange-500" />
+            <div className="grid grid-cols-2 gap-4">
+              <button 
+                onClick={() => handleFetchIssuedList("ALL")}
+                className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all text-left group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                    <FaListUl />
                   </div>
-                </button>
-                <button
-                  onClick={() => setActiveTab("RETURN")}
-                  className="p-4 bg-white rounded-xl border border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all text-left group"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-slate-800 group-hover:text-emerald-700">
-                        Overdue List
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        View overdue books
-                      </p>
-                    </div>
-                    <FaArrowRight className="text-slate-300 group-hover:text-emerald-500" />
+                  <FaArrowRight className="text-slate-200" />
+                </div>
+                <h4 className="mt-4 font-black text-slate-800 tracking-tight">Issued Books List</h4>
+                <p className="text-xs text-slate-400 font-medium">See who has which book</p>
+              </button>
+
+              <button 
+                onClick={() => handleFetchIssuedList("OVERDUE")}
+                className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all text-left group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="h-12 w-12 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-all">
+                    <FaClock />
                   </div>
-                </button>
-              </div>
+                  <FaArrowRight className="text-slate-200" />
+                </div>
+                <h4 className="mt-4 font-black text-slate-800 tracking-tight">Overdue List</h4>
+                <p className="text-xs text-slate-400 font-medium">Identify late returns</p>
+              </button>
             </div>
           </div>
 
-          {/* Right Panel - Recent Transactions */}
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 text-white">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-lg flex items-center gap-2">
-                    <FaHistory /> Recent Transactions
-                  </h3>
-                  <span className="text-xs bg-white/20 px-3 py-1 rounded-full">
-                    Today
-                  </span>
-                </div>
+            <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+              <div className="bg-slate-900 p-6 text-white flex items-center justify-between">
+                <h3 className="font-black text-xs uppercase tracking-widest">Live Feed</h3>
+                <div className="h-2 w-2 rounded-full bg-orange-500 animate-ping"></div>
               </div>
-
-              <div className="p-4 max-h-[500px] overflow-y-auto">
-                {recentTransactions.length === 0 ? (
-                  <div className="text-center py-8">
-                    <FaBookOpen className="text-4xl text-slate-200 mx-auto mb-3" />
-                    <p className="text-slate-500 font-medium">
-                      No recent transactions
-                    </p>
-                    <p className="text-sm text-slate-400 mt-1">
-                      Issued/returned books will appear here
-                    </p>
+              <div className="p-4 space-y-3">
+                {recentTransactions.map((t, i) => (
+                  <div key={i} className={`p-4 rounded-2xl border ${t.type === 'ISSUE' ? 'bg-orange-50/30 border-orange-100' : 'bg-emerald-50/30 border-emerald-100'}`}>
+                    <div className="flex justify-between items-start mb-1">
+                      <p className="font-bold text-slate-800 text-sm">{t.bookTitle}</p>
+                      <span className={`text-[9px] font-black px-2 py-0.5 rounded-2xl ${t.type === 'ISSUE' ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                        {t.type}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase">{t.studentName}</p>
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    {recentTransactions.map((transaction, index) => (
-                      <div
-                        key={index}
-                        className={`p-4 rounded-xl border transition-all ${
-                          transaction.type === "ISSUE"
-                            ? "bg-gradient-to-r from-orange-50 to-orange-100/30 border-orange-200"
-                            : "bg-gradient-to-r from-emerald-50 to-emerald-100/30 border-emerald-200"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`p-2 rounded-lg ${
-                                transaction.type === "ISSUE"
-                                  ? "bg-orange-100 text-orange-600"
-                                  : "bg-emerald-100 text-emerald-600"
-                              }`}
-                            >
-                              {transaction.type === "ISSUE" ? (
-                                <FaExchangeAlt />
-                              ) : (
-                                <FaCheckCircle />
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-semibold text-slate-900">
-                                {transaction.bookTitle || "Unknown Book"}
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                {transaction.bookCode}
-                              </p>
-                            </div>
-                          </div>
-                          <span
-                            className={`text-xs font-bold px-2 py-1 rounded-full ${
-                              transaction.type === "ISSUE"
-                                ? "bg-orange-100 text-orange-700"
-                                : "bg-emerald-100 text-emerald-700"
-                            }`}
-                          >
-                            {transaction.type}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2">
-                            {/* <FaUserCircle className="text-slate-400" /> */}
-                            <div className="w-4 h-4 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-semibold">
-                              {transaction.studentName?.charAt(0).toUpperCase()}
-                            </div>
-
-                            <span className="font-medium text-slate-700">
-                              {transaction.studentName}
-                            </span>
-                          </div>
-                          <span className="text-slate-500">
-                            {formatDate(transaction.timestamp)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Legend */}
-            <div className="bg-gradient-to-r from-slate-50 to-orange-50 p-6 rounded-2xl border border-slate-200">
-              <h4 className="font-bold text-slate-900 mb-4">Status Legend</h4>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500"></div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-700">
-                      Book Issue
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      Student borrows a book
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500"></div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-700">
-                      Book Return
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      Student returns a book
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500"></div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-700">
-                      Overdue
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      Book not returned on time
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {showIssuedModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl">
+            <div className="p-8 border-b flex items-center justify-between">
+              <div>
+                <h3 className="text-2xl font-black text-slate-900">
+                  {issuedModalFilter === "OVERDUE" ? "Overdue Books Tracking" : "Currently Issued Books"}
+                </h3>
+                <p className="text-sm text-slate-400 font-medium">Real-time circulation data</p>
+              </div>
+              <button onClick={() => setShowIssuedModal(false)} className="h-12 w-12 bg-slate-100 rounded-2xl flex items-center justify-center hover:bg-slate-200 transition-all">
+                <FaTimes className="text-slate-500" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-8">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                    <th className="pb-4 px-2">Book Info</th>
+                    <th className="pb-4 px-2">Borrower</th>
+                    <th className="pb-4 px-2">Due Date</th>
+                    <th className="pb-4 px-2 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {issuedBooks
+                    .filter(b => {
+                      if (issuedModalFilter === "OVERDUE") {
+                        return b.dueDate && new Date(b.dueDate) < new Date();
+                      }
+                      return true;
+                    })
+                    .map((book, idx) => (
+                      <tr key={idx} className="group hover:bg-slate-50 transition-colors">
+                        <td className="py-4 px-2">
+                          <p className="font-bold text-slate-800">{book.bookTitle}</p>
+                          <p className="text-[10px] font-mono text-orange-500 font-bold uppercase">{book.bookCode}</p>
+                        </td>
+                        <td className="py-4 px-2">
+                          <div className="flex items-center gap-2">
+                            <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-[10px] font-black uppercase ${book.userType === 'teacher' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-white'}`}>
+                              {book.userType === 'teacher' ? 'T' : 'S'}
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-slate-700">{book.userName}</p>
+                              <p className="text-[9px] text-slate-400 font-bold uppercase">Borrower</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-2">
+                           <p className={`text-xs font-bold ${new Date(book.dueDate) < new Date() ? 'text-red-500 animate-pulse' : 'text-slate-500'}`}>
+                             {book.dueDate ? new Date(book.dueDate).toLocaleDateString('en-GB') : "No Date"}
+                           </p>
+                        </td>
+                        <td className="py-4 px-2 text-right">
+                           <button 
+                             onClick={() => {
+                               setActiveTab("RETURN");
+                               setReturnData({ serialCode: book.bookCode });
+                               setShowIssuedModal(false);
+                             }}
+                             className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase hover:bg-indigo-600 hover:text-white transition-all"
+                           >
+                             Return Now
+                           </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              {issuedBooks.length === 0 && (
+                <div className="text-center py-20">
+                  <FaBookOpen className="text-5xl text-slate-100 mx-auto mb-4" />
+                  <p className="text-slate-400 font-bold">No books currently issued</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -6,13 +6,14 @@ import {
   FaPlus, FaSearch, FaFilter, FaBook, FaTrash, 
   FaEdit, FaSpinner, FaTimes, FaBarcode, FaCheck,
   FaEye, FaClone, FaPrint, FaDownload, FaCalendar,
-  FaTag, FaLocationArrow, FaUser, FaChartBar, FaHistory
+  FaTag, FaLocationArrow, FaUser, FaChartBar, FaHistory, FaClock
 } from "react-icons/fa";
 
 export default function LibraryInventory() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false); // New state for Edit
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -78,8 +79,48 @@ export default function LibraryInventory() {
     }
   };
 
+  // ✅ Open Edit Modal and fill data
+  const handleEditClick = (book) => {
+    setSelectedBook(book);
+    setFormData({
+      title: book.title,
+      author: book.author,
+      serialCode: book.serialCode,
+      category: book.category,
+      subject: book.subject || "",
+      rackNumber: book.rackNumber || "",
+      price: book.price || "",
+      isbn: book.isbn || "",
+      publisher: book.publisher || "",
+      edition: book.edition || "",
+      year: book.year || new Date().getFullYear(),
+      pages: book.pages || "",
+      description: book.description || ""
+    });
+    setShowEditModal(true);
+  };
+
+  // ✅ Handle Update Book
+  const handleUpdateBook = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await api.put(API_ENDPOINTS.ADMIN.LIBRARY.UPDATE_BOOK(selectedBook._id), formData);
+      toast.success("Book updated successfully!");
+      setShowEditModal(false);
+      loadInventory();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Update failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // ✅ Fixed Delete Logic
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this book from inventory?")) return;
+    const confirmDelete = window.confirm("Are you sure? This will remove the book from the system.");
+    if (!confirmDelete) return;
+
     try {
       await api.delete(API_ENDPOINTS.ADMIN.LIBRARY.DELETE_BOOK(id));
       toast.success("Book removed from inventory");
@@ -94,6 +135,7 @@ export default function LibraryInventory() {
     setShowViewModal(true);
   };
 
+  // ✅ 1. Simplified Status Styles (Removed Lost, Damaged, Reserved)
   const getStatusStyle = (status) => {
     switch (status) {
       case 'AVAILABLE': return 'bg-gradient-to-r from-emerald-500 to-green-600 text-white';
@@ -103,6 +145,12 @@ export default function LibraryInventory() {
       case 'RESERVED': return 'bg-gradient-to-r from-purple-500 to-pink-600 text-white';
       default: return 'bg-gradient-to-r from-slate-500 to-slate-600 text-white';
     }
+  };
+
+  // ✅ 2. Overdue Check Logic (To be used in the table)
+  const isOverdue = (book) => {
+    if (book.status !== 'ISSUED' || !book.dueDate) return false;
+    return new Date(book.dueDate) < new Date();
   };
 
   const getCategoryStyle = (category) => {
@@ -264,7 +312,6 @@ export default function LibraryInventory() {
                   <th className="p-6 font-bold uppercase tracking-wider">Book Details</th>
                   <th className="p-6 text-center font-bold uppercase tracking-wider">Category</th>
                   <th className="p-6 text-center font-bold uppercase tracking-wider">Serial Code</th>
-                  <th className="p-6 text-center font-bold uppercase tracking-wider">Location</th>
                   <th className="p-6 text-center font-bold uppercase tracking-wider">Status</th>
                   <th className="p-6 text-center font-bold uppercase tracking-wider">Actions</th>
                 </tr>
@@ -272,7 +319,7 @@ export default function LibraryInventory() {
               <tbody className="divide-y divide-slate-50">
                 {loading ? (
                   <tr>
-                    <td colSpan="6" className="p-16 text-center">
+                    <td colSpan="5" className="p-16 text-center">
                       <div className="flex flex-col items-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-200 border-t-orange-600 mb-4"></div>
                         <p className="text-slate-600 font-medium">Loading inventory...</p>
@@ -282,7 +329,7 @@ export default function LibraryInventory() {
                   </tr>
                 ) : paginatedBooks.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="p-16 text-center">
+                    <td colSpan="5" className="p-16 text-center">
                       <FaBook className="text-5xl text-slate-200 mx-auto mb-4" />
                       <h3 className="text-xl font-bold text-slate-700 mb-2">No books found</h3>
                       <p className="text-slate-500">Try adjusting your search or filters</p>
@@ -335,16 +382,14 @@ export default function LibraryInventory() {
                       </td>
                       <td className="p-6 text-center">
                         <div className="flex flex-col items-center gap-1">
-                          <span className="font-bold text-slate-800">{book.rackNumber || 'N/A'}</span>
-                          {book.rackNumber && (
-                            <FaLocationArrow className="text-slate-400 text-xs" />
+                          <span className={`px-4 py-2 rounded-lg text-xs font-bold ${getStatusStyle(book.status)}`}>
+                            {book.status}
+                          </span>
+                          {/* 🚩 Show Overdue Warning if applicable */}
+                          {isOverdue(book) && (
+                            <span className="text-[10px] font-black text-rose-600 animate-pulse flex items-center gap-1"><FaClock /> OVERDUE</span>
                           )}
                         </div>
-                      </td>
-                      <td className="p-6 text-center">
-                        <span className={`px-4 py-2 rounded-lg text-xs font-bold ${getStatusStyle(book.status)}`}>
-                          {book.status}
-                        </span>
                       </td>
                       <td className="p-6">
                         <div className="flex justify-center gap-2">
@@ -355,19 +400,10 @@ export default function LibraryInventory() {
                           >
                             <FaEye />
                           </button>
-                          <button
-                            className="p-2.5 bg-slate-50 text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-800 transition-all"
-                            title="Edit Book"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(book._id)}
-                            className="p-2.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:text-red-700 transition-all"
-                            title="Delete Book"
-                          >
-                            <FaTrash />
-                          </button>
+                          {/* ✅ Fixed Edit Button */}
+                          <button onClick={() => handleEditClick(book)} className="p-2.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200" title="Edit Book"><FaEdit /></button>
+                          {/* ✅ Fixed Delete Button */}
+                          <button onClick={() => handleDelete(book._id)} className="p-2.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100" title="Delete Book"><FaTrash /></button>
                         </div>
                       </td>
                     </tr>
@@ -421,44 +457,31 @@ export default function LibraryInventory() {
         </div>
 
         {/* Legend */}
+        {/* ✅ 4. CLEANED STATUS LEGEND (Removed unused statuses) */}
         <div className="mt-8 p-6 bg-gradient-to-r from-slate-50 to-orange-50 rounded-2xl border border-slate-200">
           <h4 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
             <FaChartBar className="text-orange-500" /> Status Legend
           </h4>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-green-600"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">Available</p>
-                <p className="text-xs text-slate-500">Ready to issue</p>
+                <p className="text-xs text-slate-500">Ready to be issued</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-600"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">Issued</p>
-                <p className="text-xs text-slate-500">Currently with student</p>
+                <p className="text-xs text-slate-500">Currently with a user</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100">
-              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-rose-500 to-red-600"></div>
+            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
+              <div className="w-3 h-3 rounded-full bg-rose-600 animate-pulse"></div>
               <div>
-                <p className="text-sm font-medium text-slate-700">Lost</p>
-                <p className="text-xs text-slate-500">Cannot be located</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100">
-              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-amber-500 to-orange-600"></div>
-              <div>
-                <p className="text-sm font-medium text-slate-700">Damaged</p>
-                <p className="text-xs text-slate-500">Needs repair</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100">
-              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-600"></div>
-              <div>
-                <p className="text-sm font-medium text-slate-700">Reserved</p>
-                <p className="text-xs text-slate-500">On hold</p>
+                <p className="text-sm  text-rose-700 font-bold">Overdue</p>
+                <p className="text-xs text-slate-500">Return date has passed</p>
               </div>
             </div>
           </div>
@@ -616,6 +639,122 @@ export default function LibraryInventory() {
                   ) : (
                     "Add to Library"
                   )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Edit Book Modal (New) */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl my-8">
+            <div className="p-6 bg-slate-800 text-white rounded-t-2xl flex justify-between items-center">
+              <div>
+                <h3 className="text-xl font-bold">Edit Book Details</h3>
+                <p className="text-slate-400 text-sm mt-1">{formData.title}</p>
+              </div>
+              <button 
+                onClick={() => setShowEditModal(false)}
+                className="p-2 bg-white/10 rounded-full hover:bg-white/20"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateBook} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Book Title *</label>
+                  <input
+                    required
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    value={formData.title}
+                    onChange={e => setFormData({...formData, title: e.target.value})}
+                    placeholder="Title"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Author *</label>
+                  <input
+                    required
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    value={formData.author}
+                    onChange={e => setFormData({...formData, author: e.target.value})}
+                    placeholder="Author"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">ISBN</label>
+                  <input
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    value={formData.isbn}
+                    onChange={e => setFormData({...formData, isbn: e.target.value})}
+                    placeholder="ISBN"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Serial Code *</label>
+                  <input
+                    required
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    value={formData.serialCode}
+                    onChange={e => setFormData({...formData, serialCode: e.target.value})}
+                    placeholder="Serial Code"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Category *</label>
+                  <select
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    value={formData.category}
+                    onChange={e => setFormData({...formData, category: e.target.value})}
+                  >
+                    <option value="ACADEMIC">Academic</option>
+                    <option value="FICTION">Fiction</option>
+                    <option value="REFERENCE">Reference</option>
+                    <option value="SCIENCE">Science</option>
+                    <option value="HISTORY">History</option>
+                    <option value="OTHERS">Others</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Subject</label>
+                  <input
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    value={formData.subject}
+                    onChange={e => setFormData({...formData, subject: e.target.value})}
+                    placeholder="Subject"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Rack Number</label>
+                  <input
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    value={formData.rackNumber}
+                    onChange={e => setFormData({...formData, rackNumber: e.target.value})}
+                    placeholder="Rack"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Price (₹)</label>
+                  <input
+                    type="number"
+                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    value={formData.price}
+                    onChange={e => setFormData({...formData, price: e.target.value})}
+                    placeholder="Price"
+                  />
+                </div>
+              </div>
+              <div className="col-span-2 flex gap-3 pt-4 border-t border-slate-200">
+                <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-3 bg-white border-2 border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-all">Cancel</button>
+                <button type="submit" disabled={saving} className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 transition-all">
+                  {saving ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <FaSpinner className="animate-spin" /> Updating...
+                    </span>
+                  ) : "Save Changes"}
                 </button>
               </div>
             </form>
