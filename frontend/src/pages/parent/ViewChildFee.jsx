@@ -278,16 +278,16 @@ export default function ViewChildFee() {
     : `https://ui-avatars.com/api/?name=${childInfo?.name}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 ">
       <div className="mx-auto max-w-7xl">
-        <BackButton to="/parent/parent-dashboard" />
+        {/* <BackButton to="/parent/parent-dashboard" /> */}
 
         {/* Header */}
-        <div className="mt-6">
-          <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
+        <div className="">
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
             Child&apos;s Fee Details
           </h2>
-          <p className="mt-2 text-slate-600 flex items-center gap-2">
+          <p className="mt-1 font-medium text-gray-600 flex items-center gap-2">
             <FaDollarSign className="text-green-600" />
             View and manage your child&apos;s fee payments
           </p>

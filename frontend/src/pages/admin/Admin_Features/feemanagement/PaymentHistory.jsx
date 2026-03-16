@@ -275,14 +275,14 @@ export default function PaymentHistory() {
   return (
     <div className="space-y-8 animate-in fade-in duration-700 p-4">
       {/* Header */}
-      <div className="bg-white p-8 rounded-3xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-white p-8 rounded-2xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-5">
           <div className="h-16 w-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl">
             <FaReceipt />
           </div>
           <div>
-            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Payment History</h2>
-            <p className="text-slate-600 font-medium text-sm">View and manage all fee payment receipts</p>
+            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Payment History</h2>
+            <p className="text-gray-500 font-medium text-sm mt-1">View and manage all fee payment receipts</p>
           </div>
         </div>
 
@@ -290,7 +290,7 @@ export default function PaymentHistory() {
           <button
             onClick={() => fetchPayments(currentPage)}
             disabled={loading}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all disabled:opacity-50"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg transition-all disabled:opacity-50"
           >
             <FaSync className={loading ? "animate-spin" : ""} /> Refresh
           </button>
@@ -298,22 +298,22 @@ export default function PaymentHistory() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="text-sm text-slate-500 font-semibold">Total Records</div>
-          <div className="text-3xl font-black text-indigo-600 mt-2">{totalPayments}</div>
+          <div className="text-3xl font-bold text-indigo-600 mt-2">{totalPayments}</div>
           <div className="text-xs text-slate-400 mt-1">All payment records</div>
         </div>
         
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="text-sm text-slate-500 font-semibold">Current Page</div>
-          <div className="text-3xl font-black text-emerald-600 mt-2">{payments.length}</div>
+          <div className="text-3xl font-bold text-emerald-600 mt-2">{payments.length}</div>
           <div className="text-xs text-slate-400 mt-1">Showing {itemsPerPage} per page</div>
         </div>
         
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="text-sm text-slate-500 font-semibold">Page {currentPage}</div>
-          <div className="text-3xl font-black text-purple-600 mt-2">
+          <div className="text-3xl font-bold text-purple-600 mt-2">
             {((currentPage - 1) * itemsPerPage + 1)} - {Math.min(currentPage * itemsPerPage, totalPayments)}
           </div>
           <div className="text-xs text-slate-400 mt-1">Records range</div>
@@ -321,13 +321,13 @@ export default function PaymentHistory() {
         
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="text-sm text-slate-500 font-semibold">Paid</div>
-          <div className="text-3xl font-black text-emerald-600 mt-2">{paidCount}</div>
+          <div className="text-3xl font-bold text-emerald-600 mt-2">{paidCount}</div>
           <div className="text-xs text-slate-400 mt-1">Completed payments</div>
         </div>
-      </div>
+      </div> */}
 
       {/* Filters */}
-      <div className="bg-white rounded-3xl shadow-sm p-6">
+      <div className="bg-white rounded-2xl shadow-sm p-6">
         <div className="flex items-center gap-3 mb-4">
           <FaFilter className="text-indigo-600" />
           <h3 className="text-lg font-bold">Filters</h3>
@@ -613,7 +613,7 @@ export default function PaymentHistory() {
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white flex justify-between items-center">
               <div>
-                <h3 className="text-2xl font-black uppercase tracking-tight">Receipt Details</h3>
+                <h3 className="text-2xl font-bold uppercase tracking-tight">Receipt Details</h3>
                 <div className="flex items-center gap-4 mt-2">
                   <p className="text-sm font-bold">{selectedReceipt.student?.name || "N/A"}</p>
                   <span className="text-xs bg-white/20 px-3 py-1 rounded-full">
@@ -661,7 +661,7 @@ export default function PaymentHistory() {
 
               {/* Payment Details */}
               <div className="space-y-6">
-                <h4 className="text-sm font-black uppercase text-slate-700 tracking-widest border-b pb-3">
+                <h4 className="text-sm font-bold uppercase text-slate-700 tracking-widest border-b pb-3">
                   Payment Information
                 </h4>
                 
@@ -673,7 +673,7 @@ export default function PaymentHistory() {
                         <p className="text-sm text-slate-600">Amount Paid</p>
                         <div className="flex items-center gap-2 mt-1">
                           <FaRupeeSign className="text-emerald-600" />
-                          <span className="text-3xl font-black text-emerald-600">
+                          <span className="text-3xl font-bold text-emerald-600">
                             {formatCurrency(selectedReceipt.amountPaid).replace("₹", "")}
                           </span>
                         </div>
@@ -732,7 +732,7 @@ export default function PaymentHistory() {
                 <div className="flex flex-col md:flex-row justify-between items-center">
                   <div>
                     <p className="text-sm font-bold uppercase opacity-90">Receipt Actions</p>
-                    <h2 className="text-3xl font-black mt-2">Payment Confirmed</h2>
+                    <h2 className="text-3xl font-bold mt-2">Payment Confirmed</h2>
                     <p className="text-sm opacity-90 mt-2">
                       Download official receipt for records
                     </p>

@@ -144,15 +144,15 @@ export default function SalaryStructureSetup() {
           <FaCalculator size={28} />
         </div>
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Staff Salary Structuring</h1>
-          <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2">
-            <FaShieldAlt className="text-emerald-500" /> Compliance Year: 2026 • Indian Wage Code Policy
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Staff Salary Structuring</h1>
+          <p className="text-gray-500 font-medium text-sm   flex items-center gap-2 mt-1">
+            <FaShieldAlt className="text-emerald-500 " /> Compliance Year: 2026 • Indian Wage Code Policy
           </p>
         </div>
       </div>
 
       {/* Policy UI Panel */}
-      <div className="bg-slate-900 rounded-[2rem] p-6 mb-8 text-white shadow-xl">
+      <div className="bg-slate-900 rounded-2xl p-6 mb-8 text-white shadow-xl">
         <div className="flex justify-between items-center cursor-pointer" onClick={() => setShowPolicy(!showPolicy)}>
           <div className="flex items-center gap-3">
             <FaShieldAlt className="text-orange-400" />
@@ -182,7 +182,7 @@ export default function SalaryStructureSetup() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Inputs */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">1. Target Selection</h3>
             
             <div className="space-y-4">
@@ -217,7 +217,7 @@ export default function SalaryStructureSetup() {
             </div>
           </div>
 
-          <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white">
+          <div className="bg-slate-900 p-8 rounded-2xl text-white">
             <h3 className="text-[10px] font-black uppercase tracking-widest mb-6 text-slate-500">2. Statutory Settings</h3>
             <div className="space-y-4">
                <label className="flex items-center justify-between cursor-pointer group">
@@ -241,7 +241,7 @@ export default function SalaryStructureSetup() {
 
         {/* Right Column: Preview Table */}
         <div className="lg:col-span-7">
-          <div className="bg-white rounded-[3rem] shadow-xl overflow-hidden border border-slate-100">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
             <div className="bg-slate-50 p-8 border-b border-slate-100 flex justify-between items-center">
               <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">3. Pro-forma Salary Slip</h3>
               <span className="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black">ESTIMATE</span>
@@ -282,7 +282,7 @@ export default function SalaryStructureSetup() {
               </table>
 
               <div className="mt-8 grid grid-cols-2 gap-4">
-                <div className="bg-slate-900 p-6 rounded-3xl text-center">
+                <div className="bg-slate-900 p-6 rounded-2xl text-center">
                   <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Take Home Pay</p>
                   <p className="text-2xl font-black text-white">₹{calculation.netPay.toLocaleString()}</p>
                 </div>

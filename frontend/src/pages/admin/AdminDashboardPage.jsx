@@ -148,12 +148,12 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-10 animate-in fade-in duration-1000">
       {/* Dynamic Header */}
-      <div className="flex justify-between items-center bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
+      <div className="flex justify-between items-center bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             School Insights
           </h1>
-          <p className="text-slate-600 font-bold uppercase text-sm tracking-widest mt-1">
+          <p className="text-gray-600 font-medium uppercase text-sm tracking-widest mt-2">
             Academic Session {currentYear}
           </p>
         </div>
@@ -170,17 +170,17 @@ export default function AdminDashboardPage() {
         {cards.map((card, i) => (
           <div
             key={i}
-            className="bg-white p-8 rounded-[2.5rem] border border-slate-50 shadow-xl shadow-slate-200/30 group hover:bg-slate-900 transition-all duration-500"
+            className="bg-white p-8 rounded-3xl border border-slate-50 shadow-xl shadow-slate-200/30 group hover:bg-slate-900 transition-all duration-500"
           >
             <div
               className={`${card.color} h-14 w-14 rounded-2xl text-white flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform`}
             >
               {card.icon}
             </div>
-            <h3 className="text-4xl font-black text-slate-900 group-hover:text-white transition-colors">
+            <h3 className="text-4xl font-bold text-slate-900 group-hover:text-white transition-colors">
               {card.value}
             </h3>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1 group-hover:text-slate-500">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 group-hover:text-slate-500">
               {card.label}
             </p>
             <div className="mt-4 pt-4 border-t border-slate-50 group-hover:border-white/10">
@@ -195,12 +195,12 @@ export default function AdminDashboardPage() {
       {/* Visual Data Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Enrollment Bar Chart */}
-        <div className="lg:col-span-2 bg-white p-10 rounded-[3.5rem] shadow-sm border border-slate-50">
+        <div className="lg:col-span-2 bg-white p-10 rounded-3xl shadow-sm border border-slate-50">
           <div className="flex items-center justify-between mb-10">
-            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">
+            <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">
               Grade Distribution
             </h3>
-            <span className="text-[10px] font-black bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full uppercase">
+            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full uppercase">
               Real-time
             </span>
           </div>
@@ -243,9 +243,9 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Quick Actions Panel */}
-        <div className="bg-slate-900 p-10 rounded-[3.5rem] shadow-2xl relative overflow-hidden">
+        <div className="bg-slate-900 p-10 rounded-3xl shadow-2xl relative overflow-hidden">
           <div className="absolute bottom-0 right-0 w-32 h-32 bg-red-600/10 rounded-full blur-3xl"></div>
-          <h3 className="text-xl font-black text-white mb-8 uppercase tracking-widest">
+          <h3 className="text-xl font-bold text-white mb-8 uppercase tracking-widest">
             Operations
           </h3>
           <div className="space-y-4">
@@ -272,7 +272,7 @@ export default function AdminDashboardPage() {
               color="bg-rose-500"
             />
             <div className="mt-10 p-6 bg-white/5 rounded-[2rem] border border-white/10">
-              <p className="text-[10px] font-black text-slate-500 uppercase mb-2">
+              <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">
                 System Status
               </p>
               <div className="flex items-center gap-2">

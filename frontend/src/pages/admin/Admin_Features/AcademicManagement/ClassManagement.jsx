@@ -290,18 +290,18 @@ export default function ClassManagement() {
     <div className="min-h-screen bg-slate-50 px-4 md:px-8 pb-10">
       <div className="mx-auto max-w-7xl">
         {/* Header Section - Professional Title */}
-        <div className="pt-8 pb-6">
+        <div className="">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-12 w-12 bg-indigo-100 rounded-2xl flex items-center justify-center">
               <FaBuilding className="text-indigo-600 text-xl" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-slate-900 tracking-tight">
+              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
                 Academic Structure
               </h1>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 bg-indigo-500 rounded-full"></span>
-                <p className="text-slate-500 text-sm font-medium">
+                <p className="text-gray-500 text-sm font-medium mt-1 ">
                   Session Control & Enrollment Monitoring
                 </p>
               </div>

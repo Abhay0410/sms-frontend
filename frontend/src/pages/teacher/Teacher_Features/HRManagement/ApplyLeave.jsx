@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback , useRef } from "react";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import api from "../../../../services/api";
@@ -32,6 +32,7 @@ export default function ApplyLeave() {
     handoverPerson: "",
   });
   const [loading, setLoading] = useState(false);
+  const previewRef = useRef(null);
   const [leaveBalance, setLeaveBalance] = useState({
     sick: 12,
     casual: 15,
@@ -284,6 +285,17 @@ export default function ApplyLeave() {
     }
   };
 
+  const handlePreviewToggle = () => {
+  setShowPreview(!showPreview);
+
+  setTimeout(() => {
+    previewRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, 100);
+};
+
   // Format date with day name (e.g., Monday, 25/12/2024)
   const formatDateWithDay = (dateString) => {
     if (!dateString) return "N/A";
@@ -318,21 +330,21 @@ export default function ApplyLeave() {
   };
 
   return (
-    <div className="space-y-6 p-4 md:p-6 bg-gradient-to-br from-slate-50 to-white min-h-screen">
+    <div className="space-y-6  bg-gradient-to-br from-slate-50 to-white min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">
             Leave Application
           </h1>
-          <p className="text-slate-600 mt-1 flex items-center gap-2">
+          <p className="text-gray-500  font-medium mt-1 flex items-center gap-2">
             <FaCalendarAlt className="text-teal-600" />
             Apply for leave and track your applications
           </p>
         </div>
 
         <button
-          onClick={() => setShowPreview(!showPreview)}
+          onClick={handlePreviewToggle}
           className="px-4 py-2 border-2 border-teal-300 text-teal-700 rounded-xl hover:bg-teal-50 transition-all"
         >
           {showPreview ? "Hide Preview" : "Show Preview"}
@@ -572,7 +584,8 @@ export default function ApplyLeave() {
 
               {/* Preview Modal */}
               {showPreview && (
-                <div className="p-4 bg-slate-50 border-2 border-slate-300 rounded-xl">
+                <div   ref={previewRef} 
+                className="p-4 bg-slate-50 border-2 border-slate-300 rounded-xl">
                   <h4 className="font-bold text-slate-900 mb-3">
                     Application Preview
                   </h4>

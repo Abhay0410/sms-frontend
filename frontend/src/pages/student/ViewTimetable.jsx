@@ -74,16 +74,16 @@ export default function ViewTimetable() {
   const maxPeriodsCount = getMaxPeriodsCount();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50  p-4">
       <div className="mx-auto max-w-7xl">
-        <BackButton to="/student/student-dashboard" />
+        {/* <BackButton to="/student/student-dashboard" /> */}
 
         {/* Header */}
-        <div className="mt-6">
-          <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
+        <div className="">
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
             My Timetable
           </h2>
-          <p className="mt-2 text-slate-600 flex items-center gap-2">
+          <p className="mt-2 text-slate-600 flex items-center gap-2 font-medium">
             <FaCalendarWeek className="text-blue-600" />
             View your weekly class schedule
           </p>

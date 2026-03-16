@@ -157,15 +157,15 @@ export default function SalaryStatus() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 ">
       {/* Header */}
       <div className="max-w-7xl mx-auto">
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 md:p-12 text-white shadow-2xl mb-8 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12 text-white shadow-2xl mb-8 relative overflow-hidden">
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div>
-                <h1 className="text-3xl md:text-4xl font-black mb-2">My Earnings</h1>
-                <p className="text-indigo-200 text-lg">Track your salary history and downloads</p>
+                <h1 className="text-3xl font-bold  mb-2">My Earnings</h1>
+                <p className="text-indigo-200 font-medium mt-1 text-lg">Track your salary history and downloads</p>
               </div>
               <div className="flex items-center gap-3 bg-white/20 backdrop-blur-sm rounded-2xl p-4">
                 <FaMoneyCheckAlt className="text-3xl" />
@@ -273,7 +273,7 @@ export default function SalaryStatus() {
         {/* Salary Slips List */}
         <div className="space-y-6">
           {filteredSalaries.length === 0 ? (
-            <div className="bg-white rounded-3xl p-16 text-center border-2 border-dashed border-slate-200 shadow-sm">
+            <div className="bg-white rounded-2xl p-16 text-center border-2 border-dashed border-slate-200 shadow-sm">
               <FaHistory className="mx-auto text-slate-300 text-5xl mb-6" />
               <h3 className="text-2xl font-bold text-slate-400 mb-2">No Records Found</h3>
               <p className="text-slate-400">No salary slips available for the selected filters</p>

@@ -120,12 +120,12 @@ export default function StudentResults() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-slate-50 ">
       <div className="max-w-6xl mx-auto">
-        <BackButton to="/student/student-dashboard" />
+        {/* <BackButton to="/student/student-dashboard" /> */}
         
-        <div className="mt-8 mb-8">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Academic Statement</h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight ">Academic Statement</h1>
           <p className="text-slate-500 font-medium">Official examination records and performance history.</p>
         </div>
 
@@ -146,7 +146,7 @@ export default function StudentResults() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block">Quick Search</label>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Quick Search</label>
               <div className="relative">
                 <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -172,7 +172,7 @@ export default function StudentResults() {
         {/* Results Table */}
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xl">
           <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-            <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Records Found: {filteredResults.length}</h3>
+            <h3 className="text-lg font-bold text-slate-800 uppercase tracking-tight">Records Found: {filteredResults.length}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -197,14 +197,14 @@ export default function StudentResults() {
                   filteredResults.map((result) => (
                     <tr key={result._id} className="hover:bg-slate-50 transition-colors group">
                       <td className="px-6 py-5">
-                        <p className="font-black text-slate-800 text-sm leading-none uppercase">{result.examName || result.examType}</p>
+                        <p className="font-bold text-slate-800 text-sm leading-none uppercase">{result.examName || result.examType}</p>
                         <p className="text-[10px] text-slate-400 mt-2 font-bold tracking-widest uppercase">Session {result.academicYear}</p>
                       </td>
-                      <td className="px-6 py-5 text-center font-black text-slate-700">
+                      <td className="px-6 py-5 text-center font-bold text-slate-700">
                         {result.totalObtainedMarks} <span className="text-slate-300 text-xs font-normal">/ {result.totalMaxMarks}</span>
                       </td>
                       <td className="px-6 py-5 text-center">
-                        <span className="text-sm font-black text-indigo-600">{result.overallPercentage}%</span>
+                        <span className="text-sm font-bold text-indigo-600">{result.overallPercentage}%</span>
                       </td>
                       <td className="px-6 py-5 text-center">
                         <span className="inline-block px-4 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 font-black text-xs border border-indigo-100">

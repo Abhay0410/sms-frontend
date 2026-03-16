@@ -143,7 +143,7 @@ export default function SalarySetup() {
             <FaMoneyBillWave />
           </div>
           <div>
-            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Staff Salary Setup</h2>
+            <h2 className="text-4xl font-semibold text-slate-900 tracking-tight">Staff Salary Setup</h2>
             <p className="text-slate-500">Configure & review monthly salaries</p>
           </div>
         </div>

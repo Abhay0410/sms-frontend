@@ -131,35 +131,63 @@ export default function BookIssueReturn() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 p-6 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 ">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
+        {/* Header */}
+        <div className="mb-4">
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
             Book Circulation
           </h1>
-          <p className="text-slate-500 text-sm font-medium flex items-center gap-2">
+          <p className="text-gray-500 text-sm font-medium flex items-center gap-2 mt-1">
             <FaBookReader className="text-orange-500" />
             Manage issues and returns
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {[
-            { label: "Issued Items", val: stats.totalIssued, icon: <FaBook />, color: "from-emerald-500 to-teal-500" },
-            { label: "Returned Today", val: stats.totalReturned, icon: <FaCheckCircle />, color: "from-cyan-500 to-blue-500" },
-            { label: "Overdue Books", val: stats.overdue, icon: <FaClock />, color: "from-orange-500 to-red-500" },
-          ].map((s, i) => (
-            <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center gap-5">
-              <div className={`bg-gradient-to-r ${s.color} p-4 rounded-2xl shadow-lg shadow-slate-200`}>
-                <div className="text-white text-2xl">{s.icon}</div>
+        {/* Stats Cards */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100">
+            <div className="flex items-center gap-4">
+              <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-3 rounded-xl">
+                <FaBook className="text-white text-xl" />
               </div>
               <div>
                 <p className="text-slate-400 text-xs font-black uppercase tracking-widest">{s.label}</p>
                 <p className="text-3xl font-black text-slate-900">{s.val}</p>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100">
+            <div className="flex items-center gap-4">
+              <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-3 rounded-xl">
+                <FaCheckCircle className="text-white text-xl" />
+              </div>
+              <div>
+                <p className="text-slate-500 text-sm font-medium">
+                  Returned Today
+                </p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {stats.totalReturned}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100">
+            <div className="flex items-center gap-4">
+              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-xl">
+                <FaClock className="text-white text-xl" />
+              </div>
+              <div>
+                <p className="text-slate-500 text-sm font-medium">Overdue</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {stats.overdue}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div> */}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">

@@ -169,9 +169,9 @@ export default function TeacherAnnouncements() {
   };
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
+    <div className=" bg-slate-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Class Announcements</h1>
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Class Announcements</h1>
         <button onClick={() => setIsCreating(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md font-bold">
           <FaPlus /> New Broadcast
         </button>

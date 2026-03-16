@@ -73,11 +73,11 @@ export default function StudentAnnouncements() {
   }
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto min-h-screen bg-slate-50/50">
+    <div className=" max-w-5xl mx-auto min-h-screen bg-slate-50/50">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
             <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
               <FaBullhorn size={20} />
             </div>

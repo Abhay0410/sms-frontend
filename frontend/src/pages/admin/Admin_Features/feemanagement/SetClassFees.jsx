@@ -174,18 +174,18 @@ export default function SetClassFees() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex justify-between items-end bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-[2.5rem] border border-indigo-100 shadow-sm"
+        className="flex justify-between items-end bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-2xl border border-indigo-100 shadow-sm"
       >
         <div>
-          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Class Fee Management</h2>
-          <p className="text-slate-600  text-sm font-medium mt-1">Configure automated installments for all students</p>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Class Fee Management</h2>
+          <p className="text-gray-600  text-sm font-medium mt-1">Configure automated installments for all students</p>
         </div>
         <div className="bg-white px-4 py-2 rounded-2xl border border-purple-200 shadow-sm">
           <p className="text-xs font-bold text-purple-600 uppercase tracking-widest mb-1">Active Session</p>
           <select
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
-            className="bg-transparent border-none text-lg font-black text-slate-800 focus:ring-0 cursor-pointer outline-none p-0 w-full"
+            className="bg-transparent border-none text-lg font-bold text-slate-800 focus:ring-0 cursor-pointer outline-none p-0 w-full"
           >
             {academicYears.map((year) => (
               <option key={year} value={year}>{year}</option>
@@ -206,7 +206,7 @@ export default function SetClassFees() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-all group"
+              className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-all group"
             >
               <div className="flex justify-between items-start mb-6">
                 <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg ${hasFee ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white' : 'bg-gradient-to-br from-rose-100 to-amber-100 text-rose-500'}`}>
@@ -223,7 +223,7 @@ export default function SetClassFees() {
                 )}
               </div>
               
-              <h3 className="text-2xl font-black text-slate-900 tracking-tight">{cls.className}</h3>
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{cls.className}</h3>
               <p className="text-slate-500 text-xs font-medium mt-1 mb-6">{cls.sections?.length || 0} sections assigned</p>
               
               {/* Progress indicator */}
@@ -245,7 +245,7 @@ export default function SetClassFees() {
               <div className="flex items-center justify-between pt-6 border-t border-slate-100">
                 <div>
                   <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Annual Total</p>
-                  <p className="text-xl font-black text-slate-900">₹{(cls.feeSettings?.totalAnnualFee || 0).toLocaleString()}</p>
+                  <p className="text-xl font-bold text-slate-900">₹{(cls.feeSettings?.totalAnnualFee || 0).toLocaleString()}</p>
                 </div>
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
@@ -279,7 +279,7 @@ export default function SetClassFees() {
             >
               <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                 <div>
-                  <h3 className="text-2xl font-black tracking-tight">Fee Setup: {selectedClass.className}</h3>
+                  <h3 className="text-2xl font-bold tracking-tight">Fee Setup: {selectedClass.className}</h3>
                   <p className="text-indigo-200 text-sm mt-1 font-medium">
                     Applying to all sections & students
                   </p>
@@ -400,7 +400,7 @@ export default function SetClassFees() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <h2 className="text-4xl font-black tracking-tight">₹{annualTotal.toLocaleString()}</h2>
+                    <h2 className="text-4xl font-bold tracking-tight">₹{annualTotal.toLocaleString()}</h2>
                   </div>
                 </motion.div>
 

@@ -106,14 +106,14 @@ export default function BulkImport() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
+    <div className=" max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="h-20 w-20 bg-indigo-100 text-indigo-600 rounded-3xl flex items-center justify-center mx-auto shadow-lg">
+        <div className="h-20 w-20 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
           <FaCloudUploadAlt size={40} />
         </div>
-        <h1 className="text-4xl font-black text-slate-900 tracking-tight">Onboarding Engine</h1>
-        <p className="text-slate-500 font-medium max-w-lg mx-auto">
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Onboarding Engine</h1>
+        <p className="text-gray-500 font-medium max-w-lg mx-auto">
           Universal CSV importer to set up entire school infrastructure in minutes.
         </p>
       </div>
@@ -121,10 +121,10 @@ export default function BulkImport() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: Dynamic Instructions */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
+          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
                <div className="p-3 bg-slate-50 rounded-2xl">{instructions[importType].icon}</div>
-               <h3 className="text-lg font-black text-slate-800">{instructions[importType].title}</h3>
+               <h3 className="text-lg font-bold text-slate-800">{instructions[importType].title}</h3>
             </div>
             
             <ul className="space-y-4">
@@ -150,11 +150,11 @@ export default function BulkImport() {
 
         {/* Right: Upload Form */}
         <div className="lg:col-span-2">
-          <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100">
+          <div className="bg-white p-10 rounded-2xl shadow-2xl border border-slate-100">
             <form onSubmit={handleUpload} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Execution Phase</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Execution Phase</label>
                   <select 
                     value={importType} 
                     onChange={(e) => {setImportType(e.target.value); setFile(null);}}
@@ -167,7 +167,7 @@ export default function BulkImport() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Target Academic Session</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Target Academic Session</label>
                   <select 
                     value={academicYear} 
                     onChange={(e) => setAcademicYear(e.target.value)}
@@ -195,7 +195,7 @@ export default function BulkImport() {
                     <div className="space-y-4 animate-in zoom-in-95 duration-200">
                       <FaFileCsv size={70} className="text-indigo-600 mx-auto" />
                       <div>
-                         <p className="font-black text-indigo-900 text-lg">{file.name}</p>
+                         <p className="font-bold text-indigo-900 text-lg">{file.name}</p>
                          <p className="text-xs text-indigo-400 font-bold uppercase tracking-widest">Ready to Inject Data</p>
                       </div>
                     </div>
@@ -203,7 +203,7 @@ export default function BulkImport() {
                     <div className="space-y-4">
                       <FaCloudUploadAlt size={70} className="text-slate-200 mx-auto group-hover:text-indigo-200 transition-colors" />
                       <div>
-                        <p className="font-black text-slate-400 uppercase tracking-widest text-sm">Select CSV Manifest</p>
+                        <p className="font-bold text-slate-400 uppercase tracking-widest text-sm">Select CSV Manifest</p>
                         <p className="text-[10px] text-slate-300 italic mt-1 font-medium">Click to browse or drop file here</p>
                       </div>
                     </div>
@@ -213,7 +213,7 @@ export default function BulkImport() {
 
               <button 
                 disabled={loading || !file}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-[2.5rem] font-black uppercase tracking-[0.3em] text-xs shadow-2xl shadow-indigo-100 transition-all flex items-center justify-center gap-4 disabled:opacity-50 disabled:bg-slate-300"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-[2.5rem] font-bold uppercase tracking-[0.3em] text-xs shadow-2xl shadow-indigo-100 transition-all flex items-center justify-center gap-4 disabled:opacity-50 disabled:bg-slate-300"
               >
                 {loading ? <FaSpinner className="animate-spin" /> : <><FaCheckCircle size={20} /> Execute Migration</>}
               </button>

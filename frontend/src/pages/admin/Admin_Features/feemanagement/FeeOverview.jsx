@@ -235,10 +235,10 @@ useEffect(() => {
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
         <div>
-          <h1 className="text-4xl  font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl  font-bold text-slate-900 tracking-tight">
             Fee Overview
           </h1>
-          <p className="text-sm text-slate-600   font-medium mt-2">
+          <p className="text-sm text-gray-600   font-medium mt-1">
             Comprehensive financial analytics and reports
           </p>
         </div>
@@ -262,17 +262,17 @@ useEffect(() => {
       </div>
 
       {/* Monthly Filter Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-[2.5rem] border border-purple-200 shadow-sm">
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-2xl border border-purple-200 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 bg-white text-purple-600 rounded-2xl flex items-center justify-center shadow-md">
               <FaFilter size={20} />
             </div>
             <div>
-              <h3 className="text-xl font-black text-slate-900">
+              <h3 className="text-xl font-bold text-slate-900">
                 Analytics Filter
               </h3>
-              <p className="text-slate-500 text-sm font-medium mt-1">
+              <p className="text-gray-500 text-sm font-medium mt-1">
                 Select month to view specific period collection
               </p>
             </div>
@@ -437,7 +437,7 @@ useEffect(() => {
           className="space-y-8"
         >
           {/* Key Metrics Cards (ClassManagement Style) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ">
             <StatCard
               icon={<FaUsers />}
               label="Total Students"
@@ -469,7 +469,7 @@ useEffect(() => {
           </div>
 
           {/* Collection Progress Section */}
-          <div className="bg-white rounded-[2.5rem] p-10 shadow-lg border border-slate-100">
+          <div className="bg-white rounded-2xl p-10 shadow-lg border border-slate-100">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
               <div className="flex-1 space-y-6">
                 <div className="flex items-center gap-4">
@@ -477,7 +477,7 @@ useEffect(() => {
                     <FaChartBar size={20} />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-black text-slate-900">
+                    <h3 className="text-2xl font-bold text-slate-900">
                       Collection Efficiency
                     </h3>
                     <p className="text-slate-500 text-sm font-medium mt-1">
@@ -537,7 +537,7 @@ useEffect(() => {
                         strokeLinecap="round"
                       />
                     </svg>
-                    <span className="text-4xl font-black text-slate-900">
+                    <span className="text-4xl font-bold text-slate-900">
                       {syncedStats?.collectionPercentage || 0}%
                     </span>
                   </div>
@@ -550,7 +550,7 @@ useEffect(() => {
           </div>
 
           {/* Payment Status Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 ">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8  ">
             <SegmentCard
               title="Fully Paid"
               subtitle={
@@ -580,10 +580,10 @@ useEffect(() => {
 
           {/* 4. Dynamic Student List Dashboard */}
           {selectedList && (
-            <div className="bg-slate-900 rounded-[3rem] p-10 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="bg-slate-900 rounded-2xl p-10 shadow-2xl animate-in zoom-in-95 duration-300">
               <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/10">
                 <div>
-                  <h3 className="text-2xl font-black text-white tracking-tight">
+                  <h3 className="text-2xl font-bold text-white tracking-tight">
                     {selectedList === "paid"
                       ? "✅ Monthly Settled"
                       : "⚠️ Monthly Pending"}
@@ -595,7 +595,7 @@ useEffect(() => {
                 </div>
                 <button
                   onClick={() => setSelectedList(null)}
-                  className="px-6 py-2 bg-white/10 text-white rounded-full text-xs font-black uppercase"
+                  className="px-6 py-2 bg-white/10 text-white rounded-full text-xs font-bold uppercase"
                 >
                   Close
                 </button>
@@ -637,10 +637,10 @@ useEffect(() => {
                   return (
                     <div
                       key={student._id}
-                      className="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center justify-between"
+                      className="bg-white/5 p-6 rounded-2xl border border-white/10 flex items-center justify-between"
                     >
                       <div>
-                        <p className="text-white font-black text-lg">
+                        <p className="text-white font-bold text-lg">
                           {student.name}
                         </p>
                         <p className="text-white/40 text-[10px] font-bold uppercase">
@@ -649,12 +649,12 @@ useEffect(() => {
                       </div>
                       <div className="text-right">
                         {/* 🔥 Ab yahan ₹41,000 / ₹41,000 dikhega monthly filter par */}
-                        <p className="text-white font-black text-lg">
+                        <p className="text-white font-bold text-lg">
                           ₹{displayPaid.toLocaleString()} / ₹
                           {displayTotal.toLocaleString()}
                         </p>
                         <div
-                          className={`mt-2 inline-block px-3 py-1 rounded-lg text-[9px] font-black uppercase ${
+                          className={`mt-2 inline-block px-3 py-1 rounded-lg text-[9px] font-bold uppercase ${
                             displayStatus === "PAID"
                               ? "bg-emerald-400/20 text-emerald-400"
                               : "bg-rose-400/20 text-rose-400"
@@ -705,7 +705,7 @@ const StatCard = ({ icon, label, value, color }) => {
 
   return (
     <div
-      className={`p-8 rounded-[2.5rem] border-2 ${colors.border} ${colors.bg} shadow-sm hover:shadow-lg transition-all duration-300 group`}
+      className={`p-8 rounded-2xl border-2 ${colors.border} ${colors.bg} shadow-sm hover:shadow-lg transition-all duration-300 group`}
     >
       <div className="flex items-center justify-between mb-6">
         <div
@@ -719,7 +719,7 @@ const StatCard = ({ icon, label, value, color }) => {
           </span>
         </div>
       </div>
-      <p className="text-3xl font-black text-slate-900 tracking-tight">
+      <p className="text-3xl font-bold text-slate-900 tracking-tight">
         {value}
       </p>
       <div className="mt-4 pt-4 border-t border-slate-100">
@@ -763,7 +763,7 @@ const SegmentCard = ({ title, subtitle, count, color, isActive, onClick }) => {
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={`
-        p-10 rounded-[2.5rem] border-2 cursor-pointer 
+        p-10 rounded-2xl border-2 cursor-pointer 
         transition-all duration-300 flex items-center justify-between
         ${colors.bg} ${colors.hoverBg} ${colors.border} ${colors.hoverBorder}
         ${isActive ? "border-purple-600 shadow-xl shadow-purple-100" : ""}
@@ -776,7 +776,7 @@ const SegmentCard = ({ title, subtitle, count, color, isActive, onClick }) => {
           <FaUsers />
         </div>
         <div>
-          <h4 className="text-2xl font-black text-slate-900 tracking-tight">
+          <h4 className="text-2xl font-bold text-slate-900 tracking-tight">
             {title}
           </h4>
           <p className="text-slate-500 text-sm font-medium mt-2 italic">
@@ -785,7 +785,7 @@ const SegmentCard = ({ title, subtitle, count, color, isActive, onClick }) => {
         </div>
       </div>
       <div className="flex items-center gap-6">
-        <span className={`text-5xl font-black ${colors.countText}`}>
+        <span className={`text-5xl font-bold ${colors.countText}`}>
           {count}
         </span>
         <FaArrowRight
@@ -804,7 +804,7 @@ const LoadingView = ({ academicYear, selectedMonth }) => (
       <div className="absolute top-0 left-0 h-20 w-20 rounded-full border-8 border-purple-600 border-t-transparent animate-spin"></div>
     </div>
     <div className="text-center space-y-2">
-      <p className="text-purple-600 font-black uppercase tracking-widest text-sm animate-pulse">
+      <p className="text-purple-600 font-bold uppercase tracking-widest text-sm animate-pulse">
         Loading Analytics Dashboard
       </p>
       <p className="text-slate-500 font-medium text-sm">
@@ -817,11 +817,11 @@ const LoadingView = ({ academicYear, selectedMonth }) => (
 );
 
 const NoAcademicYearView = () => (
-  <div className="text-center py-40 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
+  <div className="text-center py-40 bg-white rounded-2xl border-2 border-dashed border-slate-200">
     <div className="h-24 w-24 bg-gradient-to-br from-purple-100 to-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
       <FaCalendarAlt className="h-12 w-12 text-purple-400" />
     </div>
-    <h3 className="text-3xl font-black text-slate-900 mb-3">
+    <h3 className="text-3xl font-bold text-slate-900 mb-3">
       Select Academic Year
     </h3>
     <p className="text-slate-500 mb-8 max-w-md mx-auto font-medium">

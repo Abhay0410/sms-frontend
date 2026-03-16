@@ -161,7 +161,7 @@ const AdminRegisterForm = () => {
           icon: "success",
           title: "Account Created Successfully",
           html: `
-            <div class="text-left p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="text-left p-4 bg-slate-50 rounded-2xl border border-slate-200">
                <p class="mb-2"><strong>Member ID:</strong> <code class="text-indigo-600">${adminID}</code></p>
                <p class="mb-4"><strong>Temp Password:</strong> <code class="text-indigo-600">${password}</code></p>
                <p class="text-[11px] text-rose-500 font-bold italic text-center">⚠️ Save these keys now. They won't be shown again.</p>
@@ -243,23 +243,23 @@ const AdminRegisterForm = () => {
   if (!school) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-8">
+    <div className="min-h-screen bg-slate-50  ">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-10 text-center md:text-left">
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <FaUserShield className="text-indigo-600" /> Administrative Staff Enrollment
+        <div className="mb-4 text-center md:text-left">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
+            <FaUserShield className="text-indigo-600" /> Administrative Staff Enrollment  
           </h1>
-          <p className="text-slate-500 font-medium mt-2">Create secure accounts for Principal, Librarian, or Accountants</p>
+          <p className="text-gray-500 font-medium text-sm mt-1">Create secure accounts for Principal, Librarian, or Accountants</p>
         </div>
 
-        <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
           <div className="p-1 bg-indigo-600"></div>
           <form onSubmit={handleSubmit} className="p-10 space-y-10">
             
             {/* Role Selection Section - HIGHLIGHTED */}
             <div className="bg-indigo-50/50 p-8 rounded-3xl border border-indigo-100 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="md:col-span-2">
-                <h3 className="text-xs font-black text-indigo-400 uppercase tracking-[0.2em] mb-4">Account Access Level</h3>
+                <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-[0.2em] mb-4">Account Access Level</h3>
               </div>
               <div>
                 <label className="text-sm font-bold text-slate-700">Designation / Access Role *</label>
@@ -350,7 +350,7 @@ const AdminRegisterForm = () => {
 
             {/* Address */}
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Residential Information</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Residential Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2"><FormInput label="Street Address" name="street" value={form.address.street} onChange={handleAddressChange} /></div>
                 <FormInput label="City" name="city" value={form.address.city} onChange={handleAddressChange} />
@@ -366,7 +366,7 @@ const AdminRegisterForm = () => {
                <div className="flex items-center gap-3">
                   <input type="checkbox" name="isSuperAdmin" checked={form.isSuperAdmin} onChange={handleChange} className="h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
                   <div>
-                    <label className="text-sm font-black text-slate-800">Grant Super Admin Privileges</label>
+                    <label className="text-sm font-bold text-slate-800">Grant Super Admin Privileges</label>
                     <p className="text-[10px] text-slate-400">Enables full access to system settings and database logs.</p>
                   </div>
                </div>
@@ -374,7 +374,7 @@ const AdminRegisterForm = () => {
                <button
                   type="submit"
                   disabled={loading}
-                  className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   {loading ? <FaSpinner className="animate-spin" /> : <><FaCheck /> Initialize Account</>}
                 </button>

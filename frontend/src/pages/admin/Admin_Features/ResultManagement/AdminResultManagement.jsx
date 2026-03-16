@@ -237,17 +237,17 @@ export default function AdminResultManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 md:px-6 pb-6 ">
+    <div className="min-h-screen bg-slate-50 px-4 md:px-6  ">
       <div className="max-w-7xl mx-auto">
       
         
-        <div className=" mb-6">
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Result Management</h1>
+        <div className=" mb-4">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Result Management</h1>
           <p className="text-slate-600 text-sm font-medium mt-1">Manage, approve, publish, and download examination results</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -292,7 +292,7 @@ export default function AdminResultManagement() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Filters & Bulk Actions */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">

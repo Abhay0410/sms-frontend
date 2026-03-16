@@ -257,13 +257,13 @@ export default function SubjectManagement() {
       <style>{noScrollStyle}</style>
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="pt-4 pb-8">
+        <div className="pb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-slate-900 tracking-tight">
+              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
                 Curriculum Planner
               </h1>
-              <p className="text-slate-500 text-sm font-medium mt-1">
+              <p className="text-gray-500 text-sm font-medium mt-1">
                 Configure master curriculum for {academicYear}
               </p>
             </div>
@@ -294,11 +294,11 @@ export default function SubjectManagement() {
         {/* Class & Section Selection Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Class Card */}
-          <div className={`bg-white rounded-xl border p-5 transition-all ${
+          <div className={`bg-white rounded-2xl border p-5 transition-all ${
             selectedClass ? 'border-orange-300 shadow-md' : 'border-slate-200'
           }`}>
             <div className="flex items-center gap-3 mb-4">
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
+              <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
                 selectedClass ? 'bg-gradient-to-br from-orange-500 to-red-500 text-white' : 'bg-orange-50 text-orange-600'
               }`}>
                 <FaChalkboard size={18} />
@@ -316,7 +316,7 @@ export default function SubjectManagement() {
                   const cls = classes.find((c) => c._id === e.target.value);
                   setSelectedClass(cls);
                 }}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
+                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
               >
                 <option value="" disabled>Select a class</option>
                 {classes.map((cls) => (
@@ -330,7 +330,7 @@ export default function SubjectManagement() {
           </div>
 
           {/* Section Card */}
-          <div className={`bg-white rounded-xl border p-5 transition-all ${
+          <div className={`bg-white rounded-2xl border p-5 transition-all ${
             selectedSection ? 'border-orange-300 shadow-md' : 'border-slate-200'
           }`}>
             <div className="flex items-center gap-3 mb-4">
@@ -369,7 +369,7 @@ export default function SubjectManagement() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Master Pool Sidebar */}
             <div className="lg:col-span-4">
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm sticky top-6">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm sticky top-6">
                 {/* Header */}
                 <div className="p-5 border-b border-slate-100">
                   <div className="flex items-center justify-between mb-3">
@@ -542,7 +542,7 @@ export default function SubjectManagement() {
                   />
                 ))
               ) : (
-                <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
                   <div className="h-16 w-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <FaChalkboard className="text-3xl text-slate-400" />
                   </div>
@@ -586,7 +586,7 @@ export default function SubjectManagement() {
 // Section Card Component
 function SectionCard({ section, onRemove, isActive }) {
   return (
-    <div className={`bg-white rounded-xl border transition-all ${
+    <div className={`bg-white rounded-2xl border transition-all ${
       isActive ? 'border-orange-300 shadow-md' : 'border-slate-200 hover:shadow-sm'
     }`}>
       {/* Header */}

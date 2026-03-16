@@ -309,10 +309,10 @@ export default function LeaveRequests() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             Staff Leave Management
           </h1>
-          <p className="text-slate-600 flex items-center gap-2 text-sm font-medium">
+          <p className="text-gray-500  mt-1 flex items-center gap-2 text-sm font-medium">
             <FaCalendarAlt className="text-teal-600" />
             Review and process staff leave applications
           </p>
@@ -329,7 +329,7 @@ export default function LeaveRequests() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -387,7 +387,7 @@ export default function LeaveRequests() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Filters Section */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4">

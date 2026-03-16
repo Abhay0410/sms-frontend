@@ -18,6 +18,7 @@ export default function AdminProfileManage() {
   const [adminInfo, setAdminInfo] = useState({});
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -36,8 +37,8 @@ export default function AdminProfileManage() {
         phone: adminData.phone || "",
         designation: adminData.designation || "",
         address: adminData.address
-  ? `${adminData.address.street || ""}, ${adminData.address.city || ""}, ${adminData.address.state || ""}`
-  : "",
+          ? `${adminData.address.street || ""}, ${adminData.address.city || ""}, ${adminData.address.state || ""}`
+          : "",
 
         gender: adminData.gender || "",
         dob: adminData.dateOfBirth ? adminData.dateOfBirth.split("T")[0] : "",
@@ -80,18 +81,14 @@ export default function AdminProfileManage() {
 
       const res = await api.uploadPut(
         API_ENDPOINTS.ADMIN.UPDATE(adminInfo.adminID),
-        formData
+        formData,
       );
 
       // ✅ IMPORTANT: actual admin object
-     const updatedAdmin =
-  res?.data?.data ||
-  res?.data?.admin ||
-  res?.admin ||
-  adminInfo; // fallback
+      const updatedAdmin =
+        res?.data?.data || res?.data?.admin || res?.admin || adminInfo; // fallback
 
-setAdminInfo(updatedAdmin);
-
+      setAdminInfo(updatedAdmin);
 
       if (updatedAdmin?.profilePicture) {
         setPhotoPreview(updatedAdmin.profilePicture);
@@ -151,13 +148,12 @@ setAdminInfo(updatedAdmin);
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-4xl">
-
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold  bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
+          <h1 className="text-3xl font-bold  bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
             Administrator Profile
           </h1>
-          <p className="text-slate-600 mt-2 font-medium text-sm">
+          <p className="text-gray-500 mt-2 font-medium text-sm">
             Manage your system credentials and personal records
           </p>
         </div>
@@ -183,7 +179,7 @@ setAdminInfo(updatedAdmin);
             </div>
 
             <div className="text-white text-center md:text-left flex-1">
-              <h3 className="text-3xl font-black mb-2 uppercase tracking-tight">
+              <h3 className="text-3xl font-bold mb-2 uppercase tracking-tight">
                 {adminInfo.name}
               </h3>
               <div className="space-y-1 font-medium opacity-90">
@@ -195,6 +191,12 @@ setAdminInfo(updatedAdmin);
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-gray-900 uppercase tracking-tight mt-1">
+            Personal Profile Details
+          </h3>
         </div>
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -233,6 +235,7 @@ setAdminInfo(updatedAdmin);
                   onChange={onPhotoChange}
                   className="hidden"
                   id="photo-upload"
+                  disabled={!isEditing}
                 />
                 <label htmlFor="photo-upload" className="cursor-pointer">
                   <p className="text-sm font-bold text-indigo-600">
@@ -257,6 +260,7 @@ setAdminInfo(updatedAdmin);
                   name="currentPassword"
                   value={pw.currentPassword}
                   onChange={onChangePw}
+                  disabled={!isEditing}
                   placeholder="Current Password"
                 />
                 <input
@@ -265,6 +269,7 @@ setAdminInfo(updatedAdmin);
                   name="newPassword"
                   value={pw.newPassword}
                   onChange={onChangePw}
+                  disabled={!isEditing}
                   placeholder="New Password"
                 />
                 <input
@@ -273,11 +278,13 @@ setAdminInfo(updatedAdmin);
                   name="confirm"
                   value={pw.confirm}
                   onChange={onChangePw}
+                  disabled={!isEditing}
                   placeholder="Confirm Password"
                 />
                 <button
                   onClick={changePassword}
-                  className="w-full rounded-xl bg-slate-900 py-3 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition shadow-lg"
+                  disabled={!isEditing}
+                  className="w-full rounded-xl bg-slate-900 py-3 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition shadow-lg disabled:bg-gray-400"
                 >
                   Update Key
                 </button>
@@ -294,7 +301,7 @@ setAdminInfo(updatedAdmin);
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Full Name
                   </label>
                   <input
@@ -302,11 +309,12 @@ setAdminInfo(updatedAdmin);
                     name="name"
                     value={form.name}
                     onChange={onChange}
+                    disabled={!isEditing}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Phone Number
                   </label>
                   <input
@@ -314,11 +322,12 @@ setAdminInfo(updatedAdmin);
                     name="phone"
                     value={form.phone}
                     onChange={onChange}
+                    disabled={!isEditing}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Designation
                   </label>
                   <input
@@ -326,11 +335,12 @@ setAdminInfo(updatedAdmin);
                     name="designation"
                     value={form.designation}
                     onChange={onChange}
+                    disabled={!isEditing}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Department
                   </label>
                   <input
@@ -338,11 +348,12 @@ setAdminInfo(updatedAdmin);
                     name="department"
                     value={form.department}
                     onChange={onChange}
+                    disabled={!isEditing}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Gender
                   </label>
                   <select
@@ -350,6 +361,7 @@ setAdminInfo(updatedAdmin);
                     name="gender"
                     value={form.gender}
                     onChange={onChange}
+                    disabled={!isEditing}
                   >
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
@@ -359,7 +371,7 @@ setAdminInfo(updatedAdmin);
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     Date of Birth
                   </label>
                   <input
@@ -368,12 +380,13 @@ setAdminInfo(updatedAdmin);
                     name="dob"
                     value={form.dob}
                     onChange={onChange}
+                    disabled={!isEditing}
                   />
                 </div>
               </div>
 
               <div className="mt-6">
-                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                   Residential Address
                 </label>
                 <textarea
@@ -381,17 +394,39 @@ setAdminInfo(updatedAdmin);
                   name="address"
                   value={form.address}
                   onChange={onChange}
+                  disabled={!isEditing}
                   rows="3"
                 />
               </div>
 
-              <div className="mt-8 pt-6 border-t border-gray-100 flex justify-end">
-                <button
-                  onClick={onSave}
-                  className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 px-10 py-4 text-white font-black uppercase tracking-widest text-xs hover:from-indigo-700 hover:to-blue-700 transition shadow-xl transform active:scale-95"
-                >
-                  Save Profile Changes
-                </button>
+              <div className="mt-8 pt-6 border-t border-gray-100 flex justify-end gap-3">
+                {!isEditing ? (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-indigo-600 text-white px-5 py-3 rounded-lg text-xs font-bold uppercase"
+                  >
+                    Edit Profile
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      className="bg-gray-500 text-white px-5 py-3 rounded-lg text-xs font-bold uppercase"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        await onSave();
+                        setIsEditing(false);
+                      }}
+                      className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 px-10 py-4 text-white font-bold uppercase tracking-widest text-xs hover:from-indigo-700 hover:to-blue-700 transition shadow-xl transform active:scale-95"
+                    >
+                      Save Profile Changes
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

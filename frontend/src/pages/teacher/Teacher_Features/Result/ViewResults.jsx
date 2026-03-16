@@ -103,12 +103,12 @@ export default function ViewResults() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-slate-50 ">
       <div className="max-w-7xl mx-auto">
-        <BackButton to="/teacher/teacher-dashboard" />
-        <div className="mt-6 mb-6">
+        {/* <BackButton to="/teacher/teacher-dashboard" /> */}
+        <div className=" mb-6">
           <h1 className="text-3xl font-bold text-slate-900">View Results</h1>
-          <p className="text-slate-600 mt-1">All created examination results</p>
+          <p className="text-slate-600  font-medium mt-1">All created examination results</p>
         </div>
         
         {/* Filters */}

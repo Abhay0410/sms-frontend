@@ -401,22 +401,22 @@ export default function StudentParentRegisterForm() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-8">
+    <div className="min-h-screen bg-slate-50">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-10 text-center md:text-left">
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
+        <div className="mb-4 text-center md:text-left">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
             <FaUserGraduate className="text-indigo-600" /> Student & Parent Enrollment
           </h1>
-          <p className="text-slate-500 font-medium mt-2">Complete registration for both student and parent in a single form</p>
+          <p className="text-gray-500 text-sm font-medium mt-1">Complete registration for both student and parent in a single form</p>
         </div>
 
-        <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
           <div className="p-1 bg-indigo-600"></div>
           <form onSubmit={onSubmit} className="p-10 space-y-10">
             
             {/* Basic Information */}
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Basic Information</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Basic Information</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <Input
                   label="Full Name"
@@ -529,7 +529,7 @@ export default function StudentParentRegisterForm() {
 
             {/* Address */}
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Residential Information</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Residential Information</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <Input
@@ -592,7 +592,7 @@ export default function StudentParentRegisterForm() {
 
             {/* Father's Details */}
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Father's Details</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Father's Details</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <Input
                     label="Father's Name"
@@ -641,7 +641,7 @@ export default function StudentParentRegisterForm() {
 
             {/* Mother's Details */}
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Mother's Details (Optional)</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Mother's Details (Optional)</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <Input
                     label="Mother's Name"
@@ -789,7 +789,7 @@ export default function StudentParentRegisterForm() {
 
             {/* ✅ UPDATED Academic Information - NO SECTION */}
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Academic Information</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Academic Information</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <Select
@@ -839,7 +839,7 @@ export default function StudentParentRegisterForm() {
 
             {/* Medical Information */}
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Medical Information (Optional)</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Medical Information (Optional)</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="text-sm font-medium text-gray-700">
@@ -901,7 +901,7 @@ export default function StudentParentRegisterForm() {
 
             {/* Transport & Hostel */}
             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Transport & Hostel (Optional)</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Transport & Hostel (Optional)</h3>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Transport */}
                 <div className="space-y-4">
@@ -989,7 +989,7 @@ export default function StudentParentRegisterForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {loading ? (
                   <FaSpinner className="animate-spin" />

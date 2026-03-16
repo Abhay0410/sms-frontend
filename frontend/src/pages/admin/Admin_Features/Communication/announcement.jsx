@@ -250,17 +250,17 @@ export default function AdminAnnouncements() {
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
             Announcement Management
           </h1>
-          <p className="text-slate-500 text-sm font-medium flex items-center gap-2">
+          <p className="text-gray-500 text-sm font-medium flex items-center gap-2">
             <FaBullhorn className="text-orange-500" />
             Create and manage announcements for students, teachers, and parents
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-100">
             <div className="flex items-center gap-4">
               <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-3 rounded-xl">
@@ -318,7 +318,7 @@ export default function AdminAnnouncements() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Main Content */}
         <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
