@@ -57,27 +57,29 @@ export default function BookIssueReturn() {
   }, []);
 
   const fetchLibraryStats = async () => {
-    try {
-      const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY?.STATS || "/api/admin/library/stats");
-      setStats(response.data || { totalIssued: 0, totalReturned: 0, overdue: 0 });
-    } catch (error) {
-      console.warn("Stats fetch failed", error);
-    }
+    // try {
+    //   const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY?.STATS || "/api/admin/library/stats");
+    //   setStats(response.data || { totalIssued: 0, totalReturned: 0, overdue: 0 });
+    // } catch (error) {
+    //   console.warn("Stats fetch failed", error);
+    // }
   };
 
   const fetchRecentTransactions = async () => {
     try {
-      const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY?.RECENT_TRANSACTIONS || "/api/admin/library/recent");
-      setRecentTransactions(response.data || []);
+      const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY.RECENT_TRANSACTIONS);
+      // Direct assignment because formatted data is now an array
+      const data = response.data || [];
+      setRecentTransactions(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.warn("Transactions fetch failed", error);
+      console.error("Live Feed fetch failed", error);
     }
   };
 
   const handleFetchIssuedList = async (filterType = "ALL") => {
     setLoading(true);
     try {
-      // 🚩 Change: Call ACTIVE_ISSUES instead of RECENT
+      // This calls the dedicated 'ACTIVE_ISSUES' endpoint we created
       const response = await api.get(API_ENDPOINTS.ADMIN.LIBRARY.ACTIVE_ISSUES);
       const data = response.data || [];
       
@@ -134,8 +136,8 @@ export default function BookIssueReturn() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-4">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
+        <div className="mb-8">
+          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
             Book Circulation
           </h1>
           <p className="text-gray-500 text-sm font-medium flex items-center gap-2 mt-1">
@@ -299,17 +301,24 @@ export default function BookIssueReturn() {
                 <div className="h-2 w-2 rounded-full bg-orange-500 animate-ping"></div>
               </div>
               <div className="p-4 space-y-3">
-                {recentTransactions.map((t, i) => (
-                  <div key={i} className={`p-4 rounded-2xl border ${t.type === 'ISSUE' ? 'bg-orange-50/30 border-orange-100' : 'bg-emerald-50/30 border-emerald-100'}`}>
-                    <div className="flex justify-between items-start mb-1">
-                      <p className="font-bold text-slate-800 text-sm">{t.bookTitle}</p>
-                      <span className={`text-[9px] font-black px-2 py-0.5 rounded-2xl ${t.type === 'ISSUE' ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                        {t.type}
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase">{t.studentName}</p>
-                  </div>
-                ))}
+                {recentTransactions.length > 0 ? (
+                  recentTransactions.map((t, i) => {
+                    const actionType = t.type || t.action || t.transactionType;
+                    return (
+                      <div key={i} className={`p-4 rounded-2xl border ${actionType === 'ISSUE' ? 'bg-orange-50/30 border-orange-100' : 'bg-emerald-50/30 border-emerald-100'}`}>
+                        <div className="flex justify-between items-start mb-1">
+                          <p className="font-bold text-slate-800 text-sm">{t.bookTitle || t.book?.title || "Unknown Book"}</p>
+                          <span className={`text-[9px] font-black px-2 py-0.5 rounded-2xl ${actionType === 'ISSUE' ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                            {actionType}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase">{t.userName || t.studentName || t.user?.name || "Unknown User"}</p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-center text-xs text-slate-400 font-medium py-4">No recent transactions</p>
+                )}
               </div>
             </div>
           </div>

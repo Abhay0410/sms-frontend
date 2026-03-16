@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react"; ///, useMemo while using stats
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
@@ -164,14 +164,14 @@ export default function LibraryInventory() {
   };
 
   // Calculate stats
-  const stats = useMemo(() => {
-    return {
-      total: books.length,
-      available: books.filter(b => b.status === 'AVAILABLE').length,
-      issued: books.filter(b => b.status === 'ISSUED').length,
-      categories: [...new Set(books.map(b => b.category))].length
-    };
-  }, [books]);
+  // const stats = useMemo(() => {
+  //   return {
+  //     total: books.length,
+  //     available: books.filter(b => b.status === 'AVAILABLE').length,
+  //     issued: books.filter(b => b.status === 'ISSUED').length,
+  //     categories: [...new Set(books.map(b => b.category))].length
+  //   };
+  // }, [books]);
 
   // Pagination
   const totalPages = Math.ceil(books.length / itemsPerPage);
