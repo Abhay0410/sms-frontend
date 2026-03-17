@@ -741,7 +741,7 @@ export default function RecordPayment() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-500 shadow-sm">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">
             Session:
           </span>
@@ -760,21 +760,21 @@ export default function RecordPayment() {
       </div>
 
       {/* Search & Filter Header */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-500">
         <div className="flex-1 w-full relative">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-6 py-3 bg-slate-50 rounded-xl border-2 border-transparent focus:ring-3 focus:ring-purple-200 focus:border-purple-300 outline-none font-medium text-slate-700 transition-all"
+            className="w-full pl-12 pr-6 py-3 bg-slate-50 rounded-xl border border-slate-500 outline-none font-medium text-slate-700 transition-all focus:border-indigo-700"
             placeholder="Search by student name, ID, or class..."
           />
         </div>
       </div>
 
       {/* Filters Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-2xl border border-purple-200 shadow-sm">
+      <div className="bg-blue-50 p-8 rounded-2xl border border-slate-500 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 bg-white text-purple-600 rounded-2xl flex items-center justify-center shadow-md">
@@ -797,8 +797,8 @@ export default function RecordPayment() {
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 className="
                   rounded-2xl 
-                  border-2 
-                  border-slate-200 
+                  border 
+                  border-slate-500 
                   bg-white 
                   pl-5 
                   pr-10 
@@ -850,8 +850,8 @@ export default function RecordPayment() {
                 onChange={(e) => setSelectedClass(e.target.value)}
                 className="
                   rounded-2xl 
-                  border-2 
-                  border-slate-200 
+                  border 
+                  border-slate-500 
                   bg-white 
                   pl-5 
                   pr-10 
@@ -900,11 +900,11 @@ export default function RecordPayment() {
             disabled={loading}
             className="
                 h-14 w-14 
-                bg-slate-900 
+                bg-amber-500 
                 text-white 
                 rounded-2xl 
                 flex items-center justify-center 
-                hover:bg-purple-600 
+                hover:bg-amber-600 
                 transition-all
                 shadow-md
                 hover:shadow-lg
@@ -969,7 +969,7 @@ export default function RecordPayment() {
       </div> */}
 
       {/* Main Table */}
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden relative min-h-[400px]">
+      <div className="bg-white rounded-2xl shadow-lg border border-slate-500 overflow-hidden relative min-h-[400px]">
         {loading && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center transition-all duration-300">
             <div className="bg-white p-4 rounded-full shadow-xl mb-3">
@@ -983,7 +983,7 @@ export default function RecordPayment() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+                <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-500">
                 <th className="p-5 text-left text-xs font-bold uppercase tracking-widest text-slate-500">
                   Student Details
                 </th>
@@ -1015,7 +1015,7 @@ export default function RecordPayment() {
                   return (
                     <tr
                       key={student._id}
-                      className={`border-b border-slate-100 hover:bg-slate-50/50 transition-all ${
+                        className={`border-b border-slate-500 hover:bg-slate-50/50 transition-all ${
                         isOverdue
                           ? "bg-red-50/30 hover:bg-red-50/50"
                           : isPartiallyPaid
@@ -1114,7 +1114,7 @@ export default function RecordPayment() {
                             disabled={!canPay}
                             className={`px-5 py-2.5 rounded-lg font-bold text-sm transition-all min-w-[140px] ${
                               canPay
-                                ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-md hover:shadow-lg"
+                                ? "bg-indigo-700 text-white hover:bg-indigo-800 shadow-md hover:shadow-lg"
                                 : "bg-slate-100 text-slate-400 cursor-not-allowed"
                             }`}
                           >
@@ -1146,7 +1146,7 @@ export default function RecordPayment() {
                           setSelectedMonth("ALL");
                           setSelectedClass("ALL");
                         }}
-                        className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 font-bold text-sm"
+                        className="px-4 py-2.5 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 font-bold text-sm"
                       >
                         Clear Filters
                       </button>
@@ -1166,7 +1166,7 @@ export default function RecordPayment() {
 
         {/* Pagination */}
         {pagination.pages > 1 && (
-          <div className="p-5 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="p-5 border-t border-slate-500 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-sm text-slate-600 font-medium">
               Showing page{" "}
               <span className="font-bold">{pagination.current}</span> of{" "}
@@ -1176,7 +1176,7 @@ export default function RecordPayment() {
               <button
                 onClick={() => loadStudents(pagination.current - 1)}
                 disabled={pagination.current === 1 || loading}
-                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm"
+                className="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm"
               >
                 ← Previous
               </button>
@@ -1197,7 +1197,7 @@ export default function RecordPayment() {
                         disabled={loading}
                         className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium ${
                           pagination.current === pageNum
-                            ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                            ? "bg-indigo-700 text-white"
                             : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                         }`}
                       >
@@ -1210,7 +1210,7 @@ export default function RecordPayment() {
               <button
                 onClick={() => loadStudents(pagination.current + 1)}
                 disabled={pagination.current === pagination.pages || loading}
-                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm"
+                className="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm"
               >
                 Next →
               </button>
@@ -1222,9 +1222,9 @@ export default function RecordPayment() {
       {/* Payment Modal - Triple Column Layout */}
       {showModal && selectedStudent && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col scale-in-center border border-slate-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col scale-in-center border border-slate-500">
             {/* Modal Header */}
-            <div className="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100">
+              <div className="p-6 border-b border-slate-500 bg-gradient-to-r from-slate-50 to-slate-100">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-xl flex items-center justify-center text-xl font-bold shadow-lg">
@@ -1274,7 +1274,7 @@ export default function RecordPayment() {
             </div>
 
             {/* Triple Column Content */}
-            <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 divide-x divide-slate-500">
               {/* Left Column: Month Selection Grid */}
               <div className="lg:col-span-4 space-y-4">
                 <div className="flex items-center justify-between">
@@ -1319,10 +1319,10 @@ export default function RecordPayment() {
                           <div
                             key={inst._id}
                             onClick={() => toggleInstallment(inst)}
-                            className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex justify-between items-center group ${
+                            className={`p-4 rounded-xl border transition-all cursor-pointer flex justify-between items-center group ${
                               isSelected
                                 ? "border-purple-600 bg-gradient-to-r from-purple-50 to-purple-100 shadow-sm"
-                                : "border-slate-200 hover:border-purple-400 hover:bg-slate-50"
+                                : "border-slate-500 hover:border-indigo-700 hover:bg-slate-50"
                             }`}
                           >
                             <div className="flex items-center gap-3">
@@ -1417,7 +1417,7 @@ export default function RecordPayment() {
               </div>
 
               {/* Middle Column: Payment Details Form */}
-              <div className="lg:col-span-4 space-y-6 border-l border-r border-slate-100 px-6">
+                <div className="lg:col-span-4 space-y-6 border-l border-r border-slate-500 px-6">
                 <form
                   id="payment-form"
                   onSubmit={handleSubmit}
@@ -1441,7 +1441,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("amountPaid", e.target.value)
                         }
-                        className="w-full bg-slate-50 rounded-xl pl-12 pr-6 py-4 text-xl font-bold focus:ring-3 focus:ring-purple-100 outline-none transition-all border-2 border-slate-200 focus:border-purple-500"
+                        className="w-full bg-slate-50 rounded-xl pl-12 pr-6 py-4 text-xl font-bold outline-none transition-all border border-slate-500 focus:border-indigo-700"
                         required
                         placeholder="0.00"
                       />
@@ -1483,7 +1483,7 @@ export default function RecordPayment() {
                           onChange={(e) =>
                             updateFormField("paymentDate", e.target.value)
                           }
-                          className="w-full p-3 bg-slate-50 rounded-xl border-2 border-slate-200 focus:border-purple-500 outline-none pl-12"
+                          className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none pl-12"
                           required
                         />
                       </div>
@@ -1498,7 +1498,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("paymentMethod", e.target.value)
                         }
-                        className="w-full p-3 bg-slate-50 rounded-xl border-2 border-slate-200 focus:border-purple-500 outline-none font-medium"
+                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none font-medium"
                         required
                       >
                         <option value="CASH">Cash</option>
@@ -1519,7 +1519,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("upiId", e.target.value)
                         }
-                        className="w-full p-3 bg-slate-50 rounded-xl border-2 border-slate-200 focus:border-purple-500 outline-none"
+                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none"
                         placeholder="UPI ID / Reference"
                       />
                     )}
@@ -1532,7 +1532,7 @@ export default function RecordPayment() {
                           onChange={(e) =>
                             updateFormField("chequeNumber", e.target.value)
                           }
-                          className="w-full p-3 bg-slate-50 rounded-xl border-2 border-slate-200 focus:border-purple-500 outline-none"
+                          className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none"
                           placeholder="Cheque Number"
                         />
                         <input
@@ -1541,7 +1541,7 @@ export default function RecordPayment() {
                           onChange={(e) =>
                             updateFormField("bankName", e.target.value)
                           }
-                          className="w-full p-3 bg-slate-50 rounded-xl border-2 border-slate-200 focus:border-purple-500 outline-none"
+                          className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none"
                           placeholder="Bank Name"
                         />
                       </div>
@@ -1556,7 +1556,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("transactionId", e.target.value)
                         }
-                        className="w-full p-3 bg-slate-50 rounded-xl border-2 border-slate-200 focus:border-purple-500 outline-none"
+                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none"
                         placeholder="Transaction ID / Reference"
                       />
                     )}
@@ -1610,7 +1610,7 @@ export default function RecordPayment() {
                       onChange={(e) =>
                         updateFormField("remarks", e.target.value)
                       }
-                      className="w-full p-3 bg-slate-50 rounded-xl border-2 border-slate-200 focus:border-purple-500 outline-none text-sm font-medium"
+                      className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none text-sm font-medium"
                       rows="3"
                       placeholder="Add any additional notes or remarks..."
                     />
@@ -1759,7 +1759,7 @@ export default function RecordPayment() {
             </div>
 
             {/* Modal Footer Actions */}
-            <div className="p-6 border-t border-slate-100 bg-white flex gap-4">
+              <div className="p-6 border-t border-slate-500 bg-white flex gap-4">
               <button
                 onClick={() => {
                   setShowModal(false);
@@ -1774,7 +1774,7 @@ export default function RecordPayment() {
                 type="submit"
                 form="payment-form"
                 disabled={saving || !paymentForm.amountPaid}
-                className="flex-[2] bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-bold hover:from-purple-700 hover:to-blue-700 transition-all disabled:opacity-30 flex items-center justify-center gap-3 shadow-lg"
+                className="flex-[2] bg-indigo-700 text-white py-3 rounded-lg font-bold hover:bg-indigo-800 transition-all disabled:opacity-30 flex items-center justify-center gap-3 shadow-lg"
               >
                 {saving ? (
                   <>

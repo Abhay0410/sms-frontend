@@ -133,7 +133,7 @@ export default function BookIssueReturn() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 ">
+    <div className="min-h-screen bg-blue-50 p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -193,13 +193,13 @@ export default function BookIssueReturn() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-              <div className="flex bg-slate-50/50 p-2">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-500 overflow-hidden">
+              <div className="flex bg-slate-50 p-2 border-b border-slate-500">
                 <button
                   onClick={() => setActiveTab("ISSUE")}
                   className={`flex-1 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 ${
                     activeTab === "ISSUE"
-                      ? "bg-white shadow-md text-orange-600" : "text-slate-400"
+                      ? "bg-white shadow-sm text-orange-600 border border-slate-500" : "text-slate-500"
                   }`}
                 >
                   <FaExchangeAlt /> Issue Book
@@ -208,7 +208,7 @@ export default function BookIssueReturn() {
                   onClick={() => setActiveTab("RETURN")}
                   className={`flex-1 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 ${
                     activeTab === "RETURN"
-                      ? "bg-white shadow-md text-emerald-600" : "text-slate-400"
+                      ? "bg-white shadow-sm text-emerald-600 border border-slate-500" : "text-slate-500"
                   }`}
                 >
                   <FaCheckCircle /> Return Book
@@ -218,9 +218,9 @@ export default function BookIssueReturn() {
               <div className="p-10">
                 {activeTab === "ISSUE" ? (
                   <form onSubmit={handleIssue} className="space-y-6">
-                    <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit">
+                    <div className="flex gap-2 p-1 bg-slate-50 border border-slate-500 rounded-2xl w-fit">
                       {['student', 'teacher'].map(type => (
-                        <button key={type} type="button" onClick={() => setUserType(type)} className={`px-6 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${userType === type ? "bg-white text-orange-600 shadow-sm" : "text-slate-400"}`}>
+                        <button key={type} type="button" onClick={() => setUserType(type)} className={`px-6 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${userType === type ? "bg-white text-orange-600 shadow-sm border border-slate-500" : "text-slate-500"}`}>
                           {type}
                         </button>
                       ))}
@@ -228,18 +228,18 @@ export default function BookIssueReturn() {
                     <div>
                       <label className="text-xs font-black text-slate-500 uppercase ml-1">User ID</label>
                       <div className="relative mt-2">
-                        <FaUserGraduate className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
-                        <input ref={studentInputRef} required value={issueData.userId} onChange={e => setIssueData({...issueData, userId: e.target.value})} className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-orange-500 focus:bg-white outline-none transition-all font-bold" placeholder={`Scan or enter ${userType} ID`} />
+                        <FaUserGraduate className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input ref={studentInputRef} required value={issueData.userId} onChange={e => setIssueData({...issueData, userId: e.target.value})} className="w-full pl-12 pr-4 py-4 bg-white border border-slate-500 rounded-2xl focus:border-orange-500 outline-none transition-all font-bold" placeholder={`Scan or enter ${userType} ID`} />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="text-xs font-black text-slate-500 uppercase ml-1">Due Date</label>
-                        <input type="date" required value={issueData.dueDate} onChange={e => setIssueData({...issueData, dueDate: e.target.value})} className="w-full mt-2 p-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-orange-500 focus:bg-white outline-none font-bold" />
+                        <input type="date" required value={issueData.dueDate} onChange={e => setIssueData({...issueData, dueDate: e.target.value})} className="w-full mt-2 p-4 bg-white border border-slate-500 rounded-2xl focus:border-orange-500 outline-none font-bold" />
                       </div>
                       <div>
                         <label className="text-xs font-black text-slate-500 uppercase ml-1">Book Serial</label>
-                        <input required value={issueData.serialCode} onChange={e => setIssueData({...issueData, serialCode: e.target.value})} className="w-full mt-2 p-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-orange-500 focus:bg-white outline-none font-bold" placeholder="BK-000" />
+                        <input required value={issueData.serialCode} onChange={e => setIssueData({...issueData, serialCode: e.target.value})} className="w-full mt-2 p-4 bg-white border border-slate-500 rounded-2xl focus:border-orange-500 outline-none font-bold" placeholder="BK-000" />
                       </div>
                     </div>
                     <button type="submit" disabled={loading} className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg shadow-slate-200">
@@ -251,8 +251,8 @@ export default function BookIssueReturn() {
                     <div>
                       <label className="text-xs font-black text-slate-500 uppercase ml-1">Scan Book Barcode</label>
                       <div className="relative mt-2">
-                        <FaBarcode className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
-                        <input ref={scanInputRef} required value={returnData.serialCode} onChange={e => setReturnData({serialCode: e.target.value})} className="w-full pl-12 pr-4 py-5 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-emerald-500 focus:bg-white outline-none font-bold text-lg" placeholder="BK-X-000" />
+                        <FaBarcode className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                        <input ref={scanInputRef} required value={returnData.serialCode} onChange={e => setReturnData({serialCode: e.target.value})} className="w-full pl-12 pr-4 py-5 bg-white border border-slate-500 rounded-2xl focus:border-emerald-500 outline-none font-bold text-lg" placeholder="BK-X-000" />
                       </div>
                     </div>
                     <button type="submit" className="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100">
@@ -266,7 +266,7 @@ export default function BookIssueReturn() {
             <div className="grid grid-cols-2 gap-4">
               <button 
                 onClick={() => handleFetchIssuedList("ALL")}
-                className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all text-left group"
+                className="p-6 bg-white rounded-2xl border border-slate-500 shadow-sm hover:shadow-md transition-all text-left group"
               >
                 <div className="flex items-center justify-between">
                   <div className="h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
@@ -280,7 +280,7 @@ export default function BookIssueReturn() {
 
               <button 
                 onClick={() => handleFetchIssuedList("OVERDUE")}
-                className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all text-left group"
+                className="p-6 bg-white rounded-2xl border border-slate-500 shadow-sm hover:shadow-md transition-all text-left group"
               >
                 <div className="flex items-center justify-between">
                   <div className="h-12 w-12 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-all">
@@ -295,7 +295,7 @@ export default function BookIssueReturn() {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-500 overflow-hidden">
               <div className="bg-slate-900 p-6 text-white flex items-center justify-between">
                 <h3 className="font-black text-xs uppercase tracking-widest">Live Feed</h3>
                 <div className="h-2 w-2 rounded-full bg-orange-500 animate-ping"></div>
@@ -305,7 +305,7 @@ export default function BookIssueReturn() {
                   recentTransactions.map((t, i) => {
                     const actionType = t.type || t.action || t.transactionType;
                     return (
-                      <div key={i} className={`p-4 rounded-2xl border ${actionType === 'ISSUE' ? 'bg-orange-50/30 border-orange-100' : 'bg-emerald-50/30 border-emerald-100'}`}>
+                      <div key={i} className={`p-4 rounded-2xl bg-white shadow-sm border border-slate-500`}>
                         <div className="flex justify-between items-start mb-1">
                           <p className="font-bold text-slate-800 text-sm">{t.bookTitle || t.book?.title || "Unknown Book"}</p>
                           <span className={`text-[9px] font-black px-2 py-0.5 rounded-2xl ${actionType === 'ISSUE' ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-600'}`}>
@@ -328,7 +328,7 @@ export default function BookIssueReturn() {
       {showIssuedModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl">
-            <div className="p-8 border-b flex items-center justify-between">
+            <div className="p-8 border-b border-slate-500 flex items-center justify-between">
               <div>
                 <h3 className="text-2xl font-black text-slate-900">
                   {issuedModalFilter === "OVERDUE" ? "Overdue Books Tracking" : "Currently Issued Books"}
@@ -343,14 +343,14 @@ export default function BookIssueReturn() {
             <div className="flex-1 overflow-y-auto p-8">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                  <tr className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-500">
                     <th className="pb-4 px-2">Book Info</th>
                     <th className="pb-4 px-2">Borrower</th>
                     <th className="pb-4 px-2">Due Date</th>
                     <th className="pb-4 px-2 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-500">
                   {issuedBooks
                     .filter(b => {
                       if (issuedModalFilter === "OVERDUE") {

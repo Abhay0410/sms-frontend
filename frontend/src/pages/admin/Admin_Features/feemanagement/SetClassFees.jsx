@@ -174,13 +174,13 @@ export default function SetClassFees() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex justify-between items-end bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-2xl border border-indigo-100 shadow-sm"
+        className="flex justify-between items-end bg-blue-50 p-8 rounded-2xl border border-slate-500 shadow-sm"
       >
         <div>
           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Class Fee Management</h2>
           <p className="text-gray-600  text-sm font-medium mt-1">Configure automated installments for all students</p>
         </div>
-        <div className="bg-white px-4 py-2 rounded-2xl border border-purple-200 shadow-sm">
+        <div className="bg-white px-4 py-2 rounded-2xl border border-slate-500 shadow-sm">
           <p className="text-xs font-bold text-purple-600 uppercase tracking-widest mb-1">Active Session</p>
           <select
             value={academicYear}
@@ -206,7 +206,7 @@ export default function SetClassFees() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 hover:shadow-lg transition-all group"
+              className="bg-white rounded-2xl p-8 shadow-sm border border-slate-500 hover:shadow-lg transition-all group"
             >
               <div className="flex justify-between items-start mb-6">
                 <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg ${hasFee ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white' : 'bg-gradient-to-br from-rose-100 to-amber-100 text-rose-500'}`}>
@@ -242,7 +242,7 @@ export default function SetClassFees() {
                 </div>
               </div>
               
-              <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+              <div className="flex items-center justify-between pt-6 border-t border-slate-500">
                 <div>
                   <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Annual Total</p>
                   <p className="text-xl font-bold text-slate-900">₹{(cls.feeSettings?.totalAnnualFee || 0).toLocaleString()}</p>
@@ -251,10 +251,10 @@ export default function SetClassFees() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleEdit(cls)}
-                  className="h-12 w-12 bg-gradient-to-br from-indigo-50 to-purple-50 text-indigo-500 rounded-2xl flex items-center justify-center hover:from-indigo-100 hover:to-purple-100 transition-all shadow-md"
+                  className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-colors"
                   aria-label={`Edit ${cls.className} fees`}
                 >
-                  <FaEdit size={18} />
+                  <FaEdit size={14} /> Edit
                 </motion.button>
               </div>
             </motion.div>
@@ -317,7 +317,7 @@ export default function SetClassFees() {
                         key={idx}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="grid grid-cols-12 gap-4 p-6 bg-slate-50 rounded-2xl items-center border border-slate-200 hover:border-indigo-300 transition-all"
+                        className="grid grid-cols-12 gap-4 p-6 bg-slate-50 rounded-2xl items-center border border-slate-500 hover:border-indigo-500 transition-all"
                       >
                         <div className="col-span-5">
                           <label className="text-xs font-medium text-slate-600 mb-1 block">Fee Label</label>
@@ -326,7 +326,7 @@ export default function SetClassFees() {
                               type="text" 
                               value={row.headName} 
                               onChange={(e) => updateFeeRow(idx, "headName", e.target.value)} 
-                              className="w-full bg-white rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none px-4 py-3 font-medium text-slate-800" 
+                              className="w-full bg-white rounded-lg border border-slate-500 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
                               placeholder="Tuition Fee" 
                               required 
                             />
@@ -341,7 +341,7 @@ export default function SetClassFees() {
                             type="number" 
                             value={row.amount} 
                             onChange={(e) => updateFeeRow(idx, "amount", e.target.value)} 
-                            className="w-full bg-white rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none px-4 py-3 font-medium text-slate-800" 
+                            className="w-full bg-white rounded-lg border border-slate-500 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
                             required 
                             min="0"
                           />
@@ -351,7 +351,7 @@ export default function SetClassFees() {
                           <select 
                             value={row.frequency} 
                             onChange={(e) => updateFeeRow(idx, "frequency", e.target.value)} 
-                            className="w-full bg-white rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none py-3 px-4 font-medium text-slate-800"
+                            className="w-full bg-white rounded-lg border border-slate-500 focus:border-indigo-700 outline-none py-3 px-4 font-medium text-slate-800"
                           >
                             {FREQUENCY_OPTIONS.map(opt => 
                               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -364,7 +364,7 @@ export default function SetClassFees() {
                             type="number" 
                             value={row.lateFee} 
                             onChange={(e) => updateFeeRow(idx, "lateFee", e.target.value)} 
-                            className="w-full bg-white rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none px-4 py-3 font-medium text-slate-800" 
+                            className="w-full bg-white rounded-lg border border-slate-500 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
                             min="0"
                           />
                         </div>
@@ -406,7 +406,7 @@ export default function SetClassFees() {
 
                 {/* Master Settings */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                  <div className="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-500">
                     <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
                       <FaCalendarAlt className="text-indigo-500" /> Default Due Date
                     </label>
@@ -414,7 +414,7 @@ export default function SetClassFees() {
                       type="date" 
                       value={settingsForm.dueDate} 
                       onChange={(e) => setSettingsForm({...settingsForm, dueDate: e.target.value})} 
-                      className="w-full p-3 bg-white rounded-lg border border-slate-300 font-medium text-slate-800 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" 
+                      className="w-full p-3 bg-white rounded-lg border border-slate-500 font-medium text-slate-800 shadow-sm focus:border-indigo-700 outline-none transition-all" 
                     />
                     <p className="text-xs text-slate-500">Sets deadline for all generated installments</p>
                   </div>

@@ -47,7 +47,7 @@ export default function FeeManagementDashboard() {
   const ActiveComponent = tabs.find((tab) => tab.id === activeTab)?.component;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 p-4 md:p-8">
+    <div className="min-h-screen bg-blue-50 p-4 md:p-8">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mt-6 flex items-center justify-between flex-wrap gap-4">
@@ -72,8 +72,8 @@ export default function FeeManagementDashboard() {
                 onChange={(e) => setAcademicYear(e.target.value)}
                 className="
                   rounded-2xl 
-                  border-2 
-                  border-slate-100 
+                  border 
+                  border-slate-500 
                   bg-white 
                   pl-5 
                   pr-10 
@@ -127,8 +127,8 @@ export default function FeeManagementDashboard() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg"
-                  : "bg-white text-slate-700 border-2 border-slate-200 hover:border-purple-300"
+                  ? "bg-indigo-700 text-white shadow-lg"
+                  : "bg-white text-slate-700 border border-slate-500 hover:border-indigo-700"
               }`}
             >
               {tab.icon}

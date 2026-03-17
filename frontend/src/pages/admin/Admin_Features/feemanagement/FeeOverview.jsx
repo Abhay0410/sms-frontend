@@ -243,7 +243,7 @@ useEffect(() => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-500 shadow-sm">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">
             Session:
           </span>
@@ -262,7 +262,7 @@ useEffect(() => {
       </div>
 
       {/* Monthly Filter Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-2xl border border-purple-200 shadow-sm">
+      <div className="bg-blue-50 p-8 rounded-2xl border border-slate-500 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 bg-white text-purple-600 rounded-2xl flex items-center justify-center shadow-md">
@@ -285,8 +285,8 @@ useEffect(() => {
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 className="
                   rounded-2xl 
-                  border-2 
-                  border-slate-200 
+                  border 
+                  border-slate-500 
                   bg-white 
                   pl-5 
                   pr-10 
@@ -337,9 +337,9 @@ useEffect(() => {
                 value={selectedClass}
                 onChange={(e) => setSelectedClass(e.target.value)}
                 className="
-      rounded-2xl 
-      border-2 
-      border-slate-200 
+                  rounded-2xl 
+                  border 
+                  border-slate-500 
       bg-white 
       pl-5 
       pr-10 
@@ -387,11 +387,11 @@ useEffect(() => {
               onClick={loadStatistics}
               className="
                 h-14 w-14 
-                bg-slate-900 
+                bg-amber-500 
                 text-white 
                 rounded-2xl 
                 flex items-center justify-center 
-                hover:bg-purple-600 
+                hover:bg-amber-600 
                 transition-all
                 shadow-md
                 hover:shadow-lg
@@ -469,7 +469,7 @@ useEffect(() => {
           </div>
 
           {/* Collection Progress Section */}
-          <div className="bg-white rounded-2xl p-10 shadow-lg border border-slate-100">
+          <div className="bg-white rounded-2xl p-10 shadow-lg border border-slate-500">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
               <div className="flex-1 space-y-6">
                 <div className="flex items-center gap-4">

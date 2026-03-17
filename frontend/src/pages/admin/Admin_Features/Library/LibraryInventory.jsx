@@ -181,7 +181,7 @@ export default function LibraryInventory() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 ">
+    <div className="min-h-screen bg-blue-50 p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-4">
@@ -246,7 +246,7 @@ export default function LibraryInventory() {
         </div> */}
 
         {/* Controls */}
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-100 mb-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-500 mb-6">
           <div className="p-6">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               {/* Search */}
@@ -256,7 +256,7 @@ export default function LibraryInventory() {
                   <input
                     type="text"
                     placeholder="Search by title, author, ISBN, or serial code..."
-                    className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
                     value={filters.search}
                     onChange={(e) => setFilters({...filters, search: e.target.value})}
                   />
@@ -266,7 +266,7 @@ export default function LibraryInventory() {
               {/* Control Buttons */}
               <div className="flex gap-3">
                 <select
-                  className="bg-white border-2 border-slate-200 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  className="bg-white border border-slate-500 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500"
                   value={filters.category}
                   onChange={(e) => setFilters({...filters, category: e.target.value})}
                 >
@@ -280,7 +280,7 @@ export default function LibraryInventory() {
                 </select>
 
                 <select
-                  className="bg-white border-2 border-slate-200 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  className="bg-white border border-slate-500 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500"
                   value={filters.status}
                   onChange={(e) => setFilters({...filters, status: e.target.value})}
                 >
@@ -304,11 +304,11 @@ export default function LibraryInventory() {
         </div>
 
         {/* Inventory Table */}
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-500 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
+                <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-500">
                   <th className="p-6 font-bold uppercase tracking-wider">Book Details</th>
                   <th className="p-6 text-center font-bold uppercase tracking-wider">Category</th>
                   <th className="p-6 text-center font-bold uppercase tracking-wider">Serial Code</th>
@@ -316,7 +316,7 @@ export default function LibraryInventory() {
                   <th className="p-6 text-center font-bold uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-slate-500">
                 {loading ? (
                   <tr>
                     <td colSpan="5" className="p-16 text-center">
@@ -356,7 +356,7 @@ export default function LibraryInventory() {
                             <p className="text-sm text-slate-600 mb-1">{book.author}</p>
                             <div className="flex flex-wrap gap-1 mt-2">
                               {book.isbn && (
-                                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+                                <span className="text-xs bg-slate-100 border border-slate-200 text-slate-600 px-2 py-0.5 rounded">
                                   ISBN: {book.isbn}
                                 </span>
                               )}
@@ -375,7 +375,7 @@ export default function LibraryInventory() {
                         </span>
                       </td>
                       <td className="p-6 text-center">
-                        <div className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg border border-slate-200">
+                        <div className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg border border-slate-300">
                           <FaBarcode className="text-orange-500" />
                           <span className="font-mono font-bold">{book.serialCode}</span>
                         </div>
@@ -415,7 +415,7 @@ export default function LibraryInventory() {
 
           {/* Pagination */}
           {!loading && books.length > 0 && (
-            <div className="border-t border-slate-100 p-6">
+            <div className="border-t border-slate-500 p-6">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-slate-500 font-medium">
                   Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, books.length)} of {books.length} books
@@ -424,7 +424,7 @@ export default function LibraryInventory() {
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="px-4 py-2 bg-white border border-slate-500 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     Previous
                   </button>
@@ -435,8 +435,8 @@ export default function LibraryInventory() {
                       onClick={() => setCurrentPage(i + 1)}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         currentPage === i + 1
-                          ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                          ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-sm'
+                          : 'bg-white text-slate-600 border border-slate-500 hover:bg-slate-50'
                       }`}
                     >
                       {i + 1}
@@ -446,7 +446,7 @@ export default function LibraryInventory() {
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="px-4 py-2 bg-white border border-slate-500 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     Next
                   </button>
@@ -458,26 +458,26 @@ export default function LibraryInventory() {
 
         {/* Legend */}
         {/* ✅ 4. CLEANED STATUS LEGEND (Removed unused statuses) */}
-        <div className="mt-8 p-6 bg-gradient-to-r from-slate-50 to-orange-50 rounded-2xl border border-slate-200">
+        <div className="mt-8 p-6 bg-white rounded-2xl border border-slate-500 shadow-sm">
           <h4 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
             <FaChartBar className="text-orange-500" /> Status Legend
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-500">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-green-600"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">Available</p>
                 <p className="text-xs text-slate-500">Ready to be issued</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-500">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-600"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">Issued</p>
                 <p className="text-xs text-slate-500">Currently with a user</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-500">
               <div className="w-3 h-3 rounded-full bg-rose-600 animate-pulse"></div>
               <div>
                 <p className="text-sm  text-rose-700 font-bold">Overdue</p>
@@ -515,7 +515,7 @@ export default function LibraryInventory() {
                   </label>
                   <input
                     required
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
                     value={formData.title}
                     onChange={e => setFormData({...formData, title: e.target.value})}
                     placeholder="Enter book title"
@@ -528,7 +528,7 @@ export default function LibraryInventory() {
                   </label>
                   <input
                     required
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
                     value={formData.author}
                     onChange={e => setFormData({...formData, author: e.target.value})}
                     placeholder="Author name"
@@ -540,7 +540,7 @@ export default function LibraryInventory() {
                     ISBN
                   </label>
                   <input
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
                     value={formData.isbn}
                     onChange={e => setFormData({...formData, isbn: e.target.value})}
                     placeholder="ISBN number"
@@ -554,7 +554,7 @@ export default function LibraryInventory() {
                   <div className="relative">
                     <input
                       required
-                      className="w-full px-4 py-3 border-2 border-orange-200 bg-orange-50 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                      className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
                       value={formData.serialCode}
                       onChange={e => setFormData({...formData, serialCode: e.target.value})}
                       placeholder="Library serial code"
@@ -568,7 +568,7 @@ export default function LibraryInventory() {
                     Category *
                   </label>
                   <select
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
                     value={formData.category}
                     onChange={e => setFormData({...formData, category: e.target.value})}
                   >
@@ -586,7 +586,7 @@ export default function LibraryInventory() {
                     Subject
                   </label>
                   <input
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
                     value={formData.subject}
                     onChange={e => setFormData({...formData, subject: e.target.value})}
                     placeholder="e.g. Mathematics, Physics"
@@ -598,7 +598,7 @@ export default function LibraryInventory() {
                     Rack Number
                   </label>
                   <input
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
                     value={formData.rackNumber}
                     onChange={e => setFormData({...formData, rackNumber: e.target.value})}
                     placeholder="e.g. R-12, Shelf-2"
@@ -611,7 +611,7 @@ export default function LibraryInventory() {
                   </label>
                   <input
                     type="number"
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
                     value={formData.price}
                     onChange={e => setFormData({...formData, price: e.target.value})}
                     placeholder="Book price"
@@ -619,11 +619,11 @@ export default function LibraryInventory() {
                 </div>
               </div>
 
-              <div className="flex gap-4 pt-6 border-t border-slate-200">
+              <div className="flex gap-4 pt-6 border-t border-slate-500">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 px-6 py-3 bg-white border-2 border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-all"
+                  className="flex-1 px-6 py-3 bg-white border border-slate-500 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-all"
                 >
                   Cancel
                 </button>
@@ -668,7 +668,7 @@ export default function LibraryInventory() {
                   <label className="block text-sm font-medium text-slate-700 mb-2">Book Title *</label>
                   <input
                     required
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-indigo-500 transition-all"
                     value={formData.title}
                     onChange={e => setFormData({...formData, title: e.target.value})}
                     placeholder="Title"
@@ -678,7 +678,7 @@ export default function LibraryInventory() {
                   <label className="block text-sm font-medium text-slate-700 mb-2">Author *</label>
                   <input
                     required
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-indigo-500 transition-all"
                     value={formData.author}
                     onChange={e => setFormData({...formData, author: e.target.value})}
                     placeholder="Author"
@@ -687,7 +687,7 @@ export default function LibraryInventory() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">ISBN</label>
                   <input
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-indigo-500 transition-all"
                     value={formData.isbn}
                     onChange={e => setFormData({...formData, isbn: e.target.value})}
                     placeholder="ISBN"
@@ -697,7 +697,7 @@ export default function LibraryInventory() {
                   <label className="block text-sm font-medium text-slate-700 mb-2">Serial Code *</label>
                   <input
                     required
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-indigo-500 transition-all"
                     value={formData.serialCode}
                     onChange={e => setFormData({...formData, serialCode: e.target.value})}
                     placeholder="Serial Code"
@@ -706,7 +706,7 @@ export default function LibraryInventory() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Category *</label>
                   <select
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-indigo-500 transition-all"
                     value={formData.category}
                     onChange={e => setFormData({...formData, category: e.target.value})}
                   >
@@ -721,7 +721,7 @@ export default function LibraryInventory() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Subject</label>
                   <input
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-indigo-500 transition-all"
                     value={formData.subject}
                     onChange={e => setFormData({...formData, subject: e.target.value})}
                     placeholder="Subject"
@@ -730,7 +730,7 @@ export default function LibraryInventory() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Rack Number</label>
                   <input
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-indigo-500 transition-all"
                     value={formData.rackNumber}
                     onChange={e => setFormData({...formData, rackNumber: e.target.value})}
                     placeholder="Rack"
@@ -740,15 +740,15 @@ export default function LibraryInventory() {
                   <label className="block text-sm font-medium text-slate-700 mb-2">Price (₹)</label>
                   <input
                     type="number"
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-indigo-500 transition-all"
                     value={formData.price}
                     onChange={e => setFormData({...formData, price: e.target.value})}
                     placeholder="Price"
                   />
                 </div>
               </div>
-              <div className="col-span-2 flex gap-3 pt-4 border-t border-slate-200">
-                <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-3 bg-white border-2 border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-all">Cancel</button>
+              <div className="col-span-2 flex gap-3 pt-4 border-t border-slate-500">
+                <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-3 bg-white border border-slate-500 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-all">Cancel</button>
                 <button type="submit" disabled={saving} className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 transition-all">
                   {saving ? (
                     <span className="flex items-center justify-center gap-2">

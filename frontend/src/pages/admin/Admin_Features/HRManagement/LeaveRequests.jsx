@@ -305,7 +305,7 @@ export default function LeaveRequests() {
   const stats = getStats();
 
   return (
-    <div className="space-y-6   bg-gradient-to-br from-slate-50 to-white min-h-screen">
+    <div className="space-y-6 bg-blue-50 min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -313,7 +313,7 @@ export default function LeaveRequests() {
             Staff Leave Management
           </h1>
           <p className="text-gray-500  mt-1 flex items-center gap-2 text-sm font-medium">
-            <FaCalendarAlt className="text-teal-600" />
+            <FaCalendarAlt className="text-amber-500" />
             Review and process staff leave applications
           </p>
         </div>
@@ -321,7 +321,7 @@ export default function LeaveRequests() {
         <button
           onClick={fetchRequests}
           disabled={loading}
-          className="px-4 py-2 bg-teal-600 text-white rounded-xl hover:bg-teal-700 disabled:opacity-50 transition-all flex items-center gap-2"
+          className="px-4 py-2 bg-amber-500 text-white rounded-xl hover:bg-amber-600 disabled:opacity-50 transition-all flex items-center gap-2"
         >
           <FaSync className={loading ? "animate-spin" : ""} />
           {loading ? "Refreshing..." : "Refresh"}
@@ -390,7 +390,7 @@ export default function LeaveRequests() {
       </div> */}
 
       {/* Filters Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4">
+      <div className="bg-[#FFFFFF] rounded-xl shadow-sm border border-slate-500 p-4">
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           {/* Search */}
           <div className="flex-1">
@@ -401,20 +401,17 @@ export default function LeaveRequests() {
                 placeholder="Search by name, reason, or leave type..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border-1 border-slate-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-100 outline-none"
               />
             </div>
           </div>
 
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Status
-            </label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-teal-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border-1 border-slate-500 focus:border-amber-500 outline-none"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -426,13 +423,10 @@ export default function LeaveRequests() {
 
           {/* Leave Type Filter */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Leave Type
-            </label>
             <select
               value={leaveTypeFilter}
               onChange={(e) => setLeaveTypeFilter(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-teal-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border-1 border-slate-500 focus:border-amber-500 outline-none"
             >
               {leaveTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -445,10 +439,10 @@ export default function LeaveRequests() {
       </div>
 
       {/* Requests List */}
-      <div className="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden">
+      <div className="bg-[#FFFFFF] rounded-xl shadow-lg border border-slate-500 overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-200 border-t-teal-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-200 border-t-amber-600 mx-auto"></div>
             <p className="mt-4 text-slate-600">Loading leave requests...</p>
           </div>
         ) : requests.length === 0 ? (
@@ -466,28 +460,28 @@ export default function LeaveRequests() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200">
+          <div className="overflow-x-auto border-slate-500">
+            <table className="w-full ">
+              <thead className="bg-slate-900 border-b border-slate-800">
                 <tr>
-                  <th className="text-left p-4 font-semibold text-slate-700">
+                  <th className="text-left p-4 font-semibold text-white">
                     Staff Member
                   </th>
-                  <th className="text-left p-4 font-semibold text-slate-700">
+                  <th className="text-left p-4 font-semibold text-white">
                     Leave Details
                   </th>
-                  <th className="text-left p-4 font-semibold text-slate-700">
+                  <th className="text-left p-4 font-semibold text-white">
                     Dates
                   </th>
-                  <th className="text-left p-4 font-semibold text-slate-700">
+                  <th className="text-left p-4 font-semibold text-white">
                     Status
                   </th>
-                  <th className="text-left p-4 font-semibold text-slate-700">
+                  <th className="text-left p-4 font-semibold text-white">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-500">
                 {requests.map((req) => {
                   const displayPhoto = req.teacherId?.profilePicture
                     ? req.teacherId.profilePicture.startsWith("http")
@@ -502,7 +496,7 @@ export default function LeaveRequests() {
                     >
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-12 w-12 rounded-xl overflow-hidden bg-slate-200 flex-shrink-0">
+                          <div className="h-12 w-12 rounded-xl overflow-hidden border-slate-500 bg-slate-200 flex-shrink-0">
                             {req.teacherId?.profilePicture ? (
                               <img
                                 src={displayPhoto}
@@ -594,7 +588,7 @@ export default function LeaveRequests() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => openDetailModal(req)}
-                            className="px-3 py-2 border-2 border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2"
+                            className="px-3 py-2 border-1 border-slate-500 text-slate-700 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2"
                           >
                             <FaEye className="text-sm" />
                             View
@@ -611,7 +605,7 @@ export default function LeaveRequests() {
                                   )
                                 }
                                 disabled={processingId === req._id}
-                                className="px-3 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-all flex items-center gap-2"
+                                className="px-3 py-2 bg-emerald-700 text-white rounded-xl hover:bg-emerald-800 disabled:opacity-50 transition-all flex items-center gap-2"
                               >
                                 <FaCheck />
                                 Approve
@@ -625,7 +619,7 @@ export default function LeaveRequests() {
                                   )
                                 }
                                 disabled={processingId === req._id}
-                                className="px-3 py-2 bg-rose-600 text-white rounded-xl hover:bg-rose-700 disabled:opacity-50 transition-all flex items-center gap-2"
+                                className="px-3 py-2 bg-rose-700 text-white rounded-xl hover:bg-rose-800 disabled:opacity-50 transition-all flex items-center gap-2"
                               >
                                 <FaTimes />
                                 Reject
@@ -665,7 +659,7 @@ export default function LeaveRequests() {
 
         {/* Summary Footer */}
         {filteredRequests.length > 0 && (
-          <div className="bg-slate-50 border-t border-slate-200 p-4">
+          <div className="bg-slate-50 border-t border-slate-500 p-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-slate-600">
                 Showing{" "}
@@ -688,7 +682,7 @@ export default function LeaveRequests() {
       {/* Detail Modal */}
       {showDetailModal && selectedRequest && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#FFFFFF] rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-slate-200">
               <div className="flex items-start justify-between">
                 <div>
@@ -831,7 +825,7 @@ export default function LeaveRequests() {
                           );
                         }}
                         disabled={processingId === selectedRequest._id}
-                        className="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                        className="flex-1 py-3 bg-emerald-700 text-white rounded-xl font-semibold hover:bg-emerald-800 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                       >
                         <FaCheck />
                         Approve Leave
@@ -846,7 +840,7 @@ export default function LeaveRequests() {
                           );
                         }}
                         disabled={processingId === selectedRequest._id}
-                        className="flex-1 py-3 bg-rose-600 text-white rounded-xl font-semibold hover:bg-rose-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                        className="flex-1 py-3 bg-rose-700 text-white rounded-xl font-semibold hover:bg-rose-800 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                       >
                         <FaTimes />
                         Reject Leave
@@ -863,7 +857,7 @@ export default function LeaveRequests() {
       {/* Confirmation Modal */}
       {showConfirmationModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="bg-[#FFFFFF] rounded-2xl w-full max-w-md shadow-2xl">
             <div className="p-6 border-b border-slate-200">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
@@ -957,8 +951,8 @@ export default function LeaveRequests() {
                   disabled={processingId === confirmationData.id}
                   className={`flex-1 py-3.5 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 ${
                     confirmationData.action === "APPROVED"
-                      ? "bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700"
-                      : "bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700"
+                      ? "bg-gradient-to-r from-emerald-700 to-green-700 hover:from-emerald-800 hover:to-green-800"
+                      : "bg-gradient-to-r from-rose-700 to-pink-700 hover:from-rose-800 hover:to-pink-800"
                   } ${processingId === confirmationData.id ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   {processingId === confirmationData.id ? (

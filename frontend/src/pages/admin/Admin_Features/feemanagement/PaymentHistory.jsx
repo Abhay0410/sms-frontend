@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api";
 import { 
@@ -30,7 +30,17 @@ export default function PaymentHistory() {
     search: "",
     month: "",
   });
-  const [academicYears, setAcademicYears] = useState([]);
+
+  const academicYears = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = -1; i < 6; i++) {
+      const year = currentYear + i;
+      years.push(`${year}-${year + 1}`);
+    }
+    return years;
+  }, []);
+
   const [classes, setClasses] = useState([]);
   const [receiptModal, setReceiptModal] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
@@ -73,16 +83,18 @@ export default function PaymentHistory() {
   // Fetch filter options
   const fetchFilterOptions = async () => {
     try {
-      const classResponse = await api.get(API_ENDPOINTS.ADMIN.CLASS.ALL);
-      if (classResponse && classResponse.success) {
-        const years = [...new Set(classResponse.data.classes?.map(c => c.academicYear) || [])];
-        setAcademicYears(years.sort().reverse());
-        
-        const uniqueClasses = [...new Set(classResponse.data.classes?.map(c => c.className) || [])];
+      const classResponse = await api.get(API_ENDPOINTS.ADMIN.CLASS.LIST || "/api/admin/class/list");
+      const classData = classResponse?.data?.classes || classResponse?.data || classResponse?.classes || [];
+      
+      if (Array.isArray(classData) && classData.length > 0) {
+        const uniqueClasses = [...new Set(classData.map(c => c.className).filter(Boolean))];
         setClasses(uniqueClasses.sort());
+      } else {
+        setClasses(["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]);
       }
     } catch (err) {
       console.error("Error fetching filter options:", err);
+      setClasses(["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]);
     }
   };
 
@@ -275,7 +287,7 @@ export default function PaymentHistory() {
   return (
     <div className="space-y-8 animate-in fade-in duration-700 p-4">
       {/* Header */}
-      <div className="bg-white p-8 rounded-2xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-blue-50 p-8 rounded-2xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-5">
           <div className="h-16 w-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl">
             <FaReceipt />
@@ -290,7 +302,7 @@ export default function PaymentHistory() {
           <button
             onClick={() => fetchPayments(currentPage)}
             disabled={loading}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg transition-all disabled:opacity-50"
+            className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg transition-all disabled:opacity-50"
           >
             <FaSync className={loading ? "animate-spin" : ""} /> Refresh
           </button>
@@ -327,7 +339,7 @@ export default function PaymentHistory() {
       </div> */}
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-500 p-6">
         <div className="flex items-center gap-3 mb-4">
           <FaFilter className="text-indigo-600" />
           <h3 className="text-lg font-bold">Filters</h3>
@@ -342,7 +354,7 @@ export default function PaymentHistory() {
               placeholder="Search by student name, ID, receipt..."
               value={filters.search}
               onChange={(e) => handleFilterChange("search", e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-500 rounded-xl focus:outline-none focus:border-indigo-700"
             />
           </div>
 
@@ -350,7 +362,7 @@ export default function PaymentHistory() {
           <select
             value={filters.academicYear}
             onChange={(e) => handleFilterChange("academicYear", e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-bold"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-500 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
           >
             <option value="">All Academic Years</option>
             {academicYears.map((year) => (
@@ -362,7 +374,7 @@ export default function PaymentHistory() {
           <select
             value={filters.className}
             onChange={(e) => handleFilterChange("className", e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-bold"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-500 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
           >
             <option value="">All Classes</option>
             {classes.map((className) => (
@@ -374,7 +386,7 @@ export default function PaymentHistory() {
           <select
             value={filters.status}
             onChange={(e) => handleFilterChange("status", e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-bold"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-500 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
           >
             <option value="">All Status</option>
             <option value="PAID">Paid</option>
@@ -385,7 +397,7 @@ export default function PaymentHistory() {
 
         {/* Month Filter and Action Buttons */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6">
-          <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl w-full md:w-auto">
+          <div className="flex items-center gap-3 bg-slate-50 border border-slate-500  p-4 rounded-2xl w-full md:w-auto">
             <FaCalendarAlt className="text-slate-400" />
             <select
               value={filters.month}
@@ -431,8 +443,8 @@ export default function PaymentHistory() {
       )}
 
       {/* Payments Table */}
-      <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-500 overflow-hidden">
+        <div className="p-6 border-b border-slate-500 flex justify-between items-center">
           <h3 className="text-lg font-bold flex items-center gap-2">
             <FaHistory className="text-indigo-600" />
             Payment Records
@@ -472,7 +484,7 @@ export default function PaymentHistory() {
                     <th className="p-4 text-left">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-500">
                   {payments.map((payment, index) => (
                     <tr key={payment._id} className="hover:bg-slate-50/50 transition-colors">
                       {/* Receipt Details */}
@@ -570,7 +582,7 @@ export default function PaymentHistory() {
             </div>
 
             {/* Simple Pagination - Only Next/Prev Buttons */}
-            <div className="p-6 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="p-6 border-t border-slate-500 flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="text-slate-500 text-sm">
                 Page <span className="font-bold">{currentPage}</span> • 
                 Showing <span className="font-bold">{((currentPage - 1) * itemsPerPage + 1)} - {Math.min(currentPage * itemsPerPage, totalPayments)}</span> of{" "}
@@ -581,7 +593,7 @@ export default function PaymentHistory() {
                 <button
                   onClick={goToPrevPage}
                   disabled={currentPage === 1}
-                  className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-900 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FaChevronLeft /> Previous
                 </button>
@@ -593,7 +605,7 @@ export default function PaymentHistory() {
                 <button
                   onClick={goToNextPage}
                   disabled={!hasMore}
-                  className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-900 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next <FaChevronRight />
                 </button>

@@ -7,7 +7,7 @@ const Layout = ({ sections, title, role }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-blue-50">
       <Sidebar 
         isOpen={sidebarOpen} 
         setIsOpen={setSidebarOpen}
@@ -28,7 +28,7 @@ const Layout = ({ sections, title, role }) => {
         </header>
 
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-blue-50">
           <div className="max-w-7xl mx-auto">
              <Outlet />
           </div>

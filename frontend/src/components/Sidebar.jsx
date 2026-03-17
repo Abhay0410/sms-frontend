@@ -63,7 +63,7 @@ const Sidebar = ({
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 w-72 transform bg-slate-900 shadow-2xl transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-40 w-72 transform bg-[#051224] shadow-2xl transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >

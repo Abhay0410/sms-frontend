@@ -152,7 +152,7 @@ export default function SalaryStructureSetup() {
       </div>
 
       {/* Policy UI Panel */}
-      <div className="bg-slate-900 rounded-2xl p-6 mb-8 text-white shadow-xl">
+      <div className=" bg-[#051224] rounded-2xl p-6 mb-8 text-white shadow-xl">
         <div className="flex justify-between items-center cursor-pointer" onClick={() => setShowPolicy(!showPolicy)}>
           <div className="flex items-center gap-3">
             <FaShieldAlt className="text-orange-400" />
@@ -182,7 +182,7 @@ export default function SalaryStructureSetup() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Inputs */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-500">
             <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">1. Target Selection</h3>
             
             <div className="space-y-4">
@@ -193,7 +193,7 @@ export default function SalaryStructureSetup() {
                   value={selectedStaff}
                   onChange={(e) => handleStaffChange(e.target.value)}
                   disabled={loading} // Fixed: Using loading state
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl border-none font-bold text-slate-700 focus:ring-4 focus:ring-indigo-50 transition-all appearance-none cursor-pointer disabled:opacity-50"
+                  className="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border border-slate-500 font-bold text-slate-700 outline-none transition-all appearance-none cursor-pointer disabled:opacity-50"
                 >
                   <option value="">{loading ? "Loading Staff..." : "Choose Staff Member..."}</option>
                   {staffList.map(person => (
@@ -212,7 +212,7 @@ export default function SalaryStructureSetup() {
                 value={monthlyGross}
                 onChange={(e) => setMonthlyGross(e.target.value)}
                 placeholder="e.g. 50000"
-                className="w-full p-5 bg-slate-50 rounded-2xl border-none font-black text-2xl text-indigo-600 focus:ring-4 focus:ring-indigo-50 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-full p-5 bg-white rounded-2xl border border-slate-500 font-black text-2xl text-indigo-600 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
           </div>
@@ -241,15 +241,15 @@ export default function SalaryStructureSetup() {
 
         {/* Right Column: Preview Table */}
         <div className="lg:col-span-7">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-            <div className="bg-slate-50 p-8 border-b border-slate-100 flex justify-between items-center">
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-500">
+            <div className="bg-slate-50 p-8 border-b border-slate-500 flex justify-between items-center">
               <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">3. Pro-forma Salary Slip</h3>
               <span className="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black">ESTIMATE</span>
             </div>
 
             <div className="p-8">
               <table className="w-full text-sm">
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-slate-500">
                   <tr className="py-4 flex justify-between font-bold">
                     <td className="text-slate-500">Basic Salary ({policy.basicPercent}%)</td>
                     <td className="text-slate-900">₹{calculation.basic.toLocaleString()}</td>
@@ -295,7 +295,7 @@ export default function SalaryStructureSetup() {
               <button 
                 onClick={handleSaveStructure}
                 disabled={saving || !selectedStaff}
-                className="w-full mt-8 bg-indigo-600 hover:bg-indigo-700 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                className="w-full mt-8 bg-amber-500 hover:bg-amber-600 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-sm transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {saving ? "Processing..." : monthlyGross ? <><FaSave /> Update Salary Structure</> : <><FaSave /> Initialize Salary Structure</>}
               </button>
