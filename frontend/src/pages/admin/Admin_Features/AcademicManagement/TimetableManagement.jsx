@@ -15,7 +15,14 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 export default function TimetableManagement() {
   const [classes, setClasses] = useState([]);
@@ -43,15 +50,15 @@ export default function TimetableManagement() {
 
   // Load last selected class from localStorage
   useEffect(() => {
-    const savedClass = localStorage.getItem('lastSelectedClass');
-    const savedSection = localStorage.getItem('lastSelectedSection');
+    const savedClass = localStorage.getItem("lastSelectedClass");
+    const savedSection = localStorage.getItem("lastSelectedSection");
     if (savedClass && savedSection) {
       try {
         const parsedClass = JSON.parse(savedClass);
         setSelectedClass(parsedClass);
         setSelectedSection(savedSection);
       } catch (e) {
-        console.error('Error parsing saved class:', e);
+        console.error("Error parsing saved class:", e);
       }
     }
   }, []);
@@ -59,8 +66,8 @@ export default function TimetableManagement() {
   // Save selected class and section to localStorage
   useEffect(() => {
     if (selectedClass && selectedSection) {
-      localStorage.setItem('lastSelectedClass', JSON.stringify(selectedClass));
-      localStorage.setItem('lastSelectedSection', selectedSection);
+      localStorage.setItem("lastSelectedClass", JSON.stringify(selectedClass));
+      localStorage.setItem("lastSelectedSection", selectedSection);
     }
   }, [selectedClass, selectedSection]);
 
@@ -78,7 +85,7 @@ export default function TimetableManagement() {
       });
 
       const resp = await api.get(
-        `${API_ENDPOINTS.ADMIN.TIMETABLE.BY_CLASS_SECTION}?classId=${selectedClass._id}&section=${selectedSection}&academicYear=${academicYear}`
+        `${API_ENDPOINTS.ADMIN.TIMETABLE.BY_CLASS_SECTION}?classId=${selectedClass._id}&section=${selectedSection}&academicYear=${academicYear}`,
       );
 
       console.log("📦 Timetable response:", resp);
@@ -91,7 +98,10 @@ export default function TimetableManagement() {
         setTimetableData(null);
       }
     } catch (err) {
-      if (err.status === 404 || err?.data?.message?.includes("Timetable not found")) {
+      if (
+        err.status === 404 ||
+        err?.data?.message?.includes("Timetable not found")
+      ) {
         setTimetableData(null);
       } else {
         console.error("❌ Timetable load error:", err);
@@ -105,7 +115,7 @@ export default function TimetableManagement() {
     try {
       setLoading(true);
       const resp = await api.get(
-        `${API_ENDPOINTS.ADMIN.CLASS.LIST}?academicYear=${academicYear}`
+        `${API_ENDPOINTS.ADMIN.CLASS.LIST}?academicYear=${academicYear}`,
       );
 
       console.log("Timetable - class list response:", resp);
@@ -114,8 +124,8 @@ export default function TimetableManagement() {
       const classList = Array.isArray(resp?.data)
         ? resp.data
         : Array.isArray(resp)
-        ? resp
-        : [];
+          ? resp
+          : [];
 
       console.log("Timetable - resolved classList:", classList);
 
@@ -144,18 +154,26 @@ export default function TimetableManagement() {
     try {
       // Helper: Convert time string to minutes
       const t2m = (t) => {
-        const [h, m] = t.split(':').map(Number);
+        const [h, m] = t.split(":").map(Number);
         return h * 60 + m;
       };
 
       // Helper: Convert minutes back to time string
       const m2t = (m) => {
-        const hh = Math.floor(m / 60).toString().padStart(2, '0');
-        const mm = (m % 60).toString().padStart(2, '0');
+        const hh = Math.floor(m / 60)
+          .toString()
+          .padStart(2, "0");
+        const mm = (m % 60).toString().padStart(2, "0");
         return `${hh}:${mm}`;
       };
 
-      const calculatePeriods = (total, start, duration, lunchAfter, lunchDuration) => {
+      const calculatePeriods = (
+        total,
+        start,
+        duration,
+        lunchAfter,
+        lunchDuration,
+      ) => {
         let periods = [];
         let currentMin = t2m(start);
         const dur = parseInt(duration);
@@ -194,9 +212,14 @@ export default function TimetableManagement() {
         templateData.startTime,
         templateData.periodDuration,
         templateData.lunchAfter,
-        templateData.lunchDuration
+        templateData.lunchDuration,
       );
-      DAYS.slice(0, 5).forEach(day => schedule.push({ day, periods: JSON.parse(JSON.stringify(weekdayPeriods)) }));
+      DAYS.slice(0, 5).forEach((day) =>
+        schedule.push({
+          day,
+          periods: JSON.parse(JSON.stringify(weekdayPeriods)),
+        }),
+      );
 
       // Saturday Generation (Specific rules)
       const saturdayPeriods = calculatePeriods(
@@ -204,7 +227,7 @@ export default function TimetableManagement() {
         templateData.startTime,
         templateData.periodDuration,
         templateData.lunchAfterSat,
-        templateData.lunchDuration
+        templateData.lunchDuration,
       );
       schedule.push({ day: "Saturday", periods: saturdayPeriods });
 
@@ -213,11 +236,15 @@ export default function TimetableManagement() {
         section: selectedSection,
         academicYear,
         schedule,
-        overwrite
+        overwrite,
       });
 
       setTimetableData(resp?.data || resp);
-      toast.success(overwrite ? "Template Overwritten Successfully" : "Curriculum Template Generated");
+      toast.success(
+        overwrite
+          ? "Template Overwritten Successfully"
+          : "Curriculum Template Generated",
+      );
       setShowTemplateModal(false);
       loadTimetable();
     } catch (err) {
@@ -287,7 +314,11 @@ export default function TimetableManagement() {
   const handleDeletePeriod = async () => {
     try {
       await api.delete(
-        API_ENDPOINTS.ADMIN.TIMETABLE.DELETE_PERIOD(timetableData._id, pendingDelete.day, pendingDelete.periodId)
+        API_ENDPOINTS.ADMIN.TIMETABLE.DELETE_PERIOD(
+          timetableData._id,
+          pendingDelete.day,
+          pendingDelete.periodId,
+        ),
       );
       toast.success("Period deleted successfully");
       setShowDeleteModal(false);
@@ -304,7 +335,7 @@ export default function TimetableManagement() {
       toast.error("Cannot edit this period - missing ID");
       return;
     }
-    
+
     setEditingPeriod({ day, ...period });
     setShowPeriodModal(true);
   };
@@ -314,20 +345,25 @@ export default function TimetableManagement() {
     if (!timetableData) return [];
 
     // Find the day with the maximum number of periods (Monday for weekdays)
-    const weekdayEntry = timetableData.schedule?.find(s => s.day === "Monday");
-    
+    const weekdayEntry = timetableData.schedule?.find(
+      (s) => s.day === "Monday",
+    );
+
     if (!weekdayEntry?.periods) return [];
 
     // Count only REGULAR periods (not breaks)
-    const regularPeriods = weekdayEntry.periods.filter(p => !p.isBreak);
-    const maxRegularPeriod = Math.max(...regularPeriods.map(p => p.periodNumber), 0);
-    
+    const regularPeriods = weekdayEntry.periods.filter((p) => !p.isBreak);
+    const maxRegularPeriod = Math.max(
+      ...regularPeriods.map((p) => p.periodNumber),
+      0,
+    );
+
     // Find lunch position
-    const lunchBreak = weekdayEntry.periods.find(p => p.isBreak);
+    const lunchBreak = weekdayEntry.periods.find((p) => p.isBreak);
     const lunchPosition = lunchBreak ? Math.floor(lunchBreak.periodNumber) : -1;
 
     const headers = [];
-    
+
     // Generate headers based on regular periods only
     for (let i = 1; i <= maxRegularPeriod; i++) {
       headers.push(
@@ -336,9 +372,9 @@ export default function TimetableManagement() {
           className="border border-slate-200 p-3 text-center font-semibold text-slate-700 min-w-[120px]"
         >
           Period {i}
-        </th>
+        </th>,
       );
-      
+
       // Add lunch break header if this period has lunch after it
       if (i === lunchPosition) {
         headers.push(
@@ -347,37 +383,42 @@ export default function TimetableManagement() {
             className="border border-slate-200 p-3 text-center font-semibold text-amber-700 bg-amber-50 min-w-[120px]"
           >
             Lunch
-          </th>
+          </th>,
         );
       }
     }
-    
+
     return headers;
   };
 
   // FIXED: Helper function to position periods in correct columns
   const getPositionedPeriodsForDay = (day) => {
-    const dayEntry = timetableData.schedule?.find(s => s.day === day);
+    const dayEntry = timetableData.schedule?.find((s) => s.day === day);
     let periods = dayEntry?.periods || [];
-    
+
     // Sort periods by periodNumber
     periods = [...periods].sort((a, b) => a.periodNumber - b.periodNumber);
-    
+
     // Find lunch position from Monday (to ensure consistent column placement)
-    const weekdayEntry = timetableData.schedule?.find(s => s.day === "Monday");
-    const lunchBreak = weekdayEntry?.periods?.find(p => p.isBreak);
+    const weekdayEntry = timetableData.schedule?.find(
+      (s) => s.day === "Monday",
+    );
+    const lunchBreak = weekdayEntry?.periods?.find((p) => p.isBreak);
     const lunchPosition = lunchBreak ? Math.floor(lunchBreak.periodNumber) : -1;
-    
+
     // Count only REGULAR periods (not breaks) to determine total columns
-    const regularPeriods = periods.filter(p => !p.isBreak);
-    const maxRegularPeriod = Math.max(...regularPeriods.map(p => p.periodNumber), 0);
-    
+    const regularPeriods = periods.filter((p) => !p.isBreak);
+    const maxRegularPeriod = Math.max(
+      ...regularPeriods.map((p) => p.periodNumber),
+      0,
+    );
+
     // Create array for all columns (regular periods + lunch)
     const totalColumns = maxRegularPeriod + (lunchPosition > -1 ? 1 : 0);
     const positionedPeriods = Array(totalColumns).fill(null);
-    
+
     // Place periods in correct columns
-    periods.forEach(period => {
+    periods.forEach((period) => {
       if (period.isBreak) {
         // Lunch goes in column after the specified period
         const lunchColumnIndex = lunchPosition; // Lunch goes in column after period X
@@ -395,7 +436,7 @@ export default function TimetableManagement() {
         }
       }
     });
-    
+
     return positionedPeriods;
   };
 
@@ -404,17 +445,17 @@ export default function TimetableManagement() {
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-teal-200 border-t-teal-600 mx-auto"></div>
-          <p className="mt-6 text-lg font-medium text-slate-700">Loading timetable...</p>
+          <p className="mt-6 text-lg font-medium text-slate-700">
+            Loading timetable...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50 px-4 md:px-6 pb-6 ">
+    <div className="min-h-screen bg-blue-50  px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-7xl">
-       
-
         {/* Header */}
         <div className=" flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
@@ -430,7 +471,7 @@ export default function TimetableManagement() {
             <select
               value={academicYear}
               onChange={(e) => setAcademicYear(e.target.value)}
-              className="rounded-xl border-2 border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 shadow-sm transition-all hover:border-teal-400 focus:border-teal-600 focus:ring-4 focus:ring-teal-100 focus:outline-none"
+              className="rounded-xl border-2 border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 shadow-sm transition-all hover:border-blue-400 focus:border-blue-600 focus:ring-4 focus:ring-teal-100 focus:outline-none"
             >
               <option value="2023-2024">2023-2024</option>
               <option value="2024-2025">2024-2025</option>
@@ -450,7 +491,7 @@ export default function TimetableManagement() {
                 ) : (
                   <button
                     onClick={() => setShowUnpublishModal(true)}
-                    className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 px-6 py-3 font-semibold text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                    className="flex items-center gap-2 rounded-xl bg-indigo-700 px-6 py-3 font-semibold text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                   >
                     <FaEdit className="h-4 w-4" />
                     Move to Draft
@@ -462,7 +503,7 @@ export default function TimetableManagement() {
             <button
               onClick={() => setShowTemplateModal(true)}
               disabled={!selectedClass || !selectedSection}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-semibold text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl transition-all"
+              className="flex items-center gap-2 rounded-xl bg-indigo-700 px-6 py-3 font-semibold text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl transition-all"
             >
               <FaMagic className="h-4 w-4" />
               Generate Template
@@ -471,7 +512,45 @@ export default function TimetableManagement() {
         </div>
 
         {/* Class & Section Selector */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl border border-slate-400 p-6 shadow-sm hover:border-slate-300">
+            <label className="block text-sm font-semibold text-slate-800 mb-2">
+              Select Class
+            </label>
+            <select
+              value={selectedClass?._id || ""}
+              onChange={(e) => handleClassChange(e.target.value)}
+              className="w-full rounded-xl border-2 border-slate-200 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
+            >
+              <option value="">Choose a class</option>
+              {classes.map((cls) => (
+                <option key={cls._id} value={cls._id}>
+                  {cls.className}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="bg-white rounded-2xl border border-slate-400 p-6 shadow-sm hover:border-slate-300">
+            <label className="block text-sm font-semibold text-slate-800 mb-2">
+              Select Section
+            </label>
+            <select
+              value={selectedSection}
+              onChange={(e) => setSelectedSection(e.target.value)}
+              className="w-full rounded-xl border-2 border-slate-200 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
+              disabled={!selectedClass}
+            >
+              <option value="">Choose a section</option>
+              {selectedClass?.sections?.map((section) => (
+                <option key={section._id} value={section.sectionName}>
+                  Section {section.sectionName}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div> */}
+
+         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">
               Select Class
@@ -479,7 +558,7 @@ export default function TimetableManagement() {
             <select
               value={selectedClass?._id || ""}
               onChange={(e) => handleClassChange(e.target.value)}
-              className="w-full rounded-xl border-2 border-slate-200 bg-white p-3 font-medium focus:border-teal-600 focus:outline-none"
+              className="w-full rounded-xl border-1 border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
             >
               <option value="">Choose a class</option>
               {classes.map((cls) => (
@@ -496,7 +575,7 @@ export default function TimetableManagement() {
             <select
               value={selectedSection}
               onChange={(e) => setSelectedSection(e.target.value)}
-              className="w-full rounded-xl border-2 border-slate-200 bg-white p-3 font-medium focus:border-teal-600 focus:outline-none"
+              className="w-full rounded-xl border-1 border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
               disabled={!selectedClass}
             >
               <option value="">Choose a section</option>
@@ -520,15 +599,14 @@ export default function TimetableManagement() {
                 No Timetable Found
               </h3>
               <p className="text-slate-600 mb-6">
-                {selectedClass && selectedSection 
+                {selectedClass && selectedSection
                   ? `No timetable found for ${selectedClass.className} - Section ${selectedSection}. Generate a template to get started.`
-                  : "Please select a class and section to view or create timetable."
-                }
+                  : "Please select a class and section to view or create timetable."}
               </p>
               {selectedClass && selectedSection && (
                 <button
                   onClick={() => setShowTemplateModal(true)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-700 px-6 py-3 font-semibold text-white shadow-lg hover:shadow-xl transition-all"
                 >
                   <FaMagic className="h-4 w-4" />
                   Generate Template
@@ -538,18 +616,22 @@ export default function TimetableManagement() {
           </div>
         ) : (
           <div className="mt-8">
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-slate-900">
                   {timetableData.className} - Section {timetableData.section}
                 </h3>
                 <div className="flex items-center gap-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                    timetableData.status === 'published' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {timetableData.status === 'published' ? 'Published' : 'Draft'}
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                      timetableData.status === "published"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {timetableData.status === "published"
+                      ? "Published"
+                      : "Draft"}
                   </span>
                   <button
                     onClick={() => {
@@ -578,21 +660,27 @@ export default function TimetableManagement() {
                   <tbody>
                     {DAYS.map((day) => {
                       const positionedPeriods = getPositionedPeriodsForDay(day);
-                      
+
                       return (
                         <tr key={day} className="hover:bg-slate-50">
                           <td className="border border-slate-200 p-3 font-semibold text-slate-700 sticky left-0 bg-white z-10">
                             {day}
                           </td>
                           {positionedPeriods.map((period, index) => (
-                            <td key={index} className="border border-slate-200 p-2 text-center min-w-[120px]">
+                            <td
+                              key={index}
+                              className="border border-slate-200 p-2 text-center min-w-[120px]"
+                            >
                               {period ? (
                                 <PeriodCell
                                   period={period}
                                   isEditable={timetableData.status === "draft"}
                                   onEdit={() => openEditPeriod(day, period)}
                                   onDelete={() => {
-                                    setPendingDelete({ day, periodId: period._id });
+                                    setPendingDelete({
+                                      day,
+                                      periodId: period._id,
+                                    });
                                     setShowDeleteModal(true);
                                   }}
                                 />
@@ -601,22 +689,36 @@ export default function TimetableManagement() {
                                   <button
                                     onClick={() => {
                                       // Calculate period number based on column index
-                                      const weekdayEntry = timetableData.schedule?.find(s => s.day === "Monday");
-                                      const lunchBreak = weekdayEntry?.periods?.find(p => p.isBreak);
-                                      const lunchPosition = lunchBreak ? Math.floor(lunchBreak.periodNumber) : -1;
-                                      
+                                      const weekdayEntry =
+                                        timetableData.schedule?.find(
+                                          (s) => s.day === "Monday",
+                                        );
+                                      const lunchBreak =
+                                        weekdayEntry?.periods?.find(
+                                          (p) => p.isBreak,
+                                        );
+                                      const lunchPosition = lunchBreak
+                                        ? Math.floor(lunchBreak.periodNumber)
+                                        : -1;
+
                                       let periodNumber;
-                                      if (lunchPosition > -1 && index === lunchPosition) {
+                                      if (
+                                        lunchPosition > -1 &&
+                                        index === lunchPosition
+                                      ) {
                                         // This is the lunch column
                                         periodNumber = lunchPosition + 0.5;
-                                      } else if (lunchPosition > -1 && index > lunchPosition) {
+                                      } else if (
+                                        lunchPosition > -1 &&
+                                        index > lunchPosition
+                                      ) {
                                         // After lunch column
                                         periodNumber = index;
                                       } else {
                                         // Before lunch column
                                         periodNumber = index + 1;
                                       }
-                                      
+
                                       setEditingPeriod({ day, periodNumber });
                                       setShowPeriodModal(true);
                                     }}
@@ -656,88 +758,88 @@ export default function TimetableManagement() {
         )}
 
         {/* Modals */}
-{showTemplateModal && selectedClass && selectedSection && (
-  <GenerateTemplateModal
-    sectionName={selectedSection}
-    className={selectedClass.className}
-    onClose={() => setShowTemplateModal(false)}
-    onSuccess={(templateData) => {
-      if (timetableData) {
-        setPendingTemplateData(templateData);
-        setShowOverwriteModal(true);
-      } else {
-        executeTemplateCreation(templateData, false);
-      }
-    }}
-  />
-)}
+        {showTemplateModal && selectedClass && selectedSection && (
+          <GenerateTemplateModal
+            sectionName={selectedSection}
+            className={selectedClass.className}
+            onClose={() => setShowTemplateModal(false)}
+            onSuccess={(templateData) => {
+              if (timetableData) {
+                setPendingTemplateData(templateData);
+                setShowOverwriteModal(true);
+              } else {
+                executeTemplateCreation(templateData, false);
+              }
+            }}
+          />
+        )}
 
-{showPeriodModal && (
-  <PeriodModal
-    timetableId={timetableData?._id}
-    sectionName={selectedSection}
-    selectedClass={selectedClass}
-    editingPeriod={editingPeriod}
-    onClose={() => {
-      setShowPeriodModal(false);
-      setEditingPeriod(null);
-    }}
-    onSuccess={() => {
-      setShowPeriodModal(false);
-      setEditingPeriod(null);
-      loadTimetable();
-    }}
-  />
-)}
+        {showPeriodModal && (
+          <PeriodModal
+            timetableId={timetableData?._id}
+            sectionName={selectedSection}
+            selectedClass={selectedClass}
+            editingPeriod={editingPeriod}
+            onClose={() => {
+              setShowPeriodModal(false);
+              setEditingPeriod(null);
+            }}
+            onSuccess={() => {
+              setShowPeriodModal(false);
+              setEditingPeriod(null);
+              loadTimetable();
+            }}
+          />
+        )}
 
-{/* Overwrite Confirmation Modal */}
-{showOverwriteModal && (
-  <OverwriteConfirmationModal
-    onConfirm={handleOverwriteConfirm}
-    onCancel={handleOverwriteCancel}
-    className={selectedClass?.className}
-    sectionName={selectedSection}
-  />
-)}
+        {/* Overwrite Confirmation Modal */}
+        {showOverwriteModal && (
+          <OverwriteConfirmationModal
+            onConfirm={handleOverwriteConfirm}
+            onCancel={handleOverwriteCancel}
+            className={selectedClass?.className}
+            sectionName={selectedSection}
+          />
+        )}
 
-{/* Publish Confirmation Modal */}
-{showPublishModal && (
-  <ConfirmationModal
-    title="Publish Timetable"
-    message={`Are you sure you want to publish the timetable for ${selectedClass?.className} - Section ${selectedSection}? This will make it visible to students and teachers.`}
-    confirmText="Publish"
-    confirmColor="from-green-600 to-emerald-600"
-    onConfirm={publishTimetable}
-    onCancel={() => setShowPublishModal(false)}
-  />
-)}
+        {/* Publish Confirmation Modal */}
+        {showPublishModal && (
+          <ConfirmationModal
+            title="Publish Timetable"
+            message={`Are you sure you want to publish the timetable for ${selectedClass?.className} - Section ${selectedSection}? This will make it visible to students and teachers.`}
+            confirmText="Publish"
+            confirmColor="from-green-600 to-emerald-600"
+            onConfirm={publishTimetable}
+            onCancel={() => setShowPublishModal(false)}
+          />
+        )}
 
-{/* Unpublish Confirmation Modal */}
-{showUnpublishModal && (
-  <ConfirmationModal
-    title="Move to Draft"
-    message={`Are you sure you want to move the timetable for ${selectedClass?.className} - Section ${selectedSection} to draft? This will hide it from students and teachers.`}
-    confirmText="Move to Draft"
-    confirmColor="from-orange-600 to-red-600"
-    onConfirm={unpublishTimetable}
-    onCancel={() => setShowUnpublishModal(false)}
-  />
-)}
+        {/* Unpublish Confirmation Modal */}
+        {showUnpublishModal && (
+          <ConfirmationModal
+            title="Move to Draft"
+            message={`Are you sure you want to move the timetable for ${selectedClass?.className} - Section ${selectedSection} to draft? This will hide it from students and teachers.`}
+            confirmText="Move to Draft"
+            confirmColor="from-blue-700 to-blue-600"
+            onConfirm={unpublishTimetable}
+            onCancel={() => setShowUnpublishModal(false)}
+          />
+        )}
 
-{/* Delete Period Confirmation Modal */}
-{showDeleteModal && (
-  <ConfirmationModal
-    title="Delete Period"
-    message="Are you sure you want to delete this period? This action cannot be undone."
-    confirmText="Delete"
-    confirmColor="from-red-600 to-pink-600"
-    onConfirm={handleDeletePeriod}
-    onCancel={() => {
-      setShowDeleteModal(false);
-      setPendingDelete({ day: "", periodId: "" });
-    }}
-  />
-)}
+        {/* Delete Period Confirmation Modal */}
+        {showDeleteModal && (
+          <ConfirmationModal
+            title="Delete Period"
+            message="Are you sure you want to delete this period? This action cannot be undone."
+            confirmText="Delete"
+            confirmColor="from-red-600 to-pink-600"
+            onConfirm={handleDeletePeriod}
+            onCancel={() => {
+              setShowDeleteModal(false);
+              setPendingDelete({ day: "", periodId: "" });
+            }}
+          />
+        )}
       </div>
     </div>
   );
@@ -760,20 +862,22 @@ function PeriodCell({ period, isEditable, onEdit, onDelete }) {
   if (period.isBreak) {
     return (
       <div className="group relative h-20 rounded-lg bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-300 p-2 flex flex-col justify-center items-center">
-        <p className="text-sm font-bold text-amber-900">{period.subject || "Break"}</p>
+        <p className="text-sm font-bold text-amber-900">
+          {period.subject || "Break"}
+        </p>
         <p className="text-xs text-amber-700 mt-1">
           {period.startTime} - {period.endTime}
         </p>
         {isEditable && (
           <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity duration-200 z-50">
-            <button 
+            <button
               onClick={handleEditClick}
               type="button"
               className="p-1 rounded bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-colors"
             >
               <FaEdit className="h-3 w-3" />
             </button>
-            <button 
+            <button
               onClick={handleDeleteClick}
               type="button"
               className="p-1 rounded bg-red-600 text-white hover:bg-red-700 shadow-md transition-colors"
@@ -789,26 +893,30 @@ function PeriodCell({ period, isEditable, onEdit, onDelete }) {
   return (
     <div className="group relative h-20 rounded-lg bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 p-2 hover:shadow-md transition-all">
       <div className="flex flex-col h-full">
-        <p className="text-xs font-bold text-teal-900 truncate">{period.subject || "N/A"}</p>
+        <p className="text-xs font-bold text-teal-900 truncate">
+          {period.subject || "N/A"}
+        </p>
         <p className="text-xs text-slate-600 truncate mt-1">
           {period.teacher?.name || "Not Allotted"}
         </p>
         <p className="text-xs text-slate-500 mt-auto">
           {period.startTime} - {period.endTime}
         </p>
-        {period.room && <p className="text-xs text-slate-400">Room: {period.room}</p>}
+        {period.room && (
+          <p className="text-xs text-slate-400">Room: {period.room}</p>
+        )}
       </div>
 
       {isEditable && (
         <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity duration-200 z-50">
-          <button 
+          <button
             onClick={handleEditClick}
             type="button"
             className="p-1 rounded bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-colors"
           >
             <FaEdit className="h-3 w-3" />
           </button>
-          <button 
+          <button
             onClick={handleDeleteClick}
             type="button"
             className="p-1 rounded bg-red-600 text-white hover:bg-red-700 shadow-md transition-colors"
@@ -822,7 +930,14 @@ function PeriodCell({ period, isEditable, onEdit, onDelete }) {
 }
 
 // NEW: Reusable Confirmation Modal Component
-function ConfirmationModal({ title, message, confirmText, confirmColor, onConfirm, onCancel }) {
+function ConfirmationModal({
+  title,
+  message,
+  confirmText,
+  confirmColor,
+  onConfirm,
+  onCancel,
+}) {
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div className="w-full max-w-md bg-white rounded-2xl overflow-hidden shadow-2xl">
@@ -882,44 +997,149 @@ function GenerateTemplateModal({ sectionName, className, onClose, onSuccess }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
       <div className="w-full max-w-lg bg-white rounded-[2.5rem] overflow-hidden shadow-2xl">
         <div className="bg-slate-900 p-8 text-white flex justify-between items-center">
-          <div><h3 className="text-2xl font-black uppercase tracking-tight">Smart Timetable</h3><p className="text-slate-400 text-xs mt-1 uppercase tracking-widest">{className} - {sectionName}</p></div>
-          <FaMagic className="text-red-500 text-2xl" />
+          <div>
+            <h3 className="text-2xl font-black uppercase tracking-tight">
+              Smart Timetable
+            </h3>
+            <p className="text-slate-400 text-xs mt-1 uppercase tracking-widest">
+              {className} - {sectionName}
+            </p>
+          </div>
+          <FaMagic className="text-blue-700 text-2xl" />
         </div>
-        
-        <form onSubmit={(e) => { e.preventDefault(); onSuccess(form); }} className="p-8 space-y-6">
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSuccess(form);
+          }}
+          className="p-8 space-y-6"
+        >
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Day Start Time</label>
-            <input type="time" value={form.startTime} onChange={e => setForm({...form, startTime: e.target.value})} className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-slate-900" /></div>
-            <div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Period Len (Min)</label>
-            <input type="number" value={form.periodDuration} onChange={e => setForm({...form, periodDuration: e.target.value})} className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-slate-900" /></div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                Day Start Time
+              </label>
+              <input
+                type="time"
+                value={form.startTime}
+                onChange={(e) =>
+                  setForm({ ...form, startTime: e.target.value })
+                }
+                className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-slate-900"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                Period Len (Min)
+              </label>
+              <input
+                type="number"
+                value={form.periodDuration}
+                onChange={(e) =>
+                  setForm({ ...form, periodDuration: e.target.value })
+                }
+                className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-slate-900"
+              />
+            </div>
           </div>
 
           <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-4">
-             <span className="text-[10px] font-black uppercase text-red-500 tracking-widest">Weekdays (Mon-Fri)</span>
-             <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase">Total Periods</label>
-                <input type="number" value={form.periodsPerDay} onChange={e => setForm({...form, periodsPerDay: e.target.value})} className="w-full p-3 bg-white rounded-xl border-none font-bold shadow-sm" /></div>
-                <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase">Lunch After Per.</label>
-                <input type="number" value={form.lunchAfter} onChange={e => setForm({...form, lunchAfter: e.target.value})} className="w-full p-3 bg-white rounded-xl border-none font-bold shadow-sm" /></div>
-             </div>
+            <span className="text-[10px] font-black uppercase text-blue-500 tracking-widest">
+              Weekdays (Mon-Fri)
+            </span>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase">
+                  Total Periods
+                </label>
+                <input
+                  type="number"
+                  value={form.periodsPerDay}
+                  onChange={(e) =>
+                    setForm({ ...form, periodsPerDay: e.target.value })
+                  }
+                  className="w-full p-3 bg-white rounded-xl border-none font-bold shadow-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase">
+                  Lunch After Per.
+                </label>
+                <input
+                  type="number"
+                  value={form.lunchAfter}
+                  onChange={(e) =>
+                    setForm({ ...form, lunchAfter: e.target.value })
+                  }
+                  className="w-full p-3 bg-white rounded-xl border-none font-bold shadow-sm"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="p-6 bg-orange-50/50 rounded-[2rem] border border-orange-100 space-y-4">
-             <span className="text-[10px] font-black uppercase text-orange-600 tracking-widest">Saturday Schedule</span>
-             <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase">Total Periods</label>
-                <input type="number" value={form.periodsSat} onChange={e => setForm({...form, periodsSat: e.target.value})} className="w-full p-3 bg-white rounded-xl border-none font-bold shadow-sm" /></div>
-                <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase">Lunch After Per.</label>
-                <input type="number" value={form.lunchAfterSat} onChange={e => setForm({...form, lunchAfterSat: e.target.value})} className="w-full p-3 bg-white rounded-xl border-none font-bold shadow-sm" /></div>
-             </div>
+            <span className="text-[10px] font-black uppercase text-blue-600 tracking-widest">
+              Saturday Schedule
+            </span>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase">
+                  Total Periods
+                </label>
+                <input
+                  type="number"
+                  value={form.periodsSat}
+                  onChange={(e) =>
+                    setForm({ ...form, periodsSat: e.target.value })
+                  }
+                  className="w-full p-3 bg-white rounded-xl border-none font-bold shadow-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase">
+                  Lunch After Per.
+                </label>
+                <input
+                  type="number"
+                  value={form.lunchAfterSat}
+                  onChange={(e) =>
+                    setForm({ ...form, lunchAfterSat: e.target.value })
+                  }
+                  className="w-full p-3 bg-white rounded-xl border-none font-bold shadow-sm"
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Lunch duration (minutes)</label>
-          <input type="number" value={form.lunchDuration} onChange={e => setForm({...form, lunchDuration: e.target.value})} className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-slate-900" /></div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+              Lunch duration (minutes)
+            </label>
+            <input
+              type="number"
+              value={form.lunchDuration}
+              onChange={(e) =>
+                setForm({ ...form, lunchDuration: e.target.value })
+              }
+              className="w-full p-4 bg-slate-50 rounded-2xl border-none font-bold text-slate-900"
+            />
+          </div>
 
           <div className="flex gap-4 pt-4">
-            <button type="button" onClick={onClose} className="flex-1 py-4 font-black text-slate-400 uppercase text-xs tracking-widest hover:text-slate-600 transition-all">Discard</button>
-            <button type="submit" className="flex-[2] py-4 bg-red-600 text-white rounded-2xl font-black uppercase text-xs shadow-xl shadow-red-200 hover:shadow-2xl hover:bg-red-700 active:scale-95 transition-all">Generate & Sync Template</button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-4 font-black text-slate-400 uppercase text-xs tracking-widest hover:text-slate-600 transition-all"
+            >
+              Discard
+            </button>
+            <button
+              type="submit"
+              className="flex-[2] py-4 bg-indigo-700 text-white rounded-2xl font-black uppercase text-xs shadow-xl shadow-blue-200 hover:shadow-2xl hover:bg-blue-800 active:scale-95 transition-all"
+            >
+              Generate & Sync Template
+            </button>
           </div>
         </form>
       </div>
@@ -928,32 +1148,44 @@ function GenerateTemplateModal({ sectionName, className, onClose, onSuccess }) {
 }
 
 // NEW: Overwrite Confirmation Modal Component
-function OverwriteConfirmationModal({ onConfirm, onCancel, className, sectionName }) {
+function OverwriteConfirmationModal({
+  onConfirm,
+  onCancel,
+  className,
+  sectionName,
+}) {
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div className="w-full max-w-md bg-white rounded-2xl overflow-hidden shadow-2xl">
-        <div className="bg-gradient-to-r from-red-500 to-orange-500 p-6 text-white">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white/20 rounded-xl">
               <FaExclamationTriangle className="h-8 w-8" />
             </div>
             <div>
-              <h3 className="text-xl font-bold">Overwrite Existing Timetable</h3>
-              <p className="text-sm opacity-90 mt-1">{className} - Section {sectionName}</p>
+              <h3 className="text-xl font-bold">
+                Overwrite Existing Timetable
+              </h3>
+              <p className="text-sm opacity-90 mt-1">
+                {className} - Section {sectionName}
+              </p>
             </div>
           </div>
         </div>
 
         <div className="p-6">
           <div className="space-y-4">
-            <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200">
-              <FaExclamationTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-slate-200">
+              <FaExclamationTriangle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-semibold text-amber-900">Important Warning</h4>
-                <p className="text-sm text-amber-700 mt-1">
-                  A timetable already exists for this class. Re-generating the template will:
+                <h4 className="font-semibold text-blue-900">
+                  Important Warning
+                </h4>
+                <p className="text-sm text-blue-700 mt-1">
+                  A timetable already exists for this class. Re-generating the
+                  template will:
                 </p>
-                <ul className="text-sm text-amber-700 mt-2 space-y-1 ml-4 list-disc">
+                <ul className="text-sm text-blue-700 mt-2 space-y-1 ml-4 list-disc">
                   <li>Erase all current period assignments</li>
                   <li>Remove all teacher allocations</li>
                   <li>Reset subjects to "N/A"</li>
@@ -980,7 +1212,7 @@ function OverwriteConfirmationModal({ onConfirm, onCancel, className, sectionNam
             <button
               type="button"
               onClick={onConfirm}
-              className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 font-semibold text-white shadow-lg hover:shadow-xl"
+              className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 font-semibold text-white shadow-lg hover:shadow-xl"
             >
               Overwrite Template
             </button>
@@ -992,7 +1224,14 @@ function OverwriteConfirmationModal({ onConfirm, onCancel, className, sectionNam
 }
 
 // PeriodModal Component (unchanged, kept for reference)
-function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, onClose, onSuccess }) {
+function PeriodModal({
+  timetableId,
+  sectionName,
+  selectedClass,
+  editingPeriod,
+  onClose,
+  onSuccess,
+}) {
   const [form, setForm] = useState({
     day: editingPeriod?.day || "Monday",
     periodNumber: editingPeriod?.periodNumber || 1,
@@ -1015,7 +1254,9 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
     }
 
     try {
-      const endpoint = API_ENDPOINTS.ADMIN.SUBJECT_MANAGEMENT.CLASS(selectedClass._id);
+      const endpoint = API_ENDPOINTS.ADMIN.SUBJECT_MANAGEMENT.CLASS(
+        selectedClass._id,
+      );
       const response = await api.get(endpoint);
       const responseData = response.data || response;
 
@@ -1025,19 +1266,22 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
       // Get subjects from specific section with teacher data
       if (responseData?.sections && Array.isArray(responseData.sections)) {
         const currentSection = responseData.sections.find(
-          section => section.sectionName === sectionName
+          (section) => section.sectionName === sectionName,
         );
-        
-        if (currentSection?.subjects && Array.isArray(currentSection.subjects)) {
+
+        if (
+          currentSection?.subjects &&
+          Array.isArray(currentSection.subjects)
+        ) {
           subjectsData = currentSection.subjects;
-          
+
           // Build teachers map
-          subjectsData.forEach(subject => {
+          subjectsData.forEach((subject) => {
             if (subject.teacher && subject.teacher._id) {
               teachersMap[subject.subjectName] = {
                 _id: subject.teacher._id,
                 name: subject.teacher.name,
-                teacherID: subject.teacher.teacherID
+                teacherID: subject.teacher.teacherID,
               };
             }
           });
@@ -1048,18 +1292,17 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
       if (subjectsData.length === 0 && responseData?.availableSubjects) {
         subjectsData = responseData.availableSubjects;
       }
-      
+
       setSubjects(Array.isArray(subjectsData) ? subjectsData : []);
       setSubjectTeachers(teachersMap);
 
       // Auto-set teacher if editing and subject has teacher
       if (editingPeriod?.subject && teachersMap[editingPeriod.subject]) {
-        setForm(prev => ({
+        setForm((prev) => ({
           ...prev,
-          teacher: teachersMap[editingPeriod.subject]._id
+          teacher: teachersMap[editingPeriod.subject]._id,
         }));
       }
-      
     } catch (error) {
       console.error("Failed to load subjects", error);
       setSubjects([]);
@@ -1085,14 +1328,18 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
   // Auto-assign teacher when subject changes
   useEffect(() => {
     if (form.subject && subjectTeachers[form.subject] && !form.isBreak) {
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
-        teacher: subjectTeachers[form.subject]._id
+        teacher: subjectTeachers[form.subject]._id,
       }));
-    } else if (form.subject && !subjectTeachers[form.subject] && !form.isBreak) {
-      setForm(prev => ({
+    } else if (
+      form.subject &&
+      !subjectTeachers[form.subject] &&
+      !form.isBreak
+    ) {
+      setForm((prev) => ({
         ...prev,
-        teacher: ""
+        teacher: "",
       }));
     }
   }, [form.subject, subjectTeachers, form.isBreak]);
@@ -1101,25 +1348,25 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
   useEffect(() => {
     if (form.isBreak && !editingPeriod) {
       const isSaturday = form.day === "Saturday";
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
         startTime: isSaturday ? "12:00" : "13:00",
         endTime: isSaturday ? "12:30" : "13:30",
         subject: "Lunch Break",
-        teacher: ""
+        teacher: "",
       }));
     }
   }, [form.isBreak, form.day, editingPeriod]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     if (!form.startTime || !form.endTime) {
       toast.error("Start time and end time are required");
       return;
     }
-    
+
     if (!form.isBreak && !form.subject) {
       toast.error("Subject is required for non-break periods");
       return;
@@ -1141,29 +1388,40 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
       if (editingPeriod?._id) {
         // Update existing period
         await api.put(
-          API_ENDPOINTS.ADMIN.TIMETABLE.UPDATE_PERIOD(timetableId, form.day, editingPeriod._id),
-          periodData
+          API_ENDPOINTS.ADMIN.TIMETABLE.UPDATE_PERIOD(
+            timetableId,
+            form.day,
+            editingPeriod._id,
+          ),
+          periodData,
         );
         toast.success("Period updated successfully");
       } else {
         // Create new period (break or normal)
         if (form.isBreak) {
-          await api.post(API_ENDPOINTS.ADMIN.TIMETABLE.ADD_BREAK(timetableId, form.day), {
-            startTime: form.startTime,
-            endTime: form.endTime,
-            periodNumber: parseInt(form.periodNumber),
-            breakType: form.subject || "Lunch Break",
-          });
+          await api.post(
+            API_ENDPOINTS.ADMIN.TIMETABLE.ADD_BREAK(timetableId, form.day),
+            {
+              startTime: form.startTime,
+              endTime: form.endTime,
+              periodNumber: parseInt(form.periodNumber),
+              breakType: form.subject || "Lunch Break",
+            },
+          );
           toast.success("Break period added");
         } else {
-          await api.post(API_ENDPOINTS.ADMIN.TIMETABLE.ADD_PERIOD(timetableId, form.day), periodData);
+          await api.post(
+            API_ENDPOINTS.ADMIN.TIMETABLE.ADD_PERIOD(timetableId, form.day),
+            periodData,
+          );
           toast.success("Period added successfully");
         }
       }
       onSuccess();
     } catch (error) {
       console.error("Error saving period:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Operation failed";
+      const errorMessage =
+        error.response?.data?.message || error.message || "Operation failed";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -1171,15 +1429,20 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 ">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4  ">
       <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto ">
         <div className="border-b border-slate-100 p-6 bg-gradient-to-r from-teal-50 to-cyan-50 sticky top-0 z-10">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-slate-900">{editingPeriod?._id ? "Edit Period" : "Add Period"}</h3>
+              <h3 className="text-2xl font-bold text-slate-900">
+                {editingPeriod?._id ? "Edit Period" : "Add Period"}
+              </h3>
               <p className="text-sm text-slate-600 mt-1">{form.day}</p>
             </div>
-            <button onClick={onClose} className="rounded-xl bg-white p-2 text-slate-600 shadow-sm hover:bg-slate-100 transition-all">
+            <button
+              onClick={onClose}
+              className="rounded-xl bg-white p-2 text-slate-600 shadow-sm hover:bg-slate-100 transition-all"
+            >
               <FaTimes className="h-5 w-5" />
             </button>
           </div>
@@ -1191,67 +1454,83 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
             <input
               type="checkbox"
               checked={form.isBreak}
-              onChange={e => setForm({ ...form, isBreak: e.target.checked })}
+              onChange={(e) => setForm({ ...form, isBreak: e.target.checked })}
               className="h-4 w-4"
             />
-            <label className="text-sm font-semibold text-slate-700">This is a break period (Lunch/Recess)</label>
+            <label className="text-sm font-semibold text-slate-700">
+              This is a break period (Lunch/Recess)
+            </label>
           </div>
 
           {/* Day and Period Number */}
           <div className="grid grid-cols-2 gap-4">
-  <div>
-    <label className="block text-sm font-semibold text-slate-700 mb-2">Day</label>
-    <select
-      value={form.day}
-      onChange={e => setForm({ ...form, day: e.target.value })}
-      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none"
-      required
-    >
-      {DAYS.map(day => (
-        <option key={day} value={day}>{day}</option>
-      ))}
-    </select>
-  </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Day
+              </label>
+              <select
+                value={form.day}
+                onChange={(e) => setForm({ ...form, day: e.target.value })}
+                className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none"
+                required
+              >
+                {DAYS.map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-  <div>
-    <label className="block text-sm font-semibold text-slate-700 mb-2">Period Number</label>
-    <input
-      type="number"
-      step="0.5"
-      min="1"
-      max="8.5"
-      value={form.periodNumber}
-      onChange={e => setForm({ ...form, periodNumber: e.target.value })}
-      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none"
-      required
-    />
-    <p className="text-xs text-slate-500 mt-1">
-      {form.isBreak 
-        ? "Break periods use decimals (e.g., 4.5 for lunch after period 4)"
-        : "Use whole numbers for regular periods"}
-    </p>
-  </div>
-</div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Period Number
+              </label>
+              <input
+                type="number"
+                step="0.5"
+                min="1"
+                max="8.5"
+                value={form.periodNumber}
+                onChange={(e) =>
+                  setForm({ ...form, periodNumber: e.target.value })
+                }
+                className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none"
+                required
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                {form.isBreak
+                  ? "Break periods use decimals (e.g., 4.5 for lunch after period 4)"
+                  : "Use whole numbers for regular periods"}
+              </p>
+            </div>
+          </div>
 
           {/* Start and End Time */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Start Time</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Start Time
+              </label>
               <input
                 type="time"
                 value={form.startTime}
-                onChange={e => setForm({ ...form, startTime: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, startTime: e.target.value })
+                }
                 className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none transition-all"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">End Time</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                End Time
+              </label>
               <input
                 type="time"
                 value={form.endTime}
-                onChange={e => setForm({ ...form, endTime: e.target.value })}
+                onChange={(e) => setForm({ ...form, endTime: e.target.value })}
                 className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none transition-all"
                 required
               />
@@ -1269,10 +1548,12 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
           {/* Subject Selection (only if not break) */}
           {!form.isBreak && !fetchLoading && (
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Subject *</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Subject *
+              </label>
               <select
                 value={form.subject}
-                onChange={e => setForm({ ...form, subject: e.target.value })}
+                onChange={(e) => setForm({ ...form, subject: e.target.value })}
                 className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none transition-all"
                 required
               >
@@ -1280,24 +1561,31 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
                 {subjects.length === 0 ? (
                   <option disabled>No subjects available</option>
                 ) : (
-                  subjects.map(sub => (
-                    <option key={sub._id || sub.id || sub.subjectName} value={sub.subjectName || sub.name}>
+                  subjects.map((sub) => (
+                    <option
+                      key={sub._id || sub.id || sub.subjectName}
+                      value={sub.subjectName || sub.name}
+                    >
                       {sub.subjectName || sub.name}
                     </option>
                   ))
                 )}
               </select>
               {subjects.length === 0 && (
-                <p className="text-xs text-red-600 mt-1">No subjects found for this class. Please add subjects first.</p>
+                <p className="text-xs text-red-600 mt-1">
+                  No subjects found for this class. Please add subjects first.
+                </p>
               )}
-              
+
               {/* Teacher assignment info */}
               <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
                 <p className="text-xs text-blue-700">
-                  <strong>Note:</strong> Teacher will be automatically assigned based on subject selection from Teacher Management.
+                  <strong>Note:</strong> Teacher will be automatically assigned
+                  based on subject selection from Teacher Management.
                   {form.subject && !subjectTeachers[form.subject] && (
                     <span className="block mt-1 text-amber-700">
-                      No teacher assigned for {form.subject}. It will show "Not Allotted" in timetable.
+                      No teacher assigned for {form.subject}. It will show "Not
+                      Allotted" in timetable.
                     </span>
                   )}
                 </p>
@@ -1307,11 +1595,13 @@ function PeriodModal({ timetableId, sectionName, selectedClass, editingPeriod, o
 
           {form.isBreak && (
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Break Type</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Break Type
+              </label>
               <input
                 type="text"
                 value={form.subject}
-                onChange={e => setForm({ ...form, subject: e.target.value })}
+                onChange={(e) => setForm({ ...form, subject: e.target.value })}
                 className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-teal-600 focus:outline-none transition-all"
                 placeholder="e.g., Lunch Break, Recess"
               />

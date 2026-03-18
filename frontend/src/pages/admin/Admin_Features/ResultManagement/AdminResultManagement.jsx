@@ -223,7 +223,7 @@ export default function AdminResultManagement() {
       return <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">PUBLISHED</span>;
     }
     if (isApproved) {
-      return <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">APPROVED</span>;
+      return <span className="px-3 py-1 bg-emerald-100 text-emerald-700 border-emerald-300 text-xs font-bold rounded-full">APPROVED</span>;
     }
     return <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full">DRAFT</span>;
   };
@@ -352,7 +352,7 @@ export default function AdminResultManagement() {
               <select
                 value={filters.examType}
                 onChange={(e) => setFilters({ ...filters, examType: e.target.value })}
-                className="w-full sm:w-auto rounded-lg border border-slate-400 px-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px] bg-white cursor-pointer"
+                className="rounded-lg border-2 h-13 mt-6  border-slate-200 p-3 focus:border-purple-500 outline-none"
               >
                 <option value="">All Exam Types</option>
                 <option value="FINAL">Final Exam</option>
@@ -365,7 +365,7 @@ export default function AdminResultManagement() {
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="w-full sm:w-auto rounded-lg border border-slate-400 px-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px] bg-white cursor-pointer"
+                className="rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none"
               >
                 <option value="">All Results</option>
                 <option value="PASS">PASS</option>

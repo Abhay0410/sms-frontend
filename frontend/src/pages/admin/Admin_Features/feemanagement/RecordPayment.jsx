@@ -786,8 +786,8 @@ export default function RecordPayment() {
             <div className="h-14 w-14 bg-white text-purple-600 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300">
               <FaFilter size={20} />
             </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">
+            <div >
+              <h3 className="text-xl font-bold text-slate-900 ">
                 Filter Students
               </h3>
               <p className="text-slate-500 text-sm font-medium mt-1">

@@ -368,8 +368,8 @@ export default function ViewChildFee() {
 
             <div className="rounded-2xl bg-red-50 p-6 shadow-lg border border-red-200">
               <div className="flex items-center gap-3 mb-2">
-                <FaExclamationCircle className="h-8 w-8 text-red-600" />
-                <p className="text-sm text-red-700">Pending Amount</p>
+                <FaExclamationCircle className="h-8 w-8 text-amber-600" />
+                <p className="text-sm text-amber-700">Pending Amount</p>
               </div>
               <p className="text-3xl font-bold text-red-900">
                 ₹{feeDetails.pendingAmount?.toLocaleString("en-IN")}
@@ -524,7 +524,7 @@ export default function ViewChildFee() {
                             payment.status === "PAID" ||
                             payment.status === "APPROVED" ||
                             payment.status === "COMPLETED"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-emerald-100 text-emerald-700"
                               : payment.status === "PENDING" ||
                                 payment.status === "PARTIAL"
                                 ? "bg-yellow-100 text-yellow-800"

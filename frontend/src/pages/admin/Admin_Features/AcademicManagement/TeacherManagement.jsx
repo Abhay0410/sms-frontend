@@ -195,7 +195,7 @@ export default function TeacherManagement() {
   }
 
   return (
-    <div className="h-screen bg-slate-50 flex flex-col overflow-hidden font-sans text-slate-900">
+    <div className="h-screen bg-blue-50 flex flex-col overflow-hidden font-sans text-slate-900">
       <div className="flex items-center gap-4">
         <div className="h-14 w-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 transform -rotate-2 hover:rotate-0 transition-all duration-300">
           <FaChalkboardTeacher className="text-white text-2xl" />
@@ -211,7 +211,7 @@ export default function TeacherManagement() {
       </div>
 
       {/* Top Bar - Floating */}
-      <div className="bg-white border-b px-8 py-4 flex items-center justify-between gap-6 shadow-sm z-20 rounded-b-[1rem] mt-6">
+      <div className="bg-white border-1 rounded-t-2xl border-slate-400 px-8 py-4 flex items-center justify-between gap-6 shadow-sm z-20 mt-6">
         <div className="relative flex-1 max-w-2xl">
           <FaSearch
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
@@ -220,7 +220,7 @@ export default function TeacherManagement() {
           <input
             type="text"
             placeholder="Search by name, ID, email, or department..."
-            className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all text-sm font-medium"
+            className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all text-sm font-medium"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -228,7 +228,7 @@ export default function TeacherManagement() {
 
         <div className="flex items-center gap-4">
           <select
-            className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 outline-none cursor-pointer"
+            className="px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-600 outline-none cursor-pointer"
             value={selectedDepartment}
             onChange={(e) => setSelectedDepartment(e.target.value)}
           >
@@ -242,7 +242,7 @@ export default function TeacherManagement() {
           <select
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
-            className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 outline-none cursor-pointer"
+            className="px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-600 outline-none cursor-pointer"
           >
             <option value="2023-2024">2023-2024</option>
             <option value="2024-2025">2024-2025</option>
@@ -251,7 +251,7 @@ export default function TeacherManagement() {
 
           <button
             onClick={loadData}
-            className="p-2.5 bg-slate-100 rounded-xl hover:bg-slate-200 transition-all"
+            className="p-2.5 bg-yellow-300 rounded-xl hover:bg-yellow-400 transition-all"
           >
             <FaSync className={loading ? "animate-spin" : ""} size={16} />
           </button>
@@ -282,7 +282,7 @@ export default function TeacherManagement() {
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar - Fixed Width */}
         <div
-          className={`bg-white border-r flex flex-col transition-all duration-300 ${viewMode === "list" ? "w-full" : "w-[360px]"}`}
+          className={`bg-white border-r border-slate-400 flex flex-col transition-all duration-300 ${viewMode === "list" ? "w-full" : "w-[360px]"}`}
         >
           <div
             className={`flex-1 overflow-y-auto custom-scrollbar ${viewMode === "list" ? "p-6 space-y-2" : ""}`}
@@ -395,7 +395,7 @@ export default function TeacherManagement() {
                   <div
                     key={teacher._id}
                     onClick={() => setSelectedTeacher(teacher)}
-                    className={`p-5 flex items-center gap-4 cursor-pointer transition-all border-b relative ${
+                    className={`p-5 flex items-center gap-4 cursor-pointer transition-all border-slate-400 border-b relative ${
                       selectedTeacher?._id === teacher._id
                         ? "bg-indigo-50/40"
                         : "hover:bg-slate-50"
@@ -407,7 +407,7 @@ export default function TeacherManagement() {
 
                     {/* Avatar with Status Dot */}
                     <div className="relative">
-                      <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center font-bold text-indigo-600 text-xl border-2 border-white shadow-sm overflow-hidden">
+                      <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center font-bold text-indigo-600 text-xl border-1 border-white shadow-sm overflow-hidden">
                         {teacher.profilePicture ? (
                           <img
                             src={getProfilePic(teacher)}
@@ -441,7 +441,7 @@ export default function TeacherManagement() {
 
           {/* Pagination Bar */}
           {filteredTeachers.length > 0 && (
-            <div className="p-3 border-t bg-slate-50 flex items-center justify-between">
+            <div className="p-3 border-t border-slate-400 bg-slate-50 flex items-center justify-between">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
@@ -524,7 +524,7 @@ export default function TeacherManagement() {
                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
                   Administrative Roles
                 </h3>
-                <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex flex-wrap flex-col gap-4">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-bold text-slate-500">
                       Current Assignments:
@@ -553,12 +553,12 @@ export default function TeacherManagement() {
                   </div>
 
                   {/* Action Buttons - Added Back */}
-                  <div className="flex gap-3">
+                  <div className="flex  gap-3">
                     <button
                       onClick={() =>
                         openAssignModal(selectedTeacher, "classTeacher")
                       }
-                      className="px-5 py-2.5 bg-white border-2 border-indigo-200 text-indigo-700 rounded-xl hover:bg-indigo-50 transition-all text-xs font-bold flex items-center gap-2"
+                      className="px-5 py-2.5 bg-indigo-700 border-2 border-indigo-200  text-white rounded-xl hover:bg-indigo-800 transition-all text-xs font-bold flex items-center gap-2"
                     >
                       <FaChalkboardTeacher size={14} /> Assign Class Teacher
                     </button>
@@ -566,7 +566,7 @@ export default function TeacherManagement() {
                       onClick={() =>
                         openAssignModal(selectedTeacher, "subject")
                       }
-                      className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-200"
+                      className="px-5 py-2.5 bg-indigo-700 text-white rounded-xl hover:bg-indigo-800 transition-all text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-200"
                     >
                       <FaBook size={14} /> Assign Subject
                     </button>
@@ -881,7 +881,7 @@ function AssignmentModal({
         <div className="p-6 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-t-2xl">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-xl font-bold">
+              <h3 className="text-xl font-bold ">
                 {type === "classTeacher"
                   ? "Assign Class Teacher"
                   : "Assign Subject Teacher"}

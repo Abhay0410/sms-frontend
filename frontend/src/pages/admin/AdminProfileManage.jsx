@@ -146,7 +146,7 @@ export default function AdminProfileManage() {
       : `/assets/default-admin-avatar.png`);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 px-4 md:px-6 pb-6 ">
+    <div className="min-h-screen bg-blue-50 to-indigo-50 px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-4xl">
         {/* Header Section */}
         <div className="text-center mb-8">
