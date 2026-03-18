@@ -164,10 +164,10 @@ export default function StudentManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 px-4 md:px-6 pb-6 ">
+    <div className="min-h-screen bg-blue-50 px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+        <div className="rounded-2xl bg-white border border-slate-500 shadow-sm p-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
@@ -204,7 +204,7 @@ export default function StudentManagement() {
         </div>
 
         {/* Filters */}
-        <div className="mt-6 rounded-2xl bg-white p-6 shadow-sm border border-slate-200">
+        <div className="mt-6 rounded-2xl bg-white p-6 shadow-sm border border-slate-500">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -284,7 +284,7 @@ export default function StudentManagement() {
 
         {/* Bulk Actions */}
         {selectedStudents.length > 0 && (
-          <div className="mt-6 rounded-2xl bg-blue-50 p-4 border-2 border-blue-200 flex items-center justify-between">
+          <div className="mt-6 rounded-2xl bg-blue-50 p-4 border-1 border-slate-500 flex items-center justify-between">
             <p className="text-blue-900 font-semibold">
               {selectedStudents.length} student
               {selectedStudents.length !== 1 ? "s" : ""} selected
@@ -321,9 +321,9 @@ export default function StudentManagement() {
         )}
 
         {/* Student Table */}
-<div className="mt-6 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden">          <div className="overflow-x-auto">
+<div className="mt-6 rounded-2xl bg-white shadow-sm border border-slate-500 overflow-hidden">          <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+              <thead className="bg-slate-800  text-white border-b border-slate-200">
                 <tr>
                   <th className="p-4 text-left">
                     <input
@@ -336,19 +336,19 @@ export default function StudentManagement() {
                       className="h-4 w-4 rounded border-slate-300"
                     />
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                  <th className="p-4 text-left text-white text-sm font-semibold ">
                     Student
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                  <th className="p-4 text-left text-sm font-semibold text-white">
                     Class
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                  <th className="p-4 text-left text-sm font-semibold text-white">
                     Status
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-slate-700">
+                  <th className="p-4 text-left text-sm font-semibold text-white">
                     Parent
                   </th>
-                  <th className="p-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">
+                  <th className="p-4 text-left text-sm font-bold text-white uppercase tracking-wider">
                     Final Result
                   </th>
                   {/* <th className="p-4 text-left text-sm font-semibold text-slate-700">Actions</th> */}
@@ -432,8 +432,8 @@ export default function StudentManagement() {
                           )}
                         </div>
                       ) : (
-                        <div className="text-slate-300 text-[10px] font-bold uppercase flex items-center gap-1">
-                          <div className="h-1 w-1 rounded-full bg-slate-200"></div>
+                        <div className="  text-amber-700 text-[10px] font-bold uppercase flex items-center gap-1 ">
+                          <div className="h-1 w-1 rounded-full bg-amber-200  border-amber-300"></div>
                           Pending Generation
                         </div>
                       )}

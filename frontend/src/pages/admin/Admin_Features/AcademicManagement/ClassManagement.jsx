@@ -287,7 +287,7 @@ export default function ClassManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 md:px-8 pb-10">
+    <div className="min-h-screen bg-blue-50 px-4 md:px-8 pb-10">
       <div className="mx-auto max-w-7xl">
         {/* Header Section - Professional Title */}
         <div className="">
@@ -310,7 +310,7 @@ export default function ClassManagement() {
         </div>
 
         {/* Stats Cards - Using new color scheme */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
           <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
@@ -386,10 +386,10 @@ export default function ClassManagement() {
               ></div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Action Bar - Search, Filters, Actions */}
-        <div className="bg-white rounded-xl p-5 mb-8 border border-slate-100 shadow-sm">
+        <div className="bg-white rounded-xl p-5 mb-8 border-1 border-slate-400 shadow-sm">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             {/* Search and Filters */}
             <div className="flex-1 flex items-center gap-3 w-full">
@@ -457,7 +457,7 @@ export default function ClassManagement() {
 
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2 text-sm font-medium shadow-sm shadow-indigo-100"
+                className="px-6 py-2.5 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 transition-all flex items-center gap-2 text-sm font-medium shadow-sm shadow-indigo-100"
               >
                 <FaPlus size={14} />
                 New Class
@@ -468,7 +468,7 @@ export default function ClassManagement() {
 
         {/* Class Grid - Compact Cards */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 ">
             <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
               <FaSchool className="text-indigo-500" />
               Available Classes
@@ -484,15 +484,15 @@ export default function ClassManagement() {
             </button>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 ">
             {filteredAndSortedClasses.slice(0, 6).map((cls) => (
               <button
                 key={cls._id}
                 onClick={() => setActiveClassName(cls.className)}
-                className={`p-4 rounded-xl border transition-all ${
+                className={`p-4 rounded-xl border-1 border-slate-400 transition-all ${
                   activeClassName === cls.className
-                    ? "bg-indigo-50 border-indigo-300 shadow-sm"
-                    : "bg-white border-slate-200 hover:border-indigo-200 hover:shadow-sm"
+                    ? "bg-indigo-50     border-1 shadow-sm hover:scale-105"
+                    : "bg-white  hover:border-slate-400 hover:border-1 hover:shadow-sm hover:scale-105"
                 }`}
               >
                 <div className="text-center">
@@ -517,7 +517,7 @@ export default function ClassManagement() {
         {/* Main Selection Area - Clean Dropdowns */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Class Selector */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <div className="bg-white rounded-xl border-1 border-slate-400 p-6 shadow-sm hover:border-slate-400">
             <div className="flex items-center gap-2 mb-4">
               <div className="h-8 w-8 bg-indigo-50 rounded-lg flex items-center justify-center">
                 <FaSchool className="text-indigo-600 text-sm" />
@@ -536,7 +536,7 @@ export default function ClassManagement() {
               <select
                 value={activeClassName}
                 onChange={(e) => setActiveClassName(e.target.value)}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500"
+                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"
               >
                 <option value="" disabled>
                   Select a class...
@@ -561,7 +561,7 @@ export default function ClassManagement() {
           </div>
 
           {/* Section Selector */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <div className="bg-white rounded-xl border-1 border-slate-400  hover:border-slate-300 p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <div className="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center">
                 <FaUsers className="text-blue-500 text-sm" />
@@ -586,7 +586,7 @@ export default function ClassManagement() {
                   setSelectedSection(section);
                 }}
                 disabled={!currentActiveClassData?.sections?.length}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
+                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 disabled:bg-slate-50 disabled:text-slate-400"
               >
                 <option value="" disabled>
                   Select a section...
@@ -615,19 +615,19 @@ export default function ClassManagement() {
         {/* Section Details View */}
         <div ref={sectionsAreaRef} className="mt-6">
           {selectedSection ? (
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+            <div className="bg-white rounded-xl border-1 border-slate-400 overflow-hidden shadow-sm">
               {/* Section Header */}
-              <div className="bg-gradient-to-r from-indigo-50 to-blue-50 px-6 py-4 border-b border-slate-200">
+              <div className="bg-slate-800 px-6 py-4 border-b border-slate-200 text-white">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 bg-white rounded-xl border border-indigo-200 flex items-center justify-center">
                       <FaBuilding className="text-indigo-600 text-xl" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-slate-800">
+                      <h2 className="text-xl font-semibold text-white">
                         {activeClassName} - Section {selectedSection.sectionName}
                       </h2>
-                      <p className="text-sm text-slate-500 flex items-center gap-2 mt-0.5">
+                      <p className="text-sm text-white flex items-center gap-2 mt-0.5">
                         <FaCalendarAlt className="text-slate-400" size={12} />
                         {academicYear} • Active Session
                       </p>
@@ -635,7 +635,7 @@ export default function ClassManagement() {
                   </div>
                   <button
                     onClick={() => openManager(currentActiveClassData)}
-                    className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium flex items-center gap-2"
+                    className="px-5 py-2.5 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 transition-all text-sm font-medium border-spacing-0.5 border-white flex items-center gap-2"
                   >
                     <FaEdit size={14} />
                     Manage
@@ -645,7 +645,7 @@ export default function ClassManagement() {
 
               {/* Section Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-                <div className="bg-slate-50 rounded-xl p-5">
+                <div className="bg-slate-50 rounded-xl p-5 border-1 border-slate-200">
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
                       Students
@@ -660,7 +660,7 @@ export default function ClassManagement() {
                   </p>
                 </div>
 
-                <div className="bg-slate-50 rounded-xl p-5">
+                <div className="bg-slate-50 rounded-xl p-5 border-1 border-slate-200">
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
                       Available
@@ -673,7 +673,7 @@ export default function ClassManagement() {
                   <p className="text-xs text-slate-500 mt-1">seats left</p>
                 </div>
 
-                <div className="bg-slate-50 rounded-xl p-5">
+                <div className="bg-slate-50 rounded-xl p-5 border-1 border-slate-200">
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
                       Utilization

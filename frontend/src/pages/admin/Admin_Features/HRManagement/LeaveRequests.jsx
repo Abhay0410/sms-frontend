@@ -57,19 +57,19 @@ export default function LeaveRequests() {
       value: "PENDING",
       label: "Pending",
       icon: FaHourglassHalf,
-      color: "bg-amber-100 text-amber-700",
+      color: "bg-amber-100 text-amber-700 border-amber-300",
     },
     {
       value: "APPROVED",
       label: "Approved",
       icon: FaCheckCircle,
-      color: "bg-emerald-100 text-emerald-700",
+      color: "bg-emerald-100 text-emerald-700 border-emerald-300",
     },
     {
       value: "REJECTED",
       label: "Rejected",
       icon: FaTimesCircle,
-      color: "bg-rose-100 text-rose-700",
+      color: "bg-rose-100 text-rose-700 border-rose-300 ",
     },
   ];
 

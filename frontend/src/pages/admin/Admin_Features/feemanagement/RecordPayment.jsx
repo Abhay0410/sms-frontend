@@ -774,14 +774,14 @@ export default function RecordPayment() {
       </div>
 
       {/* Filters Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-2xl border border-purple-200 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
+      <div className="bg-blue-50 p-8 rounded-2xl border border-purple-200 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 ">
+          <div className="flex items-center gap-4  ">
             <div className="h-14 w-14 bg-white text-purple-600 rounded-2xl flex items-center justify-center shadow-md">
               <FaFilter size={20} />
             </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">
+            <div >
+              <h3 className="text-xl font-bold text-slate-900 ">
                 Filter Students
               </h3>
               <p className="text-slate-500 text-sm font-medium mt-1">

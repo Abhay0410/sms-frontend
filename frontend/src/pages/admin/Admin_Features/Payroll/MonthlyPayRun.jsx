@@ -422,7 +422,7 @@ const handleDownloadPDF = async (slipId) => {
 
       {/* TABLE 1: PENDING FOR GENERATION */}
       <section>
-        <h3 className="text-xs font-bold uppercase text-indigo-600 tracking-widest mb-4 flex items-center gap-2">
+        <h3 className="text-xs font-bold uppercase text-amber-700 tracking-widest mb-4 flex items-center gap-2">
             <FaSpinner className="animate-pulse" /> Pending Generation ({stats.length})
         </h3>
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
@@ -538,7 +538,7 @@ const handleDownloadPDF = async (slipId) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="text-sm text-slate-500 font-semibold">Pending Staff</div>
-          <div className="text-3xl font-bold text-indigo-600 mt-2">{stats.length}</div>
+          <div className="text-3xl font-bold text-amber-700 mt-2">{stats.length}</div>
           <div className="text-xs text-slate-400 mt-1">Awaiting salary generation</div>
         </div>
         <div className="bg-white rounded-2xl shadow p-6">

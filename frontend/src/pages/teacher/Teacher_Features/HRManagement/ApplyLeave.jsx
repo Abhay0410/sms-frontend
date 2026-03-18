@@ -248,9 +248,9 @@ export default function ApplyLeave() {
   const getStatusIcon = (status) => {
     switch (status?.toUpperCase()) {
       case "APPROVED":
-        return <FaCheckCircle className="text-green-500" />;
+        return <FaCheckCircle className="text-emerald-500" />;
       case "REJECTED":
-        return <FaTimesCircle className="text-red-500" />;
+        return <FaTimesCircle className="text-rose-500" />;
       case "PENDING":
         return <FaHourglassHalf className="text-amber-500" />;
       default:
@@ -261,9 +261,9 @@ export default function ApplyLeave() {
   const getStatusColor = (status) => {
     switch (status?.toUpperCase()) {
       case "APPROVED":
-        return "bg-green-100 text-green-700 border-green-300";
+        return "bg-emerald-100 text-emerald-700 border-emerald-300";
       case "REJECTED":
-        return "bg-red-100 text-red-700 border-red-300";
+        return "bg-rose-100 text-rose-700 border-rose-300";
       case "PENDING":
         return "bg-amber-100 text-amber-700 border-amber-300";
       default:

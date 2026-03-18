@@ -218,7 +218,7 @@ export default function SubjectManagement() {
           <p className="text-slate-600 mb-4">{error}</p>
           <button
             onClick={() => loadClasses()}
-            className="px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg hover:opacity-90 transition-all font-medium"
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-red-600 text-white rounded-lg hover:opacity-90 transition-all font-medium"
           >
             Retry Loading
           </button>
@@ -242,10 +242,10 @@ export default function SubjectManagement() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 space-y-4">
         <div className="relative">
-          <div className="h-16 w-16 rounded-full border-4 border-orange-200"></div>
-          <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-orange-600 border-t-transparent animate-spin"></div>
+          <div className="h-16 w-16 rounded-full border-4 border-blue-200"></div>
+          <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
         </div>
-        <p className="text-orange-600 font-semibold animate-pulse">
+        <p className="text-blue-600 font-semibold animate-pulse">
           Loading academic structure...
         </p>
       </div>
@@ -253,7 +253,7 @@ export default function SubjectManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 md:px-8 pb-10">
+    <div className="min-h-screen bg-blue-50 px-4 md:px-8 pb-10">
       <style>{noScrollStyle}</style>
       <div className="mx-auto max-w-7xl">
         {/* Header */}
@@ -271,7 +271,7 @@ export default function SubjectManagement() {
               <select
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
-                className="px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 bg-white"
+                className="px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 bg-white"
               >
                 {academicYears.map((year) => (
                   <option key={year} value={year}>
@@ -282,7 +282,7 @@ export default function SubjectManagement() {
               <button
                 onClick={() => setShowAddModal(true)}
                 disabled={!selectedClass}
-                className="px-5 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg hover:opacity-90 transition-all flex items-center gap-2 text-sm font-medium disabled:opacity-50"
+                className="px-5 py-2.5 bg-indigo-700 hover:bg-indigo-800 text-white rounded-lg hover:opacity-90 transition-all flex items-center gap-2 text-sm font-medium disabled:opacity-50"
               >
                 <FaPlus size={14} />
                 New Subject
@@ -295,11 +295,11 @@ export default function SubjectManagement() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Class Card */}
           <div className={`bg-white rounded-2xl border p-5 transition-all ${
-            selectedClass ? 'border-orange-300 shadow-md' : 'border-slate-200'
+            selectedClass ? 'border-slate-400 border-1 shadow-md' : ' border-1 border-slate-400'
           }`}>
             <div className="flex items-center gap-3 mb-4">
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
-                selectedClass ? 'bg-gradient-to-br from-orange-500 to-red-500 text-white' : 'bg-orange-50 text-orange-600'
+                selectedClass ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-blue-50 text-blue-600'
               }`}>
                 <FaChalkboard size={18} />
               </div>
@@ -316,7 +316,7 @@ export default function SubjectManagement() {
                   const cls = classes.find((c) => c._id === e.target.value);
                   setSelectedClass(cls);
                 }}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
+                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
               >
                 <option value="" disabled>Select a class</option>
                 {classes.map((cls) => (
@@ -331,11 +331,11 @@ export default function SubjectManagement() {
 
           {/* Section Card */}
           <div className={`bg-white rounded-2xl border p-5 transition-all ${
-            selectedSection ? 'border-orange-300 shadow-md' : 'border-slate-200'
+            selectedSection ? 'border-slate-400 shadow-md' : 'border-slate-400'
           }`}>
             <div className="flex items-center gap-3 mb-4">
               <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                selectedSection ? 'bg-gradient-to-br from-orange-500 to-red-500 text-white' : 'bg-orange-50 text-orange-600'
+                selectedSection ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-blue-50 text-blue-600'
               }`}>
                 <FaLayerGroup size={18} />
               </div>
@@ -350,7 +350,7 @@ export default function SubjectManagement() {
                 value={selectedSection}
                 onChange={(e) => setSelectedSection(e.target.value)}
                 disabled={!subjectData?.sections?.length}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 disabled:bg-slate-50 disabled:text-slate-400"
+                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 disabled:bg-slate-50 disabled:text-slate-400"
               >
                 <option value="">Select a section</option>
                 {subjectData?.sections?.map((sec) => (
@@ -369,15 +369,15 @@ export default function SubjectManagement() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Master Pool Sidebar */}
             <div className="lg:col-span-4">
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm sticky top-6">
+              <div className="bg-white rounded-2xl border-1 border-slate-400 shadow-sm sticky top-6">
                 {/* Header */}
                 <div className="p-5 border-b border-slate-100">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                      <FaLayerGroup className="text-orange-600" />
+                      <FaLayerGroup className="text-blue-600" />
                       Master Subject Pool
                     </h3>
-                    <span className="text-xs bg-orange-50 text-orange-700 px-2 py-1 rounded-full font-medium">
+                    <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-medium">
                       {filteredSubjects.length} subjects
                     </span>
                   </div>
@@ -391,7 +391,7 @@ export default function SubjectManagement() {
                         placeholder="Search subjects..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
+                        className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
                       />
                     </div>
                     
@@ -399,7 +399,7 @@ export default function SubjectManagement() {
                       <select
                         value={filterType}
                         onChange={(e) => setFilterType(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400 bg-white"
+                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 bg-white"
                       >
                         <option value="all">All Subjects</option>
                         <option value="core">Core Subjects</option>
@@ -428,13 +428,13 @@ export default function SubjectManagement() {
                           onClick={() => toggleSubjectSelection(sub.subjectName)}
                           className={`flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer ${
                             selectedSubjectsSet.has(sub.subjectName)
-                              ? "bg-orange-50 border-orange-200"
+                              ? "bg-blue-50 border-blue-200"
                               : "border-transparent hover:bg-slate-50 hover:border-slate-200"
                           }`}
                         >
                           <div className={`h-5 w-5 rounded border flex items-center justify-center flex-shrink-0 transition-all ${
                             selectedSubjectsSet.has(sub.subjectName)
-                              ? "bg-gradient-to-r from-orange-500 to-red-500 border-orange-600 text-white"
+                              ? "bg-gradient-to-r from-blue-500 to-blue-600 border-blue-600 text-white"
                               : "border-slate-300 bg-white"
                           }`}>
                             {selectedSubjectsSet.has(sub.subjectName) && <FaCheck size={10} />}
@@ -446,7 +446,7 @@ export default function SubjectManagement() {
                                 {sub.subjectName}
                               </span>
                               {sub.isCore ? (
-                                <FaStar className="text-amber-400 flex-shrink-0" size={10} />
+                                <FaStar className="text-blue-500 flex-shrink-0" size={10} />
                               ) : (
                                 <FaRegStar className="text-slate-300 flex-shrink-0" size={10} />
                               )}
@@ -474,7 +474,7 @@ export default function SubjectManagement() {
                 </div>
 
                 {/* Selection Summary */}
-                <div className="px-5 py-3 border-t border-slate-100 bg-slate-50">
+                <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 rounded-b-2xl">
                   {selectedSubjectsSet.size > 0 && (
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm text-slate-600">
@@ -492,7 +492,7 @@ export default function SubjectManagement() {
                   <button
                     disabled={!selectedSection || selectedSubjectsSet.size === 0 || assignLoading}
                     onClick={handleAssign}
-                    className="w-full px-4 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg hover:opacity-90 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full px-4 py-3 bg-indigo-700 text-white rounded-lg  transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {assignLoading ? (
                       <>
@@ -511,7 +511,7 @@ export default function SubjectManagement() {
             </div>
 
             {/* Sections Content Area */}
-            <div className="lg:col-span-8 space-y-4">
+            <div className="lg:col-span-8 space-y-4 ">
               {orderedSections.length > 0 ? (
                 orderedSections.map((section) => (
                   <SectionCard
@@ -586,27 +586,27 @@ export default function SubjectManagement() {
 // Section Card Component
 function SectionCard({ section, onRemove, isActive }) {
   return (
-    <div className={`bg-white rounded-2xl border transition-all ${
-      isActive ? 'border-orange-300 shadow-md' : 'border-slate-200 hover:shadow-sm'
+    <div className={`bg-white rounded-2xl border-1 transition-all  ${
+      isActive ? 'border-slate-400  border-1  ' : 'border-slate-400 border-1 hover:shadow-sm '
     }`}>
       {/* Header */}
-      <div className={`px-5 py-4 border-b ${isActive ? 'bg-orange-50 border-orange-200' : 'bg-slate-50 border-slate-100'}`}>
+      <div className={`px-5 py-4 border-b  bg-slate-100 rounded-t-2xl  ${isActive ? '  border-blue-200' : ' border-slate-100'}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
-              isActive ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white' : 'bg-slate-200 text-slate-600'
+              isActive ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'bg-blue-500 text-white'
             }`}>
-              <span className="text-sm font-bold">{section.sectionName}</span>
+              <span className="text-sm  font-bold">{section.sectionName}</span>
             </div>
             <div>
-              <h4 className="font-semibold text-slate-800">Section {section.sectionName}</h4>
+              <h4 className="font-semibold">Section {section.sectionName}</h4>
               <p className="text-xs text-slate-500">
                 {section.subjects?.length || 0} subject{section.subjects?.length !== 1 ? 's' : ''}
               </p>
             </div>
           </div>
           {isActive && (
-            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-medium">
+            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
               Active
             </span>
           )}
@@ -614,16 +614,16 @@ function SectionCard({ section, onRemove, isActive }) {
       </div>
 
       {/* Subject List */}
-      <div className="p-5">
+      <div className="p-5  ">
         {section.subjects?.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 ">
             {section.subjects.map((sub) => (
               <div
                 key={sub._id}
-                className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-orange-200 hover:shadow-sm transition-all group"
+                className="flex items-center justify-between  p-3 bg-white border border-slate-200 rounded-lg hover:border-blue-200 hover:shadow-sm transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                  <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
                     <FaBook className="text-white text-xs" />
                   </div>
                   <div>
@@ -713,14 +713,14 @@ function AddSubjectModal({ classId, className, onClose, onSuccess }) {
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Subject Name <span className="text-red-500">*</span>
+              Subject Name <span className="text-blue-500">*</span>
             </label>
             <input
               type="text"
               value={form.subjectName}
               onChange={(e) => setForm({ ...form, subjectName: e.target.value })}
               placeholder="e.g. Physics, History"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
               required
               autoFocus
             />
@@ -735,7 +735,7 @@ function AddSubjectModal({ classId, className, onClose, onSuccess }) {
               value={form.subjectCode}
               onChange={(e) => setForm({ ...form, subjectCode: e.target.value })}
               placeholder="e.g. PHY-101"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
             />
           </div>
 
@@ -745,7 +745,7 @@ function AddSubjectModal({ classId, className, onClose, onSuccess }) {
               id="isCore"
               checked={form.isCore}
               onChange={(e) => setForm({ ...form, isCore: e.target.checked })}
-              className="h-4 w-4 text-orange-600 rounded focus:ring-orange-200"
+              className="h-4 w-4 text-blue-600 rounded focus:ring-blue-200"
             />
             <label htmlFor="isCore" className="text-sm text-slate-700">
               Core Subject (mandatory for all sections)
@@ -763,7 +763,7 @@ function AddSubjectModal({ classId, className, onClose, onSuccess }) {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg hover:opacity-90 transition-all text-sm font-medium flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2.5 bg-indigo-500 text-white rounded-lg hover:opacity-90 transition-all text-sm font-medium flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

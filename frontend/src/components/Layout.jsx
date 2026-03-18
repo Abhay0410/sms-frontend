@@ -17,7 +17,7 @@ const Layout = ({ sections, title, role }) => {
       />
 
       {/* h-screen + overflow-hidden on the main container prevents the whole page from scrolling */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-screen  overflow-hidden">
         {/* Mobile Header */}
         <header className="flex h-16 items-center justify-between md:hidden px-6 bg-white border-b border-slate-200">
           <button onClick={() => setSidebarOpen(true)} className="text-slate-800 p-2">
@@ -28,7 +28,7 @@ const Layout = ({ sections, title, role }) => {
         </header>
 
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-blue-50">
           <div className="max-w-7xl mx-auto">
              <Outlet />
           </div>

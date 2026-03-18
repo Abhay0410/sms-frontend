@@ -184,7 +184,7 @@ export default function ViewResults() {
                         <div className="flex flex-col items-center gap-1">
                           <div className="flex items-center gap-2">
                             {result.isApproved ? (
-                              <FaCheckCircle className="text-green-500" title="Approved" />
+                              <FaCheckCircle className="text-emerald-500" title="Approved" />
                             ) : (
                               <FaTimesCircle className="text-gray-400" title="Draft - Can Edit" />
                             )}
@@ -257,7 +257,7 @@ function ResultDetailModal({ result, onClose }) {
                 </span>
               )}
               {result.isApproved && (
-                <span className="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">
+                <span className="inline-block mt-2 px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">
                   APPROVED
                 </span>
               )}
