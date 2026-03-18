@@ -298,25 +298,25 @@ export default function StudentProfileManage() {
           {/* Left Column */}
           <div className="lg:col-span-1 space-y-6">
             {/* Academic Information */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-gray-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Academic Information
               </h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                <div className="flex justify-between items-center py-2 border-b border-slate-400">
                   <span className="text-gray-600">Academic Year</span>
                   <span className="font-semibold text-gray-900">
                     {studentInfo.academicYear}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                <div className="flex justify-between items-center py-2 border-b border-slate-400">
                   <span className="text-gray-600">Nationality</span>
                   <span className="font-semibold text-gray-900">
                     {studentInfo.nationality}
                   </span>
                 </div>
                 {studentInfo.religion && (
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <div className="flex justify-between items-center py-2 border-b border-slate-400">
                     <span className="text-gray-600">Religion</span>
                     <span className="font-semibold text-gray-900">
                       {studentInfo.religion}
@@ -324,7 +324,7 @@ export default function StudentProfileManage() {
                   </div>
                 )}
                 {studentInfo.caste && (
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <div className="flex justify-between items-center py-2 border-b border-slate-400">
                     <span className="text-gray-600">Category</span>
                     <span className="font-semibold text-gray-900">
                       {studentInfo.caste}
@@ -347,7 +347,7 @@ export default function StudentProfileManage() {
             </div>
 
             {/* Photo Upload */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-gray-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <svg
                   className="w-5 h-5 text-blue-600"
@@ -366,7 +366,7 @@ export default function StudentProfileManage() {
               </h3>
 
               <div className="space-y-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 hover:bg-blue-50 transition-all">
+                <div className="border-2 border-dashed border-slate-400 rounded-xl p-6 text-center hover:border-blue-400 hover:bg-blue-50 transition-all">
                   <input
                     type="file"
                     accept="image/*"
@@ -497,7 +497,7 @@ export default function StudentProfileManage() {
                     onChange={onChangePw}
                     placeholder="New password (min 6 characters)"
                     disabled={!isEditing}
-                    className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                    className="w-full rounded-xl border border-slate-400 p-3 pr-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
 
                   <button
@@ -524,7 +524,7 @@ export default function StudentProfileManage() {
                     onChange={onChangePw}
                     placeholder="Confirm new password"
                     disabled={!isEditing}
-                    className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                    className="w-full rounded-xl border border-slate-400 p-3 pr-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
 
                   <button
@@ -548,14 +548,14 @@ export default function StudentProfileManage() {
 
           {/* Right Column */}
           <div className="lg:col-span-2">
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-gray-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <h3 className="text-xl font-semibold text-gray-900 mb-6">
                 Personal Information
               </h3>
 
               {/* Contact Information */}
               <div className="mb-8">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 border-b border-slate-400 pb-2">
                   Contact Information
                 </h4>
 
@@ -586,7 +586,7 @@ export default function StudentProfileManage() {
                     inputMode="numeric"
                     placeholder="Enter 10 digit phone number"
                     disabled={!isEditing}
-                    className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                    className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
 
                   <div>
@@ -595,7 +595,7 @@ export default function StudentProfileManage() {
                     </label>
                     <input
                       type="email"
-                      className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                      className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                       name="email"
                       value={form.email}
                       onChange={onChange}
@@ -609,7 +609,7 @@ export default function StudentProfileManage() {
                       Blood Group
                     </label>
                     <select
-                      className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                      className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                       name="bloodGroup"
                       value={form.bloodGroup}
                       onChange={onChange}
@@ -632,7 +632,7 @@ export default function StudentProfileManage() {
                       Nationality
                     </label>
                     <input
-                      className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                      className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                       name="nationality"
                       value={form.nationality}
                       onChange={onChange}
@@ -645,7 +645,7 @@ export default function StudentProfileManage() {
 
               {/* Medical Information */}
               <div className="mb-8">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 border-b border-slate-400 pb-2">
                   Medical Information
                 </h4>
 
@@ -655,7 +655,7 @@ export default function StudentProfileManage() {
                       Medical History
                     </label>
                     <textarea
-                      className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                      className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                       name="medicalHistory"
                       value={form.medicalHistory}
                       onChange={onChange}
@@ -670,7 +670,7 @@ export default function StudentProfileManage() {
                       Allergies
                     </label>
                     <input
-                      className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                      className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                       name="allergies"
                       value={form.allergies}
                       onChange={onChange}
@@ -685,7 +685,7 @@ export default function StudentProfileManage() {
                         Emergency Contact Name
                       </label>
                       <input
-                        className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                        className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                         name="emergencyContactName"
                         value={form.emergencyContactName}
                         onChange={onChange}
@@ -700,7 +700,7 @@ export default function StudentProfileManage() {
                       </label>
                       <input
                         type="tel"
-                        className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                        className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                         name="emergencyContactPhone"
                         value={form.emergencyContactPhone}
                         onChange={onChange}
@@ -714,7 +714,7 @@ export default function StudentProfileManage() {
                         Relation
                       </label>
                       <input
-                        className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                        className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                         name="emergencyContactRelation"
                         value={form.emergencyContactRelation}
                         onChange={onChange}
@@ -728,7 +728,7 @@ export default function StudentProfileManage() {
 
               {/* Transport Information */}
               <div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 border-b border-slate-400 pb-2">
                   Transport Information
                 </h4>
 
@@ -754,7 +754,7 @@ export default function StudentProfileManage() {
                           Bus Route
                         </label>
                         <input
-                          className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                          className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                           name="busRoute"
                           value={form.busRoute}
                           onChange={onChange}
@@ -768,7 +768,7 @@ export default function StudentProfileManage() {
                           Pickup Point
                         </label>
                         <input
-                          className="w-full rounded-xl border border-gray-300 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                          className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                           name="pickupPoint"
                           value={form.pickupPoint}
                           onChange={onChange}
@@ -782,7 +782,7 @@ export default function StudentProfileManage() {
               </div>
 
               {/* Save Button */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
+              <div className="mt-8 pt-6 border-t border-slate-400">
                 {!isEditing ? (
                   <button
                     onClick={() => setIsEditing(true)}

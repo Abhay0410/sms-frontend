@@ -91,15 +91,15 @@ export default function ViewTimetable() {
 
         {/* Timetable */}
         {timetableData?.timetable && timetableData.timetable.length > 0 ? (
-          <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-100 overflow-hidden">
-            <div className="p-6 border-b border-slate-100">
+          <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-400 overflow-hidden">
+            <div className="p-6 border-b border-slate-400">
               <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                 <FaClock className="text-blue-600" />
                 Weekly Schedule
               </h3>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-400">
               {DAYS.map((day) => {
                 const periods = getPeriodsForDay(day);
 
@@ -109,7 +109,7 @@ export default function ViewTimetable() {
                     className="flex flex-col md:flex-row hover:bg-slate-50/50 transition-colors"
                   >
                     {/* Day label */}
-                    <div className="md:w-32 bg-slate-50 md:border-r border-slate-100 flex items-center justify-center px-4 py-4 md:py-0">
+                    <div className="md:w-32 bg-slate-50 md:border-r border-slate-400 flex items-center justify-center px-4 py-4 md:py-0">
                       <span className="font-semibold text-slate-900 text-sm md:text-base">
                         {day}
                       </span>
@@ -208,7 +208,7 @@ export default function ViewTimetable() {
             </div>
           </div>
         ) : (
-          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-100">
+          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-400">
             <FaCalendarWeek className="h-16 w-16 text-slate-300 mx-auto mb-4" />
             <p className="text-xl font-semibold text-slate-600">
               No timetable available

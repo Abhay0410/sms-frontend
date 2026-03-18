@@ -284,7 +284,7 @@ export default function MarkAttendance() {
 
   if (loading && assignments.classes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-2xl">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50 rounded-2xl">
         <div className="relative">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200 border-t-indigo-600"></div>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -312,7 +312,7 @@ export default function MarkAttendance() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4 md:p-8">
+    <div className="min-h-screen bg-blue-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-2xl mb-4 shadow-lg">
@@ -340,7 +340,7 @@ export default function MarkAttendance() {
 
         {!assignments.canMarkAttendance ? (
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white border border-amber-200 rounded-2xl p-8 text-center shadow-lg">
+            <div className="bg-white border border-slate-400 rounded-2xl p-8 text-center shadow-lg">
               <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
                   className="w-10 h-10 text-amber-600"
@@ -375,7 +375,7 @@ export default function MarkAttendance() {
         ) : (
           <>
             {/* Selection Card - Enhanced */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-8">
+            <div className="bg-white rounded-2xl shadow-lg border border-slate-400 p-8 mb-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-1">
@@ -436,7 +436,7 @@ export default function MarkAttendance() {
                       setSelectedSection("");
                       setAttendance([]);
                     }}
-                    className="w-full rounded-xl border-2 border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-gray-700 font-medium bg-white hover:border-indigo-400"
+                    className="w-full rounded-xl border border-slate-400 px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-gray-700 font-medium bg-white hover:border-indigo-400"
                   >
                     <option value="">Select a class</option>
                     {assignments.classes.map((cls) => (
@@ -473,7 +473,7 @@ export default function MarkAttendance() {
                       setSelectedSection(e.target.value);
                       setAttendance([]);
                     }}
-                    className="w-full rounded-xl border-2 border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-gray-700 font-medium bg-white hover:border-indigo-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full rounded-xl border border-slate-400 px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-gray-700 font-medium bg-white hover:border-indigo-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
                     disabled={!selectedClass}
                   >
                     <option value="">Select section</option>
@@ -509,7 +509,7 @@ export default function MarkAttendance() {
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full rounded-xl border-2 border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-gray-700 font-medium bg-white hover:border-indigo-400"
+                    className="w-full rounded-xl border border-slate-400 px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all text-gray-700 font-medium bg-white hover:border-indigo-400"
                   />
                 </div>
 
@@ -553,7 +553,7 @@ export default function MarkAttendance() {
             {/* Attendance Statistics Cards - NEW */}
             {attendance.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-                <div className="bg-white rounded-xl shadow-md border-l-4 border-gray-400 p-5">
+                <div className="bg-white rounded-xl shadow-md border border-slate-400 p-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-gray-600 text-sm font-medium">Total</p>
@@ -577,7 +577,7 @@ export default function MarkAttendance() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-md border-l-4 border-green-500 p-5">
+                <div className="bg-white rounded-xl shadow-md border border-slate-400 p-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-gray-600 text-sm font-medium">
@@ -603,7 +603,7 @@ export default function MarkAttendance() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-md border-l-4 border-red-500 p-5">
+                <div className="bg-white rounded-xl shadow-md border border-slate-400 p-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-gray-600 text-sm font-medium">
@@ -629,7 +629,7 @@ export default function MarkAttendance() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-md border-l-4 border-yellow-500 p-5">
+                <div className="bg-white rounded-xl shadow-md border border-slate-400 p-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-gray-600 text-sm font-medium">Late</p>
@@ -653,7 +653,7 @@ export default function MarkAttendance() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-md border-l-4 border-blue-500 p-5">
+                <div className="bg-white rounded-xl shadow-md border border-slate-400 p-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-gray-600 text-sm font-medium">
@@ -683,8 +683,8 @@ export default function MarkAttendance() {
 
             {/* Attendance Table - Enhanced */}
             {attendance.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                <div className="px-8 py-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200">
+              <div className="bg-white rounded-2xl shadow-lg border border-slate-400 overflow-hidden">
+                <div className="px-8 py-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-slate-400">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900 mb-1">
@@ -720,7 +720,7 @@ export default function MarkAttendance() {
                       <select
                         value={bulkAction}
                         onChange={(e) => handleBulkAction(e.target.value)}
-                        className="rounded-lg border-2 border-gray-300 px-4 py-2 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all text-sm font-medium"
+                        className="rounded-lg border border-slate-400 px-4 py-2 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all text-sm font-medium"
                       >
                         <option value="">Mark all as...</option>
                         <option value="PRESENT">All Present</option>
@@ -828,7 +828,7 @@ export default function MarkAttendance() {
                                   ${
                                     student.status === status.value
                                       ? "border-purple-600 bg-purple-50"
-                                      : "border-gray-300"
+                                      : "border-slate-400"
                                   }`}
                                 >
                                   <input
@@ -869,7 +869,7 @@ export default function MarkAttendance() {
                                   ? "Add remarks..."
                                   : "Optional"
                               }
-                              className="rounded-lg border-2 border-gray-300 py-2 px-4 text-sm w-full focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all disabled:bg-gray-50 disabled:text-gray-400"
+                              className="rounded-lg border border-slate-400 py-2 px-4 text-sm w-full focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all disabled:bg-gray-50 disabled:text-gray-400"
                               disabled={student.status !== "ABSENT"}
                             />
                           </td>
@@ -880,7 +880,7 @@ export default function MarkAttendance() {
                 </div>
 
                 {/* Footer with Submit Button */}
-                <div className="px-8 py-6 bg-gray-50 border-t border-gray-200">
+                <div className="px-8 py-6 bg-gray-50 border-t border-slate-400">
                   <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                     <div className="text-sm text-gray-600 flex items-center gap-2">
                       <svg
@@ -939,7 +939,7 @@ export default function MarkAttendance() {
               attendance.length === 0 &&
               selectedClass &&
               selectedSection && (
-                <div className="bg-white rounded-2xl shadow-lg border-2 border-dashed border-gray-300 p-12 text-center">
+                <div className="bg-white rounded-2xl shadow-lg border-2 border-dashed border-slate-400 p-12 text-center">
                   <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <svg
                       className="w-12 h-12 text-gray-400"

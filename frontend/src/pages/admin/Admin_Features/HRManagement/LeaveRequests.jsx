@@ -25,7 +25,6 @@ const API_URL =
 
 export default function LeaveRequests() {
   const [requests, setRequests] = useState([]);
-  const [filteredRequests, setFilteredRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -209,7 +208,7 @@ export default function LeaveRequests() {
       case "PENDING":
         return "bg-amber-100 text-amber-700 border-amber-300";
       default:
-        return "bg-slate-100 text-slate-700 border-slate-300";
+        return "bg-slate-100 text-slate-700 border-slate-400";
     }
   };
 
@@ -390,7 +389,7 @@ export default function LeaveRequests() {
       </div> */}
 
       {/* Filters Section */}
-      <div className="bg-[#FFFFFF] rounded-xl shadow-sm border border-slate-500 p-4">
+      <div className="bg-[#FFFFFF] rounded-xl shadow-sm border border-slate-400 p-4">
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           {/* Search */}
           <div className="flex-1">
@@ -401,7 +400,7 @@ export default function LeaveRequests() {
                 placeholder="Search by name, reason, or leave type..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border-1 border-slate-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-100 outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-100 outline-none"
               />
             </div>
           </div>
@@ -411,7 +410,7 @@ export default function LeaveRequests() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border-1 border-slate-500 focus:border-amber-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-400 focus:border-amber-500 outline-none"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -426,7 +425,7 @@ export default function LeaveRequests() {
             <select
               value={leaveTypeFilter}
               onChange={(e) => setLeaveTypeFilter(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border-1 border-slate-500 focus:border-amber-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-400 focus:border-amber-500 outline-none"
             >
               {leaveTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -439,7 +438,7 @@ export default function LeaveRequests() {
       </div>
 
       {/* Requests List */}
-      <div className="bg-[#FFFFFF] rounded-xl shadow-lg border border-slate-500 overflow-hidden">
+      <div className="bg-[#FFFFFF] rounded-xl shadow-lg border border-slate-400 overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-200 border-t-amber-600 mx-auto"></div>
@@ -460,7 +459,7 @@ export default function LeaveRequests() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto border-slate-500">
+          <div className="overflow-x-auto border-slate-400">
             <table className="w-full ">
               <thead className="bg-slate-900 border-b border-slate-800">
                 <tr>
@@ -481,7 +480,7 @@ export default function LeaveRequests() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-500">
+              <tbody className="divide-y divide-slate-400">
                 {requests.map((req) => {
                   const displayPhoto = req.teacherId?.profilePicture
                     ? req.teacherId.profilePicture.startsWith("http")
@@ -496,7 +495,7 @@ export default function LeaveRequests() {
                     >
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-12 w-12 rounded-xl overflow-hidden border-slate-500 bg-slate-200 flex-shrink-0">
+                          <div className="h-12 w-12 rounded-xl overflow-hidden border-slate-400 bg-slate-200 flex-shrink-0">
                             {req.teacherId?.profilePicture ? (
                               <img
                                 src={displayPhoto}
@@ -588,7 +587,7 @@ export default function LeaveRequests() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => openDetailModal(req)}
-                            className="px-3 py-2 border-1 border-slate-500 text-slate-700 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2"
+                            className="px-3 py-2 border border-slate-400 text-slate-700 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2"
                           >
                             <FaEye className="text-sm" />
                             View
@@ -658,13 +657,13 @@ export default function LeaveRequests() {
         )}
 
         {/* Summary Footer */}
-        {filteredRequests.length > 0 && (
-          <div className="bg-slate-50 border-t border-slate-500 p-4">
+        {requests.length > 0 && (
+          <div className="bg-slate-50 border-t border-slate-400 p-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-slate-600">
                 Showing{" "}
-                <span className="font-semibold">{filteredRequests.length}</span>{" "}
-                of <span className="font-semibold">{requests.length}</span>{" "}
+                <span className="font-semibold">{requests.length}</span>{" "}
+                of <span className="font-semibold">{pagination.total}</span>{" "}
                 requests
               </div>
               <div className="text-sm text-slate-600">
@@ -942,7 +941,7 @@ export default function LeaveRequests() {
               <div className="flex gap-3 pt-6">
                 <button
                   onClick={closeAllModals}
-                  className="flex-1 py-3.5 rounded-xl border-2 border-slate-300 font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+                  className="flex-1 py-3.5 rounded-xl border-2 border-slate-400 font-semibold text-slate-700 hover:bg-slate-50 transition-all"
                 >
                   Cancel
                 </button>

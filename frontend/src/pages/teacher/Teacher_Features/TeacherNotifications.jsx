@@ -27,19 +27,20 @@ export default function TeacherNotifications() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <BackButton to="/teacher/teacher-dashboard" />
-      <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
-      <div className="mt-4 space-y-3">
-        {items.map((n) => (
-          <div key={n.id} className="rounded border bg-white p-3 shadow-sm">
+    <div className="min-h-screen bg-blue-50 p-4">
+      <div className="mx-auto max-w-3xl">
+        <BackButton to="/teacher/teacher-dashboard" />
+        <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
+        <div className="mt-4 space-y-3">
+          {items.map((n) => (
+            <div key={n.id} className="rounded-xl border border-slate-400 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-900">{n.title}</p>
                 <p className="text-xs text-gray-600">{new Date(n.createdAt).toLocaleString()}</p>
               </div>
               {!n.read && (
-                <button onClick={() => markRead(n.id)} className="rounded bg-indigo-600 px-3 py-1.5 text-xs text-white hover:bg-indigo-700">
+                <button onClick={() => markRead(n.id)} className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs text-white hover:bg-indigo-700 transition-colors">
                   Mark read
                 </button>
               )}
@@ -47,6 +48,7 @@ export default function TeacherNotifications() {
             <p className="mt-2 text-sm text-gray-700">{n.body}</p>
           </div>
         ))}
+        </div>
       </div>
     </div>
   );

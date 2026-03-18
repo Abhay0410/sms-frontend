@@ -235,14 +235,14 @@ export default function CreateResult() {
 
   if (loading && sections.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-blue-50">
         <FaSpinner className="h-12 w-12 animate-spin text-purple-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 ">
+    <div className="min-h-screen bg-blue-50 p-4">
       <div className="max-w-7xl mx-auto">
         {/* <BackButton to="/teacher/teacher-dashboard" /> */}
         <div className=" mb-4">
@@ -251,12 +251,12 @@ export default function CreateResult() {
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Exam Details Section */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md border border-slate-400 p-6">
             <h2 className="text-xl font-bold text-slate-900 mb-4">Exam Details</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">Exam Type <span className="text-red-500">*</span></label>
-                <select value={formData.examType} onChange={(e) => setFormData({ ...formData, examType: e.target.value })} className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none" required>
+                <select value={formData.examType} onChange={(e) => setFormData({ ...formData, examType: e.target.value })} className="w-full rounded-lg border border-slate-400 p-3 focus:border-purple-500 outline-none" required>
                   <option value="FINAL">Final Exam</option>
                   <option value="HALF_YEARLY">Half Yearly</option>
                   <option value="QUARTERLY">Quarterly</option>
@@ -275,7 +275,7 @@ export default function CreateResult() {
                     const value = e.target.value.replace(/[^0-9]/g, '');
                     setFormData({ ...formData, examYear: value });
                   }} 
-                  className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none" 
+                  className="w-full rounded-lg border border-slate-400 p-3 focus:border-purple-500 outline-none" 
                   required 
                 />
               </div>
@@ -283,9 +283,9 @@ export default function CreateResult() {
           </div>
 
           {/* Class & Section Selection */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md border border-slate-400 p-6">
             <h2 className="text-xl font-bold text-slate-900 mb-4">Select Class & Section</h2>
-            <select onChange={(e) => handleSectionChange(e.target.value)} className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none" required>
+            <select onChange={(e) => handleSectionChange(e.target.value)} className="w-full rounded-lg border border-slate-400 p-3 focus:border-purple-500 outline-none" required>
               <option value="">Choose a section</option>
               {sections.map((section) => (
                 <option key={`${section.classId}-${section.sectionName}`} value={`${section.classId}|${section.sectionName}`}>
@@ -297,9 +297,9 @@ export default function CreateResult() {
 
           {/* Student Selection */}
           {students.length > 0 && (
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white rounded-xl shadow-md border border-slate-400 p-6">
               <h2 className="text-xl font-bold text-slate-900 mb-4">Select Student</h2>
-              <select value={formData.studentId} onChange={(e) => handleStudentChange(e.target.value)} className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none" required>
+              <select value={formData.studentId} onChange={(e) => handleStudentChange(e.target.value)} className="w-full rounded-lg border border-slate-400 p-3 focus:border-purple-500 outline-none" required>
                 <option value="">Choose a student</option>
                 {students.map((student) => (
                   <option key={student.id} value={student.id}>{student.rollNumber} - {student.name} ({student.studentID})</option>
@@ -316,7 +316,7 @@ export default function CreateResult() {
 
           {/* Marks Entry Table */}
           {subjectMarks.length > 0 && formData.studentId && (
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white rounded-xl shadow-md border border-slate-400 p-6">
               <h2 className="text-xl font-bold text-slate-900 mb-4">Enter Marks</h2>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
@@ -351,7 +351,7 @@ export default function CreateResult() {
                                 handleSubjectMarkChange(index, 'theoryMaxMarks', value);
                               }} 
                               disabled={subject.isAbsent} 
-                              className="w-full rounded border-2 border-slate-200 p-2 text-center focus:border-purple-500 outline-none text-sm" 
+                              className="w-full rounded border border-slate-400 p-2 text-center focus:border-purple-500 outline-none text-sm" 
                               placeholder="Max" 
                             />
                             <input 
@@ -365,7 +365,7 @@ export default function CreateResult() {
                               }} 
                               max={subject.theoryMaxMarks} 
                               disabled={subject.isAbsent} 
-                              className="w-full rounded border-2 border-slate-200 p-2 text-center focus:border-purple-500 outline-none text-sm" 
+                              className="w-full rounded border border-slate-400 p-2 text-center focus:border-purple-500 outline-none text-sm" 
                               placeholder="Obtained" 
                             />
                           </div>
@@ -385,7 +385,7 @@ export default function CreateResult() {
                                   handleSubjectMarkChange(index, 'practicalMaxMarks', value);
                                 }} 
                                 disabled={subject.isAbsent} 
-                                className="w-full rounded border-2 border-slate-200 p-2 text-center focus:border-purple-500 outline-none text-sm" 
+                                className="w-full rounded border border-slate-400 p-2 text-center focus:border-purple-500 outline-none text-sm" 
                                 placeholder="Max" 
                               />
                               <input 
@@ -399,7 +399,7 @@ export default function CreateResult() {
                                 }} 
                                 max={subject.practicalMaxMarks} 
                                 disabled={subject.isAbsent} 
-                                className="w-full rounded border-2 border-slate-200 p-2 text-center focus:border-purple-500 outline-none text-sm" 
+                                className="w-full rounded border border-slate-400 p-2 text-center focus:border-purple-500 outline-none text-sm" 
                                 placeholder="Obtained" 
                               />
                             </div>
@@ -438,7 +438,7 @@ export default function CreateResult() {
                                 handleSubjectMarkChange(index, 'iaMaxMarks', value);
                               }} 
                               disabled={subject.isAbsent} 
-                              className="w-full rounded border-2 border-slate-200 p-2 text-center focus:border-purple-500 outline-none text-sm" 
+                              className="w-full rounded border border-slate-400 p-2 text-center focus:border-purple-500 outline-none text-sm" 
                               placeholder="Max" 
                             />
                             <input 
@@ -452,7 +452,7 @@ export default function CreateResult() {
                               }} 
                               max={subject.iaMaxMarks} 
                               disabled={subject.isAbsent} 
-                              className="w-full rounded border-2 border-slate-200 p-2 text-center focus:border-purple-500 outline-none text-sm" 
+                              className="w-full rounded border border-slate-400 p-2 text-center focus:border-purple-500 outline-none text-sm" 
                               placeholder="Obtained" 
                             />
                           </div>
@@ -473,7 +473,7 @@ export default function CreateResult() {
                               max={5} 
                               min={0} 
                               disabled={subject.isAbsent} 
-                              className="w-16 rounded border-2 border-slate-200 p-2 text-center focus:border-purple-500 outline-none" 
+                              className="w-16 rounded border border-slate-400 p-2 text-center focus:border-purple-500 outline-none" 
                             />
                             {subject.graceMarks > 0 && <FaStar className="text-yellow-500" title="Grace Marks" />}
                           </div>
@@ -488,7 +488,7 @@ export default function CreateResult() {
                         
                         {/* Status */}
                         <td className="border p-3">
-                          <select value={subject.status} onChange={(e) => handleSubjectMarkChange(index, 'status', e.target.value)} disabled={subject.isAbsent} className="w-full rounded border-2 border-slate-200 p-2 text-sm focus:border-purple-500 outline-none">
+                          <select value={subject.status} onChange={(e) => handleSubjectMarkChange(index, 'status', e.target.value)} disabled={subject.isAbsent} className="w-full rounded border border-slate-400 p-2 text-sm focus:border-purple-500 outline-none">
                             <option value="PASS">PASS</option>
                             <option value="FAIL">FAIL</option>
                             <option value="PASS_BY_GRACE">PASS BY GRACE</option>
@@ -511,9 +511,9 @@ export default function CreateResult() {
 
           {/* Remarks */}
           {formData.studentId && (
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white rounded-xl shadow-md border border-slate-400 p-6">
               <h2 className="text-xl font-bold text-slate-900 mb-4">Remarks</h2>
-              <textarea value={formData.remarks} onChange={(e) => setFormData({ ...formData, remarks: e.target.value })} className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none resize-none" rows="3" placeholder="Optional remarks about student performance" />
+              <textarea value={formData.remarks} onChange={(e) => setFormData({ ...formData, remarks: e.target.value })} className="w-full rounded-lg border border-slate-400 p-3 focus:border-purple-500 outline-none resize-none" rows="3" placeholder="Optional remarks about student performance" />
             </div>
           )}
 

@@ -58,7 +58,7 @@ export default function ApplyLeave() {
       value: "UNPAID",
       label: "Unpaid Leave",
       icon: FaFileAlt,
-      color: "bg-slate-100 text-slate-700 border-slate-300",
+      color: "bg-slate-100 text-slate-700 border-slate-400",
     },
     {
       value: "EARNED",
@@ -151,7 +151,7 @@ export default function ApplyLeave() {
           onClick={onClick}
           onChange={onChange}
           placeholder={placeholder}
-          className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none cursor-pointer"
+          className="w-full p-3 rounded-xl border border-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none cursor-pointer"
           ref={ref}
         />
         <FaCalendarAlt className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -267,7 +267,7 @@ export default function ApplyLeave() {
       case "PENDING":
         return "bg-amber-100 text-amber-700 border-amber-300";
       default:
-        return "bg-slate-100 text-slate-700 border-slate-300";
+        return "bg-slate-100 text-slate-700 border-slate-400";
     }
   };
 
@@ -330,7 +330,7 @@ export default function ApplyLeave() {
   };
 
   return (
-    <div className="space-y-6  bg-gradient-to-br from-slate-50 to-white min-h-screen">
+    <div className="space-y-6 bg-blue-50 min-h-screen p-4">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -362,7 +362,7 @@ export default function ApplyLeave() {
             return (
               <div
                 key={type.value}
-                className="bg-white rounded-xl shadow-sm border border-slate-100 p-4"
+                className="bg-white rounded-xl shadow-sm border border-slate-400 p-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -389,7 +389,7 @@ export default function ApplyLeave() {
 
         {/* Leave Form */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-400 p-6">
             <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
               <FaPaperPlane className="text-teal-600" />
               Apply for Leave
@@ -416,7 +416,7 @@ export default function ApplyLeave() {
                         className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
                           selected
                             ? `${type.color} border-current`
-                            : "border-slate-200 hover:border-teal-400 hover:bg-teal-50"
+                            : "border-slate-400 hover:border-teal-400 hover:bg-teal-50"
                         }`}
                       >
                         <Icon className="text-xl" />
@@ -444,9 +444,9 @@ export default function ApplyLeave() {
                     placeholderText="Select start date"
                     minDate={new Date()}
                     customInput={<CustomDateInput placeholder="DD/MM/YYYY" />}
-                    className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
+                    className="w-full p-3 rounded-xl border border-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
                     showPopperArrow={false}
-                    calendarClassName="rounded-xl shadow-lg border border-slate-200"
+                    calendarClassName="rounded-xl shadow-lg border border-slate-400"
                     dayClassName={(date) =>
                       date.getDate() === formData.startDate?.getDate()
                         ? "bg-teal-500 text-white rounded-lg"
@@ -474,9 +474,9 @@ export default function ApplyLeave() {
                     placeholderText="Select end date"
                     minDate={formData.startDate || new Date()}
                     customInput={<CustomDateInput placeholder="DD/MM/YYYY" />}
-                    className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
+                    className="w-full p-3 rounded-xl border border-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
                     showPopperArrow={false}
-                    calendarClassName="rounded-xl shadow-lg border border-slate-200"
+                    calendarClassName="rounded-xl shadow-lg border border-slate-400"
                     dayClassName={(date) =>
                       date.getDate() === formData.endDate?.getDate()
                         ? "bg-teal-500 text-white rounded-lg"
@@ -495,7 +495,7 @@ export default function ApplyLeave() {
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Total Days
                   </label>
-                  <div className="p-3 bg-slate-50 border-2 border-slate-200 rounded-xl">
+                  <div className="p-3 bg-slate-50 border border-slate-400 rounded-xl">
                     <p className="text-center text-xl font-bold text-slate-900">
                       {calculateDays() || 0}
                     </p>
@@ -538,7 +538,7 @@ export default function ApplyLeave() {
                     maxLength={10}
                     pattern="[0-9]{10}"
                     inputMode="numeric"
-                    className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
+                    className="w-full p-3 rounded-xl border border-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
                   />
                 </div>
 
@@ -556,7 +556,7 @@ export default function ApplyLeave() {
                         handoverPerson: e.target.value,
                       })
                     }
-                    className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
+                    className="w-full p-3 rounded-xl border border-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
                   />
                 </div>
               </div>
@@ -574,7 +574,7 @@ export default function ApplyLeave() {
                   }
                   rows="4"
                   placeholder="Please provide details for your leave request..."
-                  className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
+                  className="w-full p-3 rounded-xl border border-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-100 outline-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">
                   For sick leave, please mention if medical certificate is
@@ -585,7 +585,7 @@ export default function ApplyLeave() {
               {/* Preview Modal */}
               {showPreview && (
                 <div   ref={previewRef} 
-                className="p-4 bg-slate-50 border-2 border-slate-300 rounded-xl">
+                className="p-4 bg-slate-50 border border-slate-400 rounded-xl">
                   <h4 className="font-bold text-slate-900 mb-3">
                     Application Preview
                   </h4>
@@ -670,7 +670,7 @@ export default function ApplyLeave() {
       </div>
 
       {/* Leave History */}
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+      <div className="bg-white rounded-2xl shadow-lg border border-slate-400 p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
             <FaHistory className="text-slate-400" />
@@ -720,7 +720,7 @@ export default function ApplyLeave() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-400">
                 {history.map((item) => (
                   <tr key={item._id} className="hover:bg-slate-50">
                     <td className="p-3">

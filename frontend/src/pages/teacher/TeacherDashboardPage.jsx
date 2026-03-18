@@ -11,7 +11,7 @@ export default function TeacherDashboardPage() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 min-h-screen bg-blue-50 p-4">
       {/* Welcome Section */}
       <header>
         <h2 className="text-3xl font-bold text-slate-900 tracking-tighter">Command Center</h2>
@@ -21,7 +21,7 @@ export default function TeacherDashboardPage() {
       {/* Analytics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <div key={index} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-5">
+          <div key={index} className="bg-white p-6 rounded-2xl border border-slate-400 shadow-sm flex items-center gap-5">
             <div className={`${stat.color} p-4 rounded-2xl text-white shadow-md`}>
               {React.cloneElement(stat.icon, { size: 24 })}
             </div>
@@ -34,7 +34,7 @@ export default function TeacherDashboardPage() {
       </div>
 
       {/* Main Feature Cards Grid */}
-      <div className="bg-white p-8 rounded-2xl border border-slate-100">
+      <div className="bg-white p-8 rounded-2xl border border-slate-400">
          <h3 className="text-xl font-bold text-slate-800 mb-6 uppercase tracking-tight">Quick Actions</h3>
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Yahan aap apne purane cards logic ko map kar sakte hain */}

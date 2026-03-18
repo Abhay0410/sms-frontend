@@ -130,7 +130,7 @@ export default function StaffAttendance() {
               placeholder="Search staff..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2.5 bg-white rounded-xl border border-slate-500 focus:border-teal-500 outline-none w-full md:w-64"
+              className="pl-10 pr-4 py-2.5 bg-white rounded-xl border border-slate-400 focus:border-teal-500 outline-none w-full md:w-64"
             />
           </div>
           
@@ -138,7 +138,7 @@ export default function StaffAttendance() {
             type="date" 
             value={date} 
             onChange={(e) => setDate(e.target.value)}
-            className="px-4 py-2.5 bg-white rounded-xl border border-slate-500 focus:border-teal-500 outline-none"
+            className="px-4 py-2.5 bg-white rounded-xl border border-slate-400 focus:border-teal-500 outline-none"
           />
           
           <button 
@@ -173,7 +173,7 @@ export default function StaffAttendance() {
       </div> */}
 
       {/* Filter Section */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-500">
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-400">
         <div className="flex flex-wrap items-center gap-4">
           <span className="font-medium text-slate-700 flex items-center gap-2">
             <FaFilter className="text-slate-400" />
@@ -201,20 +201,20 @@ export default function StaffAttendance() {
       </div>
 
       {/* Table Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-500 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-400 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-500">
+            <thead className="bg-slate-900 border-b border-slate-800">
               <tr>
-                <th className="text-left p-4 font-semibold text-slate-700">Staff Member</th>
-                <th className="text-left p-4 font-semibold text-slate-700">Department</th>
-                <th className="text-left p-4 font-semibold text-slate-700">Time Log</th>
-                <th className="text-left p-4 font-semibold text-slate-700">Working Hours</th>
-                <th className="text-left p-4 font-semibold text-slate-700">Status</th>
-                <th className="text-left p-4 font-semibold text-slate-700">Actions</th>
+                <th className="text-left p-4 font-semibold text-white">Staff Member</th>
+                <th className="text-left p-4 font-semibold text-white">Department</th>
+                <th className="text-left p-4 font-semibold text-white">Time Log</th>
+                <th className="text-left p-4 font-semibold text-white">Working Hours</th>
+                <th className="text-left p-4 font-semibold text-white">Status</th>
+                <th className="text-left p-4 font-semibold text-white">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-500">
+            <tbody className="divide-y divide-slate-400">
               {loading ? (
                 <tr>
                   <td colSpan="6" className="p-8 text-center">
@@ -323,7 +323,7 @@ export default function StaffAttendance() {
         
         {/* Summary Footer */}
         {filteredAttendance.length > 0 && (
-          <div className="bg-slate-50 border-t border-slate-500 p-4">
+          <div className="bg-slate-50 border-t border-slate-400 p-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-slate-600">
                 Showing <span className="font-semibold">{filteredAttendance.length}</span> of <span className="font-semibold">{attendance.length}</span> records
@@ -339,8 +339,8 @@ export default function StaffAttendance() {
       {/* Update Status Modal */}
       {showUpdateModal && selectedRecord && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-sm border border-slate-500">
-            <div className="p-6 border-b border-slate-500">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-sm border border-slate-400">
+            <div className="p-6 border-b border-slate-400">
               <h3 className="text-xl font-bold text-slate-900">Update Attendance Status</h3>
               <p className="text-slate-600 mt-1">
                 Update status for <span className="font-semibold">{selectedRecord.teacherId?.name}</span>
@@ -390,13 +390,13 @@ export default function StaffAttendance() {
                 </div>
               </div>
               
-              <div className="flex gap-3 mt-6 pt-6 border-t border-slate-500">
+              <div className="flex gap-3 mt-6 pt-6 border-t border-slate-400">
                 <button
                   onClick={() => {
                     setShowUpdateModal(false);
                     setSelectedRecord(null);
                   }}
-                  className="flex-1 py-3 bg-white border border-slate-500 text-slate-700 rounded-xl hover:bg-slate-50 transition-all"
+                  className="flex-1 py-3 bg-white border border-slate-400 text-slate-700 rounded-xl hover:bg-slate-50 transition-all"
                 >
                   Cancel
                 </button>

@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ UNCOMMENT THIS
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api";
 import BackButton from "../../../../components/BackButton";
 import { FaEye, FaDownload, FaPrint, FaSpinner, FaFilter, FaSearch, FaCheckCircle, FaTimesCircle, FaTimes, FaEdit } from "react-icons/fa"; // ✅ ADD FaEdit
 
 export default function ViewResults() {
-  const navigate = useNavigate(); // ✅ UNCOMMENT THIS
+  const navigate = useNavigate(); 
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
@@ -27,7 +27,6 @@ export default function ViewResults() {
       r.studentName?.toLowerCase().includes(search) || 
       r.studentID?.toLowerCase().includes(search) || 
       r.rollNumber?.toString().includes(search) ||
-      // Also check student object if studentName is not directly on result
       r.student?.name?.toLowerCase().includes(search) ||
       r.student?.studentID?.toLowerCase().includes(search)
     );
@@ -96,27 +95,27 @@ export default function ViewResults() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-blue-50">
         <FaSpinner className="h-12 w-12 animate-spin text-purple-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 ">
+    <div className="min-h-screen bg-blue-50 p-4">
       <div className="max-w-7xl mx-auto">
-        {/* <BackButton to="/teacher/teacher-dashboard" /> */}
+
         <div className=" mb-6">
           <h1 className="text-3xl font-bold text-slate-900">View Results</h1>
           <p className="text-slate-600  font-medium mt-1">All created examination results</p>
         </div>
         
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-md border border-slate-400 p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2"><FaFilter className="inline mr-2" />Filter by Exam Type</label>
-              <select value={filters.examType} onChange={(e) => setFilters({ ...filters, examType: e.target.value })} className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none">
+              <select value={filters.examType} onChange={(e) => setFilters({ ...filters, examType: e.target.value })} className="w-full rounded-lg border border-slate-400 p-3 focus:border-purple-500 outline-none">
                 <option value="">All Exams</option>
                 <option value="FINAL">Final Exam</option>
                 <option value="HALF_YEARLY">Half Yearly</option>
@@ -127,13 +126,13 @@ export default function ViewResults() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2"><FaSearch className="inline mr-2" />Search Student</label>
-              <input type="text" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none" placeholder="Name, ID, or Roll Number" />
+              <input type="text" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} className="w-full rounded-lg border border-slate-400 p-3 focus:border-purple-500 outline-none" placeholder="Name, ID, or Roll Number" />
             </div>
           </div>
         </div>
         
         {/* Results Table */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white rounded-xl shadow-md border border-slate-400 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-purple-50">
@@ -149,7 +148,7 @@ export default function ViewResults() {
                   <th className="px-6 py-4 text-center text-sm font-bold text-slate-900">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-slate-400">
                 {filteredResults.length === 0 ? (
                   <tr><td colSpan="9" className="px-6 py-12 text-center text-slate-500">No results found</td></tr>
                 ) : (
@@ -245,7 +244,7 @@ function ResultDetailModal({ result, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
       <div className="w-full max-w-4xl rounded-2xl bg-white shadow-2xl my-8">
-        <div className="border-b border-slate-200 p-6 bg-gradient-to-r from-purple-50 to-indigo-50">
+        <div className="border-b border-slate-400 p-6 bg-gradient-to-r from-purple-50 to-indigo-50">
           <div className="flex items-start justify-between">
             <div>
               <h3 className="text-2xl font-bold text-slate-900">Result Details</h3>
@@ -279,35 +278,35 @@ function ResultDetailModal({ result, onClose }) {
           <div>
             <h4 className="text-lg font-bold text-slate-900 mb-3">Subject-wise Marks</h4>
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse border">
+              <table className="w-full border-collapse border border-slate-400">
                 <thead className="bg-purple-50">
                   <tr>
-                    <th className="border p-3 text-left">Subject</th>
-                    <th className="border p-3 text-center">Theory</th>
-                    <th className="border p-3 text-center">Practical</th>
-                    <th className="border p-3 text-center">IA</th>
-                    <th className="border p-3 text-center">Total</th>
-                    <th className="border p-3 text-center">%</th>
-                    <th className="border p-3 text-center">Grade</th>
-                    <th className="border p-3 text-center">Status</th>
+                    <th className="border border-slate-400 p-3 text-left">Subject</th>
+                    <th className="border border-slate-400 p-3 text-center">Theory</th>
+                    <th className="border border-slate-400 p-3 text-center">Practical</th>
+                    <th className="border border-slate-400 p-3 text-center">IA</th>
+                    <th className="border border-slate-400 p-3 text-center">Total</th>
+                    <th className="border border-slate-400 p-3 text-center">%</th>
+                    <th className="border border-slate-400 p-3 text-center">Grade</th>
+                    <th className="border border-slate-400 p-3 text-center">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {result.subjects?.map((subject, index) => (
                     <tr key={index} className={subject.isAbsent ? "bg-red-50" : ""}>
-                      <td className="border p-3 font-medium">{subject.subjectName}</td>
-                      <td className="border p-3 text-center">{subject.theoryMaxMarks > 0 ? `${subject.theoryObtainedMarks}/${subject.theoryMaxMarks}` : "N/A"}</td>
-                      <td className="border p-3 text-center">{subject.practicalMaxMarks > 0 ? `${subject.practicalObtainedMarks}/${subject.practicalMaxMarks}` : "N/A"}</td>
-                      <td className="border p-3 text-center">{subject.iaMaxMarks > 0 ? `${subject.iaObtainedMarks}/${subject.iaMaxMarks}` : "N/A"}</td>
-                      <td className="border p-3 text-center font-bold">
+                      <td className="border border-slate-400 p-3 font-medium">{subject.subjectName}</td>
+                      <td className="border border-slate-400 p-3 text-center">{subject.theoryMaxMarks > 0 ? `${subject.theoryObtainedMarks}/${subject.theoryMaxMarks}` : "N/A"}</td>
+                      <td className="border border-slate-400 p-3 text-center">{subject.practicalMaxMarks > 0 ? `${subject.practicalObtainedMarks}/${subject.practicalMaxMarks}` : "N/A"}</td>
+                      <td className="border border-slate-400 p-3 text-center">{subject.iaMaxMarks > 0 ? `${subject.iaObtainedMarks}/${subject.iaMaxMarks}` : "N/A"}</td>
+                      <td className="border border-slate-400 p-3 text-center font-bold">
                         <div className="flex flex-col items-center">
                           <span>{subject.totalObtainedMarks}/{subject.totalMaxMarks}</span>
                           {subject.graceMarks > 0 && <span className="text-red-500 font-bold text-xs mt-1">*{subject.graceMarks}</span>}
                         </div>
                       </td>
-                      <td className="border p-3 text-center font-bold text-purple-600">{subject.percentage}%</td>
-                      <td className="border p-3 text-center"><span className="px-2 py-1 rounded bg-purple-100 text-purple-800 font-bold">{subject.grade}</span></td>
-                      <td className="border p-3 text-center">
+                      <td className="border border-slate-400 p-3 text-center font-bold text-purple-600">{subject.percentage}%</td>
+                      <td className="border border-slate-400 p-3 text-center"><span className="px-2 py-1 rounded bg-purple-100 text-purple-800 font-bold">{subject.grade}</span></td>
+                      <td className="border border-slate-400 p-3 text-center">
                         {subject.isAbsent ? <span className="text-gray-600 font-semibold">ABSENT</span> : subject.status === "PASS_BY_GRACE" ? <span className="text-yellow-600 font-semibold">PASS*</span> : subject.status === "PASS" ? <span className="text-green-600 font-semibold">PASS</span> : <span className="text-red-600 font-semibold">FAIL</span>}
                       </td>
                     </tr>
@@ -315,16 +314,16 @@ function ResultDetailModal({ result, onClose }) {
                 </tbody>
                 <tfoot className="bg-purple-100">
                   <tr>
-                    <td colSpan="4" className="border p-3 text-right font-bold">TOTAL:</td>
-                    <td className="border p-3 text-center font-bold">
+                    <td colSpan="4" className="border border-slate-400 p-3 text-right font-bold">TOTAL:</td>
+                    <td className="border border-slate-400 p-3 text-center font-bold">
                       <div className="flex flex-col items-center">
                         <span>{result.totalObtainedMarks}/{result.totalMaxMarks}</span>
                         {result.totalGraceMarks > 0 && <span className="text-red-500 font-bold text-xs mt-1">*{result.totalGraceMarks}</span>}
                       </div>
                     </td>
-                    <td className="border p-3 text-center font-bold text-purple-600 text-lg">{result.overallPercentage}%</td>
-                    <td className="border p-3 text-center font-bold text-lg">{result.overallGrade}</td>
-                    <td className="border p-3 text-center">
+                    <td className="border border-slate-400 p-3 text-center font-bold text-purple-600 text-lg">{result.overallPercentage}%</td>
+                    <td className="border border-slate-400 p-3 text-center font-bold text-lg">{result.overallGrade}</td>
+                    <td className="border border-slate-400 p-3 text-center">
                       <span className={`px-3 py-1 rounded-full font-bold ${result.result === 'PASS' ? 'bg-green-100 text-green-800' : result.result === 'PASS_BY_GRACE' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
                         {result.result === 'PASS_BY_GRACE' ? 'PASS*' : result.result}
                       </span>
@@ -345,8 +344,8 @@ function ResultDetailModal({ result, onClose }) {
           )}
         </div>
         
-        <div className="border-t p-6 flex gap-4">
-          <button onClick={onClose} className="flex-1 px-6 py-3 rounded-xl border-2 border-slate-300 font-semibold hover:bg-slate-50">Close</button>
+        <div className="border-t border-slate-400 p-6 flex gap-4">
+          <button onClick={onClose} className="flex-1 px-6 py-3 rounded-xl border border-slate-400 font-semibold hover:bg-slate-50">Close</button>
           <button onClick={() => window.print()} className="flex-1 px-6 py-3 rounded-xl bg-purple-600 text-white font-semibold hover:bg-purple-700 flex items-center justify-center gap-2"><FaPrint />Print</button>
         </div>
       </div>

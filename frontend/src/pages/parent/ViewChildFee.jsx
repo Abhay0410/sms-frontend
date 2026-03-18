@@ -246,7 +246,7 @@ export default function ViewChildFee() {
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 md:p-8">
         <div className="mx-auto max-w-4xl">
           <BackButton to="/parent/parent-dashboard" />
-          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-100">
+          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-400">
             <FaChild className="h-20 w-20 text-slate-300 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-slate-900">
               No Children Found
@@ -346,7 +346,7 @@ export default function ViewChildFee() {
         {/* Fee Summary Cards */}
         {feeDetails && (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <div className="flex items-center gap-3 mb-2">
                 <FaMoneyBillWave className="h-8 w-8 text-green-600" />
                 <p className="text-sm text-slate-600">Total Fee</p>
@@ -407,7 +407,7 @@ export default function ViewChildFee() {
 
         {/* Fee Breakdown */}
         {feeStructure && (
-          <div className="mt-8 rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+          <div className="mt-8 rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
             <h3 className="text-xl font-bold text-slate-900 mb-4">
               Fee Breakdown
             </h3>
@@ -416,7 +416,7 @@ export default function ViewChildFee() {
                 ? feeStructure.map((item, idx) => (
                     <div
                       key={idx}
-                      className="p-4 rounded-xl bg-slate-50 border border-slate-200"
+                      className="p-4 rounded-xl bg-slate-50 border border-slate-400"
                     >
                       <p className="text-sm text-slate-600">
                         {item.feeName || "Fee"}
@@ -441,7 +441,7 @@ export default function ViewChildFee() {
                     .map(([key, value]) => (
                       <div
                         key={key}
-                        className="p-4 rounded-xl bg-slate-50 border border-slate-200"
+                        className="p-4 rounded-xl bg-slate-50 border border-slate-400"
                       >
                         <p className="text-sm text-slate-600 capitalize">
                           {key.replace(/([A-Z])/g, " $1").trim()}
@@ -456,8 +456,8 @@ export default function ViewChildFee() {
         )}
 
         {/* Payment History */}
-        <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-100 overflow-hidden">
-          <div className="p-6 border-b border-slate-100">
+        <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-400 overflow-hidden">
+          <div className="p-6 border-b border-slate-400">
             <h3 className="text-xl font-bold text-slate-900">
               Payment History
             </h3>
@@ -466,7 +466,7 @@ export default function ViewChildFee() {
           {payments.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 border-b border-slate-200">
+                <thead className="bg-slate-50 border-b border-slate-400">
                   <tr>
                     <th className="p-4 text-left text-sm font-semibold text-slate-700">
                       Receipt No
@@ -492,7 +492,7 @@ export default function ViewChildFee() {
                   {payments.map((payment) => (
                     <tr
                       key={payment._id}
-                      className="border-b border-slate-100 hover:bg-slate-50"
+                      className="border-b border-slate-400 hover:bg-slate-50"
                     >
                       <td className="p-4">
                         <span className="font-mono text-sm font-semibold text-slate-900">
@@ -573,7 +573,7 @@ export default function ViewChildFee() {
       {showPaymentModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200">
+            <div className="p-6 border-b border-slate-400">
               <h3 className="text-2xl font-bold text-slate-900">
                 Submit Payment
               </h3>
@@ -600,7 +600,7 @@ export default function ViewChildFee() {
                         amountPaid: e.target.value,
                       })
                     }
-                    className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-green-500 focus:outline-none"
+                    className="w-full rounded-xl border-2 border-slate-400 p-3 focus:border-green-500 focus:outline-none"
                     placeholder="Enter amount"
                     required
                   />
@@ -619,7 +619,7 @@ export default function ViewChildFee() {
                         paymentMethod: e.target.value,
                       })
                     }
-                    className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-green-500 focus:outline-none"
+                    className="w-full rounded-xl border-2 border-slate-400 p-3 focus:border-green-500 focus:outline-none"
                     required
                   >
                     <option value="CASH">Cash</option>
@@ -645,7 +645,7 @@ export default function ViewChildFee() {
                         paymentDate: e.target.value,
                       })
                     }
-                    className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-green-500 focus:outline-none"
+                    className="w-full rounded-xl border-2 border-slate-400 p-3 focus:border-green-500 focus:outline-none"
                     required
                   />
                 </div>
@@ -665,7 +665,7 @@ export default function ViewChildFee() {
                           upiId: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-green-500 focus:outline-none"
+                      className="w-full rounded-xl border-2 border-slate-400 p-3 focus:border-green-500 focus:outline-none"
                       placeholder="example@upi"
                     />
                   </div>
@@ -686,7 +686,7 @@ export default function ViewChildFee() {
                             chequeNumber: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-green-500 focus:outline-none"
+                        className="w-full rounded-xl border-2 border-slate-400 p-3 focus:border-green-500 focus:outline-none"
                         placeholder="Cheque number"
                       />
                     </div>
@@ -703,7 +703,7 @@ export default function ViewChildFee() {
                             bankName: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-green-500 focus:outline-none"
+                        className="w-full rounded-xl border-2 border-slate-400 p-3 focus:border-green-500 focus:outline-none"
                         placeholder="Bank name"
                       />
                     </div>
@@ -726,7 +726,7 @@ export default function ViewChildFee() {
                           transactionId: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-green-500 focus:outline-none"
+                      className="w-full rounded-xl border-2 border-slate-400 p-3 focus:border-green-500 focus:outline-none"
                       placeholder="Transaction ID / Reference number"
                     />
                   </div>
@@ -745,7 +745,7 @@ export default function ViewChildFee() {
                         remarks: e.target.value,
                       })
                     }
-                    className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-green-500 focus:outline-none"
+                    className="w-full rounded-xl border-2 border-slate-400 p-3 focus:border-green-500 focus:outline-none"
                     rows="3"
                     placeholder="Any additional notes..."
                   />
@@ -757,7 +757,7 @@ export default function ViewChildFee() {
                 <button
                   type="button"
                   onClick={() => setShowPaymentModal(false)}
-                  className="flex-1 rounded-xl border-2 border-slate-300 px-6 py-3 font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  className="flex-1 rounded-xl border-2 border-slate-400 px-6 py-3 font-semibold text-slate-700 hover:bg-slate-50 transition"
                 >
                   Cancel
                 </button>

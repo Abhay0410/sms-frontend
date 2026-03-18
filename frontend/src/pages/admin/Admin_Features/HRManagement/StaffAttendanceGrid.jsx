@@ -193,7 +193,7 @@ export default function StaffAttendanceGrid() {
         </div> */}
 
         {/* Controls */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-500 mb-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 mb-6">
           <div className="p-6">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               {/* Search and Filters */}
@@ -203,7 +203,7 @@ export default function StaffAttendanceGrid() {
                   <input
                     type="text"
                     placeholder="Search staff by name or ID..."
-                    className="w-full pl-12 pr-4 py-3 bg-white border border-slate-500 rounded-xl outline-none focus:border-orange-500 transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-white border border-slate-400 rounded-xl outline-none focus:border-orange-500 transition-all"
                     value={searchTerm}
                     onChange={(e) => {
                       setSearchTerm(e.target.value);
@@ -220,7 +220,7 @@ export default function StaffAttendanceGrid() {
                   className={`px-5 py-3 rounded-xl border flex items-center gap-2 transition-all ${
                     showFilters
                       ? 'bg-amber-50 border-amber-300 text-amber-700'
-                      : 'bg-white border-slate-500 text-slate-700 hover:bg-slate-50'
+                      : 'bg-white border-slate-400 text-slate-700 hover:bg-slate-50'
                   }`}
                 >
                   <FaFilter /> Filters
@@ -244,7 +244,7 @@ export default function StaffAttendanceGrid() {
                   <select
                     value={month}
                     onChange={(e) => setMonth(Number(e.target.value))}
-                    className="bg-white border border-slate-500 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500"
+                    className="bg-white border border-slate-400 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500"
                   >
                     {monthNames.map((m, i) => (
                       <option key={m} value={i + 1}>{m}</option>
@@ -254,7 +254,7 @@ export default function StaffAttendanceGrid() {
                   <select
                     value={year}
                     onChange={(e) => setYear(Number(e.target.value))}
-                    className="bg-white border border-slate-500 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500"
+                    className="bg-white border border-slate-400 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500"
                   >
                     {[2023, 2024, 2025, 2026, 2027].map(y => (
                       <option key={y} value={y}>{y}</option>
@@ -274,12 +274,12 @@ export default function StaffAttendanceGrid() {
 
             {/* Advanced Filters */}
             {showFilters && (
-              <div className="mt-6 p-4 bg-white rounded-xl border border-slate-500 animate-slideDown">
+              <div className="mt-6 p-4 bg-white rounded-xl border border-slate-400 animate-slideDown">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Status Filter</label>
                     <select
-                      className="w-full px-4 py-2.5 bg-white border border-slate-500 rounded-lg outline-none focus:border-orange-500"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-400 rounded-lg outline-none focus:border-orange-500"
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
                     >
@@ -299,7 +299,7 @@ export default function StaffAttendanceGrid() {
                         setSearchTerm("");
                         setCurrentPage(1);
                       }}
-                      className="w-full px-4 py-2.5 bg-white border border-slate-500 text-slate-700 rounded-lg hover:bg-slate-50 transition-all"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-400 text-slate-700 rounded-lg hover:bg-slate-50 transition-all"
                     >
                       Clear Filters
                     </button>
@@ -311,11 +311,11 @@ export default function StaffAttendanceGrid() {
         </div>
 
         {/* Matrix Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-500 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 overflow-hidden">
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-500">
+                <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-400">
                   <th className="p-5 sticky left-0 bg-slate-900 z-20 min-w-[220px] font-bold uppercase tracking-widest text-sm">
                     Staff Member
                   </th>
@@ -347,7 +347,7 @@ export default function StaffAttendanceGrid() {
                 </tr>
               </thead>
               
-              <tbody className="divide-y divide-slate-500">
+              <tbody className="divide-y divide-slate-400">
                 {loading ? (
                   <tr>
                     <td colSpan={data.daysInMonth + 2} className="p-16 text-center">
@@ -373,7 +373,7 @@ export default function StaffAttendanceGrid() {
                     
                     return (
                       <tr key={row._id} className="hover:bg-slate-50/80 transition-colors group">
-                        <td className="p-4 sticky left-0 bg-white z-10 shadow-[4px_0_8px_rgba(0,0,0,0.03)] border-r border-slate-500">
+                        <td className="p-4 sticky left-0 bg-white z-10 shadow-[4px_0_8px_rgba(0,0,0,0.03)] border-r border-slate-400">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 overflow-hidden">
                               {profileImageUrl ? (
@@ -417,7 +417,7 @@ export default function StaffAttendanceGrid() {
                           return (
                             <td 
                               key={i} 
-                              className={`p-2 text-center border-l border-slate-500 h-14 ${isToday ? 'bg-orange-50' : ''}`}
+                              className={`p-2 text-center border-l border-slate-400 h-14 ${isToday ? 'bg-orange-50' : ''}`}
                             >
                               {status ? (
                                 <div className="relative">
@@ -438,7 +438,7 @@ export default function StaffAttendanceGrid() {
                           );
                         })}
                         
-                        <td className="p-2 text-center border-l border-slate-500">
+                        <td className="p-2 text-center border-l border-slate-400">
                           <div className="flex flex-col gap-1 items-center">
                             <span className="text-xs font-bold text-emerald-600">{summary.present}</span>
                             <span className="text-xs font-bold text-rose-600">{summary.absent}</span>
@@ -466,7 +466,7 @@ export default function StaffAttendanceGrid() {
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-white border border-slate-500 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 bg-white border border-slate-400 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <FaChevronLeft />
               </button>
@@ -478,7 +478,7 @@ export default function StaffAttendanceGrid() {
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     currentPage === i + 1
                       ? 'bg-amber-500 text-white shadow-sm'
-                      : 'bg-white text-slate-600 border border-slate-500 hover:bg-slate-50'
+                      : 'bg-white text-slate-600 border border-slate-400 hover:bg-slate-50'
                   }`}
                 >
                   {i + 1}
@@ -488,7 +488,7 @@ export default function StaffAttendanceGrid() {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-white border border-slate-500 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 bg-white border border-slate-400 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <FaChevronRight />
               </button>
@@ -497,12 +497,12 @@ export default function StaffAttendanceGrid() {
         )}
 
         {/* Legend */}
-        <div className="mt-8 p-6 bg-white rounded-2xl border border-slate-500 shadow-sm">
+        <div className="mt-8 p-6 bg-white rounded-2xl border border-slate-400 shadow-sm">
           <h4 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
             <FaCircle className="text-slate-400" /> Legend
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-500">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-400">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-green-600"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">Present (P)</p>
@@ -510,7 +510,7 @@ export default function StaffAttendanceGrid() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-500">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-400">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-rose-500 to-red-600"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">Absent (A)</p>
@@ -518,7 +518,7 @@ export default function StaffAttendanceGrid() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-500">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-400">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-orange-500 to-amber-600"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">Half Day (H)</p>
@@ -526,7 +526,7 @@ export default function StaffAttendanceGrid() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-500">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-400">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-amber-500 to-yellow-600"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">Late (L)</p>
@@ -534,7 +534,7 @@ export default function StaffAttendanceGrid() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-500">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-400">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-600"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">Leave (V)</p>
@@ -542,7 +542,7 @@ export default function StaffAttendanceGrid() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-500">
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-400">
               <div className="w-3 h-3 rounded-full bg-slate-200"></div>
               <div>
                 <p className="text-sm font-medium text-slate-700">No Record (-)</p>

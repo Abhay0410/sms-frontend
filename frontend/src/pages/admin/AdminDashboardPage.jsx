@@ -148,7 +148,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-10 animate-in fade-in duration-1000">
       {/* Dynamic Header */}
-      <div className="flex justify-between items-center bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
+      <div className="flex justify-between items-center bg-white p-8 rounded-2xl border border-slate-400 shadow-sm">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             School Insights
@@ -170,7 +170,7 @@ export default function AdminDashboardPage() {
         {cards.map((card, i) => (
           <div
             key={i}
-            className="bg-white p-8 rounded-3xl border border-slate-50 shadow-xl shadow-slate-200/30 group hover:bg-slate-900 transition-all duration-500"
+            className="bg-white p-8 rounded-3xl border border-slate-400 shadow-xl shadow-slate-200/30 group hover:bg-slate-900 transition-all duration-500"
           >
             <div
               className={`${card.color} h-14 w-14 rounded-2xl text-white flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform`}
@@ -195,7 +195,7 @@ export default function AdminDashboardPage() {
       {/* Visual Data Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Enrollment Bar Chart */}
-        <div className="lg:col-span-2 bg-white p-10 rounded-3xl shadow-sm border border-slate-50">
+        <div className="lg:col-span-2 bg-white p-10 rounded-3xl shadow-sm border border-slate-400">
           <div className="flex items-center justify-between mb-10">
             <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">
               Grade Distribution
@@ -243,7 +243,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Quick Actions Panel */}
-        <div className="bg-slate-900 p-10 rounded-3xl shadow-2xl relative overflow-hidden">
+        <div className="bg-slate-900 p-10 rounded-3xl shadow-2xl relative overflow-hidden border border-slate-700">
           <div className="absolute bottom-0 right-0 w-32 h-32 bg-red-600/10 rounded-full blur-3xl"></div>
           <h3 className="text-xl font-bold text-white mb-8 uppercase tracking-widest">
             Operations

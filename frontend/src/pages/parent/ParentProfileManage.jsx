@@ -204,7 +204,7 @@ export default function ParentProfileManage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Children Information */}
             {children.length > 0 && (
-              <div className="rounded-2xl bg-white p-6 shadow-lg border border-gray-100">
+              <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <span className="text-green-600">👨‍👧‍👦</span>
                   My Children
@@ -224,7 +224,7 @@ export default function ParentProfileManage() {
                     return (
                       <div
                         key={child._id}
-                        className="rounded-xl border border-gray-200 p-4 hover:border-green-300 transition-all duration-300 hover:shadow-md"
+                        className="rounded-xl border border-slate-400 p-4 hover:border-green-300 transition-all duration-300 hover:shadow-md"
                       >
                         <div className="flex items-center gap-4">
                           <div className="h-16 w-16 rounded-full border-2 border-green-200 overflow-hidden">
@@ -266,13 +266,13 @@ export default function ParentProfileManage() {
             )}
 
             {/* Photo Upload */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-gray-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="text-green-600">🖼️</span>
                 Update Profile Photo
               </h3>
               <div className="space-y-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-green-400 transition-colors duration-300">
+                <div className="border-2 border-dashed border-slate-400 rounded-xl p-6 text-center hover:border-green-400 transition-colors duration-300">
                   <input
                     type="file"
                     accept="image/*"
@@ -349,7 +349,7 @@ export default function ParentProfileManage() {
           {/* Right Column - Contact Info & Password */}
           <div className="space-y-6">
             {/* Contact Information */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-gray-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="text-green-600">📞</span>
                 Contact Information
@@ -384,7 +384,7 @@ export default function ParentProfileManage() {
                   inputMode="numeric"
                   placeholder="Enter 10 digit phone number"
                   disabled={!isEditing}
-                  className="w-full rounded-xl border border-gray-300 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                  className="w-full rounded-xl border border-slate-400 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                 />
 
                 <div>
@@ -392,7 +392,7 @@ export default function ParentProfileManage() {
                     Occupation
                   </label>
                   <input
-                    className="w-full rounded-xl border border-gray-300 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                    className="w-full rounded-xl border border-slate-400 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                     name="occupation"
                     value={form.occupation}
                     onChange={onChange}
@@ -406,7 +406,7 @@ export default function ParentProfileManage() {
                     Address
                   </label>
                   <textarea
-                    className="w-full rounded-xl border border-gray-300 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                    className="w-full rounded-xl border border-slate-400 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                     name="address"
                     value={form.address}
                     onChange={onChange}
@@ -456,7 +456,7 @@ export default function ParentProfileManage() {
             </div>
 
             {/* Change Password */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-gray-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="text-green-600">🔒</span>
                 Change Password
@@ -489,7 +489,7 @@ export default function ParentProfileManage() {
                       onChange={onChangePw}
                       placeholder="Enter current password"
                       disabled={!isEditing}
-                      className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                      className="w-full rounded-xl border border-slate-400 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                     />
 
                     <button
@@ -528,7 +528,7 @@ export default function ParentProfileManage() {
                       onChange={onChangePw}
                       disabled={!isEditing}
                       placeholder="Enter new password (min 6 characters)"
-                      className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                      className="w-full rounded-xl border border-slate-400 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                     />
 
                     <button
@@ -567,7 +567,7 @@ export default function ParentProfileManage() {
                       onChange={onChangePw}
                       placeholder="Confirm new password"
                       disabled={!isEditing}
-                      className="w-full rounded-xl border border-gray-300 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                      className="w-full rounded-xl border border-slate-400 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
                     />
 
                     <button

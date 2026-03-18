@@ -158,7 +158,7 @@ const fetchData = useCallback(async () => {
       case 'ABSENT': return 'bg-rose-100 text-rose-700 border border-rose-300';
       case 'HALF_DAY': return 'bg-blue-100 text-blue-700 border border-blue-300';
       case 'ON_LEAVE': return 'bg-purple-100 text-purple-700 border border-purple-300';
-      default: return 'bg-slate-100 text-slate-700 border border-slate-300';
+      default: return 'bg-slate-100 text-slate-700 border border-slate-400';
     }
   };
 
@@ -168,7 +168,7 @@ const fetchData = useCallback(async () => {
   };
 
   return (
-    <div className="space-y-6  bg-gradient-to-br from-slate-50 to-white min-h-screen">
+    <div className="space-y-6 bg-blue-50 p-4 min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -188,14 +188,14 @@ const fetchData = useCallback(async () => {
           <button
             onClick={fetchData}
             disabled={loading}
-            className="px-4 py-2 border-2 border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-all flex items-center gap-2 disabled:opacity-50 shadow-sm"
           >
             <FaSync className={loading ? "animate-spin" : ""} />
             {loading ? "Refreshing..." : "Refresh"}
           </button>
           <button
             onClick={() => toast.info("QR code scanning feature coming soon")}
-            className="px-4 py-2 border-2 border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2"
+            className="px-4 py-2 border border-slate-400 text-slate-700 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2"
           >
             <FaQrcode />
             Scan QR
@@ -206,7 +206,7 @@ const fetchData = useCallback(async () => {
       {/* Main Attendance Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Attendance Actions */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-slate-400 p-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="h-16 w-16 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-2xl flex items-center justify-center">
@@ -241,7 +241,7 @@ const fetchData = useCallback(async () => {
                 disabled={!attendance?.checkIn || attendance?.checkOut || loading}
                 className={`px-8 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-3 ${
                   (!attendance?.checkIn || attendance?.checkOut)
-                    ? 'bg-slate-100 text-slate-400 border-2 border-slate-300 cursor-default' 
+                    ? 'bg-slate-100 text-slate-400 border border-slate-400 cursor-default' 
                     : 'bg-gradient-to-r from-rose-600 to-pink-600 text-white hover:shadow-lg hover:scale-105 active:scale-95'
                 } ${loading ? 'opacity-90 cursor-not-allowed' : ''}`}
               >
@@ -253,7 +253,7 @@ const fetchData = useCallback(async () => {
 
           {/* Attendance Details */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-400">
               <p className="text-sm font-medium text-slate-600 flex items-center gap-2">
                 <FaSignInAlt className="text-emerald-500" /> Check In Time
               </p>
@@ -262,7 +262,7 @@ const fetchData = useCallback(async () => {
               </p>
             </div>
             
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-400">
               <p className="text-sm font-medium text-slate-600 flex items-center gap-2">
                 <FaSignOutAlt className="text-rose-500" /> Check Out Time
               </p>
@@ -271,7 +271,7 @@ const fetchData = useCallback(async () => {
               </p>
             </div>
             
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-400">
               <p className="text-sm font-medium text-slate-600 flex items-center gap-2">
                 <FaClock className="text-teal-500" /> Working Hours
               </p>
@@ -299,7 +299,7 @@ const fetchData = useCallback(async () => {
         </div>
 
         {/* Monthly Statistics */}
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-400 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <FaUserCheck className="text-teal-600" />
@@ -347,7 +347,7 @@ const fetchData = useCallback(async () => {
       </div>
 
       {/* Recent History */}
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+      <div className="bg-white rounded-2xl shadow-lg border border-slate-400 p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
             <FaHistory className="text-slate-400" />
@@ -356,7 +356,7 @@ const fetchData = useCallback(async () => {
           <button 
             onClick={fetchData}
             disabled={loading}
-            className="text-sm text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1 disabled:opacity-50"
+            className="text-sm text-amber-500 hover:text-amber-600 font-medium flex items-center gap-1 disabled:opacity-50"
           >
             <FaSync className={loading ? "animate-spin" : ""} />
             {loading ? "Refreshing..." : "Refresh"}
@@ -372,7 +372,7 @@ const fetchData = useCallback(async () => {
             <p className="text-sm text-slate-400 mt-1">Your attendance history will appear here</p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-slate-400">
             <table className="w-full">
               <thead className="bg-slate-50">
                 <tr>
@@ -382,7 +382,7 @@ const fetchData = useCallback(async () => {
                   <th className="text-left p-3 text-xs font-bold uppercase text-slate-400">Worked</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-400">
                 {recentHistory.map((record, index) => (
                   <tr key={index} className="hover:bg-slate-50/50">
                     <td className="p-3">

@@ -145,22 +145,22 @@ export default function SetClassFees() {
 
   // Loading skeleton
   if (loading) return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8">
-      {[...Array(6)].map((_, i) => (
-        <div key={i} className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
-          <div className="animate-pulse space-y-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 py-4">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-slate-400">
+          <div className="animate-pulse space-y-4">
             <div className="flex justify-between">
-              <div className="h-14 w-14 rounded-2xl bg-slate-200" />
-              <div className="h-6 w-24 bg-slate-200 rounded-full" />
+              <div className="h-10 w-10 rounded-lg bg-slate-200" />
+              <div className="h-5 w-20 bg-slate-200 rounded-md" />
             </div>
-            <div className="h-8 w-3/4 bg-slate-200 rounded" />
-            <div className="h-4 w-1/2 bg-slate-200 rounded" />
-            <div className="pt-6 border-t border-slate-100 flex justify-between">
-              <div className="space-y-2">
-                <div className="h-3 w-16 bg-slate-200 rounded" />
-                <div className="h-6 w-24 bg-slate-200 rounded" />
+            <div className="h-5 w-3/4 bg-slate-200 rounded" />
+            <div className="h-3 w-1/2 bg-slate-200 rounded" />
+            <div className="pt-4 border-t border-slate-400 flex justify-between items-center">
+              <div className="space-y-1">
+                <div className="h-2 w-12 bg-slate-200 rounded" />
+                <div className="h-4 w-16 bg-slate-200 rounded" />
               </div>
-              <div className="h-12 w-12 rounded-2xl bg-slate-200" />
+              <div className="h-8 w-16 rounded-lg bg-slate-200" />
             </div>
           </div>
         </div>
@@ -169,23 +169,23 @@ export default function SetClassFees() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {/* Header Info */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex justify-between items-end bg-blue-50 p-8 rounded-2xl border border-slate-500 shadow-sm"
+        className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 rounded-xl border border-slate-400 shadow-sm gap-4"
       >
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Class Fee Management</h2>
-          <p className="text-gray-600  text-sm font-medium mt-1">Configure automated installments for all students</p>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Class Fee Management</h2>
+          <p className="text-gray-500 text-sm font-medium mt-0.5">Configure automated installments for all students</p>
         </div>
-        <div className="bg-white px-4 py-2 rounded-2xl border border-slate-500 shadow-sm">
-          <p className="text-xs font-bold text-purple-600 uppercase tracking-widest mb-1">Active Session</p>
+        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-400 shadow-sm">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Session:</span>
           <select
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
-            className="bg-transparent border-none text-lg font-bold text-slate-800 focus:ring-0 cursor-pointer outline-none p-0 w-full"
+            className="bg-transparent border-none text-sm font-bold text-slate-800 focus:ring-0 cursor-pointer outline-none p-0 pr-4"
           >
             {academicYears.map((year) => (
               <option key={year} value={year}>{year}</option>
@@ -195,7 +195,7 @@ export default function SetClassFees() {
       </motion.div>
 
       {/* Grid of Classes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {classes.map((cls) => {
           const hasFee = cls.feeStructure?.length > 0;
           const feePercentage = hasFee ? 100 : 0;
@@ -206,33 +206,33 @@ export default function SetClassFees() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-slate-500 hover:shadow-lg transition-all group"
+              className="bg-white rounded-xl p-5 shadow-sm border border-slate-400 hover:shadow-md transition-all group flex flex-col"
             >
-              <div className="flex justify-between items-start mb-6">
-                <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg ${hasFee ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white' : 'bg-gradient-to-br from-rose-100 to-amber-100 text-rose-500'}`}>
-                  <FaLayerGroup size={24} />
+              <div className="flex justify-between items-start mb-4">
+                <div className="h-10 w-10 rounded-lg flex items-center justify-center shadow-sm bg-slate-800 text-white">
+                  <FaLayerGroup size={16} />
                 </div>
                 {hasFee ? (
-                  <span className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
+                  <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">
                     <FaCheckCircle className="text-emerald-500" /> Configured
                   </span>
                 ) : (
-                  <span className="text-xs font-bold uppercase tracking-widest text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-100">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-100">
                     Setup Required
                   </span>
                 )}
               </div>
               
-              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{cls.className}</h3>
-              <p className="text-slate-500 text-xs font-medium mt-1 mb-6">{cls.sections?.length || 0} sections assigned</p>
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">{cls.className}</h3>
+              <p className="text-slate-500 text-[11px] font-medium mt-0.5 mb-4">{cls.sections?.length || 0} sections assigned</p>
               
               {/* Progress indicator */}
-              <div className="mb-6">
-                <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
+              <div className="mb-4">
+                <div className="flex justify-between text-[10px] font-medium text-slate-500 mb-1">
                   <span>Fee Setup</span>
                   <span>{feePercentage}%</span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                   <motion.div 
                     className={`h-full ${hasFee ? 'bg-emerald-500' : 'bg-amber-400'}`}
                     initial={{ width: 0 }}
@@ -242,19 +242,19 @@ export default function SetClassFees() {
                 </div>
               </div>
               
-              <div className="flex items-center justify-between pt-6 border-t border-slate-500">
+              <div className="flex items-center justify-between pt-4 mt-auto border-t border-slate-400">
                 <div>
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Annual Total</p>
-                  <p className="text-xl font-bold text-slate-900">₹{(cls.feeSettings?.totalAnnualFee || 0).toLocaleString()}</p>
+                  <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Annual Total</p>
+                  <p className="text-base font-bold text-slate-900">₹{(cls.feeSettings?.totalAnnualFee || 0).toLocaleString()}</p>
                 </div>
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleEdit(cls)}
-                  className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-colors"
+                  className="bg-slate-800 text-white hover:bg-slate-700 border px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors"
                   aria-label={`Edit ${cls.className} fees`}
                 >
-                  <FaEdit size={14} /> Edit
+                  <FaEdit size={12} /> Edit
                 </motion.button>
               </div>
             </motion.div>
@@ -277,7 +277,7 @@ export default function SetClassFees() {
               exit={{ scale: 0.95, opacity: 0 }}
               className="bg-white rounded-[3rem] shadow-2xl max-w-5xl w-full max-h-[92vh] overflow-hidden flex flex-col"
             >
-              <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+              <div className="p-8 border-b border-slate-400 flex justify-between items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                 <div>
                   <h3 className="text-2xl font-bold tracking-tight">Fee Setup: {selectedClass.className}</h3>
                   <p className="text-indigo-200 text-sm mt-1 font-medium">
@@ -317,7 +317,7 @@ export default function SetClassFees() {
                         key={idx}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="grid grid-cols-12 gap-4 p-6 bg-slate-50 rounded-2xl items-center border border-slate-500 hover:border-indigo-500 transition-all"
+                        className="grid grid-cols-12 gap-4 p-6 bg-slate-50 rounded-2xl items-center border border-slate-400 hover:border-indigo-500 transition-all"
                       >
                         <div className="col-span-5">
                           <label className="text-xs font-medium text-slate-600 mb-1 block">Fee Label</label>
@@ -326,7 +326,7 @@ export default function SetClassFees() {
                               type="text" 
                               value={row.headName} 
                               onChange={(e) => updateFeeRow(idx, "headName", e.target.value)} 
-                              className="w-full bg-white rounded-lg border border-slate-500 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
+                              className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
                               placeholder="Tuition Fee" 
                               required 
                             />
@@ -341,7 +341,7 @@ export default function SetClassFees() {
                             type="number" 
                             value={row.amount} 
                             onChange={(e) => updateFeeRow(idx, "amount", e.target.value)} 
-                            className="w-full bg-white rounded-lg border border-slate-500 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
+                            className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
                             required 
                             min="0"
                           />
@@ -351,7 +351,7 @@ export default function SetClassFees() {
                           <select 
                             value={row.frequency} 
                             onChange={(e) => updateFeeRow(idx, "frequency", e.target.value)} 
-                            className="w-full bg-white rounded-lg border border-slate-500 focus:border-indigo-700 outline-none py-3 px-4 font-medium text-slate-800"
+                            className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none py-3 px-4 font-medium text-slate-800"
                           >
                             {FREQUENCY_OPTIONS.map(opt => 
                               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -364,7 +364,7 @@ export default function SetClassFees() {
                             type="number" 
                             value={row.lateFee} 
                             onChange={(e) => updateFeeRow(idx, "lateFee", e.target.value)} 
-                            className="w-full bg-white rounded-lg border border-slate-500 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
+                            className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
                             min="0"
                           />
                         </div>
@@ -406,7 +406,7 @@ export default function SetClassFees() {
 
                 {/* Master Settings */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-500">
+                  <div className="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-400">
                     <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
                       <FaCalendarAlt className="text-indigo-500" /> Default Due Date
                     </label>
@@ -414,7 +414,7 @@ export default function SetClassFees() {
                       type="date" 
                       value={settingsForm.dueDate} 
                       onChange={(e) => setSettingsForm({...settingsForm, dueDate: e.target.value})} 
-                      className="w-full p-3 bg-white rounded-lg border border-slate-500 font-medium text-slate-800 shadow-sm focus:border-indigo-700 outline-none transition-all" 
+                      className="w-full p-3 bg-white rounded-lg border border-slate-400 font-medium text-slate-800 shadow-sm focus:border-indigo-700 outline-none transition-all" 
                     />
                     <p className="text-xs text-slate-500">Sets deadline for all generated installments</p>
                   </div>

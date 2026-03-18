@@ -321,15 +321,15 @@ export default function AdminAnnouncements() {
         </div> */}
 
         {/* Main Content */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-500 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 overflow-hidden">
           {/* Toolbar */}
-          <div className="border-b border-slate-500 p-6">
+          <div className="border-b border-slate-400 p-6">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="flex-1 max-w-2xl">
                 <div className="relative">
                   <FaSearch className="absolute left-4 top-3.5 text-slate-400" />
                   <input 
-                    className="w-full pl-12 pr-4 py-3 border border-slate-500 rounded-xl outline-none focus:border-indigo-700 transition-all"
+                    className="w-full pl-12 pr-4 py-3 border border-slate-400 rounded-xl outline-none focus:border-indigo-700 transition-all"
                     placeholder="Search announcements by title or content..."
                     value={filters.search}
                     onChange={(e) => setFilters({...filters, search: e.target.value})}
@@ -340,7 +340,7 @@ export default function AdminAnnouncements() {
               <div className="flex gap-3">
                 <button 
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`px-5 py-3 rounded-xl border border-slate-500 flex items-center gap-2 transition-all ${
+                  className={`px-5 py-3 rounded-xl border border-slate-400 flex items-center gap-2 transition-all ${
                     showFilters 
                       ? 'bg-amber-50 text-amber-700' 
                       : 'bg-white text-slate-700 hover:bg-slate-50'
@@ -367,12 +367,12 @@ export default function AdminAnnouncements() {
 
             {/* Advanced Filters */}
             {showFilters && (
-              <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-500 animate-slideDown">
+              <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-400 animate-slideDown">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Type</label>
                     <select 
-                      className="w-full px-4 py-2.5 border border-slate-500 rounded-lg outline-none focus:border-indigo-700"
+                      className="w-full px-4 py-2.5 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
                       value={filters.type}
                       onChange={(e) => setFilters({...filters, type: e.target.value})}
                     >
@@ -387,7 +387,7 @@ export default function AdminAnnouncements() {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Priority</label>
                     <select 
-                      className="w-full px-4 py-2.5 border border-slate-500 rounded-lg outline-none focus:border-indigo-700"
+                      className="w-full px-4 py-2.5 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
                       value={filters.priority}
                       onChange={(e) => setFilters({...filters, priority: e.target.value})}
                     >
@@ -401,7 +401,7 @@ export default function AdminAnnouncements() {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Status</label>
                     <select 
-                      className="w-full px-4 py-2.5 border border-slate-500 rounded-lg outline-none focus:border-indigo-700"
+                      className="w-full px-4 py-2.5 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
                       value={filters.isActive}
                       onChange={(e) => setFilters({...filters, isActive: e.target.value})}
                     >
@@ -414,7 +414,7 @@ export default function AdminAnnouncements() {
                   <div className="flex items-end">
                     <button 
                       onClick={handleReset}
-                      className="w-full px-4 py-2.5 bg-white border border-slate-500 text-slate-700 rounded-lg hover:bg-slate-50 transition-all"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-400 text-slate-700 rounded-lg hover:bg-slate-50 transition-all"
                     >
                       Clear Filters
                     </button>
@@ -449,7 +449,7 @@ export default function AdminAnnouncements() {
                       <input 
                         name="title" 
                         placeholder="Enter announcement title..."
-                        className="w-full px-4 py-3.5 border border-slate-500 rounded-xl font-semibold outline-none focus:border-indigo-700 transition-all"
+                        className="w-full px-4 py-3.5 border border-slate-400 rounded-xl font-semibold outline-none focus:border-indigo-700 transition-all"
                         required 
                         onChange={handleCreateChange}
                       />
@@ -460,7 +460,7 @@ export default function AdminAnnouncements() {
                       <textarea 
                         name="content" 
                         placeholder="Enter announcement details..."
-                        className="w-full px-4 py-3.5 border border-slate-500 rounded-xl h-48 resize-none outline-none focus:border-indigo-700 transition-all"
+                        className="w-full px-4 py-3.5 border border-slate-400 rounded-xl h-48 resize-none outline-none focus:border-indigo-700 transition-all"
                         required 
                         onChange={handleCreateChange}
                       />
@@ -473,7 +473,7 @@ export default function AdminAnnouncements() {
                       <label className="block text-sm font-medium text-slate-700 mb-2">Type</label>
                       <select 
                         name="type"
-                        className="w-full px-4 py-3 border border-slate-500 rounded-xl outline-none focus:border-indigo-700"
+                        className="w-full px-4 py-3 border border-slate-400 rounded-xl outline-none focus:border-indigo-700"
                         onChange={handleCreateChange}
                       >
                         <option value="GENERAL">General Announcement</option>
@@ -492,7 +492,7 @@ export default function AdminAnnouncements() {
                             className={`flex items-center justify-center p-3 rounded-lg border cursor-pointer transition-all ${
                               createForm.priority === level 
                                 ? 'bg-amber-50 border-amber-500 text-amber-700 font-semibold' 
-                                : 'bg-white border-slate-500 hover:bg-slate-50'
+                                : 'bg-white border-slate-400 hover:bg-slate-50'
                             }`}
                           >
                             <input 
@@ -509,7 +509,7 @@ export default function AdminAnnouncements() {
                       </div>
                     </div>
 
-                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-500">
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-400">
                       <label className="flex items-center gap-3 cursor-pointer">
                         <input 
                           type="checkbox" 
@@ -526,7 +526,7 @@ export default function AdminAnnouncements() {
                 </div>
 
                 {/* Audience Selection */}
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-500">
+                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-400">
                   <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                     <FaUsers className="text-indigo-600" /> Target Audience
                   </h3>
@@ -536,7 +536,7 @@ export default function AdminAnnouncements() {
                       <h4 className="font-semibold text-slate-700 mb-3">User Groups</h4>
                       <div className="space-y-3">
                         {['students', 'teachers', 'parents'].map(role => (
-                          <label key={role} className="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-500 hover:border-indigo-500 transition-all">
+                          <label key={role} className="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-400 hover:border-indigo-500 transition-all">
                             <input 
                               type="checkbox" 
                               name={`targetAudience.${role}`} 
@@ -554,7 +554,7 @@ export default function AdminAnnouncements() {
                       <h4 className="font-semibold text-slate-700 mb-3 flex items-center gap-2">
                         <FaGraduationCap className="text-indigo-600" /> Specific Classes
                       </h4>
-                      <div className="max-h-48 overflow-y-auto space-y-2 border border-slate-500 bg-white p-4 rounded-xl">
+                      <div className="max-h-48 overflow-y-auto space-y-2 border border-slate-400 bg-white p-4 rounded-xl">
                         {classes.map(cls => (
                           <div key={cls.id} className="pb-2 last:pb-0">
                             <label className="flex gap-3 items-center text-sm font-medium cursor-pointer p-2 rounded hover:bg-slate-50">
@@ -573,7 +573,7 @@ export default function AdminAnnouncements() {
                 </div>
 
                 {/* File Upload */}
-                <div className="border-2 border-dashed border-slate-500 p-8 rounded-2xl text-center hover:border-indigo-400 hover:bg-indigo-50 transition-all">
+                <div className="border-2 border-dashed border-slate-400 p-8 rounded-2xl text-center hover:border-indigo-400 hover:bg-indigo-50 transition-all">
                   <label className="cursor-pointer">
                     <FaPaperclip className="text-4xl text-slate-400 mx-auto mb-3 group-hover:text-indigo-500" />
                     <p className="text-slate-600 font-medium mb-1">Drop files here or click to upload</p>
@@ -604,11 +604,11 @@ export default function AdminAnnouncements() {
                 </div>
 
                 {/* Form Actions */}
-                <div className="flex justify-end gap-4 pt-6 border-t border-slate-500">
+                <div className="flex justify-end gap-4 pt-6 border-t border-slate-400">
                   <button 
                     type="button" 
                     onClick={() => setIsCreating(false)}
-                    className="px-8 py-3 bg-white border border-slate-500 text-slate-700 rounded-xl hover:bg-slate-50 transition-all"
+                    className="px-8 py-3 bg-white border border-slate-400 text-slate-700 rounded-xl hover:bg-slate-50 transition-all"
                   >
                     Cancel
                   </button>
@@ -630,7 +630,7 @@ export default function AdminAnnouncements() {
             </div>
           ) : (
             /* Announcements List */
-            <div className="divide-y divide-slate-500">
+            <div className="divide-y divide-slate-400">
               {loading ? (
                 <div className="p-16 text-center">
                   <FaSpinner className="animate-spin inline text-3xl text-indigo-600 mb-4" />
@@ -701,7 +701,7 @@ export default function AdminAnnouncements() {
 
                         {/* Attachments */}
                         {expandedAnnouncement === ann._id && ann.attachments?.length > 0 && (
-                          <div className="mt-4 p-4 bg-white rounded-xl border border-slate-500 shadow-sm animate-fadeIn">
+                          <div className="mt-4 p-4 bg-white rounded-xl border border-slate-400 shadow-sm animate-fadeIn">
                             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                               <FaPaperclip /> Attachments ({ann.attachments.length})
                             </h4>
@@ -719,7 +719,7 @@ export default function AdminAnnouncements() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="flex items-center gap-2 p-3 bg-white border border-slate-500 rounded-lg hover:border-indigo-500 hover:shadow-sm transition-all group/item"
+                                    className="flex items-center gap-2 p-3 bg-white border border-slate-400 rounded-lg hover:border-indigo-500 hover:shadow-sm transition-all group/item"
                                   >
                                     <div className={`p-2 rounded-lg ${
                                       file.fileType === 'image' 
@@ -751,7 +751,7 @@ export default function AdminAnnouncements() {
                           className={`p-3 rounded-xl transition-all ${
                             expandedAnnouncement === ann._id 
                               ? 'bg-slate-900 text-white' 
-                              : 'bg-white border border-slate-500 text-slate-700 hover:bg-slate-50'
+                              : 'bg-white border border-slate-400 text-slate-700 hover:bg-slate-50'
                           }`}
                           title={expandedAnnouncement === ann._id ? "Collapse" : "Expand"}
                         >
@@ -780,7 +780,7 @@ export default function AdminAnnouncements() {
 
           {/* Pagination */}
           {!isCreating && totalPages > 1 && (
-            <div className="border-t border-slate-500 p-6">
+            <div className="border-t border-slate-400 p-6">
               <div className="flex justify-center gap-2">
                 <button 
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
@@ -819,7 +819,7 @@ export default function AdminAnnouncements() {
         {/* Delete Confirmation Modal */}
         {deleteConfirmationId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-500 transform transition-all scale-100">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-400 transform transition-all scale-100">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FaTrash className="text-2xl text-red-600" />

@@ -35,13 +35,13 @@ console.log("Payrolls:", res.data);
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen bg-blue-50 p-4">
       <BackButton />
       <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
         Teacher Payroll History
       </h2>
 
-      <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
+      <div className="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-400">
         <table className="w-full text-sm">
           <thead className="bg-slate-100">
             <tr>
@@ -72,7 +72,7 @@ console.log("Payrolls:", res.data);
             )}
 
             {payrolls.map((p) => (
-              <tr key={p._id} className="border-t">
+              <tr key={p._id} className="border-t border-slate-400">
                 <td className="p-4 font-bold">
                   {new Date(p.year, p.month - 1).toLocaleString("en", {
                     month: "long",

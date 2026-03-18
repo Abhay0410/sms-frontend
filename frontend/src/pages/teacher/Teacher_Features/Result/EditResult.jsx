@@ -251,14 +251,14 @@ setResult(r);
 
   if (loading || !result) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-blue-50">
         <FaSpinner className="h-12 w-12 animate-spin text-purple-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-blue-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <BackButton to="/teacher/view-results" />
         <div className="mt-6 mb-6">
@@ -277,7 +277,7 @@ setResult(r);
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Exam & student (readonly) */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md border border-slate-400 p-6">
             <h2 className="text-xl font-bold text-slate-900 mb-4">
               Exam & Student Details
             </h2>
@@ -290,7 +290,7 @@ setResult(r);
                   type="text"
                   value={formData.examType}
                   readOnly
-                  className="w-full rounded-lg border-2 border-slate-200 p-3 bg-slate-100 text-slate-700"
+                  className="w-full rounded-lg border border-slate-400 p-3 bg-slate-100 text-slate-700"
                 />
               </div>
               <div>
@@ -304,7 +304,7 @@ setResult(r);
                     setFormData({ ...formData, examName: e.target.value })
                   }
                   disabled={!isEditable}
-                  className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none disabled:bg-slate-100 disabled:text-slate-600"
+                  className="w-full rounded-lg border border-slate-400 p-3 focus:border-purple-500 outline-none disabled:bg-slate-100 disabled:text-slate-600"
                   placeholder="e.g., Final Exam 2024-25"
                 />
               </div>
@@ -316,7 +316,7 @@ setResult(r);
                   type="number"
                   value={formData.examYear}
                   readOnly
-                  className="w-full rounded-lg border-2 border-slate-200 p-3 bg-slate-100 text-slate-700"
+                  className="w-full rounded-lg border border-slate-400 p-3 bg-slate-100 text-slate-700"
                 />
               </div>
               <div>
@@ -327,7 +327,7 @@ setResult(r);
                   type="text"
                   value={`${result.className} - ${result.section}`}
                   readOnly
-                  className="w-full rounded-lg border-2 border-slate-200 p-3 bg-slate-100 text-slate-700"
+                  className="w-full rounded-lg border border-slate-400 p-3 bg-slate-100 text-slate-700"
                 />
               </div>
               <div>
@@ -338,7 +338,7 @@ setResult(r);
                   type="text"
                   value={`${result.rollNumber} - ${result.studentName} (${result.studentID})`}
                   readOnly
-                  className="w-full rounded-lg border-2 border-slate-200 p-3 bg-slate-100 text-slate-700"
+                  className="w-full rounded-lg border border-slate-400 p-3 bg-slate-100 text-slate-700"
                 />
               </div>
             </div>
@@ -346,7 +346,7 @@ setResult(r);
 
           {/* Marks table */}
           {subjectMarks.length > 0 && (
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white rounded-xl shadow-md border border-slate-400 p-6">
               <h2 className="text-xl font-bold text-slate-900 mb-4">
                 Edit Marks
               </h2>
@@ -415,7 +415,7 @@ setResult(r);
                                 )
                               }
                               disabled={!isEditable || subject.isAbsent}
-                              className="w-full rounded border-2 border-slate-200 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
+                              className="w-full rounded border border-slate-400 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
                               placeholder="Max"
                             />
                             <input
@@ -430,7 +430,7 @@ setResult(r);
                               }
                               max={subject.theoryMaxMarks}
                               disabled={!isEditable || subject.isAbsent}
-                              className="w-full rounded border-2 border-slate-200 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
+                              className="w-full rounded border border-slate-400 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
                               placeholder="Obt"
                             />
                           </div>
@@ -451,7 +451,7 @@ setResult(r);
                                   )
                                 }
                                 disabled={!isEditable || subject.isAbsent}
-                                className="w-full rounded border-2 border-slate-200 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
+                                className="w-full rounded border border-slate-400 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
                                 placeholder="Max"
                               />
                               <input
@@ -466,7 +466,7 @@ setResult(r);
                                 }
                                 max={subject.practicalMaxMarks}
                                 disabled={!isEditable || subject.isAbsent}
-                                className="w-full rounded border-2 border-slate-200 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
+                                className="w-full rounded border border-slate-400 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
                                 placeholder="Obt"
                               />
                             </div>
@@ -522,7 +522,7 @@ setResult(r);
                                 )
                               }
                               disabled={!isEditable || subject.isAbsent}
-                              className="w-full rounded border-2 border-slate-200 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
+                              className="w-full rounded border border-slate-400 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
                               placeholder="Max"
                             />
                             <input
@@ -537,7 +537,7 @@ setResult(r);
                               }
                               max={subject.iaMaxMarks}
                               disabled={!isEditable || subject.isAbsent}
-                              className="w-full rounded border-2 border-slate-200 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
+                              className="w-full rounded border border-slate-400 p-2 text-center text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
                               placeholder="Obt"
                             />
                           </div>
@@ -558,7 +558,7 @@ setResult(r);
                             max={5}
                             min={0}
                             disabled={!isEditable || subject.isAbsent}
-                            className="w-16 rounded border-2 border-slate-200 p-2 text-center focus:border-purple-500 outline-none disabled:bg-slate-100"
+                            className="w-16 rounded border border-slate-400 p-2 text-center focus:border-purple-500 outline-none disabled:bg-slate-100"
                           />
                         </td>
 
@@ -581,7 +581,7 @@ setResult(r);
                               )
                             }
                             disabled={!isEditable || subject.isAbsent}
-                            className="w-full rounded border-2 border-slate-200 p-2 text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
+                            className="w-full rounded border border-slate-400 p-2 text-sm focus:border-purple-500 outline-none disabled:bg-slate-100"
                           >
                             <option value="PASS">PASS</option>
                             <option value="FAIL">FAIL</option>
@@ -614,7 +614,7 @@ setResult(r);
           )}
 
           {/* Remarks only */}
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-xl shadow-md border border-slate-400 p-6">
             <h2 className="text-xl font-bold text-slate-900 mb-4">Remarks</h2>
             <textarea
               value={formData.remarks}
@@ -622,7 +622,7 @@ setResult(r);
                 setFormData({ ...formData, remarks: e.target.value })
               }
               disabled={!isEditable}
-              className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none resize-none disabled:bg-slate-100"
+              className="w-full rounded-lg border border-slate-400 p-3 focus:border-purple-500 outline-none resize-none disabled:bg-slate-100"
               rows="3"
               placeholder="Optional remarks about student performance"
             />

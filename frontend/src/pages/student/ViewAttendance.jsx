@@ -175,7 +175,7 @@ export default function ViewAttendance() {
         {stats && (
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Overall Percentage */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600">
@@ -198,7 +198,7 @@ export default function ViewAttendance() {
             </div>
 
             {/* Present Days */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600">Present</p>
@@ -219,7 +219,7 @@ export default function ViewAttendance() {
             </div>
 
             {/* Absent Days */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600">Absent</p>
@@ -240,7 +240,7 @@ export default function ViewAttendance() {
             </div>
 
             {/* Late Days */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600">Late</p>
@@ -263,7 +263,7 @@ export default function ViewAttendance() {
         )}
 
         {/* Filters Section */}
-        <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+        <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
           <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
             <FaFilter className="text-blue-600" />
             Filter Attendance
@@ -278,7 +278,7 @@ export default function ViewAttendance() {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="rounded-xl border border-slate-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                className="rounded-xl border border-slate-400 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
               >
                 <option value="all">All Records</option>
                 <option value="month">By Month</option>
@@ -296,7 +296,7 @@ export default function ViewAttendance() {
                   <select
                     value={month}
                     onChange={(e) => setMonth(parseInt(e.target.value))}
-                    className="rounded-xl border border-slate-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                    className="rounded-xl border border-slate-400 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   >
                     {Array.from({ length: 12 }, (_, i) => (
                       <option key={i + 1} value={i + 1}>
@@ -314,7 +314,7 @@ export default function ViewAttendance() {
                   <select
                     value={year}
                     onChange={(e) => setYear(parseInt(e.target.value))}
-                    className="rounded-xl border border-slate-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                    className="rounded-xl border border-slate-400 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   >
                     {Array.from({ length: 5 }, (_, i) => {
                       const yearOption = new Date().getFullYear() - 2 + i;
@@ -340,7 +340,7 @@ export default function ViewAttendance() {
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="rounded-xl border border-slate-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                    className="rounded-xl border border-slate-400 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
                 </div>
                 <div>
@@ -351,7 +351,7 @@ export default function ViewAttendance() {
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="rounded-xl border border-slate-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                    className="rounded-xl border border-slate-400 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
                 </div>
                 <button
@@ -366,7 +366,7 @@ export default function ViewAttendance() {
         </div>
 
         {/* Attendance Records */}
-        <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+        <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
               <FaChartPie className="text-blue-600" />
@@ -392,7 +392,7 @@ export default function ViewAttendance() {
               {attendance.map((record, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-blue-300 transition-all duration-300"
+                  className="flex items-center justify-between p-4 rounded-xl border border-slate-400 hover:border-blue-300 transition-all duration-300"
                 >
                   <div className="flex items-center gap-4">
                     <div

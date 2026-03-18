@@ -323,7 +323,7 @@ export default function TeacherProfileManage() {
           {/* Left Column - Photo & Password */}
           <div className="lg:col-span-1 space-y-6">
             {/* Photo Upload Card */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-400">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <svg
                   className="w-5 h-5 text-indigo-600"
@@ -374,14 +374,14 @@ export default function TeacherProfileManage() {
                   className="hidden"
                   disabled={uploadingPhoto || !isEditing}
                 />
-                <div className="w-full text-center py-2 px-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors text-sm font-semibold bg-gray-50 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
+                <div className="w-full text-center py-2 px-4 rounded-lg border-2 border-dashed border-slate-400 hover:border-indigo-400 transition-colors text-sm font-semibold bg-gray-50 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
                   {uploadingPhoto ? "Uploading..." : "Choose New Photo"}
                 </div>
               </label>
             </div>
 
             {/* Change Password Card */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-400">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <svg
                   className="w-5 h-5 text-gray-700"
@@ -424,7 +424,7 @@ export default function TeacherProfileManage() {
                       onChange={onChangePw}
                       placeholder="Enter current password"
                       disabled={!isEditing}
-                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                      className="w-full rounded-lg border border-slate-400 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     />
 
                     <button
@@ -464,7 +464,7 @@ export default function TeacherProfileManage() {
                       onChange={onChangePw}
                       placeholder="Enter new password"
                       disabled={!isEditing}
-                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                      className="w-full rounded-lg border border-slate-400 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     />
 
                     <button
@@ -504,7 +504,7 @@ export default function TeacherProfileManage() {
                       onChange={onChangePw}
                       disabled={!isEditing}
                       placeholder="Confirm new password"
-                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                      className="w-full rounded-lg border border-slate-400 p-3 pr-10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     />
 
                     <button
@@ -553,7 +553,7 @@ export default function TeacherProfileManage() {
 
           {/* Right Column - Personal Information */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-400">
               <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
                 <svg
                   className="w-5 h-5 text-indigo-600"
@@ -577,7 +577,7 @@ export default function TeacherProfileManage() {
                     Full Name
                   </label>
                   <input
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    className="w-full rounded-lg border border-slate-400 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     name="name"
                     value={form.name}
                     onChange={onChange}
@@ -613,7 +613,7 @@ export default function TeacherProfileManage() {
                   inputMode="numeric"
                   placeholder="Enter 10 digit phone number"
                   disabled={!isEditing}
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                  className="w-full rounded-lg border border-slate-400 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                 />
 
                 <div>
@@ -621,7 +621,7 @@ export default function TeacherProfileManage() {
                     Department
                   </label>
                   <input
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    className="w-full rounded-lg border border-slate-400 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     name="department"
                     value={form.department}
                     onChange={onChange}
@@ -635,7 +635,7 @@ export default function TeacherProfileManage() {
                     Gender
                   </label>
                   <select
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    className="w-full rounded-lg border border-slate-400 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     name="gender"
                     value={form.gender}
                     onChange={onChange}
@@ -653,7 +653,7 @@ export default function TeacherProfileManage() {
                     Date of Birth
                   </label>
                   <input
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    className="w-full rounded-lg border border-slate-400 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     type="date"
                     name="dob"
                     value={form.dob}
@@ -667,7 +667,7 @@ export default function TeacherProfileManage() {
                     Subjects
                   </label>
                   <input
-                    className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                    className="w-full rounded-lg border border-slate-400 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                     name="subjects"
                     value={form.subjects}
                     onChange={onChange}
@@ -682,7 +682,7 @@ export default function TeacherProfileManage() {
                   Address
                 </label>
                 <textarea
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
+                  className="w-full rounded-lg border border-slate-400 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                   name="address"
                   value={form.address}
                   onChange={onChange}

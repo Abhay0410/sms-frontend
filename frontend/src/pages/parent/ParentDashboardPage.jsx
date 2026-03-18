@@ -18,7 +18,7 @@ export default function ParentDashboardPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <div key={index} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-5">
+          <div key={index} className="bg-white p-6 rounded-2xl border border-slate-400 shadow-sm flex items-center gap-5">
             <div className={`${stat.color} p-4 rounded-2xl text-white shadow-md`}>
               {React.cloneElement(stat.icon, { size: 24 })}
             </div>
@@ -30,7 +30,7 @@ export default function ParentDashboardPage() {
         ))}
       </div>
 
-      <div className="bg-white p-10 rounded-[3rem] border border-slate-100 text-center italic text-slate-400">
+      <div className="bg-white p-10 rounded-[3rem] border border-slate-400 text-center italic text-slate-400">
         Monitoring your children's progress. Use the sidebar to switch between modules.
       </div>
     </div>

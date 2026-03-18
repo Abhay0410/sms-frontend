@@ -132,7 +132,7 @@ export default function MyClasses() {
         {/* Main Class Information */}
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Class Details Card */}
-          <div className="lg:col-span-2 rounded-2xl bg-white p-8 shadow-lg border border-gray-100">
+          <div className="lg:col-span-2 rounded-2xl bg-white p-8 shadow-lg border border-slate-400">
             <div className="flex items-center gap-3 mb-6">
               <div className="rounded-xl bg-blue-100 p-3">
                 <FaChalkboard className="h-6 w-6 text-blue-600" />
@@ -191,7 +191,7 @@ export default function MyClasses() {
           {/* Status & Quick Info Card */}
           <div className="space-y-6">
             {/* Status Card */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-gray-100">
+            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Status</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -254,7 +254,7 @@ export default function MyClasses() {
 
         {/* Parent Information (if available) */}
         {studentInfo.parentId && (
-          <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg border border-gray-100">
+          <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Parent/Guardian</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>

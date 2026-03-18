@@ -99,26 +99,26 @@ export default function ViewChildResults() {
           </div>
           <input 
             placeholder="search exams..."
-            className="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm outline-none focus:ring-2 focus:ring-indigo-200 lowercase"
+            className="bg-white border border-slate-400 rounded-xl px-4 py-3 shadow-sm outline-none focus:ring-2 focus:ring-indigo-200 lowercase"
             onChange={(e) => setFilters({...filters, search: e.target.value})}
           />
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-400 shadow-2xl overflow-hidden">
           <div className="bg-slate-900 px-8 py-5 flex items-center justify-between text-white tracking-[0.3em] text-[10px]">
              <h3>PUBLISHED RECORDS</h3>
              <FaAward className="text-amber-400" />
           </div>
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50 text-slate-400 border-b border-slate-100">
+              <tr className="bg-slate-50 text-slate-400 border-b border-slate-400">
                 <th className="px-8 py-6 tracking-widest uppercase font-black">Exam Category</th>
                 <th className="px-8 py-6 text-center tracking-widest uppercase font-black">Efficiency</th>
                 <th className="px-8 py-6 text-center tracking-widest uppercase font-black">Grade</th>
                 <th className="px-8 py-6 text-right tracking-widest uppercase font-black">Download</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50 font-bold">
+            <tbody className="divide-y divide-slate-400 font-bold">
               {filteredResults.length === 0 ? (
                 <tr><td colSpan="4" className="py-20 text-center text-slate-300">No published records found</td></tr>
               ) : (

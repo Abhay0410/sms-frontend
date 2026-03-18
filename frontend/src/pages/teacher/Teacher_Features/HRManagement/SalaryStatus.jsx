@@ -134,13 +134,13 @@ export default function SalaryStatus() {
       case 'PAID': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
       case 'PROCESSED': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'PENDING': return 'bg-amber-100 text-amber-800 border-amber-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-gray-100 text-gray-800 border-slate-400';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
+      <div className="min-h-screen bg-blue-50 p-4">
         <div className="animate-pulse space-y-6">
           <div className="h-32 bg-slate-200 rounded-3xl"></div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -157,7 +157,7 @@ export default function SalaryStatus() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 ">
+    <div className="min-h-screen bg-blue-50 p-4">
       {/* Header */}
       <div className="max-w-7xl mx-auto">
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12 text-white shadow-2xl mb-8 relative overflow-hidden">
@@ -183,7 +183,7 @@ export default function SalaryStatus() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-400">
             <div className="flex items-center gap-4">
               <div className="bg-emerald-100 p-3 rounded-xl">
                 <FaRupeeSign className="text-emerald-600 text-xl" />
@@ -195,7 +195,7 @@ export default function SalaryStatus() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-400">
             <div className="flex items-center gap-4">
               <div className="bg-blue-100 p-3 rounded-xl">
                 <FaCalendarAlt className="text-blue-600 text-xl" />
@@ -207,7 +207,7 @@ export default function SalaryStatus() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-400">
             <div className="flex items-center gap-4">
               <div className="bg-emerald-100 p-3 rounded-xl">
                 <FaChartLine className="text-emerald-600 text-xl" />
@@ -219,7 +219,7 @@ export default function SalaryStatus() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-400">
             <div className="flex items-center gap-4">
               <div className="bg-amber-100 p-3 rounded-xl">
                 <FaFilter className="text-amber-600 text-xl" />
@@ -233,7 +233,7 @@ export default function SalaryStatus() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 mb-8">
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-400 mb-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="flex items-center gap-4">
               <FaFilter className="text-slate-400" />
@@ -245,7 +245,7 @@ export default function SalaryStatus() {
                 <select 
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 font-medium text-slate-700"
+                  className="bg-slate-50 border border-slate-400 rounded-lg px-4 py-2 font-medium text-slate-700"
                 >
                   {[...new Set(salaries.map(s => s.year))].sort((a,b) => b-a).map(year => (
                     <option key={year} value={year}>{year}</option>
@@ -258,7 +258,7 @@ export default function SalaryStatus() {
                 <select 
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 font-medium text-slate-700"
+                  className="bg-slate-50 border border-slate-400 rounded-lg px-4 py-2 font-medium text-slate-700"
                 >
                   <option value="ALL">All Status</option>
                   <option value="PAID">Paid</option>
@@ -273,7 +273,7 @@ export default function SalaryStatus() {
         {/* Salary Slips List */}
         <div className="space-y-6">
           {filteredSalaries.length === 0 ? (
-            <div className="bg-white rounded-2xl p-16 text-center border-2 border-dashed border-slate-200 shadow-sm">
+            <div className="bg-white rounded-2xl p-16 text-center border-2 border-dashed border-slate-400 shadow-sm">
               <FaHistory className="mx-auto text-slate-300 text-5xl mb-6" />
               <h3 className="text-2xl font-bold text-slate-400 mb-2">No Records Found</h3>
               <p className="text-slate-400">No salary slips available for the selected filters</p>
@@ -282,7 +282,7 @@ export default function SalaryStatus() {
             filteredSalaries.map((item) => (
               <div 
                 key={item._id} 
-                className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
+                className="bg-white rounded-3xl shadow-lg border border-slate-400 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
                 onClick={() => handleViewDetails(item)}
               >
                 <div className="p-8">

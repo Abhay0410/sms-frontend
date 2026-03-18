@@ -130,14 +130,14 @@ export default function StudentResults() {
         </div>
 
         {/* Search & Filters */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-8 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-400 p-6 mb-8 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block">Exam Category</label>
               <select 
                 value={filters.examType} 
                 onChange={(e) => setFilters({ ...filters, examType: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 p-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50"
+                className="w-full rounded-xl border border-slate-400 p-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-slate-50"
               >
                 <option value="">All Examinations</option>
                 <option value="FINAL">Final Examination</option>
@@ -154,7 +154,7 @@ export default function StudentResults() {
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                   placeholder="Exam title..."
-                  className="w-full rounded-xl border border-slate-200 p-3 pl-11 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"
+                  className="w-full rounded-xl border border-slate-400 p-3 pl-11 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50"
                 />
               </div>
             </div>
@@ -170,8 +170,8 @@ export default function StudentResults() {
         </div>
 
         {/* Results Table */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xl">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+        <div className="bg-white rounded-2xl border border-slate-400 overflow-hidden shadow-xl">
+          <div className="p-6 border-b border-slate-400 flex items-center justify-between">
             <h3 className="text-lg font-bold text-slate-800 uppercase tracking-tight">Records Found: {filteredResults.length}</h3>
           </div>
           <div className="overflow-x-auto">
@@ -186,7 +186,7 @@ export default function StudentResults() {
                   <th className="px-6 py-5 text-xs font-black uppercase tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-400">
                 {filteredResults.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="px-6 py-20 text-center text-slate-400 font-bold italic">

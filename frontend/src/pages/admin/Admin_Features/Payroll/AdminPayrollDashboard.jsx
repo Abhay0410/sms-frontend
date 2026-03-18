@@ -198,8 +198,8 @@ export default function AdminPayrollDashboard() {
       </div> */}
 
       {/* 📋 Staff Status Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-500 overflow-hidden">
-        <div className="p-10 border-b border-slate-500 flex justify-between items-center bg-slate-50/50">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-400 overflow-hidden">
+        <div className="p-10 border-b border-slate-400 flex justify-between items-center bg-slate-50/50">
           <div>
             <h3 className="text-xl font-bold text-slate-800">Staff Payroll Directory</h3>
             <p className="text-slate-400 text-xs font-bold uppercase mt-1">Manage individual salary structures</p>
@@ -212,14 +212,14 @@ export default function AdminPayrollDashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-white text-slate-400 text-[10px] uppercase font-bold tracking-[0.2em]">
-              <tr className="border-b border-slate-500">
+              <tr className="border-b border-slate-400">
                 <th className="p-8">Member</th>
                 <th className="p-8">Structure</th>
                 <th className="p-8">Current Status</th>
                 <th className="p-8 text-right">Quick Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-500 font-bold">
+            <tbody className="divide-y divide-slate-400 font-bold">
               {summary.staffList.map(staff => (
                 <tr key={staff._id} className="hover:bg-slate-50/80 transition-all group">
                   <td className="p-8">

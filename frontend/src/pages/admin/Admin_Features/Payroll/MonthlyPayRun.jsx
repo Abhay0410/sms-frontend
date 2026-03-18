@@ -386,10 +386,10 @@ const handleDownloadPDF = async (slipId) => {
         <div>
           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Payroll Processing</h2>
           <div className="flex gap-4 mt-2">
-            <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} className="bg-white border border-slate-500 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500">
+            <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} className="bg-white border border-slate-400 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500">
               {monthNames.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
             </select>
-            <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="bg-white border border-slate-500 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500">
+            <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="bg-white border border-slate-400 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500">
               {[2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
@@ -425,9 +425,9 @@ const handleDownloadPDF = async (slipId) => {
         <h3 className="text-xs font-bold uppercase text-indigo-600 tracking-widest mb-4 flex items-center gap-2">
             <FaSpinner className="animate-pulse" /> Pending Generation ({stats.length})
         </h3>
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-500">
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-400">
             <table className="w-full text-left">
-            <thead className="bg-slate-900 text-white text-[10px] uppercase font-bold tracking-wider border-b border-slate-500">
+            <thead className="bg-slate-900 text-white text-[10px] uppercase font-bold tracking-wider border-b border-slate-400">
                 <tr>
                 <th className="p-6">Staff Details</th>
                 <th className="p-6 text-center">Attendance</th>
@@ -436,7 +436,7 @@ const handleDownloadPDF = async (slipId) => {
                 <th className="p-6 text-right">Action</th>
                 </tr>
             </thead>
-            <tbody className="divide-y divide-slate-500">
+            <tbody className="divide-y divide-slate-400">
                 {stats.map(row => (
                 <tr key={row.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="p-6">
@@ -449,7 +449,7 @@ const handleDownloadPDF = async (slipId) => {
                     <td className="p-6">
                         <input 
                             type="number" placeholder="Force Gross Amount" 
-                            className="w-full p-2.5 bg-white border border-slate-500 rounded-xl font-bold text-slate-800 outline-none focus:border-amber-500 text-center transition-all"
+                            className="w-full p-2.5 bg-white border border-slate-400 rounded-xl font-bold text-slate-800 outline-none focus:border-amber-500 text-center transition-all"
                             value={manualAmounts[row.id] || ""}
                             onChange={(e) => handleManualAmountChange(row.id, e.target.value)}
                         />
@@ -458,8 +458,8 @@ const handleDownloadPDF = async (slipId) => {
                         <div className="space-y-2">
                             {(extraEarnings[row.id] || []).map((ex, i) => (
                             <div key={i} className="flex gap-1 animate-in slide-in-from-left-2">
-                                <input type="number" placeholder="₹" className="w-16 bg-white border border-slate-500 outline-none focus:border-amber-500 rounded-lg p-1 text-xs font-bold" value={ex.amount} onChange={(e) => handleExtraFieldChange(row.id, i, "amount", e.target.value)} />
-                                <input type="text" placeholder="Reason" className="flex-1 bg-white border border-slate-500 outline-none focus:border-amber-500 rounded-lg p-1 text-[10px] italic" value={ex.remark} onChange={(e) => handleExtraFieldChange(row.id, i, "remark", e.target.value)} />
+                                <input type="number" placeholder="₹" className="w-16 bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-xs font-bold" value={ex.amount} onChange={(e) => handleExtraFieldChange(row.id, i, "amount", e.target.value)} />
+                                <input type="text" placeholder="Reason" className="flex-1 bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-[10px] italic" value={ex.remark} onChange={(e) => handleExtraFieldChange(row.id, i, "remark", e.target.value)} />
                             </div>
                             ))}
                             <button onClick={() => handleAddExtraRow(row.id)} className="text-[9px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-tighter transition-colors">+ Add Line Item</button>
@@ -483,13 +483,13 @@ const handleDownloadPDF = async (slipId) => {
       </section>
 
       {/* TABLE 2: PROCESSED SLIPS */}
-      <section className="bg-white rounded-2xl border border-slate-500 p-8 shadow-sm">
+      <section className="bg-white rounded-2xl border border-slate-400 p-8 shadow-sm">
         <h3 className="font-bold uppercase text-xs text-slate-500 mb-6 flex items-center gap-2 tracking-widest">
             <FaHistory className="text-slate-400" /> Processed Salary Slips ({processedSlips.length})
         </h3>
-        <div className="bg-white rounded-2xl overflow-hidden border border-slate-500 shadow-sm">
+        <div className="bg-white rounded-2xl overflow-hidden border border-slate-400 shadow-sm">
             <table className="w-full text-left">
-              <thead className="bg-slate-50 text-slate-400 text-[9px] uppercase font-bold tracking-widest border-b border-slate-500">
+              <thead className="bg-slate-50 text-slate-400 text-[9px] uppercase font-bold tracking-widest border-b border-slate-400">
                 <tr>
                     <th className="p-5">Employee</th>
                     <th className="p-5 text-center">Net Payout</th>
@@ -498,7 +498,7 @@ const handleDownloadPDF = async (slipId) => {
                     <th className="p-5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-500">
+              <tbody className="divide-y divide-slate-400">
                 {processedSlips.map(slip => (
                   <tr key={slip._id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="p-5">
@@ -536,17 +536,17 @@ const handleDownloadPDF = async (slipId) => {
 
       {/* SUMMARY CARD */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-500 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
           <div className="text-sm text-slate-500 font-semibold">Pending Staff</div>
           <div className="text-3xl font-bold text-indigo-600 mt-2">{stats.length}</div>
           <div className="text-xs text-slate-400 mt-1">Awaiting salary generation</div>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-500 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
           <div className="text-sm text-slate-500 font-semibold">Processed Slips</div>
           <div className="text-3xl font-bold text-emerald-600 mt-2">{processedSlips.length}</div>
           <div className="text-xs text-slate-400 mt-1">Successfully generated</div>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-500 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
           <div className="text-sm text-slate-500 font-semibold">Total Salary</div>
           <div className="text-3xl font-bold text-slate-800 mt-2">
             ₹{processedSlips.reduce((sum, slip) => sum + (slip.netSalary || 0), 0).toLocaleString('en-IN')}
@@ -558,7 +558,7 @@ const handleDownloadPDF = async (slipId) => {
       {/* ✅ SALARY SLIP MODAL */}
       {showModal && selectedSlipData && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-          <div className="bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-sm border border-slate-500" style={{ animation: 'slideUp 0.4s ease-out' }}>
+          <div className="bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-sm border border-slate-400" style={{ animation: 'slideUp 0.4s ease-out' }}>
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white flex justify-between items-center">
               <div>
@@ -629,7 +629,7 @@ const handleDownloadPDF = async (slipId) => {
                       <span className="text-slate-700">Special Allowance</span>
                       <span className="font-bold">₹{displayCurrency(selectedSlipData.slip.earnings.specialAllowance)}</span>
                     </div>
-                    <div className="flex justify-between pt-3 border-t border-slate-500 text-lg font-bold text-emerald-700">
+                    <div className="flex justify-between pt-3 border-t border-slate-400 text-lg font-bold text-emerald-700">
                       <span>Gross Salary</span>
                       <span>₹{displayCurrency(selectedSlipData.slip.grossSalary)}</span>
                     </div>
@@ -652,7 +652,7 @@ const handleDownloadPDF = async (slipId) => {
                       <span className="text-slate-700">Tax Deducted at Source (TDS)</span>
                       <span className="font-bold text-rose-600">-₹{displayCurrency(selectedSlipData.slip.deductions.tds)}</span>
                     </div>
-                    <div className="flex justify-between pt-3 border-t border-slate-500 text-lg font-bold text-rose-700">
+                    <div className="flex justify-between pt-3 border-t border-slate-400 text-lg font-bold text-rose-700">
                       <span>Total Deductions</span>
                       <span>-₹{displayCurrency(
                         (selectedSlipData.slip.deductions.epfEmployee || 0) +

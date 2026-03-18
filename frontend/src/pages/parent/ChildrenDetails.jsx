@@ -22,7 +22,6 @@ import {
   FaHashtag,
   FaChartBar, // ✅ NEW: Added for Results
 } from "react-icons/fa";
-import { useParams } from "react-router-dom";
 
 
 const API_URL =
@@ -35,7 +34,6 @@ export default function ChildrenDetails() {
   const [selectedChild, setSelectedChild] = useState(null);
   const [attendanceData, setAttendanceData] = useState(null);
   const [subjectsCount, setSubjectsCount] = useState(0);
-  const { schoolSlug } = useParams();
 
   const loadChildren = useCallback(async () => {
     try {
@@ -156,7 +154,7 @@ export default function ChildrenDetails() {
         </div>
 
         {children.length === 0 ? (
-          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-100">
+          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-400">
             <div className="mx-auto w-fit rounded-full bg-green-50 p-6">
               <FaUserGraduate className="h-16 w-16 text-green-400" />
             </div>
@@ -345,7 +343,7 @@ function ChildDetailView({
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Class Information */}
-          <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+          <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
             <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
               <FaChalkboard className="text-green-600" />
               Class Information
@@ -419,7 +417,7 @@ function ChildDetailView({
           </div>
 
           {/* Contact Information */}
-          <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+          <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
             <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
               <FaPhone className="text-green-600" />
               Contact Information
@@ -527,7 +525,7 @@ function ChildDetailView({
           )}
 
           {/* Quick Links */}
-          <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+          <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
             <h3 className="text-lg font-bold text-slate-900 mb-4">
               Quick Actions
             </h3>

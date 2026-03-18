@@ -56,13 +56,13 @@ export default function GetTeacherClassesAndSubjects() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 ">
+    <div className="min-h-screen bg-blue-50 p-4">
       <div className="mx-auto max-w-6xl">
         {/* <BackButton to="/teacher/teacher-dashboard" /> */}
         
         {/* Teacher Info Header */}
         {data.teacher && (
-          <div className=" mb-4 p-4 bg-white rounded-xl shadow-lg">
+          <div className=" mb-4 p-4 bg-white rounded-xl shadow-lg border border-slate-400">
             <h2 className="text-3xl font-bold text-slate-900 mb-1 tracking-tight">
               {data.teacher.name}
             </h2>
@@ -93,7 +93,7 @@ export default function GetTeacherClassesAndSubjects() {
         {/* Classes & Subjects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Classes Section - Shows BOTH Class Teacher AND Subject Teacher Classes */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-lg border border-slate-400 p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <span className="bg-blue-100 text-blue-600 p-2 rounded-lg">🏫</span>
               All My Classes
@@ -153,7 +153,7 @@ export default function GetTeacherClassesAndSubjects() {
           </div>
 
           {/* Subjects Section - Shows ALL Subjects Taught */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-lg border border-slate-400 p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <span className="bg-green-100 text-green-600 p-2 rounded-lg">📚</span>
               All Subjects I Teach
@@ -162,7 +162,7 @@ export default function GetTeacherClassesAndSubjects() {
             {data.subjects.length > 0 ? (
               <div className="space-y-3">
                 {data.subjects.map((subject, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div key={index} className="border border-slate-400 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
                       <div>
                         <h4 className="font-bold text-gray-900">{subject.subjectName}</h4>

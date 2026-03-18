@@ -200,7 +200,7 @@ const childPhotoUrl = selectedChild?.profilePicture
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 md:p-8">
         <div className="mx-auto max-w-4xl">
           <BackButton to="/parent/parent-dashboard" />
-          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-100">
+          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-400">
             <FaChild className="h-20 w-20 text-slate-300 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-slate-900">No Children Found</h3>
             <p className="mt-3 text-slate-600">
@@ -277,7 +277,7 @@ const childPhotoUrl = selectedChild?.profilePicture
         {/* Stats Cards */}
         {stats && (
           <div className="mt-8 grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="rounded-2xl bg-white p-6 shadow-md border border-slate-100">
+            <div className="rounded-2xl bg-white p-6 shadow-md border border-slate-400">
               <div className="flex items-center gap-3">
                 <FaCalendarAlt className="h-8 w-8 text-slate-600" />
                 <div>
@@ -340,7 +340,7 @@ const childPhotoUrl = selectedChild?.profilePicture
         )}
 
         {/* Filters */}
-        <div className="mt-8 rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+        <div className="mt-8 rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
           <div className="flex items-center gap-2 mb-4">
             <FaFilter className="text-green-600" />
             <h3 className="text-lg font-bold text-slate-900">
@@ -356,7 +356,7 @@ const childPhotoUrl = selectedChild?.profilePicture
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="w-full rounded-xl border-2 border-slate-200 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
+                className="w-full rounded-xl border-2 border-slate-400 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
               >
                 <option value="all">All Records</option>
                 <option value="month">By Month</option>
@@ -373,7 +373,7 @@ const childPhotoUrl = selectedChild?.profilePicture
                   <select
                     value={month}
                     onChange={(e) => setMonth(Number(e.target.value))}
-                    className="w-full rounded-xl border-2 border-slate-200 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
+                    className="w-full rounded-xl border-2 border-slate-400 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
                   >
                     {[...Array(12)].map((_, i) => (
                       <option key={i + 1} value={i + 1}>
@@ -392,7 +392,7 @@ const childPhotoUrl = selectedChild?.profilePicture
                   <select
                     value={year}
                     onChange={(e) => setYear(Number(e.target.value))}
-                    className="w-full rounded-xl border-2 border-slate-200 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
+                    className="w-full rounded-xl border-2 border-slate-400 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
                   >
                     {[2023, 2024, 2025, 2026].map((y) => (
                       <option key={y} value={y}>
@@ -414,7 +414,7 @@ const childPhotoUrl = selectedChild?.profilePicture
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full rounded-xl border-2 border-slate-200 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
+                    className="w-full rounded-xl border-2 border-slate-400 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
                   />
                 </div>
 
@@ -426,7 +426,7 @@ const childPhotoUrl = selectedChild?.profilePicture
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full rounded-xl border-2 border-slate-200 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
+                    className="w-full rounded-xl border-2 border-slate-400 bg-white p-3 font-medium focus:border-green-600 focus:outline-none"
                   />
                 </div>
 
@@ -444,8 +444,8 @@ const childPhotoUrl = selectedChild?.profilePicture
         </div>
 
         {/* Attendance Records */}
-        <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-100 overflow-hidden">
-          <div className="p-6 border-b border-slate-100">
+        <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-400 overflow-hidden">
+          <div className="p-6 border-b border-slate-400">
             <h3 className="text-xl font-bold text-slate-900">
               Attendance Records ({attendance.length})
             </h3>
@@ -459,7 +459,7 @@ const childPhotoUrl = selectedChild?.profilePicture
           ) : attendance.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 border-b border-slate-200">
+                <thead className="bg-slate-50 border-b border-slate-400">
                   <tr>
                     <th className="p-4 text-left text-sm font-semibold text-slate-700">
                       Date
@@ -479,7 +479,7 @@ const childPhotoUrl = selectedChild?.profilePicture
                   {attendance.map((record, idx) => (
                     <tr
                       key={idx}
-                      className="border-b border-slate-100 hover:bg-slate-50"
+                      className="border-b border-slate-400 hover:bg-slate-50"
                     >
                       <td className="p-4">
                         <div className="flex items-center gap-2">

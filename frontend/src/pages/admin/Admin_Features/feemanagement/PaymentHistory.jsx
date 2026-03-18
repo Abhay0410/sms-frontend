@@ -240,7 +240,7 @@ export default function PaymentHistory() {
       case "IMPS":
         return "border-l-4 border-indigo-500";
       default:
-        return "border-l-4 border-slate-500";
+        return "border-l-4 border-slate-400";
     }
   };
 
@@ -287,7 +287,7 @@ export default function PaymentHistory() {
   return (
     <div className="space-y-8 animate-in fade-in duration-700 p-4">
       {/* Header */}
-      <div className="bg-blue-50 p-8 rounded-2xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-blue-50 p-8 rounded-2xl border-slate-400 border shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-5">
           <div className="h-16 w-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl">
             <FaReceipt />
@@ -339,7 +339,7 @@ export default function PaymentHistory() {
       </div> */}
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-500 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
         <div className="flex items-center gap-3 mb-4">
           <FaFilter className="text-indigo-600" />
           <h3 className="text-lg font-bold">Filters</h3>
@@ -354,7 +354,7 @@ export default function PaymentHistory() {
               placeholder="Search by student name, ID, receipt..."
               value={filters.search}
               onChange={(e) => handleFilterChange("search", e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-500 rounded-xl focus:outline-none focus:border-indigo-700"
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-400 rounded-xl focus:outline-none focus:border-indigo-700"
             />
           </div>
 
@@ -362,7 +362,7 @@ export default function PaymentHistory() {
           <select
             value={filters.academicYear}
             onChange={(e) => handleFilterChange("academicYear", e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-500 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-400 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
           >
             <option value="">All Academic Years</option>
             {academicYears.map((year) => (
@@ -374,7 +374,7 @@ export default function PaymentHistory() {
           <select
             value={filters.className}
             onChange={(e) => handleFilterChange("className", e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-500 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-400 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
           >
             <option value="">All Classes</option>
             {classes.map((className) => (
@@ -386,7 +386,7 @@ export default function PaymentHistory() {
           <select
             value={filters.status}
             onChange={(e) => handleFilterChange("status", e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-500 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-400 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
           >
             <option value="">All Status</option>
             <option value="PAID">Paid</option>
@@ -397,7 +397,7 @@ export default function PaymentHistory() {
 
         {/* Month Filter and Action Buttons */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6">
-          <div className="flex items-center gap-3 bg-slate-50 border border-slate-500  p-4 rounded-2xl w-full md:w-auto">
+          <div className="flex items-center gap-3 bg-slate-50 border border-slate-400  p-4 rounded-2xl w-full md:w-auto">
             <FaCalendarAlt className="text-slate-400" />
             <select
               value={filters.month}
@@ -420,7 +420,7 @@ export default function PaymentHistory() {
             </button>
             <button
               onClick={resetFilters}
-              className="flex-1 md:flex-none border border-slate-300 hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all"
+              className="flex-1 md:flex-none border border-slate-400 hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all"
             >
               Reset
             </button>
@@ -443,8 +443,8 @@ export default function PaymentHistory() {
       )}
 
       {/* Payments Table */}
-      <div className="bg-white rounded-3xl shadow-sm border border-slate-500 overflow-hidden">
-        <div className="p-6 border-b border-slate-500 flex justify-between items-center">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-400 overflow-hidden">
+        <div className="p-6 border-b border-slate-400 flex justify-between items-center">
           <h3 className="text-lg font-bold flex items-center gap-2">
             <FaHistory className="text-indigo-600" />
             Payment Records
@@ -457,7 +457,7 @@ export default function PaymentHistory() {
 
         {loading ? (
           <div className="p-12 text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border border-indigo-600"></div>
             <p className="mt-4 text-slate-500">Loading payment history...</p>
           </div>
         ) : payments.length === 0 ? (
@@ -484,7 +484,7 @@ export default function PaymentHistory() {
                     <th className="p-4 text-left">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-500">
+                <tbody className="divide-y divide-slate-400">
                   {payments.map((payment, index) => (
                     <tr key={payment._id} className="hover:bg-slate-50/50 transition-colors">
                       {/* Receipt Details */}
@@ -582,7 +582,7 @@ export default function PaymentHistory() {
             </div>
 
             {/* Simple Pagination - Only Next/Prev Buttons */}
-            <div className="p-6 border-t border-slate-500 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="p-6 border-t border-slate-400 flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="text-slate-500 text-sm">
                 Page <span className="font-bold">{currentPage}</span> • 
                 Showing <span className="font-bold">{((currentPage - 1) * itemsPerPage + 1)} - {Math.min(currentPage * itemsPerPage, totalPayments)}</span> of{" "}

@@ -65,7 +65,7 @@ const loadMySchedule = useCallback(async () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
+      <div className="flex items-center justify-center min-h-screen bg-blue-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600 mx-auto"></div>
           <p className="mt-6 text-lg font-medium text-slate-700">Loading schedule...</p>
@@ -80,7 +80,7 @@ const loadMySchedule = useCallback(async () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 ">
+    <div className="min-h-screen bg-blue-50 p-4 ">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div>
@@ -92,14 +92,14 @@ const loadMySchedule = useCallback(async () => {
         </div>
 
         {/* Academic Year Filter - UPDATED */}
-        <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+        <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-4">
               <label className="text-sm font-semibold text-slate-700">Academic Year:</label>
               <select
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
-                className="rounded-xl border-2 border-slate-200 bg-white p-2 font-medium focus:border-purple-600 focus:outline-none"
+                className="rounded-xl border-2 border-slate-400 bg-white p-2 font-medium focus:border-purple-600 focus:outline-none"
               >
                 {academicYearOptions.map((year) => (
                   <option key={year} value={year}>
@@ -155,14 +155,14 @@ const loadMySchedule = useCallback(async () => {
 
         {/* Schedule Table */}
         {scheduleData && totalClasses > 0 ? (
-          <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-100 overflow-hidden">
-            <div className="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-purple-50">
+          <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-400 overflow-hidden">
+            <div className="p-6 border-b border-slate-400 bg-gradient-to-r from-slate-50 to-purple-50">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                   <FaClock className="text-purple-600" />
                   Weekly Teaching Schedule
                 </h3>
-                <div className="text-sm text-slate-600 bg-white px-3 py-1 rounded-full border">
+                <div className="text-sm text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-400">
                   {totalClasses} classes across {Object.keys(scheduleData).filter(day => scheduleData[day]?.length > 0).length} days
                 </div>
               </div>
@@ -170,7 +170,7 @@ const loadMySchedule = useCallback(async () => {
 
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 border-b-2 border-slate-200">
+                <thead className="bg-slate-50 border-b-2 border-slate-400">
                   <tr>
                     <th className="p-4 text-left text-sm font-semibold text-slate-700 min-w-[120px]">
                       Day
@@ -186,7 +186,7 @@ const loadMySchedule = useCallback(async () => {
                     const hasClasses = daySchedule.length > 0;
 
                     return (
-                      <tr key={day} className={`border-b border-slate-100 ${hasClasses ? 'hover:bg-slate-50' : ''}`}>
+                      <tr key={day} className={`border-b border-slate-400 ${hasClasses ? 'hover:bg-slate-50' : ''}`}>
                         <td className="p-4 font-bold text-slate-900 bg-slate-50 align-top">
                           <div className="flex items-center gap-2">
                             <span>{day}</span>
@@ -253,7 +253,7 @@ const loadMySchedule = useCallback(async () => {
             </div>
           </div>
         ) : (
-          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-100">
+          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-400">
             <FaCalendarWeek className="h-16 w-16 text-slate-300 mx-auto mb-4" />
             <p className="text-xl font-semibold text-slate-600">No schedule available</p>
             <p className="text-sm text-slate-500 mt-2 max-w-md mx-auto">

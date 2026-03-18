@@ -231,11 +231,11 @@ useEffect(() => {
   }, [selectedMonth, selectedClass]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-5 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-          <h1 className="text-3xl  font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
             Fee Overview
           </h1>
           <p className="text-sm text-gray-600   font-medium mt-1">
@@ -243,14 +243,14 @@ useEffect(() => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-500 shadow-sm">
+        <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-400 shadow-sm">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">
             Session:
           </span>
           <select
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
-            className="bg-slate-50 border-none text-slate-900 text-sm font-bold rounded-lg py-2 pl-3 pr-8 focus:ring-2 focus:ring-purple-500 cursor-pointer outline-none"
+            className="bg-transparent border-none text-slate-900 text-sm font-bold focus:ring-0 cursor-pointer outline-none p-0 pr-6"
           >
             {academicYears.map((year) => (
               <option key={year} value={year}>
@@ -262,45 +262,41 @@ useEffect(() => {
       </div>
 
       {/* Monthly Filter Section */}
-      <div className="bg-blue-50 p-8 rounded-2xl border border-slate-500 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="h-14 w-14 bg-white text-purple-600 rounded-2xl flex items-center justify-center shadow-md">
-              <FaFilter size={20} />
+      <div className="bg-white p-4 rounded-xl border border-slate-400 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 bg-blue-50 text-purple-600 rounded-lg flex items-center justify-center">
+            <FaFilter size={16} />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-slate-900">
+              <h3 className="text-base font-bold text-slate-900">
                 Analytics Filter
               </h3>
-              <p className="text-gray-500 text-sm font-medium mt-1">
-                Select month to view specific period collection
-              </p>
-            </div>
           </div>
+        </div>
 
-          <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
             <div className="relative">
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 className="
-                  rounded-2xl 
+                  rounded-lg 
                   border 
-                  border-slate-500 
-                  bg-white 
-                  pl-5 
-                  pr-10 
-                  py-3.5 
-                  font-bold 
+                  border-slate-400 
+                  bg-slate-50 
+                  pl-3 
+                  pr-8 
+                  py-2 
+                  text-sm 
+                  font-semibold 
                   text-slate-700 
                   outline-none 
                   focus:ring-2 
                   focus:ring-purple-500/20 
                   focus:border-purple-500
-                  hover:border-slate-300
+                  hover:border-slate-400
                   transition-all
                   shadow-sm
-                  appearance-none
                   cursor-pointer
                   min-w-[200px]
                 "
@@ -314,22 +310,6 @@ useEffect(() => {
                   </option>
                 ))}
               </select>
-
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
             </div>
 
             <div className="relative">
@@ -337,23 +317,23 @@ useEffect(() => {
                 value={selectedClass}
                 onChange={(e) => setSelectedClass(e.target.value)}
                 className="
-                  rounded-2xl 
+                  rounded-lg 
                   border 
-                  border-slate-500 
-      bg-white 
-      pl-5 
-      pr-10 
-      py-3.5 
-      font-bold 
+                  border-slate-400 
+                  bg-slate-50 
+                  pl-3 
+                  pr-8 
+                  py-2 
+                  text-sm 
+                  font-semibold 
       text-slate-700 
       outline-none 
       focus:ring-2 
       focus:ring-purple-500/20 
       focus:border-purple-500
-      hover:border-slate-300
+      hover:border-slate-400
       transition-all
       shadow-sm
-      appearance-none
       cursor-pointer
       min-w-[200px]
     "
@@ -365,45 +345,27 @@ useEffect(() => {
                   </option>
                 ))}
               </select>
-
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
             </div>
 
             <button
               onClick={loadStatistics}
               className="
-                h-14 w-14 
+                h-9 w-9 
                 bg-amber-500 
                 text-white 
-                rounded-2xl 
+                rounded-lg 
                 flex items-center justify-center 
                 hover:bg-amber-600 
                 transition-all
                 shadow-md
-                hover:shadow-lg
               "
               title="Refresh Statistics"
             >
               <FiRefreshCw
                 className={statsLoading ? "animate-spin" : ""}
-                size={20}
+                size={16}
               />
             </button>
-          </div>
         </div>
 
         {selectedMonth !== "ALL" && (
@@ -434,10 +396,10 @@ useEffect(() => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-8"
+          className="space-y-5"
         >
           {/* Key Metrics Cards (ClassManagement Style) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               icon={<FaUsers />}
               label="Total Students"
@@ -469,38 +431,33 @@ useEffect(() => {
           </div>
 
           {/* Collection Progress Section */}
-          <div className="bg-white rounded-2xl p-10 shadow-lg border border-slate-500">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-              <div className="flex-1 space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-2xl flex items-center justify-center">
-                    <FaChartBar size={20} />
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-400">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-8 w-8 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg flex items-center justify-center">
+                    <FaChartBar size={14} />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-slate-900">
+                    <h3 className="text-lg font-bold text-slate-900">
                       Collection Efficiency
                     </h3>
-                    <p className="text-slate-500 text-sm font-medium mt-1">
-                      {selectedMonth === "ALL"
-                        ? `Overall performance for ${academicYear}`
-                        : `${selectedMonth} collection performance`}
-                    </p>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner">
+                <div className="space-y-2">
+                  <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{
                         width: `${syncedStats?.collectionPercentage || 0}%`,
                       }}
                       transition={{ duration: 1, ease: "easeOut" }}
-                      className="h-full bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 rounded-full shadow-lg"
+                      className="h-full bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 rounded-full"
                     />
                   </div>
 
-                  <div className="flex justify-between text-sm font-medium">
+                  <div className="flex justify-between text-xs font-medium">
                     <div className="text-slate-600">
                       <span className="font-bold">
                         {syncedStats?.collectionPercentage || 0}%
@@ -517,40 +474,43 @@ useEffect(() => {
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-center space-y-4">
-                <div className="relative">
-                  <div className="h-40 w-40 rounded-full border-[12px] border-slate-100 flex items-center justify-center shadow-lg">
+              <div className="flex items-center justify-center shrink-0">
+                <div className="relative h-20 w-20 flex items-center justify-center">
                     <svg className="absolute inset-0 w-full h-full -rotate-90">
                       <circle
-                        cx="80"
-                        cy="80"
-                        r="74"
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        fill="none"
+                        stroke="#f1f5f9"
+                        strokeWidth="8"
+                      />
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
                         fill="none"
                         stroke="#8b5cf6"
-                        strokeWidth="12"
-                        strokeDasharray="464.96"
+                        strokeWidth="8"
+                        strokeDasharray="226.19"
                         strokeDashoffset={
-                          464.96 -
-                          (464.96 * (syncedStats?.collectionPercentage || 0)) /
+                          226.19 -
+                          (226.19 * (syncedStats?.collectionPercentage || 0)) /
                             100
                         }
                         strokeLinecap="round"
                       />
                     </svg>
-                    <span className="text-4xl font-bold text-slate-900">
+                    <span className="text-lg font-bold text-slate-900">
                       {syncedStats?.collectionPercentage || 0}%
                     </span>
-                  </div>
                 </div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                  Collection Rate
-                </p>
               </div>
             </div>
           </div>
 
           {/* Payment Status Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8  ">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <SegmentCard
               title="Fully Paid"
               subtitle={
@@ -580,28 +540,28 @@ useEffect(() => {
 
           {/* 4. Dynamic Student List Dashboard */}
           {selectedList && (
-            <div className="bg-slate-900 rounded-2xl p-10 shadow-2xl animate-in zoom-in-95 duration-300">
-              <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/10">
+            <div className="bg-slate-900 rounded-xl p-6 shadow-xl animate-in zoom-in-95 duration-300">
+              <div className="flex justify-between items-center mb-5 pb-4 border-b border-white/10">
                 <div>
-                  <h3 className="text-2xl font-bold text-white tracking-tight">
+                  <h3 className="text-xl font-bold text-white tracking-tight">
                     {selectedList === "paid"
                       ? "✅ Monthly Settled"
                       : "⚠️ Monthly Pending"}
                   </h3>
-                  <p className="text-white/50 text-xs font-bold uppercase tracking-[0.2em] mt-2">
+                  <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mt-1">
                     FILTER: {selectedMonth} • FOUND {studentList.length}{" "}
                     STUDENTS
                   </p>
                 </div>
                 <button
                   onClick={() => setSelectedList(null)}
-                  className="px-6 py-2 bg-white/10 text-white rounded-full text-xs font-bold uppercase"
+                  className="px-4 py-1.5 bg-white/10 hover:bg-white/20 transition-colors text-white rounded-lg text-xs font-bold uppercase"
                 >
                   Close
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-4 custom-scrollbar-white">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar-white">
                 {studentList.map((student) => {
                   // 🔥 Current selected month ki installment dhoondo
                   const monthKey =
@@ -637,24 +597,23 @@ useEffect(() => {
                   return (
                     <div
                       key={student._id}
-                      className="bg-white/5 p-6 rounded-2xl border border-white/10 flex items-center justify-between"
+                      className="bg-white/5 p-4 rounded-xl border border-white/10 flex items-center justify-between"
                     >
                       <div>
-                        <p className="text-white font-bold text-lg">
+                        <p className="text-white font-bold text-sm truncate max-w-[120px]">
                           {student.name}
                         </p>
-                        <p className="text-white/40 text-[10px] font-bold uppercase">
+                        <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase">
                           {student.studentID}
                         </p>
                       </div>
                       <div className="text-right">
-                        {/* 🔥 Ab yahan ₹41,000 / ₹41,000 dikhega monthly filter par */}
-                        <p className="text-white font-bold text-lg">
-                          ₹{displayPaid.toLocaleString()} / ₹
-                          {displayTotal.toLocaleString()}
+                        <p className="text-white font-bold text-sm">
+                          ₹{displayPaid.toLocaleString()}{" "}
+                          <span className="text-white/40">/ ₹{displayTotal.toLocaleString()}</span>
                         </p>
                         <div
-                          className={`mt-2 inline-block px-3 py-1 rounded-lg text-[9px] font-bold uppercase ${
+                          className={`mt-1 inline-block px-2 py-0.5 rounded text-[8px] font-bold uppercase ${
                             displayStatus === "PAID"
                               ? "bg-emerald-400/20 text-emerald-400"
                               : "bg-rose-400/20 text-rose-400"
@@ -705,30 +664,19 @@ const StatCard = ({ icon, label, value, color }) => {
 
   return (
     <div
-      className={`p-8 rounded-2xl border-2 ${colors.border} ${colors.bg} shadow-sm hover:shadow-lg transition-all duration-300 group`}
+      className={`p-5 rounded-xl border ${colors.border} ${colors.bg} shadow-sm hover:shadow-md transition-all duration-300 group flex items-center gap-4`}
     >
-      <div className="flex items-center justify-between mb-6">
-        <div
-          className={`h-14 w-14 rounded-2xl flex items-center justify-center ${colors.iconBg} shadow-sm group-hover:scale-110 transition-transform`}
-        >
-          {icon}
-        </div>
-        <div className="text-right">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-            {label}
-          </span>
-        </div>
+      <div
+        className={`h-12 w-12 shrink-0 rounded-xl flex items-center justify-center text-xl ${colors.iconBg} shadow-sm group-hover:scale-105 transition-transform`}
+      >
+        {icon}
       </div>
-      <p className="text-3xl font-bold text-slate-900 tracking-tight">
-        {value}
-      </p>
-      <div className="mt-4 pt-4 border-t border-slate-100">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-          {color === "emerald"
-            ? "✅ Cleared"
-            : color === "rose"
-              ? "⚠️ Pending"
-              : "📊 Metric"}
+      <div>
+        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+          {label}
+        </p>
+        <p className="text-xl font-bold text-slate-900 tracking-tight">
+          {value}
         </p>
       </div>
     </div>
@@ -763,34 +711,34 @@ const SegmentCard = ({ title, subtitle, count, color, isActive, onClick }) => {
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={`
-        p-10 rounded-2xl border-2 cursor-pointer 
+        p-5 rounded-xl border cursor-pointer 
         transition-all duration-300 flex items-center justify-between
         ${colors.bg} ${colors.hoverBg} ${colors.border} ${colors.hoverBorder}
-        ${isActive ? "border-purple-600 shadow-xl shadow-purple-100" : ""}
+        ${isActive ? "border-purple-500 shadow-md ring-1 ring-purple-500" : ""}
       `}
     >
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-4">
         <div
-          className={`h-20 w-20 rounded-3xl flex items-center justify-center text-2xl ${colors.text} bg-white/50`}
+          className={`h-12 w-12 rounded-xl flex items-center justify-center text-xl ${colors.text} bg-white/50`}
         >
           <FaUsers />
         </div>
         <div>
-          <h4 className="text-2xl font-bold text-slate-900 tracking-tight">
+          <h4 className="text-lg font-bold text-slate-900 tracking-tight">
             {title}
           </h4>
-          <p className="text-slate-500 text-sm font-medium mt-2 italic">
+          <p className="text-slate-500 text-xs font-medium mt-0.5">
             {subtitle}
           </p>
         </div>
       </div>
-      <div className="flex items-center gap-6">
-        <span className={`text-5xl font-bold ${colors.countText}`}>
+      <div className="flex items-center gap-3">
+        <span className={`text-3xl font-bold ${colors.countText}`}>
           {count}
         </span>
         <FaArrowRight
-          className={`text-slate-300 transition-colors ${isActive ? "text-purple-600" : ""}`}
-          size={24}
+          className={`text-slate-400 transition-colors ${isActive ? "text-purple-600" : ""}`}
+          size={16}
         />
       </div>
     </motion.div>
@@ -798,16 +746,16 @@ const SegmentCard = ({ title, subtitle, count, color, isActive, onClick }) => {
 };
 
 const LoadingView = ({ academicYear, selectedMonth }) => (
-  <div className="flex flex-col items-center justify-center py-32 space-y-6">
+  <div className="flex flex-col items-center justify-center py-20 space-y-4">
     <div className="relative">
-      <div className="h-20 w-20 rounded-full border-8 border-purple-200"></div>
-      <div className="absolute top-0 left-0 h-20 w-20 rounded-full border-8 border-purple-600 border-t-transparent animate-spin"></div>
+      <div className="h-12 w-12 rounded-full border-4 border-purple-100"></div>
+      <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-4 border-purple-600 border-t-transparent animate-spin"></div>
     </div>
-    <div className="text-center space-y-2">
-      <p className="text-purple-600 font-bold uppercase tracking-widest text-sm animate-pulse">
+    <div className="text-center space-y-1">
+      <p className="text-purple-600 font-bold uppercase tracking-widest text-xs animate-pulse">
         Loading Analytics Dashboard
       </p>
-      <p className="text-slate-500 font-medium text-sm">
+      <p className="text-slate-500 font-medium text-xs">
         {selectedMonth === "ALL"
           ? `Fetching data for ${academicYear}`
           : `Fetching ${selectedMonth} data for ${academicYear}`}
@@ -817,7 +765,7 @@ const LoadingView = ({ academicYear, selectedMonth }) => (
 );
 
 const NoAcademicYearView = () => (
-  <div className="text-center py-40 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+  <div className="text-center py-40 bg-white rounded-2xl border-2 border-dashed border-slate-400">
     <div className="h-24 w-24 bg-gradient-to-br from-purple-100 to-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
       <FaCalendarAlt className="h-12 w-12 text-purple-400" />
     </div>

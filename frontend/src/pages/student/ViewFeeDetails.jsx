@@ -156,7 +156,7 @@ export default function ViewFeeDetails() {
         {feeDetails && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {/* Total Fee */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-400">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-blue-50 rounded-lg">
                   <FaMoneyBillWave className="text-blue-600 h-5 w-5" />
@@ -169,7 +169,7 @@ export default function ViewFeeDetails() {
             </div>
 
             {/* Paid Amount */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-400">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-green-50 rounded-lg">
                   <FaCheckCircle className="text-green-600 h-5 w-5" />
@@ -182,7 +182,7 @@ export default function ViewFeeDetails() {
             </div>
 
             {/* Pending Amount */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-400">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-red-50 rounded-lg">
                   <FaExclamationCircle className="text-red-600 h-5 w-5" />
@@ -195,7 +195,7 @@ export default function ViewFeeDetails() {
             </div>
 
             {/* Status */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-400">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-gray-50 rounded-lg">
                   <FaCalendarAlt className="text-gray-600 h-5 w-5" />
@@ -234,8 +234,8 @@ export default function ViewFeeDetails() {
 
           {/* Payment History Column */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden h-full">
-              <div className="p-6 border-b border-gray-100 bg-gray-50">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-400 overflow-hidden h-full">
+              <div className="p-6 border-b border-slate-400 bg-gray-50">
                 <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                   <FaHistory className="text-gray-500" />
                   Payment History
@@ -244,7 +244,7 @@ export default function ViewFeeDetails() {
               
               <div className="p-0">
                 {paymentHistory.length > 0 ? (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-slate-400">
                     {paymentHistory.map((payment) => (
                       <div key={payment._id} className="p-5 hover:bg-gray-50 transition-colors">
                         <div className="flex justify-between items-start mb-2">

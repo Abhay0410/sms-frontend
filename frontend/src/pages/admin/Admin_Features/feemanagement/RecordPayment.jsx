@@ -18,7 +18,6 @@ import {
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
 import Swal from "sweetalert2";
-// import downloadReceiptPDF from "../../../../utils/downloadReceiptPDF";
 
 const API_URL =
   import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
@@ -380,7 +379,7 @@ export default function RecordPayment() {
     const fd = student.feeDetails;
     if (!fd) {
       return (
-        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-bold uppercase">
+        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-bold uppercase shadow-sm">
           No Fee Set
         </span>
       );
@@ -392,14 +391,14 @@ export default function RecordPayment() {
 
     if (status === "NOT_SET" && !classHasFeeStructure) {
       return (
-        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-bold uppercase">
+        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-bold uppercase shadow-sm">
           No Fee Set
         </span>
       );
     }
     if (status === "ERROR") {
       return (
-        <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full border border-gray-200 text-xs font-bold uppercase">
+        <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full border border-gray-200 text-xs font-bold uppercase shadow-sm">
           Error
         </span>
       );
@@ -410,34 +409,34 @@ export default function RecordPayment() {
 
     if (isPaid || status === "PAID") {
       return (
-        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold uppercase">
+        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold uppercase shadow-sm">
           Paid
         </span>
       );
     }
     if (status === "PARTIALLY_PAID") {
       return (
-        <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase">
+        <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase shadow-sm">
           Partial
         </span>
       );
     }
     if (status === "OVERDUE") {
       return (
-        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-bold uppercase">
+        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full border border-red-200 text-xs font-bold uppercase shadow-sm">
           Overdue
         </span>
       );
     }
     if (classHasFeeStructure && !fd.feePaymentId) {
       return (
-        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full border border-blue-200 text-xs font-bold uppercase">
+        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full border border-blue-200 text-xs font-bold uppercase shadow-sm">
           Class Fee Set
         </span>
       );
     }
     return (
-      <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase">
+      <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase shadow-sm">
         Pending
       </span>
     );
@@ -628,7 +627,7 @@ export default function RecordPayment() {
           popup: "animate__animated animate__fadeInDown",
         },
         hideClass: {
-          popup: "animate__animated animate__fadeOutUp",
+          popup: "animate__animated animate__fadeInUp",
         },
       }).then((result) => {
         if (result.isConfirmed) {
@@ -724,6 +723,13 @@ export default function RecordPayment() {
         opacity: 1;
       }
     }
+    .hover-scale {
+      transition: all 0.3s ease;
+    }
+    .hover-scale:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
   `;
 
   return (
@@ -731,17 +737,17 @@ export default function RecordPayment() {
       <style>{scrollbarStyles}</style>
 
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white p-6 rounded-xl border border-slate-400 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             Fee Collection
           </h1>
-          <p className="text-sm font-medium   text-gray-600 mt-1">
+          <p className="text-sm font-medium text-gray-600 mt-1">
             Record payments and manage transactions
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-500 shadow-sm">
+        <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-400 shadow-sm">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">
             Session:
           </span>
@@ -760,24 +766,24 @@ export default function RecordPayment() {
       </div>
 
       {/* Search & Filter Header */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-500">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-400 hover:shadow-md transition-all duration-300">
         <div className="flex-1 w-full relative">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-6 py-3 bg-slate-50 rounded-xl border border-slate-500 outline-none font-medium text-slate-700 transition-all focus:border-indigo-700"
+            className="w-full pl-12 pr-6 py-3 bg-slate-50 rounded-xl border border-slate-400 outline-none font-medium text-slate-700 transition-all focus:border-indigo-700"
             placeholder="Search by student name, ID, or class..."
           />
         </div>
       </div>
 
       {/* Filters Section */}
-      <div className="bg-blue-50 p-8 rounded-2xl border border-slate-500 shadow-sm">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-all duration-300">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="h-14 w-14 bg-white text-purple-600 rounded-2xl flex items-center justify-center shadow-md">
+            <div className="h-14 w-14 bg-white text-purple-600 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300">
               <FaFilter size={20} />
             </div>
             <div>
@@ -796,9 +802,9 @@ export default function RecordPayment() {
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 className="
-                  rounded-2xl 
+                  rounded-xl 
                   border 
-                  border-slate-500 
+                  border-slate-400 
                   bg-white 
                   pl-5 
                   pr-10 
@@ -809,7 +815,7 @@ export default function RecordPayment() {
                   focus:ring-2 
                   focus:ring-purple-500/20 
                   focus:border-purple-500
-                  hover:border-slate-300
+                  hover:border-slate-400
                   transition-all
                   shadow-sm
                   appearance-none
@@ -849,9 +855,9 @@ export default function RecordPayment() {
                 value={selectedClass}
                 onChange={(e) => setSelectedClass(e.target.value)}
                 className="
-                  rounded-2xl 
+                  rounded-xl 
                   border 
-                  border-slate-500 
+                  border-slate-400 
                   bg-white 
                   pl-5 
                   pr-10 
@@ -862,7 +868,7 @@ export default function RecordPayment() {
                   focus:ring-2 
                   focus:ring-purple-500/20 
                   focus:border-purple-500
-                  hover:border-slate-300
+                  hover:border-slate-400
                   transition-all
                   shadow-sm
                   appearance-none
@@ -895,31 +901,32 @@ export default function RecordPayment() {
               </div>
             </div>
 
-          <button
-            onClick={() => loadStudents(1)}
-            disabled={loading}
-            className="
+            <button
+              onClick={() => loadStudents(1)}
+              disabled={loading}
+              className="
                 h-14 w-14 
                 bg-amber-500 
                 text-white 
-                rounded-2xl 
+                rounded-xl 
                 flex items-center justify-center 
                 hover:bg-amber-600 
-                transition-all
-                shadow-md
-                hover:shadow-lg
+                transition-all duration-300
+                shadow-sm
+                hover:shadow-md
+                hover:scale-105
               "
-            title="Refresh Students"
-          >
-            <FiRefreshCw className={loading ? "animate-spin" : ""} size={20} />
-          </button>
+              title="Refresh Students"
+            >
+              <FiRefreshCw className={loading ? "animate-spin" : ""} size={20} />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Uncomment if needed */}
       {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-br from-white to-purple-50 p-5 rounded-2xl border border-purple-100 shadow-sm">
+        <div className="bg-gradient-to-br from-white to-purple-50 p-5 rounded-xl border border-purple-100 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600 uppercase tracking-wider font-bold">
@@ -935,7 +942,7 @@ export default function RecordPayment() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-white to-red-50 p-5 rounded-2xl border border-red-100 shadow-sm">
+        <div className="bg-gradient-to-br from-white to-red-50 p-5 rounded-xl border border-red-100 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600 uppercase tracking-wider font-bold">
@@ -951,7 +958,7 @@ export default function RecordPayment() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-white to-emerald-50 p-5 rounded-2xl border border-emerald-100 shadow-sm">
+        <div className="bg-gradient-to-br from-white to-emerald-50 p-5 rounded-xl border border-emerald-100 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600 uppercase tracking-wider font-bold">
@@ -969,7 +976,7 @@ export default function RecordPayment() {
       </div> */}
 
       {/* Main Table */}
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-500 overflow-hidden relative min-h-[400px]">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-400 overflow-hidden relative min-h-[400px] hover:shadow-md transition-all duration-300">
         {loading && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center transition-all duration-300">
             <div className="bg-white p-4 rounded-full shadow-xl mb-3">
@@ -983,7 +990,7 @@ export default function RecordPayment() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-                <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-500">
+              <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-400">
                 <th className="p-5 text-left text-xs font-bold uppercase tracking-widest text-slate-500">
                   Student Details
                 </th>
@@ -1015,7 +1022,7 @@ export default function RecordPayment() {
                   return (
                     <tr
                       key={student._id}
-                        className={`border-b border-slate-500 hover:bg-slate-50/50 transition-all ${
+                      className={`border-b border-slate-400 hover:bg-slate-50/50 transition-all duration-300 ${
                         isOverdue
                           ? "bg-red-50/30 hover:bg-red-50/50"
                           : isPartiallyPaid
@@ -1112,9 +1119,9 @@ export default function RecordPayment() {
                           <button
                             onClick={() => handleRecordPayment(student)}
                             disabled={!canPay}
-                            className={`px-5 py-2.5 rounded-lg font-bold text-sm transition-all min-w-[140px] ${
+                            className={`px-5 py-2.5 rounded-lg font-bold text-sm transition-all duration-300 min-w-[140px] ${
                               canPay
-                                ? "bg-indigo-700 text-white hover:bg-indigo-800 shadow-md hover:shadow-lg"
+                                ? "bg-indigo-700 text-white hover:bg-indigo-800 shadow-sm hover:shadow-md hover:scale-105"
                                 : "bg-slate-100 text-slate-400 cursor-not-allowed"
                             }`}
                           >
@@ -1146,13 +1153,13 @@ export default function RecordPayment() {
                           setSelectedMonth("ALL");
                           setSelectedClass("ALL");
                         }}
-                        className="px-4 py-2.5 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 font-bold text-sm"
+                        className="px-4 py-2.5 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 font-bold text-sm transition-all duration-300 hover:scale-105"
                       >
                         Clear Filters
                       </button>
                       <button
                         onClick={() => loadStudents(1)}
-                        className="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 font-bold text-sm"
+                        className="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 font-bold text-sm transition-all duration-300 hover:scale-105"
                       >
                         Refresh
                       </button>
@@ -1166,7 +1173,7 @@ export default function RecordPayment() {
 
         {/* Pagination */}
         {pagination.pages > 1 && (
-              <div className="p-5 border-t border-slate-500 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-5 border-t border-slate-400 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-sm text-slate-600 font-medium">
               Showing page{" "}
               <span className="font-bold">{pagination.current}</span> of{" "}
@@ -1176,7 +1183,7 @@ export default function RecordPayment() {
               <button
                 onClick={() => loadStudents(pagination.current - 1)}
                 disabled={pagination.current === 1 || loading}
-                className="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm"
+                className="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm transition-all duration-300 hover:scale-105"
               >
                 ← Previous
               </button>
@@ -1195,9 +1202,9 @@ export default function RecordPayment() {
                         key={pageNum}
                         onClick={() => loadStudents(pageNum)}
                         disabled={loading}
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium ${
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-all duration-300 hover:scale-105 ${
                           pagination.current === pageNum
-                            ? "bg-indigo-700 text-white"
+                            ? "bg-indigo-700 text-white shadow-sm"
                             : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                         }`}
                       >
@@ -1210,7 +1217,7 @@ export default function RecordPayment() {
               <button
                 onClick={() => loadStudents(pagination.current + 1)}
                 disabled={pagination.current === pagination.pages || loading}
-                className="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm"
+                className="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm transition-all duration-300 hover:scale-105"
               >
                 Next →
               </button>
@@ -1222,12 +1229,12 @@ export default function RecordPayment() {
       {/* Payment Modal - Triple Column Layout */}
       {showModal && selectedStudent && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col scale-in-center border border-slate-500">
+          <div className="bg-white rounded-xl shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col scale-in-center border border-slate-400 hover:shadow-2xl transition-all duration-300">
             {/* Modal Header */}
-              <div className="p-6 border-b border-slate-500 bg-gradient-to-r from-slate-50 to-slate-100">
+            <div className="p-6 border-b border-slate-400 bg-gradient-to-r from-slate-50 to-slate-100">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-xl flex items-center justify-center text-xl font-bold shadow-lg">
+                  <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-xl flex items-center justify-center text-xl font-bold shadow-sm">
                     {selectedStudent.name?.charAt(0)}
                   </div>
                   <div>
@@ -1265,7 +1272,7 @@ export default function RecordPayment() {
                   <button
                     onClick={() => setShowModal(false)}
                     disabled={saving}
-                    className="w-10 h-10 bg-white border border-slate-200 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50 shadow-sm"
+                    className="w-10 h-10 bg-white border border-slate-400 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50 shadow-sm"
                   >
                     <FaTimes />
                   </button>
@@ -1274,7 +1281,7 @@ export default function RecordPayment() {
             </div>
 
             {/* Triple Column Content */}
-              <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 divide-x divide-slate-500">
+            <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 divide-x divide-slate-400">
               {/* Left Column: Month Selection Grid */}
               <div className="lg:col-span-4 space-y-4">
                 <div className="flex items-center justify-between">
@@ -1287,7 +1294,7 @@ export default function RecordPayment() {
                       <button
                         type="button"
                         onClick={clearAllSelections}
-                        className="text-xs font-bold text-red-600 hover:text-red-700 uppercase"
+                        className="text-xs font-bold text-red-600 hover:text-red-700 uppercase transition-all duration-300 hover:scale-105"
                       >
                         <FaTimes className="inline-block mr-1" /> Clear
                       </button>
@@ -1295,7 +1302,7 @@ export default function RecordPayment() {
                     <button
                       type="button"
                       onClick={selectAllInstallments}
-                      className="text-xs font-bold text-purple-600 hover:text-purple-700 uppercase"
+                      className="text-xs font-bold text-purple-600 hover:text-purple-700 uppercase transition-all duration-300 hover:scale-105"
                     >
                       <FaCheck className="inline-block mr-1" /> Select All
                     </button>
@@ -1319,10 +1326,10 @@ export default function RecordPayment() {
                           <div
                             key={inst._id}
                             onClick={() => toggleInstallment(inst)}
-                            className={`p-4 rounded-xl border transition-all cursor-pointer flex justify-between items-center group ${
+                            className={`p-4 rounded-xl border transition-all duration-300 cursor-pointer flex justify-between items-center group ${
                               isSelected
-                                ? "border-purple-600 bg-gradient-to-r from-purple-50 to-purple-100 shadow-sm"
-                                : "border-slate-500 hover:border-indigo-700 hover:bg-slate-50"
+                                ? "border-purple-300 bg-gradient-to-r from-purple-50 to-purple-100 shadow-sm"
+                                : "border-slate-400 hover:border-indigo-300 hover:bg-slate-50 hover:shadow-md hover:scale-[1.02]"
                             }`}
                           >
                             <div className="flex items-center gap-3">
@@ -1366,7 +1373,7 @@ export default function RecordPayment() {
                         );
                       })
                   ) : (
-                    <div className="text-center py-10 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-dashed border-slate-200">
+                    <div className="text-center py-10 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-dashed border-slate-400">
                       <FaInfoCircle
                         className="mx-auto text-slate-300 mb-3"
                         size={32}
@@ -1383,7 +1390,7 @@ export default function RecordPayment() {
 
                 {/* Selection Summary */}
                 {selectedInsts.length > 0 && (
-                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-4 mt-4">
+                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-4 mt-4 shadow-sm">
                     <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-purple-600"></div>
@@ -1417,7 +1424,7 @@ export default function RecordPayment() {
               </div>
 
               {/* Middle Column: Payment Details Form */}
-                <div className="lg:col-span-4 space-y-6 border-l border-r border-slate-500 px-6">
+              <div className="lg:col-span-4 space-y-6 border-l border-r border-slate-400 px-6">
                 <form
                   id="payment-form"
                   onSubmit={handleSubmit}
@@ -1441,7 +1448,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("amountPaid", e.target.value)
                         }
-                        className="w-full bg-slate-50 rounded-xl pl-12 pr-6 py-4 text-xl font-bold outline-none transition-all border border-slate-500 focus:border-indigo-700"
+                        className="w-full bg-slate-50 rounded-xl pl-12 pr-6 py-4 text-xl font-bold outline-none transition-all border border-slate-400 focus:border-indigo-700"
                         required
                         placeholder="0.00"
                       />
@@ -1462,7 +1469,7 @@ export default function RecordPayment() {
                               .pending,
                           )
                         }
-                        className="text-xs font-bold text-purple-600 hover:text-purple-700"
+                        className="text-xs font-bold text-purple-600 hover:text-purple-700 transition-all duration-300 hover:scale-105"
                       >
                         Use Maximum
                       </button>
@@ -1483,7 +1490,7 @@ export default function RecordPayment() {
                           onChange={(e) =>
                             updateFormField("paymentDate", e.target.value)
                           }
-                          className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none pl-12"
+                          className="w-full p-3 bg-slate-50 rounded-xl border border-slate-400 focus:border-indigo-700 outline-none pl-12"
                           required
                         />
                       </div>
@@ -1498,7 +1505,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("paymentMethod", e.target.value)
                         }
-                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none font-medium"
+                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-400 focus:border-indigo-700 outline-none font-medium"
                         required
                       >
                         <option value="CASH">Cash</option>
@@ -1519,7 +1526,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("upiId", e.target.value)
                         }
-                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none"
+                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-400 focus:border-indigo-700 outline-none"
                         placeholder="UPI ID / Reference"
                       />
                     )}
@@ -1532,7 +1539,7 @@ export default function RecordPayment() {
                           onChange={(e) =>
                             updateFormField("chequeNumber", e.target.value)
                           }
-                          className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none"
+                          className="w-full p-3 bg-slate-50 rounded-xl border border-slate-400 focus:border-indigo-700 outline-none"
                           placeholder="Cheque Number"
                         />
                         <input
@@ -1541,7 +1548,7 @@ export default function RecordPayment() {
                           onChange={(e) =>
                             updateFormField("bankName", e.target.value)
                           }
-                          className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none"
+                          className="w-full p-3 bg-slate-50 rounded-xl border border-slate-400 focus:border-indigo-700 outline-none"
                           placeholder="Bank Name"
                         />
                       </div>
@@ -1556,7 +1563,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("transactionId", e.target.value)
                         }
-                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none"
+                        className="w-full p-3 bg-slate-50 rounded-xl border border-slate-400 focus:border-indigo-700 outline-none"
                         placeholder="Transaction ID / Reference"
                       />
                     )}
@@ -1572,7 +1579,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("sendNotification", e.target.checked)
                         }
-                        className="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500"
+                        className="w-4 h-4 text-purple-600 rounded border-slate-400 focus:ring-purple-500"
                       />
                       <label
                         htmlFor="sendNotification"
@@ -1589,7 +1596,7 @@ export default function RecordPayment() {
                         onChange={(e) =>
                           updateFormField("generateReceipt", e.target.checked)
                         }
-                        className="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500"
+                        className="w-4 h-4 text-purple-600 rounded border-slate-400 focus:ring-purple-500"
                       />
                       <label
                         htmlFor="generateReceipt"
@@ -1610,7 +1617,7 @@ export default function RecordPayment() {
                       onChange={(e) =>
                         updateFormField("remarks", e.target.value)
                       }
-                      className="w-full p-3 bg-slate-50 rounded-xl border border-slate-500 focus:border-indigo-700 outline-none text-sm font-medium"
+                      className="w-full p-3 bg-slate-50 rounded-xl border border-slate-400 focus:border-indigo-700 outline-none text-sm font-medium"
                       rows="3"
                       placeholder="Add any additional notes or remarks..."
                     />
@@ -1619,7 +1626,7 @@ export default function RecordPayment() {
               </div>
 
               {/* Right Column: Allocation Preview */}
-              <div className="lg:col-span-4 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-5 text-white flex flex-col shadow-xl">
+              <div className="lg:col-span-4 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-5 text-white flex flex-col shadow-xl hover:shadow-2xl transition-all duration-300">
                 <div className="mb-6">
                   <h4 className="text-sm font-bold text-slate-100 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></div>
@@ -1636,7 +1643,7 @@ export default function RecordPayment() {
                       {allocationPreview.items.map((item, idx) => (
                         <div
                           key={item.id || idx}
-                          className="bg-white/5 rounded-lg p-3 border border-white/10 hover:bg-white/10 transition-colors"
+                          className="bg-white/5 rounded-lg p-3 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-[1.02]"
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -1759,14 +1766,14 @@ export default function RecordPayment() {
             </div>
 
             {/* Modal Footer Actions */}
-              <div className="p-6 border-t border-slate-500 bg-white flex gap-4">
+            <div className="p-6 border-t border-slate-400 bg-white flex gap-4">
               <button
                 onClick={() => {
                   setShowModal(false);
                   setSelectedInsts([]);
                 }}
                 disabled={saving}
-                className="flex-1 py-3 font-bold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all disabled:opacity-50"
+                className="flex-1 py-3 font-bold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all duration-300 disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -1774,7 +1781,7 @@ export default function RecordPayment() {
                 type="submit"
                 form="payment-form"
                 disabled={saving || !paymentForm.amountPaid}
-                className="flex-[2] bg-indigo-700 text-white py-3 rounded-lg font-bold hover:bg-indigo-800 transition-all disabled:opacity-30 flex items-center justify-center gap-3 shadow-lg"
+                className="flex-[2] bg-indigo-700 text-white py-3 rounded-lg font-bold hover:bg-indigo-800 transition-all duration-300 disabled:opacity-30 flex items-center justify-center gap-3 shadow-sm hover:shadow-md hover:scale-[1.02]"
               >
                 {saving ? (
                   <>

@@ -142,7 +142,7 @@ export default function ViewChildTimetable() {
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 md:p-8">
         <div className="mx-auto max-w-4xl">
           <BackButton to="/parent/parent-dashboard" />
-          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-100">
+          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-400">
             <FaChild className="h-20 w-20 text-slate-300 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-slate-900">
               No Children Found
@@ -285,7 +285,7 @@ console.log("Final Image URL:", childPhotoUrl);
 
         {/* Subjects list (optional, like before) */}
         {timetableData?.subjects && timetableData.subjects.length > 0 && (
-          <div className="mt-8 rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+          <div className="mt-8 rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
             <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
               <FaBook className="text-green-600" />
               Subjects ({timetableData.subjects.length})
@@ -313,13 +313,13 @@ console.log("Final Image URL:", childPhotoUrl);
 
         {/* Timetable – EXACT student layout */}
         {loadingTimetable ? (
-          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-100">
+          <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-400">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600 mx-auto" />
             <p className="mt-4 text-slate-600">Loading timetable...</p>
           </div>
         ) : timetableData?.timetable && timetableData.timetable.length > 0 ? (
-          <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-100 overflow-hidden">
-            <div className="p-6 border-b border-slate-100">
+          <div className="mt-8 rounded-2xl bg-white shadow-lg border border-slate-400 overflow-hidden">
+            <div className="p-6 border-b border-slate-400">
               <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                 <FaClock className="text-green-600" />
                 Weekly Schedule
@@ -329,7 +329,7 @@ console.log("Final Image URL:", childPhotoUrl);
               </h3>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-400">
               {DAYS.map((day) => {
                 const periods = getPeriodsForDay(day);
 
@@ -339,7 +339,7 @@ console.log("Final Image URL:", childPhotoUrl);
                     className="flex flex-col md:flex-row hover:bg-slate-50/50 transition-colors"
                   >
                     {/* Day label */}
-                    <div className="md:w-32 bg-slate-50 md:border-r border-slate-100 flex items-center justify-center px-4 py-4 md:py-0">
+                    <div className="md:w-32 bg-slate-50 md:border-r border-slate-400 flex items-center justify-center px-4 py-4 md:py-0">
                       <span className="font-semibold text-slate-900 text-sm md:text-base">
                         {day}
                       </span>

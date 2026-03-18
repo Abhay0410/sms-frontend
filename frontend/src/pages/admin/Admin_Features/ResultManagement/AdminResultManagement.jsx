@@ -237,7 +237,7 @@ export default function AdminResultManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 md:px-6  ">
+    <div className="min-h-screen bg-blue-50 px-4 md:px-6  ">
       <div className="max-w-7xl mx-auto">
       
         
@@ -295,12 +295,15 @@ export default function AdminResultManagement() {
         </div> */}
 
         {/* Filters & Bulk Actions */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            <div className="flex flex-wrap gap-3 items-center">
-              <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-lg">
+        <div className="bg-white rounded-xl shadow-md border border-slate-400 p-4 mb-6">
+          <div className="flex flex-wrap gap-4 items-center justify-between">
+            
+            {/* Selection & Bulk Actions */}
+            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg h-[42px]">
                 <input
                   type="checkbox"
+                  className="w-4 h-4 cursor-pointer accent-purple-600"
                   checked={selectedResults.length === filteredResults.length && filteredResults.length > 0}
                   onChange={(e) => {
                     if (e.target.checked) {
@@ -310,46 +313,46 @@ export default function AdminResultManagement() {
                     }
                   }}
                 />
-                <span className="font-medium text-slate-700">
+                <span className="font-semibold text-slate-700 text-sm whitespace-nowrap">
                   {selectedResults.length} of {filteredResults.length} selected
                 </span>
               </div>
 
               {selectedResults.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={handleBulkApprove}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-all flex items-center gap-2"
+                    className="px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold text-sm transition-all flex items-center gap-2 h-[42px]"
                   >
-                    <FaCheckCircle /> Bulk Approve
+                    <FaCheckCircle /> Approve
                   </button>
                   <button
                     onClick={handleBulkPublish}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-all flex items-center gap-2"
+                    className="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-sm transition-all flex items-center gap-2 h-[42px]"
                   >
-                    <FaGlobe /> Bulk Publish
+                    <FaGlobe /> Publish
                   </button>
                 </div>
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 flex-1 max-w-2xl">
-              <div>
-                <label className="flex items-center gap-1 text-sm font-semibold text-slate-700 mb-1">
-                  <FaSearch /> Search
-                </label>
+            {/* Filters */}
+            <div className="flex flex-wrap items-center gap-3 flex-1 w-full lg:w-auto">
+              <div className="relative w-full sm:w-auto flex-1 max-w-md">
+                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  className="w-full rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none"
-                  placeholder="Student name, ID, roll number"
+                  className="w-full rounded-lg border border-slate-400 pl-10 pr-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px]"
+                  placeholder="Student name, ID, roll..."
                 />
               </div>
+              
               <select
                 value={filters.examType}
                 onChange={(e) => setFilters({ ...filters, examType: e.target.value })}
-                className="rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none"
+                className="w-full sm:w-auto rounded-lg border border-slate-400 px-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px] bg-white cursor-pointer"
               >
                 <option value="">All Exam Types</option>
                 <option value="FINAL">Final Exam</option>
@@ -358,10 +361,11 @@ export default function AdminResultManagement() {
                 <option value="UNIT_TEST">Unit Test</option>
                 <option value="MID_TERM">Mid Term</option>
               </select>
+              
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none"
+                className="w-full sm:w-auto rounded-lg border border-slate-400 px-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px] bg-white cursor-pointer"
               >
                 <option value="">All Results</option>
                 <option value="PASS">PASS</option>
@@ -369,10 +373,11 @@ export default function AdminResultManagement() {
                 <option value="PASS_BY_GRACE">PASS BY GRACE</option>
                 <option value="ABSENT">ABSENT</option>
               </select>
-              <div className="flex items-center gap-2">
+              
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => loadResults()}
-                  className="px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all flex items-center gap-2 font-medium flex-1"
+                  className="px-5 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold text-sm transition-all flex items-center justify-center gap-2 h-[42px] flex-1 sm:flex-none"
                 >
                   <FaFilter /> Filter
                 </button>
@@ -386,18 +391,19 @@ export default function AdminResultManagement() {
                     sortBy: "createdAt",
                     sortOrder: "desc",
                   })}
-                  className="px-4 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-all flex-1"
+                  className="px-5 py-2.5 bg-slate-100 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-200 font-semibold text-sm transition-all flex items-center justify-center h-[42px] flex-1 sm:flex-none"
                 >
                   Clear
                 </button>
               </div>
             </div>
+            
           </div>
         </div>
 
         {/* Results Table */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50">
+        <div className="bg-white rounded-xl border border-slate-400 shadow-md overflow-hidden">
+          <div className="flex items-center justify-between p-6 border-b border-slate-400 bg-slate-50">
             <h3 className="text-xl font-bold text-slate-900">
               All Results ({filteredResults.length})
             </h3>
@@ -409,7 +415,7 @@ export default function AdminResultManagement() {
                   const [sortBy, sortOrder] = e.target.value.split('-');
                   setFilters({ ...filters, sortBy, sortOrder });
                 }}
-                className="rounded border-2 border-slate-200 p-1 text-xs focus:border-purple-500 outline-none"
+                className="rounded border-2 border-slate-400 p-1 text-xs focus:border-purple-500 outline-none"
               >
                 <option value="createdAt-desc">Newest First</option>
                 <option value="studentName-asc">Student Name (A-Z)</option>
@@ -437,7 +443,7 @@ export default function AdminResultManagement() {
                   <th className="px-6 py-4 text-center text-sm font-bold text-slate-900">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-slate-400">
                 {filteredResults.length === 0 ? (
                   <tr>
                     <td colSpan="10" className="px-6 py-12 text-center text-slate-500">
