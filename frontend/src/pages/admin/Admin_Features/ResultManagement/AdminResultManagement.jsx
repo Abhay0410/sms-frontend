@@ -353,6 +353,7 @@ export default function AdminResultManagement() {
                 value={filters.examType}
                 onChange={(e) => setFilters({ ...filters, examType: e.target.value })}
                 className="rounded-lg border-2 h-13 mt-6  border-slate-200 p-3 focus:border-purple-500 outline-none"
+                className="w-full sm:w-auto rounded-lg border border-slate-400 px-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px] bg-white cursor-pointer"
               >
                 <option value="">All Exam Types</option>
                 <option value="FINAL">Final Exam</option>
@@ -365,7 +366,8 @@ export default function AdminResultManagement() {
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="rounded-lg border-2 border-slate-200 p-3 focus:border-purple-500 outline-none"
+                className="rounded-lg border-2 h-13 mt-6  border-slate-200 p-3 focus:border-purple-500 outline-none"
+                className="w-full sm:w-auto rounded-lg border border-slate-400 px-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px] bg-white cursor-pointer"
               >
                 <option value="">All Results</option>
                 <option value="PASS">PASS</option>
