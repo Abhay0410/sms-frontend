@@ -292,75 +292,44 @@ export default function SubjectManagement() {
         </div>
 
         {/* Class & Section Selection Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Class Card */}
-          <div className={`bg-white rounded-2xl border p-5 transition-all ${
-            selectedClass ? 'border-slate-400 border-1 shadow-md' : ' border-1 border-slate-400'
-          }`}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
-                selectedClass ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-blue-50 text-blue-600'
-              }`}>
-                <FaChalkboard size={18} />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-slate-800">Select Grade</h3>
-                <p className="text-xs text-slate-500">Choose a class to manage</p>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <select
-                value={selectedClass?._id || ""}
-                onChange={(e) => {
-                  const cls = classes.find((c) => c._id === e.target.value);
-                  setSelectedClass(cls);
-                }}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
-              >
-                <option value="" disabled>Select a class</option>
-                {classes.map((cls) => (
-                  <option key={cls._id} value={cls._id}>
-                    {cls.className} ({cls.sections?.length || 0} sections)
-                  </option>
-                ))}
-              </select>
-              <FaChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
-            </div>
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Select Class
+            </label>
+            <select
+              value={selectedClass?._id || ""}
+              onChange={(e) => {
+                const cls = classes.find((c) => c._id === e.target.value);
+                setSelectedClass(cls);
+              }}
+              className="w-full rounded-xl border border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
+            >
+              <option value="" disabled>Choose a class</option>
+              {classes.map((cls) => (
+                <option key={cls._id} value={cls._id}>
+                  {cls.className}
+                </option>
+              ))}
+            </select>
           </div>
-
-          {/* Section Card */}
-          <div className={`bg-white rounded-2xl border p-5 transition-all ${
-            selectedSection ? 'border-slate-400 shadow-md' : 'border-slate-400'
-          }`}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                selectedSection ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' : 'bg-blue-50 text-blue-600'
-              }`}>
-                <FaLayerGroup size={18} />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-slate-800">Select Section</h3>
-                <p className="text-xs text-slate-500">Choose a section to assign subjects</p>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <select
-                value={selectedSection}
-                onChange={(e) => setSelectedSection(e.target.value)}
-                disabled={!subjectData?.sections?.length}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 disabled:bg-slate-50 disabled:text-slate-400"
-              >
-                <option value="">Select a section</option>
-                {subjectData?.sections?.map((sec) => (
-                  <option key={sec.sectionName} value={sec.sectionName}>
-                    Section {sec.sectionName} • {sec.subjects?.length || 0} subjects
-                  </option>
-                ))}
-              </select>
-              <FaChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
-            </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Select Section
+            </label>
+            <select
+              value={selectedSection}
+              onChange={(e) => setSelectedSection(e.target.value)}
+              className="w-full rounded-xl border border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
+              disabled={!subjectData?.sections?.length}
+            >
+              <option value="" disabled>Choose a section</option>
+              {subjectData?.sections?.map((sec) => (
+                <option key={sec.sectionName} value={sec.sectionName}>
+                  Section {sec.sectionName}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

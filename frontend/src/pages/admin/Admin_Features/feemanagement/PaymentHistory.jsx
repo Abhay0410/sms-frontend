@@ -272,12 +272,6 @@ export default function PaymentHistory() {
     }
   };
 
-  // Apply filters handler
-  const applyFilters = () => {
-    setCurrentPage(1);
-    fetchPayments(1);
-  };
-
   // Initial load
   useEffect(() => {
     fetchFilterOptions();
@@ -338,92 +332,82 @@ export default function PaymentHistory() {
         </div>
       </div> */}
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <FaFilter className="text-indigo-600" />
-          <h3 className="text-lg font-bold">Filters</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Search & Filters */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-400 mb-6 transition-all duration-300 hover:shadow-md">
+        <div className="flex flex-wrap gap-4 items-center justify-between">
+          
           {/* Search */}
-          <div className="relative">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+          <div className="w-full lg:flex-1 relative max-w-md">
+            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search by student name, ID, receipt..."
+              placeholder="Search student, ID, receipt..."
               value={filters.search}
               onChange={(e) => handleFilterChange("search", e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-400 rounded-xl focus:outline-none focus:border-indigo-700"
+              className="w-full pl-11 pr-4 py-2.5 bg-slate-50 rounded-xl border border-slate-300 outline-none font-medium text-slate-700 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 text-sm"
             />
           </div>
 
-          {/* Academic Year */}
-          <select
-            value={filters.academicYear}
-            onChange={(e) => handleFilterChange("academicYear", e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-400 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
-          >
-            <option value="">All Academic Years</option>
-            {academicYears.map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
+          {/* Filter Dropdowns */}
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+            <div className="flex items-center gap-2">
+              <FaFilter className="text-slate-400" />
+              <span className="text-sm font-bold text-slate-600 hidden sm:inline">Filters:</span>
+            </div>
 
-          {/* Class */}
-          <select
-            value={filters.className}
-            onChange={(e) => handleFilterChange("className", e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-400 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
-          >
-            <option value="">All Classes</option>
-            {classes.map((className) => (
-              <option key={className} value={className}>{className}</option>
-            ))}
-          </select>
+            <select
+              value={filters.academicYear}
+              onChange={(e) => handleFilterChange("academicYear", e.target.value)}
+              className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
+            >
+              <option value="">All Years</option>
+              {academicYears.map((year) => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
 
-          {/* Status */}
-          <select
-            value={filters.status}
-            onChange={(e) => handleFilterChange("status", e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-400 rounded-xl focus:outline-none focus:border-indigo-700 font-bold"
-          >
-            <option value="">All Status</option>
-            <option value="PAID">Paid</option>
-            <option value="PARTIAL">Partial</option>
-            <option value="PENDING">Pending</option>
-          </select>
-        </div>
+            <select
+              value={filters.className}
+              onChange={(e) => handleFilterChange("className", e.target.value)}
+              className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
+            >
+              <option value="">All Classes</option>
+              {classes.map((className) => (
+                <option key={className} value={className}>{className}</option>
+              ))}
+            </select>
 
-        {/* Month Filter and Action Buttons */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6">
-          <div className="flex items-center gap-3 bg-slate-50 border border-slate-400  p-4 rounded-2xl w-full md:w-auto">
-            <FaCalendarAlt className="text-slate-400" />
             <select
               value={filters.month}
               onChange={(e) => handleFilterChange("month", e.target.value)}
-              className="bg-transparent border-none focus:outline-none font-bold"
+              className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
             >
               <option value="">All Months</option>
               {monthOptions.map((month) => (
                 <option key={month} value={month}>{month}</option>
               ))}
             </select>
-          </div>
 
-          <div className="flex gap-3 w-full md:w-auto">
-            <button
-              onClick={applyFilters}
-              className="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all"
+            <select
+              value={filters.status}
+              onChange={(e) => handleFilterChange("status", e.target.value)}
+              className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
             >
-              Apply Filters
-            </button>
+              <option value="">All Status</option>
+              <option value="PAID">Paid</option>
+              <option value="PARTIAL">Partial</option>
+              <option value="PENDING">Pending</option>
+            </select>
+
+            {(filters.search || filters.academicYear || filters.className || filters.month || filters.status) && (
             <button
               onClick={resetFilters}
-              className="flex-1 md:flex-none border border-slate-400 hover:bg-slate-50 text-slate-700 px-6 py-3 rounded-xl font-bold transition-all"
+                className="px-4 py-2.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl font-bold text-sm transition-all"
+                title="Clear Filters"
             >
-              Reset
+                Clear
             </button>
+            )}
           </div>
         </div>
       </div>

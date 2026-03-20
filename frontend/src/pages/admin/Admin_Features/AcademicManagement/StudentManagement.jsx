@@ -13,6 +13,8 @@ import {
   FaSearch,
   FaTimes,
   FaChartPie,
+  FaCheckCircle,
+  FaClock,
 } from "react-icons/fa";
 
 export default function StudentManagement() {
@@ -321,130 +323,162 @@ export default function StudentManagement() {
         )}
 
         {/* Student Table */}
-<div className="mt-6 rounded-2xl bg-white shadow-sm border border-slate-500 overflow-hidden">          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-800  text-white border-b border-slate-200">
+        <div className="mt-6 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-slate-800 text-white border-b border-slate-200">
                 <tr>
-                  <th className="p-4 text-left">
-                    <input
-                      type="checkbox"
-                      checked={
-                        students.length > 0 &&
-                        selectedStudents.length === students.length
-                      }
-                      onChange={toggleAll}
-                      className="h-4 w-4 rounded border-slate-300"
-                    />
+                  <th className="p-4 w-16">
+                    <div className="flex justify-center">
+                      <label className="relative flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={
+                            students.length > 0 &&
+                            selectedStudents.length === students.length
+                          }
+                          onChange={toggleAll}
+                          className="peer hidden"
+                        />
+                        <div className="h-5 w-5 rounded-md border-2 border-slate-300 bg-white peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-checked:after:absolute peer-checked:after:left-[6px] peer-checked:after:top-[2px] peer-checked:after:h-3 peer-checked:after:w-1.5 peer-checked:after:rotate-45 peer-checked:after:border-r-2 peer-checked:after:border-b-2 peer-checked:after:border-white transition-all"></div>
+                      </label>
+                    </div>
                   </th>
-                  <th className="p-4 text-left text-white text-sm font-semibold ">
+                  <th className="p-4 text-left font-semibold text-white uppercase tracking-wider text-xs">
                     Student
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-white">
+                  <th className="p-4 text-left font-semibold text-white uppercase tracking-wider text-xs">
                     Class
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-white">
+                  <th className="p-4 text-left font-semibold text-white uppercase tracking-wider text-xs">
                     Status
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-white">
+                  <th className="p-4 text-left font-semibold text-white uppercase tracking-wider text-xs">
                     Parent
                   </th>
-                  <th className="p-4 text-left text-sm font-bold text-white uppercase tracking-wider">
+                  <th className="p-4 text-left font-semibold text-white uppercase tracking-wider text-xs">
                     Final Result
                   </th>
-                  {/* <th className="p-4 text-left text-sm font-semibold text-slate-700">Actions</th> */}
                 </tr>
               </thead>
-              <tbody>
-                {students.map((student) => (
-                  <tr
-                    key={student._id}
-                   className="border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-150"
-                  >
-                    <td className="p-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedStudents.includes(student._id)}
-                        onChange={() => toggleStudent(student._id)}
-                        className="h-4 w-4 rounded border-slate-300"
-                      />
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold">
-                          {student.name?.charAt(0)}
+              <tbody className="divide-y divide-slate-100">
+                {students.map((student) => {
+                  const isSelected = selectedStudents.includes(student._id);
+                  return (
+                    <tr
+                      key={student._id}
+                      className={`transition-all duration-200 ${
+                        isSelected
+                          ? "bg-indigo-50/50"
+                          : "hover:bg-slate-50/80 hover:shadow-sm"
+                      }`}
+                    >
+                      <td className="p-4">
+                        <div className="flex justify-center">
+                          <label className="relative flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => toggleStudent(student._id)}
+                              className="peer hidden"
+                            />
+                            <div className="h-5 w-5 rounded-md border-2 border-slate-300 bg-white peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-checked:after:absolute peer-checked:after:left-[6px] peer-checked:after:top-[2px] peer-checked:after:h-3 peer-checked:after:w-1.5 peer-checked:after:rotate-45 peer-checked:after:border-r-2 peer-checked:after:border-b-2 peer-checked:after:border-white transition-all"></div>
+                          </label>
                         </div>
-
-                        <div>
-                          <p className="font-semibold text-slate-900">
-                            {student.name}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {student.studentID}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4 text-slate-700">
-                      {student.className}{" "}
-                      {student.section && `- ${student.section}`}
-                      {student.rollNumber && (
-                        <span className="block text-sm text-slate-500">
-                          Roll: {student.rollNumber}
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide${
-                          student.status === "ENROLLED"
-                            ? "bg-green-100 text-green-800"
-                            : student.status === "REGISTERED"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-slate-100 text-slate-800"
-                        }`}
-                      >
-                        {student.status}
-                      </span>
-                    </td>
-                    <td className="p-4 text-sm text-slate-700">
-                      {student.parentId?.name || "N/A"}
-                    </td>
-                    <td className="p-4">
-                      {student.finalResult ? (
-                        <div className="flex flex-col gap-1">
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
                           <div
-                            className={`px-3 py-1 rounded-full text-[10px] font-bold w-fit flex items-center gap-1.5 shadow-sm ${
-                              student.finalResult.result === "PASS"
-                                ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                                : "bg-rose-50 text-rose-600 border border-rose-100"
+                            className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm ${
+                              isSelected
+                                ? "bg-indigo-100 text-indigo-700"
+                                : "bg-blue-50 text-blue-600"
                             }`}
                           >
-                            <div
-                              className={`h-1.5 w-1.5 rounded-full ${student.finalResult.result === "PASS" ? "bg-emerald-500" : "bg-rose-500"}`}
-                            ></div>
-                            {student.finalResult.result} (
-                            {student.finalResult.overallPercentage}%)
+                            {student.name?.charAt(0)}
                           </div>
-                          {!student.finalResult.isPublished && (
-                            <span className="text-[9px] text-amber-500 font-bold uppercase italic px-1">
-                              ⚠️ Draft Mode
-                            </span>
+
+                          <div>
+                            <p className="font-bold text-slate-900">
+                              {student.name}
+                            </p>
+                            <p className="text-xs text-slate-500 font-medium">
+                              {student.studentID}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4 text-slate-700 font-medium">
+                        {student.className}{" "}
+                        {student.section && `- ${student.section}`}
+                        {student.rollNumber && (
+                          <span className="block text-xs text-slate-500 mt-0.5">
+                            Roll: {student.rollNumber}
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
+                            student.status === "ENROLLED"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : student.status === "REGISTERED"
+                                ? "bg-amber-50 text-amber-700 border-amber-200"
+                                : "bg-slate-50 text-slate-600 border-slate-200"
+                          }`}
+                        >
+                          {student.status === "ENROLLED" && (
+                            <FaCheckCircle
+                              size={10}
+                              className="text-emerald-500"
+                            />
                           )}
-                        </div>
-                      ) : (
-                        <div className="  text-amber-700 text-[10px] font-bold uppercase flex items-center gap-1 ">
-                          <div className="h-1 w-1 rounded-full bg-amber-200  border-amber-300"></div>
-                          Pending Generation
-                        </div>
-                      )}
-                    </td>
-                    {/* <td className="p-4">
-                      <button className="text-blue-600 hover:text-blue-700">
-                        <FaEdit />
-                      </button>
-                    </td> */}
-                  </tr>
-                ))}
+                          {student.status === "REGISTERED" && (
+                            <FaClock size={10} className="text-amber-500" />
+                          )}
+                          {student.status}
+                        </span>
+                      </td>
+                      <td className="p-4 text-sm text-slate-700 font-medium">
+                        {student.parentId?.name || "N/A"}
+                      </td>
+                      <td className="p-4">
+                        {student.finalResult ? (
+                          <div className="flex flex-col gap-1">
+                            <div
+                              className={`px-3 py-1 rounded-md text-[10px] font-bold w-fit flex items-center gap-1.5 shadow-sm border ${
+                                student.finalResult.result === "PASS"
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                  : "bg-rose-50 text-rose-700 border-rose-200"
+                              }`}
+                            >
+                              {student.finalResult.result === "PASS" ? (
+                                <FaCheckCircle
+                                  size={10}
+                                  className="text-emerald-500"
+                                />
+                              ) : (
+                                <FaTimes size={10} className="text-rose-500" />
+                              )}
+                              {student.finalResult.result} (
+                              {student.finalResult.overallPercentage}%)
+                            </div>
+                            {!student.finalResult.isPublished && (
+                              <span className="text-[9px] text-amber-600 font-bold uppercase mt-1 px-1">
+                                ⚠️ Draft
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-slate-400 text-[10px] font-bold uppercase flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                            Pending
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

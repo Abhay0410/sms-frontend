@@ -109,6 +109,7 @@ export default function AdminDashboardPage() {
       icon: <FaUserGraduate />,
       color: "bg-blue-600",
       sub: "Active Enrollment",
+      path: `/school/${schoolSlug}/admin/student-management`,
     },
     {
       label: "Teachers",
@@ -116,6 +117,7 @@ export default function AdminDashboardPage() {
       icon: <FaChalkboardTeacher />,
       color: "bg-indigo-600",
       sub: "Faculty Registry",
+      path: `/school/${schoolSlug}/admin/teacher-management`,
     },
     {
       label: "Classes",
@@ -123,6 +125,7 @@ export default function AdminDashboardPage() {
       icon: <FaBook />,
       color: "bg-emerald-600",
       sub: "Managed Grades",
+      path: `/school/${schoolSlug}/admin/class-management`,
     },
     {
       label: "Capacity",
@@ -130,6 +133,7 @@ export default function AdminDashboardPage() {
       icon: <FaChartPie />,
       color: "bg-orange-500",
       sub: "Campus Usage",
+      path: `/school/${schoolSlug}/admin/class-management`,
     },
   ];
 
@@ -159,32 +163,37 @@ export default function AdminDashboardPage() {
         </div>
         <button
           onClick={fetchRealStats}
-          className="p-4 bg-slate-50 rounded-2xl hover:bg-red-50 text-slate-400 hover:text-red-600 transition-all active:scale-95 shadow-inner"
+          className="p-4 bg-amber-500 text-white rounded-2xl hover:bg-amber-600 flex items-center justify-centertext-slate-400 hover:text-white transition-all active:scale-95 shadow-inner"
         >
           <FaSync size={18} />
         </button>
       </div>
 
       {/* Modern Analytics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {cards.map((card, i) => (
           <div
             key={i}
-            className="bg-white p-8 rounded-3xl border border-slate-400 shadow-xl shadow-slate-200/30 group hover:bg-slate-900 transition-all duration-500"
+            onClick={() => navigate(card.path)}
+            className="bg-white p-4 rounded-2xl border border-slate-400 shadow-sm hover:shadow-md group hover:bg-slate-900 transition-all duration-300 flex flex-col justify-between cursor-pointer"
           >
-            <div
-              className={`${card.color} h-14 w-14 rounded-2xl text-white flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform`}
-            >
-              {card.icon}
+            <div className="flex items-center justify-between mb-2">
+              <div
+                className={`${card.color} h-10 w-10 rounded-xl text-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform`}
+              >
+                {card.icon}
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 group-hover:text-white transition-colors tracking-tight">
+                {card.value}
+              </h3>
             </div>
-            <h3 className="text-4xl font-bold text-slate-900 group-hover:text-white transition-colors">
-              {card.value}
-            </h3>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 group-hover:text-slate-500">
-              {card.label}
-            </p>
-            <div className="mt-4 pt-4 border-t border-slate-50 group-hover:border-white/10">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">
+            <div>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-slate-300 transition-colors">
+                {card.label}
+              </p>
+            </div>
+            <div className="mt-2 pt-2 border-t border-slate-100 group-hover:border-slate-700 transition-colors">
+              <span className="text-[10px] font-semibold text-slate-400 group-hover:text-slate-400 uppercase tracking-wider">
                 {card.sub}
               </span>
             </div>
@@ -270,6 +279,9 @@ export default function AdminDashboardPage() {
               icon={<FaWallet />}
               label="Verify Fees"
               color="bg-rose-500"
+              onClick={() =>
+                navigate(`/school/${schoolSlug}/admin/fee-history`)
+              }
             />
             <div className="mt-10 p-6 bg-white/5 rounded-[2rem] border border-white/10">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">

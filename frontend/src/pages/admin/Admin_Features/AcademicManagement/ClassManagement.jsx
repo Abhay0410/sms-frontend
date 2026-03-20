@@ -515,100 +515,46 @@ export default function ClassManagement() {
         </div>
 
         {/* Main Selection Area - Clean Dropdowns */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Class Selector */}
-          <div className="bg-white rounded-xl border-1 border-slate-400 p-6 shadow-sm hover:border-slate-400">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-8 w-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-                <FaSchool className="text-indigo-600 text-sm" />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-slate-800">
-                  Select Class
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Choose a grade to manage
-                </p>
-              </div>
-            </div>
-
-            <div className="relative">
-              <select
-                value={activeClassName}
-                onChange={(e) => setActiveClassName(e.target.value)}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"
-              >
-                <option value="" disabled>
-                  Select a class...
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Select Class
+            </label>
+            <select
+              value={activeClassName || ""}
+              onChange={(e) => setActiveClassName(e.target.value)}
+              className="w-full rounded-xl border border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
+            >
+              <option value="" disabled>Choose a class</option>
+              {classes.map((cls) => (
+                <option key={cls._id} value={cls.className}>
+                  {cls.className}
                 </option>
-                {classes.map((cls) => (
-                  <option key={cls._id} value={cls.className}>
-                    {cls.className} ({cls.sections?.length || 0} sections)
-                  </option>
-                ))}
-              </select>
-              <FaChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
-            </div>
-
-            {activeClassName && (
-              <div className="mt-4 flex items-center gap-2">
-                <span className="h-2 w-2 bg-indigo-500 rounded-full animate-pulse"></span>
-                <span className="text-xs font-medium text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-lg">
-                  Managing • {activeClassName}
-                </span>
-              </div>
-            )}
+              ))}
+            </select>
           </div>
-
-          {/* Section Selector */}
-          <div className="bg-white rounded-xl border-1 border-slate-400  hover:border-slate-300 p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                <FaUsers className="text-blue-500 text-sm" />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-slate-800">
-                  Select Section
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Choose a section to view details
-                </p>
-              </div>
-            </div>
-
-            <div className="relative">
-              <select
-                value={selectedSection?._id || ""}
-                onChange={(e) => {
-                  const section = currentActiveClassData?.sections?.find(
-                    (s) => s._id === e.target.value,
-                  );
-                  setSelectedSection(section);
-                }}
-                disabled={!currentActiveClassData?.sections?.length}
-                className="w-full appearance-none bg-white border border-slate-200 text-slate-800 py-3 px-4 pr-10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 disabled:bg-slate-50 disabled:text-slate-400"
-              >
-                <option value="" disabled>
-                  Select a section...
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Select Section
+            </label>
+            <select
+              value={selectedSection?._id || ""}
+              onChange={(e) => {
+                const section = currentActiveClassData?.sections?.find(
+                  (s) => s._id === e.target.value,
+                );
+                setSelectedSection(section);
+              }}
+              className="w-full rounded-xl border border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
+              disabled={!currentActiveClassData?.sections?.length}
+            >
+              <option value="" disabled>Choose a section</option>
+              {currentActiveClassData?.sections?.map((section) => (
+                <option key={section._id} value={section._id}>
+                  Section {section.sectionName}
                 </option>
-                {currentActiveClassData?.sections?.map((sec) => (
-                  <option key={sec._id} value={sec._id}>
-                    Section {sec.sectionName} — {sec.currentStrength}/
-                    {sec.capacity} students
-                  </option>
-                ))}
-              </select>
-              <FaChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
-            </div>
-
-            {selectedSection && (
-              <div className="mt-4 flex items-center gap-2">
-                <span className="h-2 w-2 bg-blue-500 rounded-full animate-pulse"></span>
-                <span className="text-xs font-medium text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg">
-                  Active • Section {selectedSection.sectionName}
-                </span>
-              </div>
-            )}
+              ))}
+            </select>
           </div>
         </div>
 
@@ -635,7 +581,7 @@ export default function ClassManagement() {
                   </div>
                   <button
                     onClick={() => openManager(currentActiveClassData)}
-                    className="px-5 py-2.5 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 transition-all text-sm font-medium border-spacing-0.5 border-white flex items-center gap-2"
+                    className="px-5 py-2.5 bg-white  text-[#051224] rounded-lg hover:bg-indigo-800 transition-all text-sm font-medium border-spacing-0.5 border-white flex items-center gap-2"
                   >
                     <FaEdit size={14} />
                     Manage

@@ -427,23 +427,34 @@ export default function AdminResultManagement() {
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-purple-50">
+              <thead className="bg-slate-100 text-slate-600 border-b border-slate-400 text-sm">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-slate-900 w-12">
-                    <input type="checkbox" />
+                  <th className="p-4 text-center w-12">
+                    <input
+                      type="checkbox"
+                      checked={selectedResults.length === filteredResults.length && filteredResults.length > 0}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedResults(filteredResults.map(r => r._id));
+                        } else {
+                          setSelectedResults([]);
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer accent-purple-600"
+                    />
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-slate-900">Student</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-slate-900">Class</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-slate-900">Exam</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-slate-900">Marks</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-slate-900">%</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-slate-900">Grade</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-slate-900">Result</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-slate-900">Status</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-slate-900">Actions</th>
+                  <th className="p-4 text-left font-bold uppercase tracking-wider text-xs">Student</th>
+                  <th className="p-4 text-left font-bold uppercase tracking-wider text-xs">Class</th>
+                  <th className="p-4 text-left font-bold uppercase tracking-wider text-xs">Exam</th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Marks</th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">%</th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Grade</th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Result</th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Status</th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-400">
+              <tbody className="divide-y divide-slate-200 text-sm">
                 {filteredResults.length === 0 ? (
                   <tr>
                     <td colSpan="10" className="px-6 py-12 text-center text-slate-500">
@@ -452,8 +463,8 @@ export default function AdminResultManagement() {
                   </tr>
                 ) : (
                   filteredResults.map((result) => (
-                    <tr key={result._id} className="hover:bg-slate-50">
-                      <td className="px-6 py-4 text-center">
+                    <tr key={result._id} className={`transition-colors duration-150 ${selectedResults.includes(result._id) ? 'bg-purple-50/60' : 'hover:bg-slate-50'}`}>
+                      <td className="p-4 text-center">
                         <input
                           type="checkbox"
                           checked={selectedResults.includes(result._id)}
@@ -464,9 +475,10 @@ export default function AdminResultManagement() {
                               setSelectedResults(selectedResults.filter(id => id !== result._id));
                             }
                           }}
+                          className="h-4 w-4 rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer accent-purple-600"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <div>
                           <p className="font-semibold text-slate-900">{result.studentName}</p>
                           <p className="text-sm text-slate-600">
@@ -474,15 +486,15 @@ export default function AdminResultManagement() {
                           </p>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <p className="font-medium text-slate-900">{result.className}</p>
                         <p className="text-sm text-slate-600">Sec {result.section}</p>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <p className="font-medium text-slate-900">{result.examType}</p>
                         <p className="text-sm text-slate-600">{result.examYear}</p>
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="p-4 text-center">
                         <p className="font-bold">
                           {result.totalObtainedMarks}/{result.totalMaxMarks}
                         </p>
@@ -490,23 +502,23 @@ export default function AdminResultManagement() {
                           <p className="text-xs text-red-600">*{result.totalGraceMarks} grace</p>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="p-4 text-center">
                         <p className="text-lg font-bold text-purple-600">
                           {result.overallPercentage}%
                         </p>
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="p-4 text-center">
                         <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800 font-bold text-sm">
                           {result.overallGrade}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="p-4 text-center">
                         {getStatusBadge(result.result)}
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="p-4 text-center">
                         {getApprovalBadge(result.isApproved, result.isPublished)}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <div className="flex items-center justify-center gap-2 flex-wrap">
                           {/* <button
                             onClick={() => handleView(result._id)}

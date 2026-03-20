@@ -211,7 +211,7 @@ export default function TeacherManagement() {
       </div>
 
       {/* Top Bar - Floating */}
-      <div className="bg-white border-1 rounded-t-2xl border-slate-400 px-8 py-4 flex items-center justify-between gap-6 shadow-sm z-20 mt-6">
+      <div className="bg-slate-800 border rounded-t-2xl border-slate-400 px-8 py-4 flex items-center justify-between gap-6 shadow-sm z-20 mt-6">
         <div className="relative flex-1 max-w-2xl">
           <FaSearch
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
@@ -220,7 +220,7 @@ export default function TeacherManagement() {
           <input
             type="text"
             placeholder="Search by name, ID, email, or department..."
-            className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all text-sm font-medium"
+            className="w-full pl-11 pr-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl outline-none focus:ring-4 focus:ring-indigo-500/20 focus:bg-slate-600 transition-all text-sm font-medium text-white placeholder-white/80"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -228,7 +228,7 @@ export default function TeacherManagement() {
 
         <div className="flex items-center gap-4">
           <select
-            className="px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-600 outline-none cursor-pointer"
+            className="px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm font-medium text-white outline-none cursor-pointer"
             value={selectedDepartment}
             onChange={(e) => setSelectedDepartment(e.target.value)}
           >
@@ -242,7 +242,7 @@ export default function TeacherManagement() {
           <select
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
-            className="px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-600 outline-none cursor-pointer"
+            className="px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm font-medium text-white outline-none cursor-pointer"
           >
             <option value="2023-2024">2023-2024</option>
             <option value="2024-2025">2024-2025</option>
@@ -251,24 +251,24 @@ export default function TeacherManagement() {
 
           <button
             onClick={loadData}
-            className="p-2.5 bg-yellow-300 rounded-xl hover:bg-yellow-400 transition-all"
+            className="p-2.5 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-all shadow-sm"
           >
             <FaSync className={loading ? "animate-spin" : ""} size={16} />
           </button>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mr-2">
+            <span className="text-xs font-bold text-slate-300 uppercase tracking-widest mr-2">
               View:
             </span>
-            <div className="flex bg-slate-100 p-1 rounded-xl">
+            <div className="flex bg-slate-700 border border-slate-600 p-1 rounded-xl">
               <button
-                className={`p-2 rounded-lg ${viewMode === "list" ? "bg-white shadow-sm text-indigo-600" : "text-slate-400 hover:text-slate-600"}`}
+                className={`p-2 rounded-lg ${viewMode === "list" ? "bg-slate-600 shadow-sm text-white" : "text-slate-300 hover:text-white"}`}
                 onClick={() => setViewMode("list")}
               >
                 <FaList size={16} />
               </button>
               <button
-                className={`p-2 rounded-lg ${viewMode === "grid" ? "bg-white shadow-sm text-indigo-600" : "text-slate-400 hover:text-slate-600"}`}
+                className={`p-2 rounded-lg ${viewMode === "grid" ? "bg-slate-600 shadow-sm text-white" : "text-slate-300 hover:text-white"}`}
                 onClick={() => setViewMode("grid")}
               >
                 <FaThLarge size={16} />
@@ -279,7 +279,7 @@ export default function TeacherManagement() {
       </div>
 
       {/* Main Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden border border-t-0 border-slate-400 rounded-b-2xl mb-6 shadow-sm bg-white">
         {/* Left Sidebar - Fixed Width */}
         <div
           className={`bg-white border-r border-slate-400 flex flex-col transition-all duration-300 ${viewMode === "list" ? "w-full" : "w-[360px]"}`}
@@ -300,7 +300,7 @@ export default function TeacherManagement() {
                   // LIST VIEW ROW
                   <div
                     key={teacher._id}
-                    className="group flex items-center px-6 h-20 border border-slate-100 rounded-2xl hover:bg-indigo-50/30 hover:shadow-sm transition-all cursor-pointer bg-white"
+                    className="group flex items-center px-6 h-20 border border-slate-400 rounded-2xl hover:bg-indigo-50/30 hover:shadow-sm transition-all cursor-pointer bg-white"
                     onClick={() => {
                       setSelectedTeacher(teacher);
                       setViewMode("grid");
@@ -579,7 +579,7 @@ export default function TeacherManagement() {
                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
                   Schedule Summary
                 </h3>
-                <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                <div className="bg-white border border-slate-400 rounded-2xl overflow-hidden shadow-sm">
                   {loadingSchedule ? (
                     <div className="p-8 text-center">
                       <FaSpinner className="animate-spin text-indigo-600 text-2xl mx-auto mb-2" />
@@ -589,15 +589,15 @@ export default function TeacherManagement() {
                     </div>
                   ) : (
                     <table className="w-full text-[9px] text-center border-collapse">
-                      <thead className="bg-slate-50 border-b border-slate-100">
+                      <thead className="bg-slate-50 border-b border-slate-400">
                         <tr>
-                          <th className="p-3 border-r border-slate-100 font-bold text-slate-400">
+                          <th className="p-3 border-r border-slate-400 font-bold text-slate-400">
                             Day
                           </th>
                           {[1, 2, 3, 4, 5, 6, 7, 8].map((p) => (
                             <th
                               key={p}
-                              className="p-2 border-r border-slate-100 font-bold text-slate-400 w-[10%]"
+                              className="p-2 border-r border-slate-400 font-bold text-slate-400 w-[10%]"
                             >
                               P{p}
                             </th>
@@ -617,9 +617,9 @@ export default function TeacherManagement() {
                           return (
                             <tr
                               key={day}
-                              className="border-b border-slate-100 last:border-0 h-12"
+                              className="border-b border-slate-400 last:border-0 h-12"
                             >
-                              <td className="p-2 border-r border-slate-100 font-bold bg-slate-50/30 text-slate-500 uppercase tracking-widest text-[8px]">
+                              <td className="p-2 border-r border-slate-400 font-bold bg-slate-50/30 text-slate-500 uppercase tracking-widest text-[8px]">
                                 {day.slice(0, 3)}
                               </td>
                               {[1, 2, 3, 4, 5, 6, 7, 8].map((p) => {
@@ -629,7 +629,7 @@ export default function TeacherManagement() {
                                 return (
                                   <td
                                     key={p}
-                                    className="border-r border-slate-100 last:border-0 p-1 align-middle"
+                                    className="border-r border-slate-400 last:border-0 p-1 align-middle"
                                   >
                                     {period ? (
                                       <div className="bg-indigo-50/50 p-1 rounded-md h-full flex flex-col justify-center items-center">
@@ -665,7 +665,7 @@ export default function TeacherManagement() {
                   <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
                     Activity Feed
                   </h3>
-                  <div className="space-y-6 border-l-2 border-slate-100 ml-2 pl-6">
+                  <div className="space-y-6 border-l-2 border-slate-400 ml-2 pl-6">
                     {[
                       { text: "Graded 20 assignments", color: "bg-indigo-500" },
                       {
@@ -702,7 +702,7 @@ export default function TeacherManagement() {
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className="flex gap-4 items-start bg-slate-50 p-4 rounded-2xl border border-slate-100"
+                        className="flex gap-4 items-start bg-slate-50 p-4 rounded-2xl border border-slate-400"
                       >
                         <div className="h-2 w-2 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
                         <p className="text-[11px] text-slate-500 font-bold leading-relaxed">

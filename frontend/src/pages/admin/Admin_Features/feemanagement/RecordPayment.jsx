@@ -765,160 +765,62 @@ export default function RecordPayment() {
         </div>
       </div>
 
-      {/* Search & Filter Header */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-400 hover:shadow-md transition-all duration-300">
-        <div className="flex-1 w-full relative">
-          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-6 py-3 bg-slate-50 rounded-xl border border-slate-400 outline-none font-medium text-slate-700 transition-all focus:border-indigo-700"
-            placeholder="Search by student name, ID, or class..."
-          />
-        </div>
-      </div>
-
-      {/* Filters Section */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-all duration-300">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="h-14 w-14 bg-white text-purple-600 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300">
-              <FaFilter size={20} />
-            </div>
-            <div >
-              <h3 className="text-xl font-bold text-slate-900 ">
-                Filter Students
-              </h3>
-              <p className="text-slate-500 text-sm font-medium mt-1">
-                Select month and class to filter students
-              </p>
-            </div>
+      {/* Search & Filters Section */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-400 mb-6 transition-all duration-300 hover:shadow-md">
+        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          {/* Search Bar */}
+          <div className="w-full lg:flex-1 relative">
+            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-11 pr-4 py-3 bg-slate-50 rounded-xl border border-slate-300 outline-none font-medium text-slate-700 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+              placeholder="Search by student name, ID, or class..."
+            />
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="
-                  rounded-xl 
-                  border 
-                  border-slate-400 
-                  bg-white 
-                  pl-5 
-                  pr-10 
-                  py-3.5 
-                  font-bold 
-                  text-slate-700 
-                  outline-none 
-                  focus:ring-2 
-                  focus:ring-purple-500/20 
-                  focus:border-purple-500
-                  hover:border-slate-400
-                  transition-all
-                  shadow-sm
-                  appearance-none
-                  cursor-pointer
-                  min-w-[200px]
-                "
-              >
-                <option value="ALL">📊 Full Academic Year</option>
-                {MONTHS.map((m) => (
-                  <option key={m} value={m.toUpperCase()}>
-                    {m.toUpperCase() === getCurrentMonth()
-                      ? `📅 ${m} (Current)`
-                      : m}
-                  </option>
-                ))}
-              </select>
-
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
+          {/* Filter Dropdowns & Refresh */}
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+            <div className="flex items-center gap-2">
+              <FaFilter className="text-slate-400" />
+              <span className="text-sm font-bold text-slate-600 hidden sm:inline">Filters:</span>
             </div>
 
-            <div className="relative">
-              <select
-                value={selectedClass}
-                onChange={(e) => setSelectedClass(e.target.value)}
-                className="
-                  rounded-xl 
-                  border 
-                  border-slate-400 
-                  bg-white 
-                  pl-5 
-                  pr-10 
-                  py-3.5 
-                  font-bold 
-                  text-slate-700 
-                  outline-none 
-                  focus:ring-2 
-                  focus:ring-purple-500/20 
-                  focus:border-purple-500
-                  hover:border-slate-400
-                  transition-all
-                  shadow-sm
-                  appearance-none
-                  cursor-pointer
-                  min-w-[200px]
-                "
-              >
-                <option value="ALL">🏫 All Classes</option>
-                {classList.map((cls) => (
-                  <option key={cls._id} value={cls._id}>
-                    {cls.className}
-                  </option>
-                ))}
-              </select>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer min-w-[180px]"
+            >
+              <option value="ALL">📊 Full Academic Year</option>
+              {MONTHS.map((m) => (
+                <option key={m} value={m.toUpperCase()}>
+                  {m.toUpperCase() === getCurrentMonth() ? `📅 ${m} (Current)` : m}
+                </option>
+              ))}
+            </select>
 
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
+            <select
+              value={selectedClass}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer min-w-[160px]"
+            >
+              <option value="ALL">🏫 All Classes</option>
+              {classList.map((cls) => (
+                <option key={cls._id} value={cls._id}>
+                  {cls.className}
+                </option>
+              ))}
+            </select>
 
             <button
               onClick={() => loadStudents(1)}
               disabled={loading}
-              className="
-                h-14 w-14 
-                bg-amber-500 
-                text-white 
-                rounded-xl 
-                flex items-center justify-center 
-                hover:bg-amber-600 
-                transition-all duration-300
-                shadow-sm
-                hover:shadow-md
-                hover:scale-105
-              "
+              className="h-12 px-6 bg-amber-500 text-white rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-amber-600 transition-all duration-300 shadow-sm disabled:opacity-50"
               title="Refresh Students"
             >
-              <FiRefreshCw className={loading ? "animate-spin" : ""} size={20} />
+              <FiRefreshCw className={loading ? "animate-spin" : ""} size={16} />
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
         </div>
@@ -1807,5 +1709,6 @@ export default function RecordPayment() {
         </div>
       )}
     </div>
+    // </div>
   );
 }
