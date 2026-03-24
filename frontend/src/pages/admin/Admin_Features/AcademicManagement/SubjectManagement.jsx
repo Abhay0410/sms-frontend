@@ -39,6 +39,7 @@ export default function SubjectManagement() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [sessions, setSessions] = useState([]);
 
   function getCurrentAcademicYear() {
     const now = new Date();
@@ -96,6 +97,45 @@ export default function SubjectManagement() {
     }
   }, [academicYear]);
 
+  const fetchSessions = async () => {
+  try {
+    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+    console.log("FULL RES:", res);
+
+    // ✅ Always correct data
+   let sessionData = Array.isArray(res) ? res : res?.data || [];
+
+    // ✅ Remove duplicates (safe)
+    sessionData = sessionData.filter(
+      (s, index, self) =>
+        index ===
+        self.findIndex(
+          (x) =>
+            x.startYear === s.startYear &&
+            x.endYear === s.endYear
+        )
+    );
+
+    // ✅ Sort
+    sessionData.sort((a, b) => a.startYear - b.startYear);
+
+    console.log("FINAL SESSION DATA:", sessionData);
+
+    setSessions(sessionData);
+
+    // ✅ Active session select
+    const active = sessionData.find((s) => s?.isActive);
+
+    if (active) {
+      setAcademicYear(`${active.startYear}-${active.endYear}`);
+    }
+
+  } catch (err) {
+    console.error("Session fetch error", err);
+  }
+};
+
   const loadSubjects = useCallback(async () => {
     if (!selectedClass) return;
     try {
@@ -114,24 +154,28 @@ export default function SubjectManagement() {
   useEffect(() => {
     loadClasses();
   }, [loadClasses]);
-  
+
   useEffect(() => {
     if (selectedClass) loadSubjects();
+    fetchSessions();
   }, [selectedClass, loadSubjects]);
 
   // Filter available subjects
   const filteredSubjects = useMemo(() => {
     if (!subjectData?.availableSubjects) return [];
-    
-    return subjectData.availableSubjects.filter(sub => {
-      const matchesSearch = searchTerm === "" || 
+
+    return subjectData.availableSubjects.filter((sub) => {
+      const matchesSearch =
+        searchTerm === "" ||
         sub.subjectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (sub.subjectCode && sub.subjectCode.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-      const matchesType = filterType === "all" || 
+        (sub.subjectCode &&
+          sub.subjectCode.toLowerCase().includes(searchTerm.toLowerCase()));
+
+      const matchesType =
+        filterType === "all" ||
         (filterType === "core" && sub.isCore) ||
         (filterType === "elective" && !sub.isCore);
-      
+
       return matchesSearch && matchesType;
     });
   }, [subjectData, searchTerm, filterType]);
@@ -197,7 +241,7 @@ export default function SubjectManagement() {
   };
 
   const handleSelectAll = () => {
-    const allSubjectNames = filteredSubjects.map(s => s.subjectName);
+    const allSubjectNames = filteredSubjects.map((s) => s.subjectName);
     setSelectedSubjectsSet(new Set(allSubjectNames));
   };
 
@@ -230,10 +274,10 @@ export default function SubjectManagement() {
   const orderedSections = subjectData?.sections
     ? [
         ...subjectData.sections.filter(
-          (s) => s.sectionName === selectedSection
+          (s) => s.sectionName === selectedSection,
         ),
         ...subjectData.sections.filter(
-          (s) => s.sectionName !== selectedSection
+          (s) => s.sectionName !== selectedSection,
         ),
       ]
     : [];
@@ -271,11 +315,11 @@ export default function SubjectManagement() {
               <select
                 value={academicYear}
                 onChange={(e) => setAcademicYear(e.target.value)}
-                className="px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 bg-white"
+                className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate"
               >
-                {academicYears.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
+                {sessions?.map((s) => (
+                  <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                    {s.startYear}-{s.endYear}
                   </option>
                 ))}
               </select>
@@ -305,7 +349,9 @@ export default function SubjectManagement() {
               }}
               className="w-full rounded-xl border border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
             >
-              <option value="" disabled>Choose a class</option>
+              <option value="" disabled>
+                Choose a class
+              </option>
               {classes.map((cls) => (
                 <option key={cls._id} value={cls._id}>
                   {cls.className}
@@ -323,7 +369,9 @@ export default function SubjectManagement() {
               className="w-full rounded-xl border border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
               disabled={!subjectData?.sections?.length}
             >
-              <option value="" disabled>Choose a section</option>
+              <option value="" disabled>
+                Choose a section
+              </option>
               {subjectData?.sections?.map((sec) => (
                 <option key={sec.sectionName} value={sec.sectionName}>
                   Section {sec.sectionName}
@@ -350,11 +398,14 @@ export default function SubjectManagement() {
                       {filteredSubjects.length} subjects
                     </span>
                   </div>
-                  
+
                   {/* Search & Filters */}
                   <div className="space-y-3">
                     <div className="relative">
-                      <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={12} />
+                      <FaSearch
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                        size={12}
+                      />
                       <input
                         type="text"
                         placeholder="Search subjects..."
@@ -363,7 +414,7 @@ export default function SubjectManagement() {
                         className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
                       />
                     </div>
-                    
+
                     <div className="flex gap-2">
                       <select
                         value={filterType}
@@ -374,7 +425,7 @@ export default function SubjectManagement() {
                         <option value="core">Core Subjects</option>
                         <option value="elective">Electives</option>
                       </select>
-                      
+
                       {filteredSubjects.length > 0 && (
                         <button
                           onClick={handleSelectAll}
@@ -394,19 +445,25 @@ export default function SubjectManagement() {
                       filteredSubjects.map((sub) => (
                         <div
                           key={sub.subjectName}
-                          onClick={() => toggleSubjectSelection(sub.subjectName)}
+                          onClick={() =>
+                            toggleSubjectSelection(sub.subjectName)
+                          }
                           className={`flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer ${
                             selectedSubjectsSet.has(sub.subjectName)
                               ? "bg-blue-50 border-blue-200"
                               : "border-transparent hover:bg-slate-50 hover:border-slate-200"
                           }`}
                         >
-                          <div className={`h-5 w-5 rounded border flex items-center justify-center flex-shrink-0 transition-all ${
-                            selectedSubjectsSet.has(sub.subjectName)
-                              ? "bg-gradient-to-r from-blue-500 to-blue-600 border-blue-600 text-white"
-                              : "border-slate-300 bg-white"
-                          }`}>
-                            {selectedSubjectsSet.has(sub.subjectName) && <FaCheck size={10} />}
+                          <div
+                            className={`h-5 w-5 rounded border flex items-center justify-center flex-shrink-0 transition-all ${
+                              selectedSubjectsSet.has(sub.subjectName)
+                                ? "bg-gradient-to-r from-blue-500 to-blue-600 border-blue-600 text-white"
+                                : "border-slate-300 bg-white"
+                            }`}
+                          >
+                            {selectedSubjectsSet.has(sub.subjectName) && (
+                              <FaCheck size={10} />
+                            )}
                           </div>
 
                           <div className="flex-1 min-w-0">
@@ -415,18 +472,28 @@ export default function SubjectManagement() {
                                 {sub.subjectName}
                               </span>
                               {sub.isCore ? (
-                                <FaStar className="text-blue-500 flex-shrink-0" size={10} />
+                                <FaStar
+                                  className="text-blue-500 flex-shrink-0"
+                                  size={10}
+                                />
                               ) : (
-                                <FaRegStar className="text-slate-300 flex-shrink-0" size={10} />
+                                <FaRegStar
+                                  className="text-slate-300 flex-shrink-0"
+                                  size={10}
+                                />
                               )}
                             </div>
                             {sub.subjectCode && (
-                              <p className="text-xs text-slate-500 font-mono">{sub.subjectCode}</p>
+                              <p className="text-xs text-slate-500 font-mono">
+                                {sub.subjectCode}
+                              </p>
                             )}
                           </div>
 
                           <button
-                            onClick={(e) => handleRemoveFromMaster(e, sub.subjectName)}
+                            onClick={(e) =>
+                              handleRemoveFromMaster(e, sub.subjectName)
+                            }
                             className="p-1.5 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded transition-all"
                           >
                             <FaTrash size={10} />
@@ -436,7 +503,9 @@ export default function SubjectManagement() {
                     ) : (
                       <div className="py-12 text-center">
                         <FaBook className="text-3xl text-slate-200 mx-auto mb-2" />
-                        <p className="text-sm text-slate-400">No subjects found</p>
+                        <p className="text-sm text-slate-400">
+                          No subjects found
+                        </p>
                       </div>
                     )}
                   </div>
@@ -447,7 +516,8 @@ export default function SubjectManagement() {
                   {selectedSubjectsSet.size > 0 && (
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm text-slate-600">
-                        {selectedSubjectsSet.size} subject{selectedSubjectsSet.size > 1 ? 's' : ''} selected
+                        {selectedSubjectsSet.size} subject
+                        {selectedSubjectsSet.size > 1 ? "s" : ""} selected
                       </span>
                       <button
                         onClick={handleClearSelection}
@@ -459,7 +529,11 @@ export default function SubjectManagement() {
                   )}
 
                   <button
-                    disabled={!selectedSection || selectedSubjectsSet.size === 0 || assignLoading}
+                    disabled={
+                      !selectedSection ||
+                      selectedSubjectsSet.size === 0 ||
+                      assignLoading
+                    }
                     onClick={handleAssign}
                     className="w-full px-4 py-3 bg-indigo-700 text-white rounded-lg  transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
@@ -488,11 +562,16 @@ export default function SubjectManagement() {
                     section={section}
                     classId={selectedClass._id}
                     onRemove={async (subjectName) => {
-                      if (!window.confirm(`Remove ${subjectName} from Section ${section.sectionName}?`))
+                      if (
+                        !window.confirm(
+                          `Remove ${subjectName} from Section ${section.sectionName}?`,
+                        )
+                      )
                         return;
                       try {
                         await api.delete(
-                          API_ENDPOINTS.ADMIN.SUBJECT_MANAGEMENT.REMOVE_FROM_SECTIONS,
+                          API_ENDPOINTS.ADMIN.SUBJECT_MANAGEMENT
+                            .REMOVE_FROM_SECTIONS,
                           {
                             data: {
                               classId: selectedClass._id,
@@ -515,7 +594,9 @@ export default function SubjectManagement() {
                   <div className="h-16 w-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <FaChalkboard className="text-3xl text-slate-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-700 mb-2">No Sections Found</h3>
+                  <h3 className="text-lg font-semibold text-slate-700 mb-2">
+                    No Sections Found
+                  </h3>
                   <p className="text-sm text-slate-500 max-w-md mx-auto">
                     Create sections in Class Management first to assign subjects
                   </p>
@@ -528,9 +609,12 @@ export default function SubjectManagement() {
             <div className="h-20 w-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <FaChalkboard className="text-4xl text-slate-400" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-2">No Grade Selected</h3>
+            <h3 className="text-xl font-semibold text-slate-700 mb-2">
+              No Grade Selected
+            </h3>
             <p className="text-sm text-slate-500 max-w-md mx-auto">
-              Please select a grade from the dropdown above to view and manage its curriculum
+              Please select a grade from the dropdown above to view and manage
+              its curriculum
             </p>
           </div>
         )}
@@ -555,22 +639,33 @@ export default function SubjectManagement() {
 // Section Card Component
 function SectionCard({ section, onRemove, isActive }) {
   return (
-    <div className={`bg-white rounded-2xl border-1 transition-all  ${
-      isActive ? 'border-slate-400  border-1  ' : 'border-slate-400 border-1 hover:shadow-sm '
-    }`}>
+    <div
+      className={`bg-white rounded-2xl border-1 transition-all  ${
+        isActive
+          ? "border-slate-400  border-1  "
+          : "border-slate-400 border-1 hover:shadow-sm "
+      }`}
+    >
       {/* Header */}
-      <div className={`px-5 py-4 border-b  bg-slate-100 rounded-t-2xl  ${isActive ? '  border-blue-200' : ' border-slate-100'}`}>
+      <div
+        className={`px-5 py-4 border-b  bg-slate-100 rounded-t-2xl  ${isActive ? "  border-blue-200" : " border-slate-100"}`}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
-              isActive ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'bg-blue-500 text-white'
-            }`}>
+            <div
+              className={`h-8 w-8 rounded-lg flex items-center justify-center ${
+                isActive
+                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+                  : "bg-blue-500 text-white"
+              }`}
+            >
               <span className="text-sm  font-bold">{section.sectionName}</span>
             </div>
             <div>
               <h4 className="font-semibold">Section {section.sectionName}</h4>
               <p className="text-xs text-slate-500">
-                {section.subjects?.length || 0} subject{section.subjects?.length !== 1 ? 's' : ''}
+                {section.subjects?.length || 0} subject
+                {section.subjects?.length !== 1 ? "s" : ""}
               </p>
             </div>
           </div>
@@ -596,10 +691,14 @@ function SectionCard({ section, onRemove, isActive }) {
                     <FaBook className="text-white text-xs" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm text-slate-800">{sub.subjectName}</p>
+                    <p className="font-medium text-sm text-slate-800">
+                      {sub.subjectName}
+                    </p>
                     <div className="flex items-center gap-2 mt-0.5">
                       {sub.subjectCode && (
-                        <span className="text-xs text-slate-500 font-mono">{sub.subjectCode}</span>
+                        <span className="text-xs text-slate-500 font-mono">
+                          {sub.subjectCode}
+                        </span>
                       )}
                       <span className="flex items-center gap-1 text-xs text-slate-400">
                         <FaClock size={10} />
@@ -667,7 +766,9 @@ function AddSubjectModal({ classId, className, onClose, onSuccess }) {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold">Add New Subject</h3>
-              <p className="text-slate-400 text-sm mt-1">to Master Pool • {className}</p>
+              <p className="text-slate-400 text-sm mt-1">
+                to Master Pool • {className}
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -687,7 +788,9 @@ function AddSubjectModal({ classId, className, onClose, onSuccess }) {
             <input
               type="text"
               value={form.subjectName}
-              onChange={(e) => setForm({ ...form, subjectName: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, subjectName: e.target.value })
+              }
               placeholder="e.g. Physics, History"
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
               required
@@ -702,7 +805,9 @@ function AddSubjectModal({ classId, className, onClose, onSuccess }) {
             <input
               type="text"
               value={form.subjectCode}
-              onChange={(e) => setForm({ ...form, subjectCode: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, subjectCode: e.target.value })
+              }
               placeholder="e.g. PHY-101"
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
             />

@@ -58,6 +58,7 @@ export default function FeeOverview() {
   const [selectedList, setSelectedList] = useState(null);
   const [studentList, setStudentList] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
+  const[session, setSession] = useState(null);
 
   const getFormattedMonth = useCallback(() =>
     selectedMonth !== "ALL"
@@ -116,6 +117,45 @@ export default function FeeOverview() {
       console.error("Failed to load fee context", err);
     }
   }, [academicYear, selectedClass, getFormattedMonth]);
+
+  const fetchSessions = async () => {
+  try {
+    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+    console.log("FULL RES:", res);
+
+    // ✅ Always correct data
+   let sessionData = Array.isArray(res) ? res : res?.data || [];
+
+    // ✅ Remove duplicates (safe)
+    sessionData = sessionData.filter(
+      (s, index, self) =>
+        index ===
+        self.findIndex(
+          (x) =>
+            x.startYear === s.startYear &&
+            x.endYear === s.endYear
+        )
+    );
+
+    // ✅ Sort
+    sessionData.sort((a, b) => a.startYear - b.startYear);
+
+    console.log("FINAL SESSION DATA:", sessionData);
+
+    setSession(sessionData);
+
+    // ✅ Active session select
+    const active = sessionData.find((s) => s?.isActive);
+
+    if (active) {
+      setAcademicYear(`${active.startYear}-${active.endYear}`);
+    }
+
+  } catch (err) {
+    console.error("Session fetch error", err);
+  }
+};
 
   const loadStatistics = useCallback(async () => {
     try {
@@ -211,6 +251,7 @@ export default function FeeOverview() {
 useEffect(() => {
   if (academicYear) {
     loadClasses();
+    fetchSessions();
   }
 }, [academicYear, loadClasses]);
 
@@ -247,14 +288,14 @@ useEffect(() => {
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">
             Session:
           </span>
-          <select
+           <select
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
-            className="bg-transparent border-none text-slate-900 text-sm font-bold focus:ring-0 cursor-pointer outline-none p-0 pr-6"
+            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
           >
-            {academicYears.map((year) => (
-              <option key={year} value={year}>
-                {year}
+            {session?.map((s) => (
+              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                {s.startYear}-{s.endYear}
               </option>
             ))}
           </select>

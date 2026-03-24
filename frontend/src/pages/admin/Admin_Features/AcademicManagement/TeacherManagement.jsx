@@ -42,6 +42,8 @@ export default function TeacherManagement() {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assignmentType, setAssignmentType] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sessions, setSessions] = useState([]);
+
   const itemsPerPage = 10;
 
   const DEPARTMENTS = [
@@ -100,39 +102,97 @@ export default function TeacherManagement() {
     }
   }, [academicYear, selectedTeacher]);
 
-  // ✅ FIXED: Schedule Fetching with correct API
-  const fetchTeacherSchedule = useCallback(async (teacherId) => {
-    try {
-      setLoadingSchedule(true);
-      // Using the exact API you mentioned
-      const resp = await api.get(`${API_ENDPOINTS.ADMIN.TEACHER_MANAGEMENT.GET_SCHEDULE(teacherId)}&academicYear=${academicYear}`);
-      
-      // Extract schedule data from response
-      const scheduleData = resp.data?.schedule || resp.schedule || {};
-      
-      // Ensure all days exist
-      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-      const formattedSchedule = {};
-      days.forEach(day => {
-        formattedSchedule[day] = scheduleData[day] || [];
-      });
-      
-      setTeacherSchedule(formattedSchedule);
-    } catch (error) {
-      console.error("Schedule fetch failed:", error);
-      // Create empty schedule structure
-      const emptySchedule = {};
-      ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].forEach(day => {
-        emptySchedule[day] = [];
-      });
-      setTeacherSchedule(emptySchedule);
-    } finally {
-      setLoadingSchedule(false);
+const fetchSessions = async () => {
+  try {
+    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+    console.log("FULL RES:", res);
+
+    // ✅ Always correct data
+   let sessionData = Array.isArray(res) ? res : res?.data || [];
+
+    // ✅ Remove duplicates (safe)
+    sessionData = sessionData.filter(
+      (s, index, self) =>
+        index ===
+        self.findIndex(
+          (x) =>
+            x.startYear === s.startYear &&
+            x.endYear === s.endYear
+        )
+    );
+
+    // ✅ Sort
+    sessionData.sort((a, b) => a.startYear - b.startYear);
+
+    console.log("FINAL SESSION DATA:", sessionData);
+
+    setSessions(sessionData);
+
+    // ✅ Active session select
+    const active = sessionData.find((s) => s?.isActive);
+
+    if (active) {
+      setAcademicYear(`${active.startYear}-${active.endYear}`);
     }
-  }, [academicYear]);
+
+  } catch (err) {
+    console.error("Session fetch error", err);
+  }
+};
+  // ✅ FIXED: Schedule Fetching with correct API
+  const fetchTeacherSchedule = useCallback(
+    async (teacherId) => {
+      try {
+        setLoadingSchedule(true);
+        // Using the exact API you mentioned
+        const resp = await api.get(
+          `${API_ENDPOINTS.ADMIN.TEACHER_MANAGEMENT.GET_SCHEDULE(teacherId)}&academicYear=${academicYear}`,
+        );
+
+        // Extract schedule data from response
+        const scheduleData = resp.data?.schedule || resp.schedule || {};
+
+        // Ensure all days exist
+        const days = [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        const formattedSchedule = {};
+        days.forEach((day) => {
+          formattedSchedule[day] = scheduleData[day] || [];
+        });
+
+        setTeacherSchedule(formattedSchedule);
+      } catch (error) {
+        console.error("Schedule fetch failed:", error);
+        // Create empty schedule structure
+        const emptySchedule = {};
+        [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ].forEach((day) => {
+          emptySchedule[day] = [];
+        });
+        setTeacherSchedule(emptySchedule);
+      } finally {
+        setLoadingSchedule(false);
+      }
+    },
+    [academicYear],
+  );
 
   useEffect(() => {
     loadData();
+    fetchSessions();
   }, [loadData]);
 
   useEffect(() => {
@@ -242,11 +302,13 @@ export default function TeacherManagement() {
           <select
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
-            className="px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm font-medium text-white outline-none cursor-pointer"
+            className="px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm font-medium text-white"
           >
-            <option value="2023-2024">2023-2024</option>
-            <option value="2024-2025">2024-2025</option>
-            <option value="2025-2026">2025-2026</option>
+            {sessions?.map((s) => (
+              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                {s.startYear}-{s.endYear}
+              </option>
+            ))}
           </select>
 
           <button

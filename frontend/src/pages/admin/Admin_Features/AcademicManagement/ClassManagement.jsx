@@ -61,6 +61,7 @@ export default function ClassManagement() {
   const [error, setError] = useState(null);
   const scrollContainerRef = useRef(null);
   const sectionsAreaRef = useRef(null);
+  const [sessions, setSessions] = useState([]);
 
   const [selectedSection, setSelectedSection] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,6 +110,46 @@ export default function ClassManagement() {
     });
   }, []);
 
+ const fetchSessions = async () => {
+   try {
+     const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+ 
+     console.log("FULL RES:", res);
+ 
+     // ✅ Always correct data
+    let sessionData = Array.isArray(res) ? res : res?.data || [];
+ 
+     // ✅ Remove duplicates (safe)
+     sessionData = sessionData.filter(
+       (s, index, self) =>
+         index ===
+         self.findIndex(
+           (x) =>
+             x.startYear === s.startYear &&
+             x.endYear === s.endYear
+         )
+     );
+ 
+     // ✅ Sort
+     sessionData.sort((a, b) => a.startYear - b.startYear);
+ 
+     console.log("FINAL SESSION DATA:", sessionData);
+ 
+     setSessions(sessionData);
+ 
+     // ✅ Active session select
+     const active = sessionData.find((s) => s?.isActive);
+ 
+     if (active) {
+       setAcademicYear(`${active.startYear}-${active.endYear}`);
+     }
+ 
+   } catch (err) {
+     console.error("Session fetch error", err);
+   }
+ };
+
+
   const loadClasses = useCallback(
     async (retryCount = 0) => {
       try {
@@ -155,6 +196,7 @@ export default function ClassManagement() {
 
   useEffect(() => {
     loadClasses();
+    fetchSessions();
   }, [loadClasses]);
 
   useEffect(() => {
@@ -443,17 +485,17 @@ export default function ClassManagement() {
                 Sync Session
               </button>
 
-              <select
-                value={academicYear}
-                onChange={(e) => setAcademicYear(e.target.value)}
-                className="px-5 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 bg-white"
-              >
-                {academicYears.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+             <select
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate"
+          >
+            {sessions?.map((s) => (
+              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                {s.startYear}-{s.endYear}
+              </option>
+            ))}
+          </select>
 
               <button
                 onClick={() => setShowCreateModal(true)}

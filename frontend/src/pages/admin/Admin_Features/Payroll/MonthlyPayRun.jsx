@@ -16,6 +16,8 @@ export default function MonthlyPayRun() {
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const [academicYear, setAcademicYear] = useState("2025-2026");
+  const[session, setSession] = useState([]);
 
   // New state for extra earnings
   const [extraEarnings, setExtraEarnings] = useState({}); // Structure: { teacherId: { amount: 0, remark: "" } }
@@ -126,8 +128,35 @@ export default function MonthlyPayRun() {
     }
   }, [selectedMonth, selectedYear]);
 
+   const fetchSessions = async () => {
+  try {
+    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+    console.log("SESSION API RESPONSE:", res);
+
+    // ✅ handle multiple possible structures
+    const sessionData =
+      res?.data?.sessions || 
+      res?.data || 
+      res || 
+      [];
+
+    setSession(sessionData);
+
+    // ✅ safe find
+    const active = sessionData?.find((s) => s?.isActive);
+
+    if (active) {
+      setAcademicYear(active.endYear);
+    }
+  } catch (err) {
+    console.error("Session fetch error", err);
+  }
+};
+
   useEffect(() => {
     loadData();
+    fetchSessions();
   }, [loadData]);
 
   // 2. Generate Individual Salary Slip
@@ -389,9 +418,19 @@ const handleDownloadPDF = async (slipId) => {
             <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} className="bg-white border border-slate-400 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500">
               {monthNames.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
             </select>
-            <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="bg-white border border-slate-400 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500">
-              {[2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
+            
+            <select
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
+          >
+            {session?.map((s) => (
+              <option key={s._id} value={s.endYear}>
+        {s.endYear}
+              </option>
+            ))}
+          </select>
+
           </div>
         </div>
         <div className="flex gap-3">

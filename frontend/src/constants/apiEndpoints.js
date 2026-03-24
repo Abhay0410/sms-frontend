@@ -472,4 +472,16 @@ export const API_ENDPOINTS = {
     GET_IMAGE: (filename) => `/api/uploads/${filename}`,
     SEARCH: "/api/search",
   },
+
+  // ======================================== 
+  // Session
+  // ========================================
+
+  SESSION: {
+    GET_All_SESSION: `/api/session/all`,
+    GET_ACTIVE_SESSION: `/api/session/active`,
+    CREATE_SESSION :`/api/session/create`,
+    UPDATE_SESSiON :(id)=>`/api/session/${id}`
+  },
+
 };

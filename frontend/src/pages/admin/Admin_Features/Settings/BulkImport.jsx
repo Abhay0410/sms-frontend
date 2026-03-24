@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import api from "../../../../services/api";
+import api, { API_ENDPOINTS } from "../../../../services/api";
 import { 
   FaCloudUploadAlt, FaFileCsv, FaInfoCircle, 
   FaCheckCircle, FaSpinner, FaDownload, FaUniversity,
@@ -12,6 +12,7 @@ export default function BulkImport() {
   const [importType, setImportType] = useState("academic"); // Default changed to Academic first
   const [loading, setLoading] = useState(false);
   const [academicYear, setAcademicYear] = useState("2025-2026");
+  const[session, setSession] = useState([]);
 
   const sampleData = {
     academic: "ClassName,ClassNumeric,SectionName,Subjects,Capacity\n10,10,A,\"Math,Science,English\",40\n9,9,B,\"Hindi,SST\",35",
@@ -59,6 +60,7 @@ export default function BulkImport() {
     setFile(selectedFile);
   };
 
+
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!file) return toast.warning("Please select a file first");
@@ -87,6 +89,116 @@ export default function BulkImport() {
       setLoading(false);
     }
   };
+
+//  const fetchSessions = async () => {
+//   try {
+//     // const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+//     const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION, {
+//   headers: {
+//     "Cache-Control": "no-cache",
+//   },
+// });
+//     console.log(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+//   const sessionData = res?.data || [];
+
+//     const currentYear = new Date().getFullYear();
+
+//     // ✅ filter: past 2 + present + next 3
+//     sessionData = sessionData.filter(
+//       (s) =>
+//         s.startYear >= currentYear - 2 &&
+//         s.startYear <= currentYear + 3
+//     );
+
+//     // ✅ sort
+//     sessionData.sort((a, b) => a.startYear - b.startYear);
+
+//     setSession(sessionData);
+
+//     // ✅ active select
+//     const active = sessionData.find((s) => s?.isActive);
+
+//     if (active) {
+//       setAcademicYear(`${active.startYear}-${active.endYear}`);
+//     } else if (sessionData.length > 0) {
+//       const latest = sessionData[sessionData.length - 1];
+//       setAcademicYear(`${latest.startYear}-${latest.endYear}`);
+//     }
+
+//   } catch (err) {
+//     console.error("Session fetch error", err);
+//   }
+// };
+
+// const fetchSessions = async () => {
+//   try {
+//     const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+// console.log("FULL RES:", res);
+
+// // 🔥 handle both cases
+// const sessionData = Array.isArray(res) ? res : res?.data || [];
+
+// console.log("SESSION DATA:", sessionData);
+
+// setSession(sessionData);
+  
+
+//     const active = sessionData.find((s) => s?.isActive);
+
+//     if (active) {
+//       setAcademicYear(`${active.startYear}-${active.endYear}`);
+//     }
+
+//   } catch (err) {
+//     console.error("Session fetch error", err);
+//   }
+// };
+
+const fetchSessions = async () => {
+  try {
+    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+    console.log("FULL RES:", res);
+
+    // ✅ Always correct data
+   let sessionData = Array.isArray(res) ? res : res?.data || [];
+
+    // ✅ Remove duplicates (safe)
+    sessionData = sessionData.filter(
+      (s, index, self) =>
+        index ===
+        self.findIndex(
+          (x) =>
+            x.startYear === s.startYear &&
+            x.endYear === s.endYear
+        )
+    );
+
+    // ✅ Sort
+    sessionData.sort((a, b) => a.startYear - b.startYear);
+
+    console.log("FINAL SESSION DATA:", sessionData);
+
+    setSession(sessionData);
+
+    // ✅ Active session select
+    const active = sessionData.find((s) => s?.isActive);
+
+    if (active) {
+      setAcademicYear(`${active.startYear}-${active.endYear}`);
+    }
+
+  } catch (err) {
+    console.error("Session fetch error", err);
+  }
+};
+
+useEffect(() => {
+    fetchSessions();
+  }, []);
+
 
   const handleDownloadSample = () => {
     try {
@@ -168,14 +280,17 @@ export default function BulkImport() {
 
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Target Academic Session</label>
-                  <select 
-                    value={academicYear} 
-                    onChange={(e) => setAcademicYear(e.target.value)}
-                    className="w-full bg-slate-50 border-none rounded-2xl p-5 font-bold text-slate-700 outline-none focus:ring-2 ring-indigo-500/20"
-                  >
-                    <option>2024-2025</option>
-                    <option>2025-2026</option>
-                  </select>
+                  <select
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
+          >
+            {session?.map((s) => (
+              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                {s.startYear}-{s.endYear}
+              </option>
+            ))}
+          </select>
                 </div>
               </div>
 

@@ -23,6 +23,7 @@ export default function PaymentHistory() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [academicYear, setAcademicYear] = useState(["2025-2026"]);
   const [filters, setFilters] = useState({
     academicYear: "",
     status: "",
@@ -45,6 +46,7 @@ export default function PaymentHistory() {
   const [receiptModal, setReceiptModal] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [downloadLoading, setDownloadLoading] = useState(null);
+  const[session, setSession] = useState(null);
   
   // ✅ CHANGE ITEMS PER PAGE HERE:
   const itemsPerPage = 7;
@@ -79,6 +81,45 @@ export default function PaymentHistory() {
       setLoading(false);
     }
   }, [filters, itemsPerPage]);
+
+   const fetchSessions = async () => {
+  try {
+    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+    console.log("FULL RES:", res);
+
+    // ✅ Always correct data
+   let sessionData = Array.isArray(res) ? res : res?.data || [];
+
+    // ✅ Remove duplicates (safe)
+    sessionData = sessionData.filter(
+      (s, index, self) =>
+        index ===
+        self.findIndex(
+          (x) =>
+            x.startYear === s.startYear &&
+            x.endYear === s.endYear
+        )
+    );
+
+    // ✅ Sort
+    sessionData.sort((a, b) => a.startYear - b.startYear);
+
+    console.log("FINAL SESSION DATA:", sessionData);
+
+    setSession(sessionData);
+
+    // ✅ Active session select
+    const active = sessionData.find((s) => s?.isActive);
+
+    if (active) {
+      setAcademicYear(`${active.startYear}-${active.endYear}`);
+    }
+
+  } catch (err) {
+    console.error("Session fetch error", err);
+  }
+};
 
   // Fetch filter options
   const fetchFilterOptions = async () => {
@@ -276,6 +317,7 @@ export default function PaymentHistory() {
   useEffect(() => {
     fetchFilterOptions();
     fetchPayments(1);
+    fetchSessions();
   }, [fetchPayments]);
 
   return (
@@ -355,7 +397,7 @@ export default function PaymentHistory() {
               <span className="text-sm font-bold text-slate-600 hidden sm:inline">Filters:</span>
             </div>
 
-            <select
+            {/* <select
               value={filters.academicYear}
               onChange={(e) => handleFilterChange("academicYear", e.target.value)}
               className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
@@ -364,7 +406,21 @@ export default function PaymentHistory() {
               {academicYears.map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
-            </select>
+            </select> */}
+             <select
+            value={academicYears}
+            onChange={(e) => academicYears(e.target.value)}
+            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate-900"
+          >
+            
+              <option value="">All Years</option>
+            {session?.map((s) => (
+              
+              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                {s.startYear}-{s.endYear}
+              </option>
+            ))}
+          </select>
 
             <select
               value={filters.className}

@@ -22,11 +22,13 @@ export default function StudentManagement() {
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [academicYear, setAcademicYear] = useState("2025-2026");  
   const [filters, setFilters] = useState({
     status: "",
     className: "",
     section: "",
-    academicYear: getCurrentAcademicYear(),
+    academicYear: "",
     search: "",
   });
   const [showPromoteModal, setShowPromoteModal] = useState(false);
@@ -42,6 +44,49 @@ export default function StudentManagement() {
     const month = now.getMonth();
     return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
   }
+
+  const fetchSessions = async () => {
+  try {
+    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+    console.log("FULL RES:", res);
+
+    // ✅ Always correct data
+   let sessionData = Array.isArray(res) ? res : res?.data || [];
+
+    // ✅ Remove duplicates (safe)
+    sessionData = sessionData.filter(
+      (s, index, self) =>
+        index ===
+        self.findIndex(
+          (x) =>
+            x.startYear === s.startYear &&
+            x.endYear === s.endYear
+        )
+    );
+
+    // ✅ Sort
+    sessionData.sort((a, b) => a.startYear - b.startYear);
+
+    console.log("FINAL SESSION DATA:", sessionData);
+
+    setSessions(sessionData);
+
+    // ✅ Active session select
+    const active = sessionData.find((s) => s?.isActive);
+
+    if (active) {
+      setAcademicYear(`${active.startYear}-${active.endYear}`);
+    }
+
+  } catch (err) {
+    console.error("Session fetch error", err);
+  }
+};
+
+  useEffect(() => {
+    fetchSessions();
+  }, []);
 
   const loadData = useCallback(async () => {
     try {
@@ -219,9 +264,13 @@ export default function StudentManagement() {
                 }
                 className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition"
               >
-                <option value="2023-2024">2023-2024</option>
-                <option value="2024-2025">2024-2025</option>
-                <option value="2025-2026">2025-2026</option>
+                <option value="">Select Session</option>
+
+                {sessions.map((s) => (
+                  <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                    {s.startYear}-{s.endYear} {s.isActive ? "(Current)" : ""}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -537,6 +586,7 @@ export default function StudentManagement() {
             }}
             studentIds={selectedStudents}
             students={students}
+            sessions={sessions}
           />
         )}
       </div>
@@ -551,6 +601,7 @@ function PromoteModal({
   onSuccess,
   studentIds,
   students,
+  sessions,
 }) {
   const [newClassName, setNewClassName] = useState("");
   const [newAcademicYear, setNewAcademicYear] = useState("");
@@ -642,13 +693,16 @@ function PromoteModal({
             <select
               value={newAcademicYear}
               onChange={(e) => setNewAcademicYear(e.target.value)}
-              className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-xl border-2 border-slate-200 p-3"
               required
             >
               <option value="">Select Year</option>
-              <option value="2024-2025">2024-2025</option>
-              <option value="2025-2026">2025-2026</option>
-              <option value="2026-2027">2026-2027</option>
+
+              {sessions.map((s) => (
+                <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                  {s.startYear}-{s.endYear}
+                </option>
+              ))}
             </select>
           </div>
 

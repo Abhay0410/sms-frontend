@@ -40,6 +40,7 @@ export default function TimetableManagement() {
   const [showUnpublishModal, setShowUnpublishModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [pendingDelete, setPendingDelete] = useState({ day: "", periodId: "" });
+  const [session, setSession] = useState(null);
 
   function getCurrentAcademicYear() {
     const now = new Date();
@@ -261,13 +262,56 @@ export default function TimetableManagement() {
     setPendingTemplateData(null);
   };
 
+  
+
   const handleOverwriteCancel = () => {
     setShowOverwriteModal(false);
     setPendingTemplateData(null);
   };
 
+  const fetchSessions = async () => {
+  try {
+    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+    console.log("FULL RES:", res);
+
+    // ✅ Always correct data
+   let sessionData = Array.isArray(res) ? res : res?.data || [];
+
+    // ✅ Remove duplicates (safe)
+    sessionData = sessionData.filter(
+      (s, index, self) =>
+        index ===
+        self.findIndex(
+          (x) =>
+            x.startYear === s.startYear &&
+            x.endYear === s.endYear
+        )
+    );
+
+    // ✅ Sort
+    sessionData.sort((a, b) => a.startYear - b.startYear);
+
+    console.log("FINAL SESSION DATA:", sessionData);
+
+    setSession(sessionData);
+
+    // ✅ Active session select
+    const active = sessionData.find((s) => s?.isActive);
+
+    if (active) {
+      setAcademicYear(`${active.startYear}-${active.endYear}`);
+    }
+
+  } catch (err) {
+    console.error("Session fetch error", err);
+  }
+};
+  
+
   useEffect(() => {
     loadClasses();
+    fetchSessions();
   }, [loadClasses]);
 
   useEffect(() => {
@@ -468,15 +512,18 @@ export default function TimetableManagement() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3 items-center">
+            
             <select
-              value={academicYear}
-              onChange={(e) => setAcademicYear(e.target.value)}
-              className="rounded-xl border-2 border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 shadow-sm transition-all hover:border-blue-400 focus:border-blue-600 focus:ring-4 focus:ring-teal-100 focus:outline-none"
-            >
-              <option value="2023-2024">2023-2024</option>
-              <option value="2024-2025">2024-2025</option>
-              <option value="2025-2026">2025-2026</option>
-            </select>
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate"
+          >
+            {session?.map((s) => (
+              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                {s.startYear}-{s.endYear}
+              </option>
+            ))}
+          </select>
 
             {timetableData && (
               <>

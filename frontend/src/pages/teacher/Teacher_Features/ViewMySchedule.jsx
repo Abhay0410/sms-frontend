@@ -17,6 +17,7 @@ export default function ViewMySchedule() {
   const [teacher, setTeacher] = useState(null);
   const [loading, setLoading] = useState(true);
   const [academicYear, setAcademicYear] = useState("2025-2026"); // ✅ FIXED: Use correct format
+  const [session, setSession] = useState([]);
 
 const loadMySchedule = useCallback(async () => {
   try {
@@ -51,8 +52,74 @@ const loadMySchedule = useCallback(async () => {
     }
   }, [academicYear]);
 
+//   const fetchSessions = async () => {
+//   try {
+//     const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+//     console.log("SESSION API RESPONSE:", res);
+
+//     // ✅ handle multiple possible structures
+//     const sessionData =
+//       res?.data?.sessions || 
+//       res?.data || 
+//       res || 
+//       [];
+
+//     setSession(sessionData);
+
+//     // ✅ safe find
+//     const active = sessionData?.find((s) => s?.isActive);
+
+//     if (active) {
+//       setAcademicYear(`${active.startYear}-${active.endYear}`);
+//     }
+//   } catch (err) {
+//     console.error("Session fetch error", err);
+//   }
+// };
+
+const fetchSessions = async () => {
+  try {
+    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+
+    console.log("FULL RES:", res);
+
+    // ✅ Always correct data
+   let sessionData = Array.isArray(res) ? res : res?.data || [];
+
+    // ✅ Remove duplicates (safe)
+    sessionData = sessionData.filter(
+      (s, index, self) =>
+        index ===
+        self.findIndex(
+          (x) =>
+            x.startYear === s.startYear &&
+            x.endYear === s.endYear
+        )
+    );
+
+    // ✅ Sort
+    sessionData.sort((a, b) => a.startYear - b.startYear);
+
+    console.log("FINAL SESSION DATA:", sessionData);
+
+    setSession(sessionData);
+
+    // ✅ Active session select
+    const active = sessionData.find((s) => s?.isActive);
+
+    if (active) {
+      setAcademicYear(`${active.startYear}-${active.endYear}`);
+    }
+
+  } catch (err) {
+    console.error("Session fetch error", err);
+  }
+};
+
   useEffect(() => {
     loadMySchedule();
+    fetchSessions();
   }, [loadMySchedule]);
 
   // ✅ FIXED: Academic year options that match your database format
@@ -96,17 +163,19 @@ const loadMySchedule = useCallback(async () => {
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-4">
               <label className="text-sm font-semibold text-slate-700">Academic Year:</label>
+              
+              
               <select
-                value={academicYear}
-                onChange={(e) => setAcademicYear(e.target.value)}
-                className="rounded-xl border-2 border-slate-400 bg-white p-2 font-medium focus:border-purple-600 focus:outline-none"
-              >
-                {academicYearOptions.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
+          >
+            {session?.map((s) => (
+              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                {s.startYear}-{s.endYear}
+              </option>
+            ))}
+          </select>
             </div>
             
             <button 
