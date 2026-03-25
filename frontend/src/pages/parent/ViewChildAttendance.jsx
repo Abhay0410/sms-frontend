@@ -213,7 +213,7 @@ const childPhotoUrl = selectedChild?.profilePicture
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-3 ">
+    <div className="min-h-screen bg-blue-50 p-3 ">
       <div className="mx-auto max-w-7xl">
         {/* <BackButton to="/parent/parent-dashboard" /> */}
 

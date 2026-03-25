@@ -534,7 +534,7 @@ export default function ClassManagement() {
                 className={`p-4 rounded-xl border-1 border-slate-400 transition-all ${
                   activeClassName === cls.className
                     ? "bg-indigo-50     border-1 shadow-sm hover:scale-105"
-                    : "bg-white  hover:border-slate-400 hover:border-1 hover:shadow-sm hover:scale-105"
+                    : "bg-slate-800  text-white hover:border-slate-400 hover:border-1 hover:shadow-sm hover:scale-105"
                 }`}
               >
                 <div className="text-center">
@@ -542,12 +542,12 @@ export default function ClassManagement() {
                     className={`text-sm font-semibold mb-1 ${
                       activeClassName === cls.className
                         ? "text-indigo-700"
-                        : "text-slate-700"
+                        : "text-white"
                     }`}
                   >
                     {cls.className}
                   </div>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-white-500">
                     {cls.sections?.length || 0} sections
                   </div>
                 </div>

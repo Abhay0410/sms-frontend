@@ -37,7 +37,7 @@ export default function ParentAnnouncements() {
   }, [loadAnnouncements]);
 
   return (
-    <div className=" min-h-screen bg-slate-50">
+    <div className=" min-h-screen bg-blue-50">
       <div className="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
         <h1 className="text-3xl font-bold">Parent Notifications</h1>
         <select

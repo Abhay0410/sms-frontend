@@ -219,8 +219,8 @@ export default function SetClassFees() {
         className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 rounded-xl border border-slate-400 shadow-sm gap-4"
       >
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Class Fee Management</h2>
-          <p className="text-gray-500 text-sm font-medium mt-0.5">Configure automated installments for all students</p>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">Class Fee Management</h2>
+          <p className="text-slate-600 text-sm font-medium mt-1">Configure automated installments for all students</p>
         </div>
         <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-400 shadow-sm">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Session:</span>

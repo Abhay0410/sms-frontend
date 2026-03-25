@@ -86,7 +86,7 @@ export default function ViewChildResults() {
   if (loading) return <div className="min-h-screen flex items-center justify-center"><FaSpinner className="animate-spin text-slate-900" size={32}/></div>;
 
   return (
-    <div className="min-h-screen bg-slate-50  font-bold uppercase text-xs tracking-tight">
+    <div className="min-h-screen bg-blue-50  font-bold uppercase text-xs tracking-tight">
       <div className="max-w-6xl mx-auto">
         {/* <BackButton to={`/parent/children`} /> */}
         <div className=" mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">

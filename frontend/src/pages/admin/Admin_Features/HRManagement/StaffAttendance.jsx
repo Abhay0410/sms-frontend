@@ -106,7 +106,7 @@ export default function StaffAttendance() {
   };
 
   return (
-    <div className="space-y-6 bg-blue-50 p-4 min-h-screen">
+    <div className="space-y-6 bg-blue-50  min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

@@ -122,7 +122,7 @@ export default function ViewFeeDetails() {
   const paymentHistory = feeData?.payments || [];
 
   return (
-    <div className="min-h-screen bg-gray-50  ">
+    <div className="min-h-screen bg-blue-50  ">
       <div className="mx-auto max-w-7xl">
         {/* <BackButton to="/student/student-dashboard" /> */}
 

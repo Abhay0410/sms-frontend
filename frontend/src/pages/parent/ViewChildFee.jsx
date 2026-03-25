@@ -243,7 +243,7 @@ export default function ViewChildFee() {
 
   if (children.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 md:p-8">
+      <div className="min-h-screen bg-blue-50 p-4 md:p-8">
         <div className="mx-auto max-w-4xl">
           <BackButton to="/parent/parent-dashboard" />
           <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-400">
@@ -278,7 +278,7 @@ export default function ViewChildFee() {
     : `https://ui-avatars.com/api/?name=${childInfo?.name}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50 p-4 ">
+    <div className="min-h-screen bg-blue-50 p-4 ">
       <div className="mx-auto max-w-7xl">
         {/* <BackButton to="/parent/parent-dashboard" /> */}
 

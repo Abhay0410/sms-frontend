@@ -157,7 +157,7 @@ export default function AdminPayrollDashboard() {
 
   return (
     <div className=" space-y-10">
-      <div className="flex justify-between items-end">
+      <div className="flex justify-between items-end ">
         <div>
            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Payroll Command Center</h1>
            <p className="text-gray-500 font-medium text-sm  mt-1">Real-time Financial Overview</p>

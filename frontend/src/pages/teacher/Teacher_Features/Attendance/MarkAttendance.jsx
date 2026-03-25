@@ -375,13 +375,13 @@ export default function MarkAttendance() {
         ) : (
           <>
             {/* Selection Card - Enhanced */}
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-400 p-8 mb-8">
+            <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-2xl shadow-lg border border-slate-400 p-8 mb-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                  <h2 className="text-2xl font-bold text-white mb-1">
                     Quick Selection
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-gray-100">
                     Choose your class and date to begin marking
                   </p>
                 </div>
@@ -411,7 +411,7 @@ export default function MarkAttendance() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {/* Class Selection */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label className="block text-sm font-semibold text-gray-100 mb-3">
                     <span className="flex items-center gap-2">
                       <svg
                         className="w-4 h-4 text-indigo-600"
@@ -449,7 +449,7 @@ export default function MarkAttendance() {
 
                 {/* Section Selection */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label className="block text-sm font-semibold text-gray-100 mb-3">
                     <span className="flex items-center gap-2">
                       <svg
                         className="w-4 h-4 text-indigo-600"
@@ -487,7 +487,7 @@ export default function MarkAttendance() {
 
                 {/* Date Selection */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label className="block text-sm font-semibold text-gray-100 mb-3">
                     <span className="flex items-center gap-2">
                       <svg
                         className="w-4 h-4 text-indigo-600"

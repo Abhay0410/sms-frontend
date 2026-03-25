@@ -153,7 +153,7 @@ const fetchSessions = async () => {
         <div>
           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">My Teaching Schedule</h2>
           <p className="mt-1 text-gray-600 flex  font-medium items-center gap-2">
-            <FaCalendarWeek className="text-purple-600" />
+            <FaCalendarWeek className="text-slate-600" />
             View your weekly teaching schedule
           </p>
         </div>
@@ -180,7 +180,7 @@ const fetchSessions = async () => {
             
             <button 
               onClick={loadMySchedule}
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
             >
               Refresh Schedule
             </button>
@@ -195,25 +195,25 @@ const fetchSessions = async () => {
 
         {/* Teacher Info */}
         {teacher && (
-          <div className="mt-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white shadow-lg">
+          <div className="mt-6 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 p-6 text-white shadow-lg">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <h3 className="text-2xl font-bold">{teacher.name}</h3>
-                <p className="text-purple-100 font-medium">{teacher.teacherID}</p>
-                <p className="text-purple-100">Teaching Schedule • {academicYear}</p>
+                <p className="text-slate-100 font-medium">{teacher.teacherID}</p>
+                <p className="text-slate-100">Teaching Schedule • {academicYear}</p>
               </div>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-3 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3">
                   <FaChalkboardTeacher className="h-6 w-6" />
                   <div>
-                    <p className="text-xs text-purple-100">Weekly Classes</p>
+                    <p className="text-xs text-slate-100">Weekly Classes</p>
                     <p className="font-bold text-lg">{totalClasses}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3">
                   <FaCalendarWeek className="h-6 w-6" />
                   <div>
-                    <p className="text-xs text-purple-100">Academic Year</p>
+                    <p className="text-xs text-slate-100">Academic Year</p>
                     <p className="font-bold">{academicYear}</p>
                   </div>
                 </div>
@@ -228,7 +228,7 @@ const fetchSessions = async () => {
             <div className="p-6 border-b border-slate-400 bg-gradient-to-r from-slate-50 to-purple-50">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <FaClock className="text-purple-600" />
+                  <FaClock className="text-slate-600" />
                   Weekly Teaching Schedule
                 </h3>
                 <div className="text-sm text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-400">
@@ -260,7 +260,7 @@ const fetchSessions = async () => {
                           <div className="flex items-center gap-2">
                             <span>{day}</span>
                             {hasClasses && (
-                              <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-purple-600 rounded-full">
+                              <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-blue-600 rounded-full">
                                 {daySchedule.length}
                               </span>
                             )}
@@ -275,16 +275,16 @@ const fetchSessions = async () => {
                                   className="rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 p-4 border border-purple-200 hover:shadow-md transition-shadow group"
                                 >
                                   <div className="flex items-center gap-2 mb-2">
-                                    <FaUsers className="h-4 w-4 text-purple-600" />
-                                    <p className="font-bold text-purple-900 group-hover:text-purple-700">
+                                    <FaUsers className="h-4 w-4 text-slate-600" />
+                                    <p className="font-bold text-slate-900 group-hover:text-slate-700">
                                       {period.className} - {period.section}
                                     </p>
                                   </div>
                                   <div className="flex items-center gap-2 mb-1">
-                                    <FaBook className="h-3 w-3 text-purple-600" />
-                                    <p className="text-sm text-purple-700 font-medium">{period.subject}</p>
+                                    <FaBook className="h-3 w-3 text-slate-600" />
+                                    <p className="text-sm text-slate-700 font-medium">{period.subject}</p>
                                   </div>
-                                  <div className="flex items-center gap-2 text-xs text-purple-600">
+                                  <div className="flex items-center gap-2 text-xs text-slate-600">
                                     <FaClock className="h-3 w-3" />
                                     <span className="font-medium">Period {period.periodNumber}</span>
                                     <span>•</span>

@@ -246,7 +246,7 @@ export default function AdminAnnouncements() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 font-sans p-4">
+    <div className="min-h-screen bg-blue-50 font-sans ">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-8">

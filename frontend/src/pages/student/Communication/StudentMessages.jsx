@@ -57,7 +57,7 @@ const StudentMessaging = () => {
   useEffect(() => { scrollRef.current?.scrollIntoView({ behavior: "smooth" }); }, [activeThread]);
 
   return (
-    <div className=" bg-slate-50 min-h-screen">
+    <div className=" bg-blue-50 min-h-screen">
       <div className="mb-4 flex items-center justify-between px-2">
         <div className="flex items-center gap-4">
           {/* <BackButton /> */}

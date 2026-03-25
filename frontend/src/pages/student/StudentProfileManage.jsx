@@ -216,7 +216,7 @@ export default function StudentProfileManage() {
   //   : `/assets/default-student-avatar.png`);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 ">
+    <div className="min-h-screen bg-blue-50 ">
       <div className="mx-auto max-w-4xl">
         {/* <BackButton to="/student/student-dashboard" /> */}
 

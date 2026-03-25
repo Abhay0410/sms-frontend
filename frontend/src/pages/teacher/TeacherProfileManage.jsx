@@ -226,7 +226,7 @@ export default function TeacherProfileManage() {
       : "/assets/default-teacher-avatar.png");
 
   return (
-    <div className="min-h-screen bg-gray-50 ">
+    <div className="min-h-screen bg-blue-50 ">
       <div className="mx-auto max-w-4xl">
         {/* <BackButton to="/teacher/teacher-dashboard" /> */}
 
@@ -239,7 +239,7 @@ export default function TeacherProfileManage() {
         </div>
 
         {/* Profile Overview Card */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 shadow-xl mb-8">
+        <div className="mt-6 mb-2 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 p-8 shadow-2xl relative overflow-hidden">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative">
               <div className="relative h-32 w-32 rounded-full shadow-2xl overflow-hidden bg-gray-200 flex items-center justify-center">

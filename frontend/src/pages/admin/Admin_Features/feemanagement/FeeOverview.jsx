@@ -276,10 +276,10 @@ useEffect(() => {
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
             Fee Overview
           </h1>
-          <p className="text-sm text-gray-600   font-medium mt-1">
+          <p className="text-gray-500 text-sm font-medium mt-1 ">
             Comprehensive financial analytics and reports
           </p>
         </div>

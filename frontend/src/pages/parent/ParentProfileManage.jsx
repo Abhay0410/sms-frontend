@@ -143,7 +143,7 @@ export default function ParentProfileManage() {
       : "/assets/default-parent-avatar.png");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50 ">
+    <div className="min-h-screen bg-blue-50 ">
       <div className="mx-auto max-w-4xl">
         {/* <BackButton to="/parent/parent-dashboard" /> */}
 

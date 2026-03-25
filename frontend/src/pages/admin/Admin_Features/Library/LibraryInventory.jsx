@@ -181,7 +181,7 @@ export default function LibraryInventory() {
   );
 
   return (
-    <div className="min-h-screen bg-blue-50 p-4">
+    <div className="min-h-screen bg-blue-50 ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-4">

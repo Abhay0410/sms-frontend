@@ -133,11 +133,11 @@ export default function BookIssueReturn() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 p-4">
+    <div className="min-h-screen bg-blue-50 ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
             Book Circulation
           </h1>
           <p className="text-gray-500 text-sm font-medium flex items-center gap-2 mt-1">

@@ -73,7 +73,7 @@ export default function StudentAnnouncements() {
   }
 
   return (
-    <div className=" max-w-5xl mx-auto min-h-screen bg-slate-50/50">
+    <div className=" max-w-5xl mx-auto min-h-screen bg-blue-50">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
