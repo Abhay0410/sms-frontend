@@ -332,44 +332,44 @@ export default function RecordPayment() {
     [academicYear, searchTerm, getFormattedMonth, selectedClass],
   );
   console.log("Pagination:", pagination);
-const fetchSessions = async () => {
-  try {
-    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+  const fetchSessions = async () => {
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-    console.log("FULL RES:", res);
+      console.log("FULL RES:", res);
 
-    // ✅ Always correct data
-   let sessionData = Array.isArray(res) ? res : res?.data || [];
+      // ✅ Always correct data
+      let sessionData = Array.isArray(res) ? res : res?.data || [];
 
-    // ✅ Remove duplicates (safe)
-    sessionData = sessionData.filter(
-      (s, index, self) =>
-        index ===
-        self.findIndex(
-          (x) =>
-            x.startYear === s.startYear &&
-            x.endYear === s.endYear
-        )
-    );
+      // ✅ Remove duplicates (safe)
+      sessionData = sessionData.filter(
+        (s, index, self) =>
+          index ===
+          self.findIndex(
+            (x) => x.startYear === s.startYear && x.endYear === s.endYear,
+          ),
+      );
 
-    // ✅ Sort
-    sessionData.sort((a, b) => a.startYear - b.startYear);
+      // ✅ Sort
+      sessionData.sort((a, b) => a.startYear - b.startYear);
 
-    console.log("FINAL SESSION DATA:", sessionData);
+      console.log("FINAL SESSION DATA:", sessionData);
 
-    setSession(sessionData);
+      setSession(sessionData);
 
-    // ✅ Active session select
-    const active = sessionData.find((s) => s?.isActive);
+      // ✅ Active session select
+      const savedSession = localStorage.getItem("academicYear");
 
-    if (active) {
-      setAcademicYear(`${active.startYear}-${active.endYear}`);
+      setAcademicYear((prev) => {
+        if (savedSession) return savedSession; // ✅ user selection priority
+
+        const active = sessionData.find((s) => s?.isActive);
+        return active ? `${active.startYear}-${active.endYear}` : "";
+      });
+    } catch (err) {
+      console.error("Session fetch error", err);
     }
-
-  } catch (err) {
-    console.error("Session fetch error", err);
-  }
-};
+  };
 
   //   const school = (() => {
   //   try {
@@ -380,9 +380,12 @@ const fetchSessions = async () => {
   // })();
 
   useEffect(() => {
+    fetchSessions(); // ✅ only once
+  }, []);
+
+  useEffect(() => {
     if (academicYear) {
       loadClasses();
-      fetchSessions();
     }
   }, [academicYear, loadClasses]);
 
@@ -791,9 +794,13 @@ const fetchSessions = async () => {
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">
             Session:
           </span>
-           <select
+          <select
             value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setAcademicYear(value);
+              localStorage.setItem("academicYear", value); // ✅ save
+            }}
             className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate-900"
           >
             {session?.map((s) => (
@@ -824,7 +831,9 @@ const fetchSessions = async () => {
           <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
             <div className="flex items-center gap-2">
               <FaFilter className="text-slate-400" />
-              <span className="text-sm font-bold text-slate-600 hidden sm:inline">Filters:</span>
+              <span className="text-sm font-bold text-slate-600 hidden sm:inline">
+                Filters:
+              </span>
             </div>
 
             <select
@@ -835,7 +844,9 @@ const fetchSessions = async () => {
               <option value="ALL">📊 Full Academic Year</option>
               {MONTHS.map((m) => (
                 <option key={m} value={m.toUpperCase()}>
-                  {m.toUpperCase() === getCurrentMonth() ? `📅 ${m} (Current)` : m}
+                  {m.toUpperCase() === getCurrentMonth()
+                    ? `📅 ${m} (Current)`
+                    : m}
                 </option>
               ))}
             </select>
@@ -859,7 +870,10 @@ const fetchSessions = async () => {
               className="h-12 px-6 bg-amber-500 text-white rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-amber-600 transition-all duration-300 shadow-sm disabled:opacity-50"
               title="Refresh Students"
             >
-              <FiRefreshCw className={loading ? "animate-spin" : ""} size={16} />
+              <FiRefreshCw
+                className={loading ? "animate-spin" : ""}
+                size={16}
+              />
               <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
@@ -1081,7 +1095,9 @@ const fetchSessions = async () => {
                       <FaSearch className="inline-block" />
                     </div>
                     <p className="text-slate-600 text-lg font-bold">
-                      {searchTerm || selectedMonth !== "ALL" || selectedClass !== "ALL"
+                      {searchTerm ||
+                      selectedMonth !== "ALL" ||
+                      selectedClass !== "ALL"
                         ? "No students found matching your criteria"
                         : "No students found for this academic year"}
                     </p>

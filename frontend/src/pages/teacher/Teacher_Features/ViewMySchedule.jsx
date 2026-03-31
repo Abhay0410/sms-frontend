@@ -10,7 +10,14 @@ import {
   FaUsers,
 } from "react-icons/fa";
 
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 export default function ViewMySchedule() {
   const [scheduleData, setScheduleData] = useState(null);
@@ -19,115 +26,130 @@ export default function ViewMySchedule() {
   const [academicYear, setAcademicYear] = useState("2025-2026"); // ✅ FIXED: Use correct format
   const [session, setSession] = useState([]);
 
-const loadMySchedule = useCallback(async () => {
-  try {
-    setLoading(true);
-    // ✅ Use the specific MY_SCHEDULE endpoint
-    const resp = await api.get(API_ENDPOINTS.TEACHER.TIMETABLE.MY_SCHEDULE, {
-      params: { academicYear }
-    });
-    
-    const responseData = resp.data || resp;
-    const actualData = responseData.data || responseData;
-    
-    setTeacher(actualData.teacher);
-    setScheduleData(actualData.schedule);
-      
+  const loadMySchedule = useCallback(async () => {
+    try {
+      setLoading(true);
+      // ✅ Use the specific MY_SCHEDULE endpoint
+      const resp = await api.get(API_ENDPOINTS.TEACHER.TIMETABLE.MY_SCHEDULE, {
+        params: { academicYear },
+      });
+
+      const responseData = resp.data || resp;
+      const actualData = responseData.data || responseData;
+
+      setTeacher(actualData.teacher);
+      setScheduleData(actualData.schedule);
+
       if (actualData.hasAssignments === false) {
-        toast.info("No classes assigned for this academic year", { toastId: "no-assignments" });
-      } else if (!actualData.schedule || Object.keys(actualData.schedule).length === 0) {
-        toast.info("Schedule is empty for the selected academic year", { toastId: "empty-schedule" });
+        toast.info("No classes assigned for this academic year", {
+          toastId: "no-assignments",
+        });
+      } else if (
+        !actualData.schedule ||
+        Object.keys(actualData.schedule).length === 0
+      ) {
+        toast.info("Schedule is empty for the selected academic year", {
+          toastId: "empty-schedule",
+        });
       } else {
         const totalClasses = Object.values(actualData.schedule || {}).reduce(
-          (total, daySchedule) => total + (daySchedule?.length || 0), 0
+          (total, daySchedule) => total + (daySchedule?.length || 0),
+          0,
         );
-        toast.success(`Loaded schedule with ${totalClasses} classes`, { toastId: "schedule-loaded" });
+        toast.success(`Loaded schedule with ${totalClasses} classes`, {
+          toastId: "schedule-loaded",
+        });
       }
     } catch (error) {
       console.error("❌ Failed to load schedule:", error);
       console.error("❌ Error details:", error.response?.data || error.message);
-      toast.error(error.message || "Failed to load schedule", { toastId: "schedule-error" });
+      toast.error(error.message || "Failed to load schedule", {
+        toastId: "schedule-error",
+      });
     } finally {
       setLoading(false);
     }
   }, [academicYear]);
 
-//   const fetchSessions = async () => {
-//   try {
-//     const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+  //   const fetchSessions = async () => {
+  //   try {
+  //     const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-//     console.log("SESSION API RESPONSE:", res);
+  //     console.log("SESSION API RESPONSE:", res);
 
-//     // ✅ handle multiple possible structures
-//     const sessionData =
-//       res?.data?.sessions || 
-//       res?.data || 
-//       res || 
-//       [];
+  //     // ✅ handle multiple possible structures
+  //     const sessionData =
+  //       res?.data?.sessions ||
+  //       res?.data ||
+  //       res ||
+  //       [];
 
-//     setSession(sessionData);
+  //     setSession(sessionData);
 
-//     // ✅ safe find
-//     const active = sessionData?.find((s) => s?.isActive);
+  //     // ✅ safe find
+  //     const active = sessionData?.find((s) => s?.isActive);
 
-//     if (active) {
-//       setAcademicYear(`${active.startYear}-${active.endYear}`);
-//     }
-//   } catch (err) {
-//     console.error("Session fetch error", err);
-//   }
-// };
+  //     if (active) {
+  //       setAcademicYear(`${active.startYear}-${active.endYear}`);
+  //     }
+  //   } catch (err) {
+  //     console.error("Session fetch error", err);
+  //   }
+  // };
 
-const fetchSessions = async () => {
-  try {
-    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+  const fetchSessions = async () => {
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-    console.log("FULL RES:", res);
+      console.log("FULL RES:", res);
 
-    // ✅ Always correct data
-   let sessionData = Array.isArray(res) ? res : res?.data || [];
+      // ✅ Always correct data
+      let sessionData = Array.isArray(res) ? res : res?.data || [];
 
-    // ✅ Remove duplicates (safe)
-    sessionData = sessionData.filter(
-      (s, index, self) =>
-        index ===
-        self.findIndex(
-          (x) =>
-            x.startYear === s.startYear &&
-            x.endYear === s.endYear
-        )
-    );
+      // ✅ Remove duplicates (safe)
+      sessionData = sessionData.filter(
+        (s, index, self) =>
+          index ===
+          self.findIndex(
+            (x) => x.startYear === s.startYear && x.endYear === s.endYear,
+          ),
+      );
 
-    // ✅ Sort
-    sessionData.sort((a, b) => a.startYear - b.startYear);
+      // ✅ Sort
+      sessionData.sort((a, b) => a.startYear - b.startYear);
 
-    console.log("FINAL SESSION DATA:", sessionData);
+      console.log("FINAL SESSION DATA:", sessionData);
 
-    setSession(sessionData);
+      setSession(sessionData);
 
-    // ✅ Active session select
-    const active = sessionData.find((s) => s?.isActive);
+      // ✅ Active session select
+      const savedSession = localStorage.getItem("academicYear");
 
-    if (active) {
-      setAcademicYear(`${active.startYear}-${active.endYear}`);
+      setAcademicYear((prev) => {
+        if (savedSession) return savedSession; // ✅ user selection priority
+
+        const active = sessionData.find((s) => s?.isActive);
+        return active ? `${active.startYear}-${active.endYear}` : "";
+      });
+    } catch (err) {
+      console.error("Session fetch error", err);
     }
+  };
 
-  } catch (err) {
-    console.error("Session fetch error", err);
-  }
-};
+  useEffect(() => {
+    fetchSessions();
+  }, []);
 
   useEffect(() => {
     loadMySchedule();
-    fetchSessions();
   }, [loadMySchedule]);
 
   // ✅ FIXED: Academic year options that match your database format
   const academicYearOptions = [
     "2023-2024",
-    "2024-2025", 
+    "2024-2025",
     "2025-2026",
-    "2026-2027"
+    "2026-2027",
   ];
 
   if (loading) {
@@ -135,15 +157,20 @@ const fetchSessions = async () => {
       <div className="flex items-center justify-center min-h-screen bg-blue-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600 mx-auto"></div>
-          <p className="mt-6 text-lg font-medium text-slate-700">Loading schedule...</p>
+          <p className="mt-6 text-lg font-medium text-slate-700">
+            Loading schedule...
+          </p>
         </div>
       </div>
     );
   }
 
   // Calculate total classes for display
-  const totalClasses = scheduleData ? 
-    Object.values(scheduleData).reduce((total, daySchedule) => total + (daySchedule?.length || 0), 0) 
+  const totalClasses = scheduleData
+    ? Object.values(scheduleData).reduce(
+        (total, daySchedule) => total + (daySchedule?.length || 0),
+        0,
+      )
     : 0;
 
   return (
@@ -151,7 +178,9 @@ const fetchSessions = async () => {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">My Teaching Schedule</h2>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+            My Teaching Schedule
+          </h2>
           <p className="mt-1 text-gray-600 flex  font-medium items-center gap-2">
             <FaCalendarWeek className="text-slate-600" />
             View your weekly teaching schedule
@@ -162,32 +191,38 @@ const fetchSessions = async () => {
         <div className="mt-6 rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-4">
-              <label className="text-sm font-semibold text-slate-700">Academic Year:</label>
-              
-              
+              <label className="text-sm font-semibold text-slate-700">
+                Academic Year:
+              </label>
+
               <select
-            value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
-            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
-          >
-            {session?.map((s) => (
-              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
-                {s.startYear}-{s.endYear}
-              </option>
-            ))}
-          </select>
+                value={academicYear}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setAcademicYear(value);
+                  localStorage.setItem("academicYear", value); // ✅ save
+                }}
+                className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
+              >
+                {session?.map((s) => (
+                  <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                    {s.startYear}-{s.endYear}
+                  </option>
+                ))}
+              </select>
             </div>
-            
-            <button 
+
+            <button
               onClick={loadMySchedule}
               className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
             >
               Refresh Schedule
             </button>
-            
+
             {teacher && (
               <div className="ml-auto text-sm text-slate-600">
-                <span className="font-medium">Teacher:</span> {teacher.name} ({teacher.teacherID})
+                <span className="font-medium">Teacher:</span> {teacher.name} (
+                {teacher.teacherID})
               </div>
             )}
           </div>
@@ -199,8 +234,12 @@ const fetchSessions = async () => {
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <h3 className="text-2xl font-bold">{teacher.name}</h3>
-                <p className="text-slate-100 font-medium">{teacher.teacherID}</p>
-                <p className="text-slate-100">Teaching Schedule • {academicYear}</p>
+                <p className="text-slate-100 font-medium">
+                  {teacher.teacherID}
+                </p>
+                <p className="text-slate-100">
+                  Teaching Schedule • {academicYear}
+                </p>
               </div>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-3 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3">
@@ -232,7 +271,13 @@ const fetchSessions = async () => {
                   Weekly Teaching Schedule
                 </h3>
                 <div className="text-sm text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-400">
-                  {totalClasses} classes across {Object.keys(scheduleData).filter(day => scheduleData[day]?.length > 0).length} days
+                  {totalClasses} classes across{" "}
+                  {
+                    Object.keys(scheduleData).filter(
+                      (day) => scheduleData[day]?.length > 0,
+                    ).length
+                  }{" "}
+                  days
                 </div>
               </div>
             </div>
@@ -255,7 +300,10 @@ const fetchSessions = async () => {
                     const hasClasses = daySchedule.length > 0;
 
                     return (
-                      <tr key={day} className={`border-b border-slate-400 ${hasClasses ? 'hover:bg-slate-50' : ''}`}>
+                      <tr
+                        key={day}
+                        className={`border-b border-slate-400 ${hasClasses ? "hover:bg-slate-50" : ""}`}
+                      >
                         <td className="p-4 font-bold text-slate-900 bg-slate-50 align-top">
                           <div className="flex items-center gap-2">
                             <span>{day}</span>
@@ -282,11 +330,15 @@ const fetchSessions = async () => {
                                   </div>
                                   <div className="flex items-center gap-2 mb-1">
                                     <FaBook className="h-3 w-3 text-slate-600" />
-                                    <p className="text-sm text-slate-700 font-medium">{period.subject}</p>
+                                    <p className="text-sm text-slate-700 font-medium">
+                                      {period.subject}
+                                    </p>
                                   </div>
                                   <div className="flex items-center gap-2 text-xs text-slate-600">
                                     <FaClock className="h-3 w-3" />
-                                    <span className="font-medium">Period {period.periodNumber}</span>
+                                    <span className="font-medium">
+                                      Period {period.periodNumber}
+                                    </span>
                                     <span>•</span>
                                     <span>
                                       {period.startTime} - {period.endTime}
@@ -294,11 +346,13 @@ const fetchSessions = async () => {
                                   </div>
                                   {period.role && (
                                     <div className="mt-2">
-                                      <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                                        period.role === 'Class Teacher' 
-                                          ? 'bg-green-100 text-green-800' 
-                                          : 'bg-blue-100 text-blue-800'
-                                      }`}>
+                                      <span
+                                        className={`inline-block px-2 py-1 text-xs rounded-full ${
+                                          period.role === "Class Teacher"
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-blue-100 text-blue-800"
+                                        }`}
+                                      >
                                         {period.role}
                                       </span>
                                     </div>
@@ -310,7 +364,9 @@ const fetchSessions = async () => {
                             <div className="text-center py-8 text-slate-400">
                               <FaCalendarWeek className="h-8 w-8 mx-auto mb-2 opacity-50" />
                               <p>No classes scheduled</p>
-                              <p className="text-xs mt-1">Enjoy your free time!</p>
+                              <p className="text-xs mt-1">
+                                Enjoy your free time!
+                              </p>
                             </div>
                           )}
                         </td>
@@ -324,14 +380,15 @@ const fetchSessions = async () => {
         ) : (
           <div className="mt-12 text-center py-16 rounded-2xl bg-white shadow-lg border border-slate-400">
             <FaCalendarWeek className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-xl font-semibold text-slate-600">No schedule available</p>
-            <p className="text-sm text-slate-500 mt-2 max-w-md mx-auto">
-              {teacher 
-                ? `No teaching schedule found for ${teacher.name} in academic year ${academicYear}. Please contact administration.`
-                : 'Your teaching schedule has not been created yet'
-              }
+            <p className="text-xl font-semibold text-slate-600">
+              No schedule available
             </p>
-            <button 
+            <p className="text-sm text-slate-500 mt-2 max-w-md mx-auto">
+              {teacher
+                ? `No teaching schedule found for ${teacher.name} in academic year ${academicYear}. Please contact administration.`
+                : "Your teaching schedule has not been created yet"}
+            </p>
+            <button
               onClick={loadMySchedule}
               className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
             >

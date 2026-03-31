@@ -6,7 +6,6 @@ import {
   FaPlus,
   FaEdit,
   FaUsers,
-  
   FaTimes,
   FaUserGraduate,
   FaCheckCircle,
@@ -18,11 +17,9 @@ import {
   FaExchangeAlt,
   FaChartBar,
   FaSchool,
-  
   FaCalendarAlt,
   FaUserFriends,
   FaBuilding,
-
   FaSearch,
   FaSort,
   FaSortAmountDown,
@@ -110,45 +107,44 @@ export default function ClassManagement() {
     });
   }, []);
 
- const fetchSessions = async () => {
-   try {
-     const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
- 
-     console.log("FULL RES:", res);
- 
-     // ✅ Always correct data
-    let sessionData = Array.isArray(res) ? res : res?.data || [];
- 
-     // ✅ Remove duplicates (safe)
-     sessionData = sessionData.filter(
-       (s, index, self) =>
-         index ===
-         self.findIndex(
-           (x) =>
-             x.startYear === s.startYear &&
-             x.endYear === s.endYear
-         )
-     );
- 
-     // ✅ Sort
-     sessionData.sort((a, b) => a.startYear - b.startYear);
- 
-     console.log("FINAL SESSION DATA:", sessionData);
- 
-     setSessions(sessionData);
- 
-     // ✅ Active session select
-     const active = sessionData.find((s) => s?.isActive);
- 
-     if (active) {
-       setAcademicYear(`${active.startYear}-${active.endYear}`);
-     }
- 
-   } catch (err) {
-     console.error("Session fetch error", err);
-   }
- };
+  const fetchSessions = async () => {
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
+      console.log("FULL RES:", res);
+
+      // ✅ Always correct data
+      let sessionData = Array.isArray(res) ? res : res?.data || [];
+
+      // ✅ Remove duplicates (safe)
+      sessionData = sessionData.filter(
+        (s, index, self) =>
+          index ===
+          self.findIndex(
+            (x) => x.startYear === s.startYear && x.endYear === s.endYear,
+          ),
+      );
+
+      // ✅ Sort
+      sessionData.sort((a, b) => a.startYear - b.startYear);
+
+      console.log("FINAL SESSION DATA:", sessionData);
+
+      setSessions(sessionData);
+
+      // ✅ Active session select
+      const savedSession = localStorage.getItem("academicYear");
+
+      setAcademicYear((prev) => {
+        if (savedSession) return savedSession; // ✅ user selection priority
+
+        const active = sessionData.find((s) => s?.isActive);
+        return active ? `${active.startYear}-${active.endYear}` : "";
+      });
+    } catch (err) {
+      console.error("Session fetch error", err);
+    }
+  };
 
   const loadClasses = useCallback(
     async (retryCount = 0) => {
@@ -195,8 +191,11 @@ export default function ClassManagement() {
   );
 
   useEffect(() => {
+    fetchSessions(); // ✅ only once
+  }, []);
+
+  useEffect(() => {
     loadClasses();
-    fetchSessions();
   }, [loadClasses]);
 
   useEffect(() => {
@@ -485,17 +484,21 @@ export default function ClassManagement() {
                 Sync Session
               </button>
 
-             <select
-            value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
-            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate"
-          >
-            {sessions?.map((s) => (
-              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
-                {s.startYear}-{s.endYear}
-              </option>
-            ))}
-          </select>
+              <select
+                value={academicYear}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setAcademicYear(value);
+                  localStorage.setItem("academicYear", value); // ✅ save
+                }}
+                className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate"
+              >
+                {sessions?.map((s) => (
+                  <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                    {s.startYear}-{s.endYear}
+                  </option>
+                ))}
+              </select>
 
               <button
                 onClick={() => setShowCreateModal(true)}
@@ -567,7 +570,9 @@ export default function ClassManagement() {
               onChange={(e) => setActiveClassName(e.target.value)}
               className="w-full rounded-xl border border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
             >
-              <option value="" disabled>Choose a class</option>
+              <option value="" disabled>
+                Choose a class
+              </option>
               {classes.map((cls) => (
                 <option key={cls._id} value={cls.className}>
                   {cls.className}
@@ -590,7 +595,9 @@ export default function ClassManagement() {
               className="w-full rounded-xl border border-slate-400 bg-white p-3 font-medium focus:border-blue-500 focus:outline-none"
               disabled={!currentActiveClassData?.sections?.length}
             >
-              <option value="" disabled>Choose a section</option>
+              <option value="" disabled>
+                Choose a section
+              </option>
               {currentActiveClassData?.sections?.map((section) => (
                 <option key={section._id} value={section._id}>
                   Section {section.sectionName}
@@ -613,7 +620,8 @@ export default function ClassManagement() {
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-white">
-                        {activeClassName} - Section {selectedSection.sectionName}
+                        {activeClassName} - Section{" "}
+                        {selectedSection.sectionName}
                       </h2>
                       <p className="text-sm text-white flex items-center gap-2 mt-0.5">
                         <FaCalendarAlt className="text-slate-400" size={12} />

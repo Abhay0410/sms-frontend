@@ -2,15 +2,15 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
-import { 
-  FaEdit, 
-  FaPlus, 
-  FaTrash, 
-  FaCalculator, 
-  FaCalendarAlt, 
+import {
+  FaEdit,
+  FaPlus,
+  FaTrash,
+  FaCalculator,
+  FaCalendarAlt,
   FaLayerGroup,
   FaCheckCircle,
-  FaExclamationCircle
+  FaExclamationCircle,
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,7 +46,7 @@ export default function SetClassFees() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
-  const[session, setSession] = useState([]);
+  const [session, setSession] = useState([]);
 
   const [settingsForm, setSettingsForm] = useState({
     paymentSchedule: "YEARLY",
@@ -72,49 +72,51 @@ export default function SetClassFees() {
   }, [academicYear]);
 
   const fetchSessions = async () => {
-  try {
-    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-    console.log("FULL RES:", res);
+      console.log("FULL RES:", res);
 
-    // ✅ Always correct data
-   let sessionData = Array.isArray(res) ? res : res?.data || [];
+      // ✅ Always correct data
+      let sessionData = Array.isArray(res) ? res : res?.data || [];
 
-    // ✅ Remove duplicates (safe)
-    sessionData = sessionData.filter(
-      (s, index, self) =>
-        index ===
-        self.findIndex(
-          (x) =>
-            x.startYear === s.startYear &&
-            x.endYear === s.endYear
-        )
-    );
+      // ✅ Remove duplicates (safe)
+      sessionData = sessionData.filter(
+        (s, index, self) =>
+          index ===
+          self.findIndex(
+            (x) => x.startYear === s.startYear && x.endYear === s.endYear,
+          ),
+      );
 
-    // ✅ Sort
-    sessionData.sort((a, b) => a.startYear - b.startYear);
+      // ✅ Sort
+      sessionData.sort((a, b) => a.startYear - b.startYear);
 
-    console.log("FINAL SESSION DATA:", sessionData);
+      console.log("FINAL SESSION DATA:", sessionData);
 
-    setSession(sessionData);
+      setSession(sessionData);
 
-    // ✅ Active session select
-    const active = sessionData.find((s) => s?.isActive);
+      // ✅ Active session select
+      const savedSession = localStorage.getItem("academicYear");
 
-    if (active) {
-      setAcademicYear(`${active.startYear}-${active.endYear}`);
+      setAcademicYear((prev) => {
+        if (savedSession) return savedSession; // ✅ user selection priority
+
+        const active = sessionData.find((s) => s?.isActive);
+        return active ? `${active.startYear}-${active.endYear}` : "";
+      });
+    } catch (err) {
+      console.error("Session fetch error", err);
     }
+  };
 
-  } catch (err) {
-    console.error("Session fetch error", err);
-  }
-};
-  
+  useEffect(() => {
+    fetchSessions(); // ✅ only once
+  }, []);
 
   useEffect(() => {
     if (academicYear) {
       loadClasses();
-      fetchSessions();
     }
   }, [academicYear, loadClasses]);
 
@@ -130,12 +132,16 @@ export default function SetClassFees() {
   }, [feeRows]);
 
   const addFeeRow = () => {
-    setFeeRows([...feeRows, { headName: "", amount: 0, frequency: "MONTHLY", lateFee: 0 }]);
+    setFeeRows([
+      ...feeRows,
+      { headName: "", amount: 0, frequency: "MONTHLY", lateFee: 0 },
+    ]);
   };
 
   const updateFeeRow = (index, field, value) => {
     const updated = [...feeRows];
-    updated[index][field] = field === "amount" || field === "lateFee" ? Number(value || 0) : value;
+    updated[index][field] =
+      field === "amount" || field === "lateFee" ? Number(value || 0) : value;
     setFeeRows(updated);
   };
 
@@ -153,10 +159,16 @@ export default function SetClassFees() {
       lateFee: f.lateFee || 0,
     }));
 
-    setFeeRows(rows.length ? rows : [{ headName: "", amount: 0, frequency: "MONTHLY", lateFee: 0 }]);
+    setFeeRows(
+      rows.length
+        ? rows
+        : [{ headName: "", amount: 0, frequency: "MONTHLY", lateFee: 0 }],
+    );
     setSettingsForm({
       paymentSchedule: classData.feeSettings?.paymentSchedule || "MONTHLY",
-      dueDate: classData.feeSettings?.dueDate ? new Date(classData.feeSettings.dueDate).toISOString().split("T")[0] : "",
+      dueDate: classData.feeSettings?.dueDate
+        ? new Date(classData.feeSettings.dueDate).toISOString().split("T")[0]
+        : "",
       lateFeeAmount: classData.feeSettings?.lateFeeAmount || 0,
     });
     setShowModal(true);
@@ -165,7 +177,8 @@ export default function SetClassFees() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const activeRows = feeRows.filter((r) => r.headName.trim() && r.amount > 0);
-    if (!activeRows.length) return toast.error("Please add at least one fee head");
+    if (!activeRows.length)
+      return toast.error("Please add at least one fee head");
 
     try {
       setSaving(true);
@@ -173,7 +186,7 @@ export default function SetClassFees() {
         className: selectedClass.className,
         academicYear,
         feeStructure: activeRows,
-        ...settingsForm
+        ...settingsForm,
       });
       toast.success(`Fee structure synced for ${selectedClass.className}`);
       setShowModal(false);
@@ -186,48 +199,62 @@ export default function SetClassFees() {
   };
 
   // Loading skeleton
-  if (loading) return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 py-4">
-      {[...Array(8)].map((_, i) => (
-        <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-slate-400">
-          <div className="animate-pulse space-y-4">
-            <div className="flex justify-between">
-              <div className="h-10 w-10 rounded-lg bg-slate-200" />
-              <div className="h-5 w-20 bg-slate-200 rounded-md" />
-            </div>
-            <div className="h-5 w-3/4 bg-slate-200 rounded" />
-            <div className="h-3 w-1/2 bg-slate-200 rounded" />
-            <div className="pt-4 border-t border-slate-400 flex justify-between items-center">
-              <div className="space-y-1">
-                <div className="h-2 w-12 bg-slate-200 rounded" />
-                <div className="h-4 w-16 bg-slate-200 rounded" />
+  if (loading)
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 py-4">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-white rounded-xl p-5 shadow-sm border border-slate-400"
+          >
+            <div className="animate-pulse space-y-4">
+              <div className="flex justify-between">
+                <div className="h-10 w-10 rounded-lg bg-slate-200" />
+                <div className="h-5 w-20 bg-slate-200 rounded-md" />
               </div>
-              <div className="h-8 w-16 rounded-lg bg-slate-200" />
+              <div className="h-5 w-3/4 bg-slate-200 rounded" />
+              <div className="h-3 w-1/2 bg-slate-200 rounded" />
+              <div className="pt-4 border-t border-slate-400 flex justify-between items-center">
+                <div className="space-y-1">
+                  <div className="h-2 w-12 bg-slate-200 rounded" />
+                  <div className="h-4 w-16 bg-slate-200 rounded" />
+                </div>
+                <div className="h-8 w-16 rounded-lg bg-slate-200" />
+              </div>
             </div>
           </div>
-        </div>
-      ))}
-    </div>
-  );
+        ))}
+      </div>
+    );
 
   return (
     <div className="space-y-5">
       {/* Header Info */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 rounded-xl border border-slate-400 shadow-sm gap-4"
       >
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">Class Fee Management</h2>
-          <p className="text-slate-600 text-sm font-medium mt-1">Configure automated installments for all students</p>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
+            Class Fee Management
+          </h2>
+          <p className="text-slate-600 text-sm font-medium mt-1">
+            Configure automated installments for all students
+          </p>
         </div>
         <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-400 shadow-sm">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Session:</span>
-          
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            Session:
+          </span>
+
           <select
             value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setAcademicYear(value);
+              localStorage.setItem("academicYear", value); // ✅ save
+            }}
             className="px-4 py-2.5 bg-slate-100 border  rounded-xl text-sm font-medium text-black"
           >
             {session?.map((s) => (
@@ -244,9 +271,9 @@ export default function SetClassFees() {
         {classes.map((cls) => {
           const hasFee = cls.feeStructure?.length > 0;
           const feePercentage = hasFee ? 100 : 0;
-          
+
           return (
-            <motion.div 
+            <motion.div
               key={cls._id}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -267,10 +294,14 @@ export default function SetClassFees() {
                   </span>
                 )}
               </div>
-              
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight">{cls.className}</h3>
-              <p className="text-slate-500 text-[11px] font-medium mt-0.5 mb-4">{cls.sections?.length || 0} sections assigned</p>
-              
+
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+                {cls.className}
+              </h3>
+              <p className="text-slate-500 text-[11px] font-medium mt-0.5 mb-4">
+                {cls.sections?.length || 0} sections assigned
+              </p>
+
               {/* Progress indicator */}
               <div className="mb-4">
                 <div className="flex justify-between text-[10px] font-medium text-slate-500 mb-1">
@@ -278,21 +309,25 @@ export default function SetClassFees() {
                   <span>{feePercentage}%</span>
                 </div>
                 <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <motion.div 
-                    className={`h-full ${hasFee ? 'bg-emerald-500' : 'bg-amber-400'}`}
+                  <motion.div
+                    className={`h-full ${hasFee ? "bg-emerald-500" : "bg-amber-400"}`}
                     initial={{ width: 0 }}
                     animate={{ width: `${feePercentage}%` }}
                     transition={{ duration: 0.8 }}
                   />
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between pt-4 mt-auto border-t border-slate-400">
                 <div>
-                  <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Annual Total</p>
-                  <p className="text-base font-bold text-slate-900">₹{(cls.feeSettings?.totalAnnualFee || 0).toLocaleString()}</p>
+                  <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+                    Annual Total
+                  </p>
+                  <p className="text-base font-bold text-slate-900">
+                    ₹{(cls.feeSettings?.totalAnnualFee || 0).toLocaleString()}
+                  </p>
                 </div>
-                <motion.button 
+                <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleEdit(cls)}
@@ -310,13 +345,13 @@ export default function SetClassFees() {
       {/* Configuration Modal */}
       <AnimatePresence>
         {showModal && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           >
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -324,13 +359,15 @@ export default function SetClassFees() {
             >
               <div className="p-8 border-b border-slate-400 flex justify-between items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                 <div>
-                  <h3 className="text-2xl font-bold tracking-tight">Fee Setup: {selectedClass.className}</h3>
+                  <h3 className="text-2xl font-bold tracking-tight">
+                    Fee Setup: {selectedClass.className}
+                  </h3>
                   <p className="text-indigo-200 text-sm mt-1 font-medium">
                     Applying to all sections & students
                   </p>
                 </div>
-                <button 
-                  onClick={() => setShowModal(false)} 
+                <button
+                  onClick={() => setShowModal(false)}
                   className="h-10 w-10 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
                   aria-label="Close modal"
                 >
@@ -338,15 +375,18 @@ export default function SetClassFees() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+              <form
+                onSubmit={handleSubmit}
+                className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar"
+              >
                 {/* Dynamic Fee Heads */}
                 <section className="space-y-6">
                   <div className="flex items-center justify-between px-2">
                     <h4 className="font-bold text-slate-800 text-lg flex items-center gap-3">
                       Fee Structure Breakdown
                     </h4>
-                    <motion.button 
-                      type="button" 
+                    <motion.button
+                      type="button"
                       onClick={addFeeRow}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.98 }}
@@ -358,64 +398,84 @@ export default function SetClassFees() {
 
                   <div className="space-y-4">
                     {feeRows.map((row, idx) => (
-                      <motion.div 
+                      <motion.div
                         key={idx}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="grid grid-cols-12 gap-4 p-6 bg-slate-50 rounded-2xl items-center border border-slate-400 hover:border-indigo-500 transition-all"
                       >
                         <div className="col-span-5">
-                          <label className="text-xs font-medium text-slate-600 mb-1 block">Fee Label</label>
+                          <label className="text-xs font-medium text-slate-600 mb-1 block">
+                            Fee Label
+                          </label>
                           <div className="relative">
-                            <input 
-                              type="text" 
-                              value={row.headName} 
-                              onChange={(e) => updateFeeRow(idx, "headName", e.target.value)} 
-                              className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
-                              placeholder="Tuition Fee" 
-                              required 
+                            <input
+                              type="text"
+                              value={row.headName}
+                              onChange={(e) =>
+                                updateFeeRow(idx, "headName", e.target.value)
+                              }
+                              className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800"
+                              placeholder="Tuition Fee"
+                              required
                             />
                             {!row.headName.trim() && (
-                              <span className="absolute right-3 top-3.5 text-xs text-rose-500 font-bold">*</span>
+                              <span className="absolute right-3 top-3.5 text-xs text-rose-500 font-bold">
+                                *
+                              </span>
                             )}
                           </div>
                         </div>
                         <div className="col-span-2">
-                          <label className="text-xs font-medium text-slate-600 mb-1 block">Amount (₹)</label>
-                          <input 
-                            type="number" 
-                            value={row.amount} 
-                            onChange={(e) => updateFeeRow(idx, "amount", e.target.value)} 
-                            className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
-                            required 
+                          <label className="text-xs font-medium text-slate-600 mb-1 block">
+                            Amount (₹)
+                          </label>
+                          <input
+                            type="number"
+                            value={row.amount}
+                            onChange={(e) =>
+                              updateFeeRow(idx, "amount", e.target.value)
+                            }
+                            className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800"
+                            required
                             min="0"
                           />
                         </div>
                         <div className="col-span-3">
-                          <label className="text-xs font-medium text-slate-600 mb-1 block">Frequency</label>
-                          <select 
-                            value={row.frequency} 
-                            onChange={(e) => updateFeeRow(idx, "frequency", e.target.value)} 
+                          <label className="text-xs font-medium text-slate-600 mb-1 block">
+                            Frequency
+                          </label>
+                          <select
+                            value={row.frequency}
+                            onChange={(e) =>
+                              updateFeeRow(idx, "frequency", e.target.value)
+                            }
                             className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none py-3 px-4 font-medium text-slate-800"
                           >
-                            {FREQUENCY_OPTIONS.map(opt => 
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            )}
+                            {FREQUENCY_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className="col-span-1">
-                          <label className="text-xs font-medium text-slate-600 mb-1 block">Late Fee</label>
-                          <input 
-                            type="number" 
-                            value={row.lateFee} 
-                            onChange={(e) => updateFeeRow(idx, "lateFee", e.target.value)} 
-                            className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800" 
+                          <label className="text-xs font-medium text-slate-600 mb-1 block">
+                            Late Fee
+                          </label>
+                          <input
+                            type="number"
+                            value={row.lateFee}
+                            onChange={(e) =>
+                              updateFeeRow(idx, "lateFee", e.target.value)
+                            }
+                            className="w-full bg-white rounded-lg border border-slate-400 focus:border-indigo-700 outline-none px-4 py-3 font-medium text-slate-800"
                             min="0"
                           />
                         </div>
                         <div className="col-span-1 text-right pt-5">
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             onClick={() => removeFeeRow(idx)}
                             className="p-3 text-slate-400 hover:text-rose-500 transition-colors"
                             aria-label="Remove fee row"
@@ -429,7 +489,7 @@ export default function SetClassFees() {
                 </section>
 
                 {/* Dynamic Calculator Banner */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-white flex items-center justify-between shadow-xl relative overflow-hidden"
@@ -440,12 +500,18 @@ export default function SetClassFees() {
                       <FaCalculator />
                     </div>
                     <div>
-                      <p className="text-indigo-300 text-sm font-bold uppercase tracking-wider">Total Annual Commitment</p>
-                      <p className="text-slate-400 text-xs mt-1">Calculated based on selected intervals</p>
+                      <p className="text-indigo-300 text-sm font-bold uppercase tracking-wider">
+                        Total Annual Commitment
+                      </p>
+                      <p className="text-slate-400 text-xs mt-1">
+                        Calculated based on selected intervals
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <h2 className="text-4xl font-bold tracking-tight">₹{annualTotal.toLocaleString()}</h2>
+                    <h2 className="text-4xl font-bold tracking-tight">
+                      ₹{annualTotal.toLocaleString()}
+                    </h2>
                   </div>
                 </motion.div>
 
@@ -453,39 +519,53 @@ export default function SetClassFees() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-400">
                     <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                      <FaCalendarAlt className="text-indigo-500" /> Default Due Date
+                      <FaCalendarAlt className="text-indigo-500" /> Default Due
+                      Date
                     </label>
-                    <input 
-                      type="date" 
-                      value={settingsForm.dueDate} 
-                      onChange={(e) => setSettingsForm({...settingsForm, dueDate: e.target.value})} 
-                      className="w-full p-3 bg-white rounded-lg border border-slate-400 font-medium text-slate-800 shadow-sm focus:border-indigo-700 outline-none transition-all" 
+                    <input
+                      type="date"
+                      value={settingsForm.dueDate}
+                      onChange={(e) =>
+                        setSettingsForm({
+                          ...settingsForm,
+                          dueDate: e.target.value,
+                        })
+                      }
+                      className="w-full p-3 bg-white rounded-lg border border-slate-400 font-medium text-slate-800 shadow-sm focus:border-indigo-700 outline-none transition-all"
                     />
-                    <p className="text-xs text-slate-500">Sets deadline for all generated installments</p>
+                    <p className="text-xs text-slate-500">
+                      Sets deadline for all generated installments
+                    </p>
                   </div>
 
                   <div className="p-6 bg-amber-50 rounded-2xl border border-amber-200 flex items-start gap-4">
-                    <FaExclamationCircle className="text-amber-500 mt-1 flex-shrink-0" size={20} />
+                    <FaExclamationCircle
+                      className="text-amber-500 mt-1 flex-shrink-0"
+                      size={20}
+                    />
                     <div>
-                      <p className="text-amber-800 font-bold text-sm">Adjustment Policy</p>
+                      <p className="text-amber-800 font-bold text-sm">
+                        Adjustment Policy
+                      </p>
                       <p className="text-amber-700 text-sm mt-2 leading-relaxed">
-                        Publishing will generate payment roadmap for all sections. Existing unpaid balances will be recalculated.
+                        Publishing will generate payment roadmap for all
+                        sections. Existing unpaid balances will be recalculated.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex gap-4 pt-8">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => setShowModal(false)}
                     disabled={saving}
                     className="flex-1 py-4 font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
                   >
                     Cancel
                   </button>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={saving}
                     className="flex-[2] bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 rounded-xl font-bold shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-70 flex items-center justify-center gap-3"
                   >

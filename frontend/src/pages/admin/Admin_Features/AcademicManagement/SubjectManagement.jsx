@@ -125,11 +125,15 @@ export default function SubjectManagement() {
     setSessions(sessionData);
 
     // ✅ Active session select
-    const active = sessionData.find((s) => s?.isActive);
+   setAcademicYear((prev) => {
+  if (prev) return prev; // agar already selected hai to override mat karo
 
-    if (active) {
-      setAcademicYear(`${active.startYear}-${active.endYear}`);
-    }
+  const saved = localStorage.getItem("academicYear");
+  if (saved) return saved;
+
+  const active = sessionData.find((s) => s?.isActive);
+  return active ? `${active.startYear}-${active.endYear}` : "";
+});
 
   } catch (err) {
     console.error("Session fetch error", err);
@@ -157,8 +161,12 @@ export default function SubjectManagement() {
 
   useEffect(() => {
     if (selectedClass) loadSubjects();
-    fetchSessions();
+  
   }, [selectedClass, loadSubjects]);
+
+  useEffect(() => {
+    fetchSessions();
+  }, []);
 
   // Filter available subjects
   const filteredSubjects = useMemo(() => {

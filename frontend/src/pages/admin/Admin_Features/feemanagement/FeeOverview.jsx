@@ -58,12 +58,15 @@ export default function FeeOverview() {
   const [selectedList, setSelectedList] = useState(null);
   const [studentList, setStudentList] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
-  const[session, setSession] = useState(null);
+  const [session, setSession] = useState(null);
 
-  const getFormattedMonth = useCallback(() =>
-    selectedMonth !== "ALL"
-      ? selectedMonth.substring(0, 3).toUpperCase()
-      : undefined, [selectedMonth]);
+  const getFormattedMonth = useCallback(
+    () =>
+      selectedMonth !== "ALL"
+        ? selectedMonth.substring(0, 3).toUpperCase()
+        : undefined,
+    [selectedMonth],
+  );
   // Removed unused variable: studentsLoading
 
   // Get current month for default selection
@@ -87,19 +90,19 @@ export default function FeeOverview() {
   };
 
   const loadClasses = useCallback(async () => {
-  try {
-    const res = await api.get(
-      `${API_ENDPOINTS.ADMIN.CLASS.STATISTICS}?academicYear=${academicYear}`
-    );
+    try {
+      const res = await api.get(
+        `${API_ENDPOINTS.ADMIN.CLASS.STATISTICS}?academicYear=${academicYear}`,
+      );
 
-    const classData = res?.data?.classes || res?.data || [];
+      const classData = res?.data?.classes || res?.data || [];
 
-    setClassList(classData);
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to load classes");
-  }
-}, [academicYear]);
+      setClassList(classData);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load classes");
+    }
+  }, [academicYear]);
 
   const loadAllFeeData = useCallback(async () => {
     try {
@@ -119,43 +122,43 @@ export default function FeeOverview() {
   }, [academicYear, selectedClass, getFormattedMonth]);
 
   const fetchSessions = async () => {
-  try {
-    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-    console.log("FULL RES:", res);
+      console.log("FULL RES:", res);
 
-    // ✅ Always correct data
-   let sessionData = Array.isArray(res) ? res : res?.data || [];
+      // ✅ Always correct data
+      let sessionData = Array.isArray(res) ? res : res?.data || [];
 
-    // ✅ Remove duplicates (safe)
-    sessionData = sessionData.filter(
-      (s, index, self) =>
-        index ===
-        self.findIndex(
-          (x) =>
-            x.startYear === s.startYear &&
-            x.endYear === s.endYear
-        )
-    );
+      // ✅ Remove duplicates (safe)
+      sessionData = sessionData.filter(
+        (s, index, self) =>
+          index ===
+          self.findIndex(
+            (x) => x.startYear === s.startYear && x.endYear === s.endYear,
+          ),
+      );
 
-    // ✅ Sort
-    sessionData.sort((a, b) => a.startYear - b.startYear);
+      // ✅ Sort
+      sessionData.sort((a, b) => a.startYear - b.startYear);
 
-    console.log("FINAL SESSION DATA:", sessionData);
+      console.log("FINAL SESSION DATA:", sessionData);
 
-    setSession(sessionData);
+      setSession(sessionData);
 
-    // ✅ Active session select
-    const active = sessionData.find((s) => s?.isActive);
+      // ✅ Active session select
+      const savedSession = localStorage.getItem("academicYear");
 
-    if (active) {
-      setAcademicYear(`${active.startYear}-${active.endYear}`);
+      setAcademicYear((prev) => {
+        if (savedSession) return savedSession; // ✅ user selection priority
+
+        const active = sessionData.find((s) => s?.isActive);
+        return active ? `${active.startYear}-${active.endYear}` : "";
+      });
+    } catch (err) {
+      console.error("Session fetch error", err);
     }
-
-  } catch (err) {
-    console.error("Session fetch error", err);
-  }
-};
+  };
 
   const loadStatistics = useCallback(async () => {
     try {
@@ -190,7 +193,6 @@ export default function FeeOverview() {
 
       // ✅ 2. Phir parallel mein list fetch karo agar zaroori ho
       await loadAllFeeData();
-
     } catch (err) {
       console.error(err);
       toast.error("Statistics not available for this period");
@@ -204,24 +206,33 @@ export default function FeeOverview() {
     if (!allStudentsData.length) return statistics;
 
     // Filter logic exactly wahi jo aapke student list panel mein hai
-    const paidList = allStudentsData.filter(student => {
-       const monthKey = selectedMonth !== "ALL" ? selectedMonth.substring(0, 3).toUpperCase() : null;
-       const monthlyInst = monthKey ? student.feeDetails?.installments?.filter(i => i.name.toUpperCase().startsWith(monthKey)) : null;
-       
-       if (monthlyInst?.length) {
-         return monthlyInst.every(i => i.status === "PAID");
-       }
-       return student.feeDetails.status === "PAID";
+    const paidList = allStudentsData.filter((student) => {
+      const monthKey =
+        selectedMonth !== "ALL"
+          ? selectedMonth.substring(0, 3).toUpperCase()
+          : null;
+      const monthlyInst = monthKey
+        ? student.feeDetails?.installments?.filter((i) =>
+            i.name.toUpperCase().startsWith(monthKey),
+          )
+        : null;
+
+      if (monthlyInst?.length) {
+        return monthlyInst.every((i) => i.status === "PAID");
+      }
+      return student.feeDetails.status === "PAID";
     });
 
-    const unpaidList = allStudentsData.filter(student => !paidList.find(p => p._id === student._id));
+    const unpaidList = allStudentsData.filter(
+      (student) => !paidList.find((p) => p._id === student._id),
+    );
 
     return {
       ...statistics,
       paymentStatus: {
         paid: paidList.length,
-        unpaid: unpaidList.length
-      }
+        unpaid: unpaidList.length,
+      },
     };
   }, [allStudentsData, statistics, selectedMonth]);
 
@@ -247,25 +258,27 @@ export default function FeeOverview() {
     }
   };
 
-  
-useEffect(() => {
-  if (academicYear) {
-    loadClasses();
-    fetchSessions();
-  }
-}, [academicYear, loadClasses]);
+  useEffect(() => {
+    fetchSessions(); // ✅ only once
+  }, []);
 
-useEffect(() => {
-  if (academicYear) {
-    loadStatistics();
-  }
-}, [academicYear, loadStatistics]);
+  useEffect(() => {
+    if (academicYear) {
+      loadClasses();
+    }
+  }, [academicYear, loadClasses]);
 
-useEffect(() => {
-  if (statistics) {
-    console.log("Payment Status:", statistics.paymentStatus);
-  }
-}, [statistics]);
+  useEffect(() => {
+    if (academicYear) {
+      loadStatistics();
+    }
+  }, [academicYear, loadStatistics]);
+
+  useEffect(() => {
+    if (statistics) {
+      console.log("Payment Status:", statistics.paymentStatus);
+    }
+  }, [statistics]);
   // Reset selectedList when month changes
   useEffect(() => {
     setSelectedList(null);
@@ -288,9 +301,13 @@ useEffect(() => {
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">
             Session:
           </span>
-           <select
+          <select
             value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setAcademicYear(value);
+              localStorage.setItem("academicYear", value); // ✅ save
+            }}
             className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
           >
             {session?.map((s) => (
@@ -307,20 +324,20 @@ useEffect(() => {
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 bg-blue-50 text-purple-600 rounded-lg flex items-center justify-center">
             <FaFilter size={16} />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-slate-900">
-                Analytics Filter
-              </h3>
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-slate-900">
+              Analytics Filter
+            </h3>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-            <div className="relative">
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="
+          <div className="relative">
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="
                   rounded-lg 
                   border 
                   border-slate-400 
@@ -341,23 +358,23 @@ useEffect(() => {
                   cursor-pointer
                   min-w-[200px]
                 "
-              >
-                <option value="ALL">📊 Full Academic Year</option>
-                {MONTHS.map((m) => (
-                  <option key={m} value={m.toUpperCase()}>
-                    {m.toUpperCase() === getCurrentMonth()
-                      ? `📅 ${m} (Current)`
-                      : m}
-                  </option>
-                ))}
-              </select>
-            </div>
+            >
+              <option value="ALL">📊 Full Academic Year</option>
+              {MONTHS.map((m) => (
+                <option key={m} value={m.toUpperCase()}>
+                  {m.toUpperCase() === getCurrentMonth()
+                    ? `📅 ${m} (Current)`
+                    : m}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div className="relative">
-              <select
-                value={selectedClass}
-                onChange={(e) => setSelectedClass(e.target.value)}
-                className="
+          <div className="relative">
+            <select
+              value={selectedClass}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              className="
                   rounded-lg 
                   border 
                   border-slate-400 
@@ -378,19 +395,19 @@ useEffect(() => {
       cursor-pointer
       min-w-[200px]
     "
-              >
-                <option value="ALL">🏫 All Classes</option>
-                {classList.map((cls) => (
-                  <option key={cls._id} value={cls._id}>
-                    {cls.className}
-                  </option>
-                ))}
-              </select>
-            </div>
+            >
+              <option value="ALL">🏫 All Classes</option>
+              {classList.map((cls) => (
+                <option key={cls._id} value={cls._id}>
+                  {cls.className}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <button
-              onClick={loadStatistics}
-              className="
+          <button
+            onClick={loadStatistics}
+            className="
                 h-9 w-9 
                 bg-amber-500 
                 text-white 
@@ -400,13 +417,13 @@ useEffect(() => {
                 transition-all
                 shadow-md
               "
-              title="Refresh Statistics"
-            >
-              <FiRefreshCw
-                className={statsLoading ? "animate-spin" : ""}
-                size={16}
-              />
-            </button>
+            title="Refresh Statistics"
+          >
+            <FiRefreshCw
+              className={statsLoading ? "animate-spin" : ""}
+              size={16}
+            />
+          </button>
         </div>
 
         {selectedMonth !== "ALL" && (
@@ -517,34 +534,34 @@ useEffect(() => {
 
               <div className="flex items-center justify-center shrink-0">
                 <div className="relative h-20 w-20 flex items-center justify-center">
-                    <svg className="absolute inset-0 w-full h-full -rotate-90">
-                      <circle
-                        cx="40"
-                        cy="40"
-                        r="36"
-                        fill="none"
-                        stroke="#f1f5f9"
-                        strokeWidth="8"
-                      />
-                      <circle
-                        cx="40"
-                        cy="40"
-                        r="36"
-                        fill="none"
-                        stroke="#8b5cf6"
-                        strokeWidth="8"
-                        strokeDasharray="226.19"
-                        strokeDashoffset={
-                          226.19 -
-                          (226.19 * (syncedStats?.collectionPercentage || 0)) /
-                            100
-                        }
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <span className="text-lg font-bold text-slate-900">
-                      {syncedStats?.collectionPercentage || 0}%
-                    </span>
+                  <svg className="absolute inset-0 w-full h-full -rotate-90">
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="36"
+                      fill="none"
+                      stroke="#f1f5f9"
+                      strokeWidth="8"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="36"
+                      fill="none"
+                      stroke="#8b5cf6"
+                      strokeWidth="8"
+                      strokeDasharray="226.19"
+                      strokeDashoffset={
+                        226.19 -
+                        (226.19 * (syncedStats?.collectionPercentage || 0)) /
+                          100
+                      }
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="text-lg font-bold text-slate-900">
+                    {syncedStats?.collectionPercentage || 0}%
+                  </span>
                 </div>
               </div>
             </div>
@@ -651,7 +668,9 @@ useEffect(() => {
                       <div className="text-right">
                         <p className="text-white font-bold text-sm">
                           ₹{displayPaid.toLocaleString()}{" "}
-                          <span className="text-white/40">/ ₹{displayTotal.toLocaleString()}</span>
+                          <span className="text-white/40">
+                            / ₹{displayTotal.toLocaleString()}
+                          </span>
                         </p>
                         <div
                           className={`mt-1 inline-block px-2 py-0.5 rounded text-[8px] font-bold uppercase ${

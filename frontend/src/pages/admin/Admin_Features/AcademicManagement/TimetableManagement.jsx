@@ -30,7 +30,11 @@ export default function TimetableManagement() {
   const [selectedSection, setSelectedSection] = useState("");
   const [timetableData, setTimetableData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [academicYear, setAcademicYear] = useState(getCurrentAcademicYear());
+  
+  const [academicYear, setAcademicYear] = useState(() => {
+  return localStorage.getItem("academicYear") || getCurrentAcademicYear();
+});
+
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showPeriodModal, setShowPeriodModal] = useState(false);
   const [editingPeriod, setEditingPeriod] = useState(null);
@@ -262,56 +266,57 @@ export default function TimetableManagement() {
     setPendingTemplateData(null);
   };
 
-  
-
   const handleOverwriteCancel = () => {
     setShowOverwriteModal(false);
     setPendingTemplateData(null);
   };
 
   const fetchSessions = async () => {
-  try {
-    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-    console.log("FULL RES:", res);
+      console.log("FULL RES:", res);
 
-    // ✅ Always correct data
-   let sessionData = Array.isArray(res) ? res : res?.data || [];
+      // ✅ Always correct data
+      let sessionData = Array.isArray(res) ? res : res?.data || [];
 
-    // ✅ Remove duplicates (safe)
-    sessionData = sessionData.filter(
-      (s, index, self) =>
-        index ===
-        self.findIndex(
-          (x) =>
-            x.startYear === s.startYear &&
-            x.endYear === s.endYear
-        )
-    );
+      // ✅ Remove duplicates (safe)
+      sessionData = sessionData.filter(
+        (s, index, self) =>
+          index ===
+          self.findIndex(
+            (x) => x.startYear === s.startYear && x.endYear === s.endYear,
+          ),
+      );
 
-    // ✅ Sort
-    sessionData.sort((a, b) => a.startYear - b.startYear);
+      // ✅ Sort
+      sessionData.sort((a, b) => a.startYear - b.startYear);
 
-    console.log("FINAL SESSION DATA:", sessionData);
+      console.log("FINAL SESSION DATA:", sessionData);
 
-    setSession(sessionData);
+      setSession(sessionData);
 
-    // ✅ Active session select
-    const active = sessionData.find((s) => s?.isActive);
+      // ✅ Active session select
 
-    if (active) {
-      setAcademicYear(`${active.startYear}-${active.endYear}`);
-    }
-
-  } catch (err) {
-    console.error("Session fetch error", err);
+      if (!localStorage.getItem("academicYear")) {
+  const active = sessionData.find((s) => s?.isActive);
+  if (active) {
+    const year = `${active.startYear}-${active.endYear}`;
+    setAcademicYear(year);
+    localStorage.setItem("academicYear", year);
   }
-};
-  
+}
+    } catch (err) {
+      console.error("Session fetch error", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSessions(); // ✅ only once
+  }, []);
 
   useEffect(() => {
     loadClasses();
-    fetchSessions();
   }, [loadClasses]);
 
   useEffect(() => {
@@ -512,18 +517,21 @@ export default function TimetableManagement() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3 items-center">
-            
             <select
             value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
-            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate"
-          >
-            {session?.map((s) => (
-              <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
-                {s.startYear}-{s.endYear}
-              </option>
-            ))}
-          </select>
+              onChange={(e) => {
+                const value = e.target.value;
+                setAcademicYear(value);
+                localStorage.setItem("academicYear", value); // ✅ save
+              }}
+              className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate"
+            >
+              {session?.map((s) => (
+                <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                  {s.startYear}-{s.endYear}
+                </option>
+              ))}
+            </select>
 
             {timetableData && (
               <>
@@ -597,7 +605,7 @@ export default function TimetableManagement() {
           </div>
         </div> */}
 
-         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">
               Select Class
