@@ -435,11 +435,11 @@ const fetchSessions = async () => {
                     <div className="w-[15%] px-2 flex flex-col gap-1.5">
                       <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-lg text-[10px] font-bold w-fit">
                         <FaChalkboardTeacher size={10} />
-                        {teacher.assignedClasses?.filter(ac => ac.academicYear === academicYear)?.length || 0} Class Roles
+                        {teacher.assignedClasses?.filter(ac => ac.isClassTeacher && ac.academicYear === academicYear)?.length || 0} Class Roles
                       </span>
                       <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg text-[10px] font-bold w-fit">
                         <FaBook size={10} />
-                        {(teacher.teachingSubjects || teacher.subjectsTaught || teacher.subjects || [])?.filter(s => s.academicYear === academicYear)?.length || 0} Subjects
+                        {teacher.assignedClasses?.filter(ac => !ac.isClassTeacher && ac.academicYear === academicYear)?.length || 0} Subjects
                       </span>
                     </div>
 
@@ -597,91 +597,83 @@ const fetchSessions = async () => {
                 </div>
               </div>
 
-              {/* Assignments & Roles */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                    Assignments & Roles ({academicYear})
-                  </h3>
+              {/* Assignments & Roles (Compact Card) */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-200/60">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Assignments & Roles
+                    </h3>
+                    <span className="px-2 py-0.5 bg-white border border-slate-200 text-slate-500 rounded-md text-[10px] font-bold">
+                      {academicYear}
+                    </span>
+                  </div>
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      title={!academicYear ? "Select an Academic Session first" : "Assign Class Teacher"}
+                      disabled={!academicYear}
+                      onClick={() => openAssignModal(selectedTeacher, "classTeacher")}
+                      className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                    >
+                      <FaPlus size={10} /> Assign Class
+                    </button>
+                    <button
+                      title={!academicYear ? "Select an Academic Session first" : "Assign Subject Teacher"}
+                      disabled={!academicYear}
+                      onClick={() => openAssignModal(selectedTeacher, "subject")}
+                      className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                    >
+                      <FaPlus size={10} /> Assign Subject
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex flex-col gap-5 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Class Teacher Section */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="p-1.5 bg-emerald-100 text-emerald-600 rounded-md">
-                        <FaChalkboardTeacher size={14} />
-                      </div>
-                      <span className="text-sm font-bold text-slate-700">Class Teacher</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase">
+                      <FaChalkboardTeacher size={12} className="text-emerald-500" /> Class Teacher Duty
                     </div>
-                    <div className="flex gap-2 flex-wrap">
-                      {selectedTeacher.assignedClasses?.filter(ac => ac.academicYear === academicYear)?.length > 0 ? (
+                    <div className="flex gap-1.5 flex-wrap">
+                      {selectedTeacher.assignedClasses?.filter(ac => ac.isClassTeacher && ac.academicYear === academicYear).length > 0 ? (
                         selectedTeacher.assignedClasses
-                          .filter(ac => ac.academicYear === academicYear)
+                          .filter(ac => ac.isClassTeacher && ac.academicYear === academicYear)
                           .map((ac, idx) => (
                             <span
                               key={`ct-${idx}`}
-                              className="px-3 py-1.5 bg-white text-emerald-700 rounded-lg text-xs font-bold border border-emerald-200 shadow-sm flex items-center gap-1.5"
+                              className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded text-[10px] font-bold border border-emerald-200"
                             >
-                              Class {ac.class?.className || ac.className} - Section {ac.section}
+                              Class {ac.class?.className?.replace(/class\s*/i, "").trim() || "N/A"}-{ac.section}
                             </span>
                           ))
                       ) : (
-                        <span className="text-xs text-slate-400 italic bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-                          No class teacher roles assigned
-                        </span>
+                        <span className="text-[10px] text-slate-400 italic">No class teacher roles assigned</span>
                       )}
                     </div>
                   </div>
 
-                  <div className="h-px w-full bg-slate-200"></div>
-
                   {/* Subject Teacher Section */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="p-1.5 bg-indigo-100 text-indigo-600 rounded-md">
-                        <FaBook size={14} />
-                      </div>
-                      <span className="text-sm font-bold text-slate-700">Subject Teacher</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase">
+                      <FaBook size={12} className="text-indigo-500" /> Assigned Subjects
                     </div>
-                    <div className="flex gap-2 flex-wrap">
-                      {(selectedTeacher.teachingSubjects || selectedTeacher.subjectsTaught || selectedTeacher.subjects || [])?.filter(s => s.academicYear === academicYear)?.length > 0 ? (
-                        (selectedTeacher.teachingSubjects || selectedTeacher.subjectsTaught || selectedTeacher.subjects || [])
-                          .filter(s => s.academicYear === academicYear)
+                    <div className="flex gap-1.5 flex-wrap">
+                      {selectedTeacher.assignedClasses?.filter(ac => !ac.isClassTeacher && ac.academicYear === academicYear).length > 0 ? (
+                        selectedTeacher.assignedClasses
+                          .filter(ac => !ac.isClassTeacher && ac.academicYear === academicYear)
                           .map((sub, idx) => (
                             <span
                               key={`sub-${idx}`}
-                              className="px-3 py-1.5 bg-white text-indigo-700 rounded-lg text-xs font-bold border border-indigo-200 shadow-sm flex items-center gap-1.5"
+                              className="px-2 py-1 bg-indigo-50 text-indigo-700 rounded text-[10px] font-bold border border-indigo-200"
                             >
-                              {sub.subjectName} <span className="text-indigo-300 mx-0.5">|</span> Class {sub.class?.className || sub.className}-{sub.section}
+                              {sub.subject || sub.subjectName} <span className="opacity-40 mx-0.5">|</span> Class {sub.class?.className?.replace(/class\s*/i, "").trim() || "N/A"}-{sub.section}
                             </span>
                           ))
                       ) : (
-                        <span className="text-xs text-slate-400 italic bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-                          No subjects assigned
-                        </span>
+                        <span className="text-[10px] text-slate-400 italic">No subject assignments found</span>
                       )}
                     </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 mt-2 pt-5 border-t border-slate-200">
-                    <button
-                      onClick={() =>
-                        openAssignModal(selectedTeacher, "classTeacher")
-                      }
-                      className="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"
-                    >
-                      <FaPlus size={12} /> Assign Class Teacher
-                    </button>
-                    <button
-                      onClick={() =>
-                        openAssignModal(selectedTeacher, "subject")
-                      }
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"
-                    >
-                      <FaPlus size={12} /> Assign Subject
-                    </button>
                   </div>
                 </div>
               </div>
@@ -746,8 +738,7 @@ const fetchSessions = async () => {
                                     {period ? (
                                       <div className="bg-indigo-50/50 p-1 rounded-md h-full flex flex-col justify-center items-center">
                                         <div className="font-bold text-indigo-700 leading-none mb-0.5">
-                                          {period.className?.slice(0, 3)}-
-                                          {period.section}
+                                        C{period.className?.replace(/class\s*/i, "").trim()}-{period.section}
                                         </div>
                                         <div className="text-[7px] text-slate-400 uppercase font-bold">
                                           {period.subject?.slice(0, 3)}
@@ -859,7 +850,7 @@ const fetchSessions = async () => {
       )}
 
       {/* Custom Scrollbar Styles */}
-      <style jsx>{`
+      <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }
@@ -930,6 +921,11 @@ function AssignmentModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!academicYear) {
+      toast.error("Academic Year is missing. Please select a session.");
+      return;
+    }
 
     if (!selectedClass || !selectedSection) {
       toast.error("Please select class and section");
@@ -1014,6 +1010,23 @@ function AssignmentModal({
 
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {/* Academic Year Info (Read-Only) */}
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">
+              Academic Session
+            </label>
+            <input
+              type="text"
+              value={academicYear || "No Session Selected"}
+              className="w-full rounded-xl border border-gray-300 bg-gray-100 p-3 text-sm text-gray-500 font-bold cursor-not-allowed"
+              disabled
+              readOnly
+            />
+            <p className="text-[10px] text-slate-400 mt-1">
+              Assignments are tied to the active session selected in the top bar.
+            </p>
+          </div>
+
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">
               Select Class <span className="text-rose-500">*</span>
