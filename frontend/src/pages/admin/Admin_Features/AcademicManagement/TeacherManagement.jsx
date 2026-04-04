@@ -38,7 +38,7 @@ export default function TeacherManagement() {
   const [teacherSchedule, setTeacherSchedule] = useState({});
   const [loadingSchedule, setLoadingSchedule] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState("All");
-  const [academicYear, setAcademicYear] = useState("2025-2026");
+  const [academicYear, setAcademicYear] = useState("");
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assignmentType, setAssignmentType] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,6 +62,7 @@ export default function TeacherManagement() {
   // Load teachers and classes
   const loadData = useCallback(async () => {
     try {
+      if (!academicYear) return;
       setLoading(true);
       const teachersUrl = `${API_ENDPOINTS.ADMIN.TEACHER_MANAGEMENT.LIST}?academicYear=${academicYear}`;
       const classesUrl = `${API_ENDPOINTS.ADMIN.CLASS.LIST}?academicYear=${academicYear}`;
@@ -91,7 +92,16 @@ export default function TeacherManagement() {
 
       setTeachers(teacherList);
       setClasses(classList);
-      if (teacherList.length > 0 && !selectedTeacher) {
+
+      // ✅ CRITICAL FIX: Selected teacher ko refresh karein naye session ke data ke saath
+      if (selectedTeacher) {
+        const updatedTeacher = teacherList.find((t) => t._id === selectedTeacher._id);
+        if (updatedTeacher) {
+          setSelectedTeacher(updatedTeacher); // Naya data jisme sirf current year ke assignments hon
+        } else if (teacherList.length > 0) {
+          setSelectedTeacher(teacherList[0]);
+        }
+      } else if (teacherList.length > 0) {
         setSelectedTeacher(teacherList[0]);
       }
     } catch (error) {
@@ -100,7 +110,7 @@ export default function TeacherManagement() {
     } finally {
       setLoading(false);
     }
-  }, [academicYear, selectedTeacher]);
+  }, [academicYear, selectedTeacher?._id]);
 
 const fetchSessions = async () => {
   try {
@@ -130,12 +140,11 @@ const fetchSessions = async () => {
     setSessions(sessionData);
 
     // ✅ Active session select
-    const active = sessionData.find((s) => s?.isActive);
-
-    if (active) {
-      setAcademicYear(`${active.startYear}-${active.endYear}`);
-    }
-
+    setAcademicYear((prev) => {
+      if (prev) return prev; // Do not override if a year is already selected
+      const active = sessionData.find((s) => s?.isActive);
+      return active ? `${active.startYear}-${active.endYear}` : "";
+    });
   } catch (err) {
     console.error("Session fetch error", err);
   }
@@ -191,8 +200,11 @@ const fetchSessions = async () => {
   );
 
   useEffect(() => {
-    loadData();
     fetchSessions();
+  }, []);
+
+  useEffect(() => {
+    loadData();
   }, [loadData]);
 
   useEffect(() => {
@@ -420,10 +432,14 @@ const fetchSessions = async () => {
                     </div>
 
                     {/* Col 4: Assignments (15%) */}
-                    <div className="w-[15%] px-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold hover:bg-indigo-100 hover:text-indigo-700 transition-colors">
+                    <div className="w-[15%] px-2 flex flex-col gap-1.5">
+                      <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-lg text-[10px] font-bold w-fit">
                         <FaChalkboardTeacher size={10} />
-                        {teacher.assignedClasses?.length || 0} Classes
+                        {teacher.assignedClasses?.filter(ac => ac.academicYear === academicYear)?.length || 0} Class Roles
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg text-[10px] font-bold w-fit">
+                        <FaBook size={10} />
+                        {(teacher.teachingSubjects || teacher.subjectsTaught || teacher.subjects || [])?.filter(s => s.academicYear === academicYear)?.length || 0} Subjects
                       </span>
                     </div>
 
@@ -581,56 +597,90 @@ const fetchSessions = async () => {
                 </div>
               </div>
 
-              {/* Administrative Roles & Action Buttons */}
+              {/* Assignments & Roles */}
               <div>
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
-                  Administrative Roles
-                </h3>
-                <div className="flex flex-wrap flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-slate-500">
-                      Current Assignments:
-                    </span>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                    Assignments & Roles ({academicYear})
+                  </h3>
+                </div>
+
+                <div className="flex flex-col gap-5 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                  {/* Class Teacher Section */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="p-1.5 bg-emerald-100 text-emerald-600 rounded-md">
+                        <FaChalkboardTeacher size={14} />
+                      </div>
+                      <span className="text-sm font-bold text-slate-700">Class Teacher</span>
+                    </div>
                     <div className="flex gap-2 flex-wrap">
-                      {selectedTeacher.assignedClasses?.length > 0 ? (
-                        selectedTeacher.assignedClasses.map((ac, idx) => (
-                          <span
-                            key={idx}
-                            className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-wider border border-slate-200"
-                          >
-                            {ac.class?.className}-{ac.section}
-                          </span>
-                        ))
+                      {selectedTeacher.assignedClasses?.filter(ac => ac.academicYear === academicYear)?.length > 0 ? (
+                        selectedTeacher.assignedClasses
+                          .filter(ac => ac.academicYear === academicYear)
+                          .map((ac, idx) => (
+                            <span
+                              key={`ct-${idx}`}
+                              className="px-3 py-1.5 bg-white text-emerald-700 rounded-lg text-xs font-bold border border-emerald-200 shadow-sm flex items-center gap-1.5"
+                            >
+                              Class {ac.class?.className || ac.className} - Section {ac.section}
+                            </span>
+                          ))
                       ) : (
-                        <span className="text-xs text-slate-400 italic">
-                          No assignments
-                        </span>
-                      )}
-                      {selectedTeacher.department && (
-                        <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold uppercase tracking-wider border border-emerald-100">
-                          Subject Lead
+                        <span className="text-xs text-slate-400 italic bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+                          No class teacher roles assigned
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Action Buttons - Added Back */}
-                  <div className="flex  gap-3">
+                  <div className="h-px w-full bg-slate-200"></div>
+
+                  {/* Subject Teacher Section */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="p-1.5 bg-indigo-100 text-indigo-600 rounded-md">
+                        <FaBook size={14} />
+                      </div>
+                      <span className="text-sm font-bold text-slate-700">Subject Teacher</span>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      {(selectedTeacher.teachingSubjects || selectedTeacher.subjectsTaught || selectedTeacher.subjects || [])?.filter(s => s.academicYear === academicYear)?.length > 0 ? (
+                        (selectedTeacher.teachingSubjects || selectedTeacher.subjectsTaught || selectedTeacher.subjects || [])
+                          .filter(s => s.academicYear === academicYear)
+                          .map((sub, idx) => (
+                            <span
+                              key={`sub-${idx}`}
+                              className="px-3 py-1.5 bg-white text-indigo-700 rounded-lg text-xs font-bold border border-indigo-200 shadow-sm flex items-center gap-1.5"
+                            >
+                              {sub.subjectName} <span className="text-indigo-300 mx-0.5">|</span> Class {sub.class?.className || sub.className}-{sub.section}
+                            </span>
+                          ))
+                      ) : (
+                        <span className="text-xs text-slate-400 italic bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+                          No subjects assigned
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 mt-2 pt-5 border-t border-slate-200">
                     <button
                       onClick={() =>
                         openAssignModal(selectedTeacher, "classTeacher")
                       }
-                      className="px-5 py-2.5 bg-indigo-700 border-2 border-indigo-200  text-white rounded-xl hover:bg-indigo-800 transition-all text-xs font-bold flex items-center gap-2"
+                      className="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"
                     >
-                      <FaChalkboardTeacher size={14} /> Assign Class Teacher
+                      <FaPlus size={12} /> Assign Class Teacher
                     </button>
                     <button
                       onClick={() =>
                         openAssignModal(selectedTeacher, "subject")
                       }
-                      className="px-5 py-2.5 bg-indigo-700 text-white rounded-xl hover:bg-indigo-800 transition-all text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-200"
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"
                     >
-                      <FaBook size={14} /> Assign Subject
+                      <FaPlus size={12} /> Assign Subject
                     </button>
                   </div>
                 </div>
@@ -981,7 +1031,7 @@ function AssignmentModal({
               <option value="">Choose a class</option>
               {classes.map((cls) => (
                 <option key={cls._id} value={cls._id}>
-                  Class {cls.className} ({cls.academicYear})
+                  Class {cls.className.replace(/class\s*/i, "").trim()}
                 </option>
               ))}
             </select>
