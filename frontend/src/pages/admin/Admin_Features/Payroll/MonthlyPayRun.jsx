@@ -138,9 +138,6 @@ export default function MonthlyPayRun() {
         id: staff.teacherId || staff._id,
         teacherID: staff.teacherID,
         name: staff.name,
-        presentDays: staff.presentDays,
-        totalDays: staff.totalDays,
-        attendanceFactor: staff.attendanceFactor,
       }));
 
       setStats(formattedPending);
@@ -562,8 +559,10 @@ export default function MonthlyPayRun() {
             <thead className="bg-slate-900 text-white text-[10px] uppercase font-bold tracking-wider border-b border-slate-400">
               <tr>
                 <th className="p-6">Staff Details</th>
-                <th className="p-6 text-center">Attendance</th>
-                <th className="p-6 text-center">Override Total (₹)</th>
+                <th className="p-6 text-center">
+                  Adjustment Gross (Optional)
+                  <div className="text-[9px] text-slate-400 font-normal normal-case tracking-normal mt-1">Leave blank to use standard salary</div>
+                </th>
                 <th className="p-6 text-center">Extra Activities</th>
                 <th className="p-6 text-right">Action</th>
               </tr>
@@ -580,15 +579,10 @@ export default function MonthlyPayRun() {
                       ID: {row.teacherID}
                     </p>
                   </td>
-                  <td className="p-6 text-center">
-                    <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-bold text-xs">
-                      {row.attendanceFactor}x
-                    </span>
-                  </td>
                   <td className="p-6">
                     <input
                       type="number"
-                      placeholder="Force Gross Amount"
+                      placeholder="Adjustment Gross"
                       className="w-full p-2.5 bg-white border border-slate-400 rounded-xl font-bold text-slate-800 outline-none focus:border-amber-500 text-center transition-all"
                       value={manualAmounts[row.id] || ""}
                       onChange={(e) =>
@@ -661,7 +655,7 @@ export default function MonthlyPayRun() {
               {stats.length === 0 && (
                 <tr>
                   <td
-                    colSpan="5"
+                    colSpan="4"
                     className="p-10 text-center text-slate-400 font-medium italic"
                   >
                     No pending staff for this period.
