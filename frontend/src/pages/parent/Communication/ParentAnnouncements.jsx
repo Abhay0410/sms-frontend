@@ -58,7 +58,7 @@ export default function ParentAnnouncements() {
         {announcements.map((ann) => (
           <div
             key={ann._id}
-            className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all"
+            className="bg-white p-6 rounded-2xl shadow-sm border-1 border-slate-500 hover:shadow-md transition-all"
           >
             <div className="flex items-center gap-2 mb-3">
               <span

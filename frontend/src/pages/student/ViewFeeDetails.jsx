@@ -134,7 +134,7 @@ export default function ViewFeeDetails() {
 
         {/* Student Info Card */}
         {student && (
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white shadow-lg mb-8">
+          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-8  text-white shadow-2xl rounded-2xl mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h2 className="text-2xl font-bold mb-1">{student.name}</h2>

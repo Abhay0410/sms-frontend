@@ -36,7 +36,7 @@
 //            </div>
 //         </div>
 //       </div>
-      
+
 //       {/* 📊 Top Stats Cards */}
 //       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 //         <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden group">
@@ -106,7 +106,7 @@
 //                     </span>
 //                   </td>
 //                   <td className="p-8 text-right">
-//                     <button 
+//                     <button
 //                       onClick={() => navigate(staff.hasStructure ? `../salary-setup?id=${staff._id}` : '../salary-setup')}
 //                       className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-900 transition-all"
 //                     >
@@ -124,30 +124,44 @@
 //   );
 // }
 
-
-
 import { useEffect, useState } from "react";
 import api from "../../../../services/api";
-import { FaMoneyBillWave, FaUsers, FaExclamationCircle, FaArrowRight, FaCheckCircle, FaTools } from "react-icons/fa";
+import {
+  FaMoneyBillWave,
+  FaUsers,
+  FaExclamationCircle,
+  FaArrowRight,
+  FaCheckCircle,
+  FaTools,
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminPayrollDashboard() {
-  const [summary, setSummary] = useState({ paid: 0, pending: 0, totalStaff: 0, staffList: [], processedCount: 0 });
+  const [summary, setSummary] = useState({
+    paid: 0,
+    pending: 0,
+    totalStaff: 0,
+    staffList: [],
+    processedCount: 0,
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadSummary = async () => {
       try {
-        const resp = await api.get('/api/admin/payroll/summary');
-        setSummary(resp.data || { paid: 0, pending: 0, totalStaff: 0, staffList: [] });
-//         setSummary({
-//   paid: resp.data?.paid || 0,
-//   pending: resp.data?.pending || 0,
-//   totalStaff: resp.data?.totalStaff || 0,
-//   processedCount: resp.data?.processedCount || 0,
-//   staffList: resp.data?.staffList || []   // 👈 IMPORTANT
-// });
-
+        const resp = await api.get("/api/admin/payroll/summary");
+        setSummary(
+          resp.data || { paid: 0, pending: 0, totalStaff: 0, staffList: [] },
+        );
+        //         setSummary({
+        //   paid: resp.data?.paid || 0,
+        //   pending: resp.data?.pending || 0,
+        //   totalStaff: resp.data?.totalStaff || 0,
+        //   processedCount: resp.data?.processedCount || 0,
+        //   staffList: resp.data?.staffList || []   // 👈 IMPORTANT
+        // });
       } catch (err) {
         console.error("Summary fetch error", err);
       }
@@ -155,24 +169,57 @@ export default function AdminPayrollDashboard() {
     loadSummary();
   }, []);
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  const currentStaff = summary.staffList.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
+
+  const totalPages = Math.ceil(summary.staffList.length / itemsPerPage);
+
+  const maxButtons = 10;
+
+  const startPage = Math.floor((currentPage - 1) / maxButtons) * maxButtons + 1;
+  const endPage = Math.min(startPage + maxButtons - 1, totalPages);
+
+  const visiblePages = [];
+  for (let i = startPage; i <= endPage; i++) {
+    visiblePages.push(i);
+  }
+
   return (
     <div className=" space-y-10">
       <div className="flex justify-between items-end ">
         <div>
-           <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Payroll Command Center</h1>
-           <p className="text-gray-500 font-medium text-sm  mt-1">Real-time Financial Overview</p>
+          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+            Payroll Command Center
+          </h1>
+          <p className="text-gray-500 font-medium text-sm  mt-1">
+            Real-time Financial Overview
+          </p>
         </div>
         <div className="bg-indigo-50 px-6 py-3 rounded-2xl border border-indigo-100">
-           <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Processing Progress</p>
-           <div className="flex items-center gap-3 mt-1">
-              <div className="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
-                 <div className="h-full bg-indigo-600" style={{ width: `${(summary.processedCount / summary.totalStaff) * 100}%` }}></div>
-              </div>
-              <span className="text-sm font-bold text-indigo-700">{summary.processedCount}/{summary.totalStaff}</span>
-           </div>
+          <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+            Processing Progress
+          </p>
+          <div className="flex items-center gap-3 mt-1">
+            <div className="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-indigo-600"
+                style={{
+                  width: `${(summary.processedCount / summary.totalStaff) * 100}%`,
+                }}
+              ></div>
+            </div>
+            <span className="text-sm font-bold text-indigo-700">
+              {summary.processedCount}/{summary.totalStaff}
+            </span>
+          </div>
         </div>
       </div>
-      
+
       {/* 📊 Top Stats Cards */}
       {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden group">
@@ -201,10 +248,17 @@ export default function AdminPayrollDashboard() {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-400 overflow-hidden">
         <div className="p-10 border-b border-slate-400 flex justify-between items-center bg-slate-50/50">
           <div>
-            <h3 className="text-xl font-bold text-slate-800">Staff Payroll Directory</h3>
-            <p className="text-slate-400 text-xs font-bold uppercase mt-1">Manage individual salary structures</p>
+            <h3 className="text-xl font-bold text-slate-800">
+              Staff Payroll Directory
+            </h3>
+            <p className="text-slate-400 text-xs font-bold uppercase mt-1">
+              Manage individual salary structures
+            </p>
           </div>
-          <button onClick={() => navigate('../salary-setup')} className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all">
+          <button
+            onClick={() => navigate("../salary-setup")}
+            className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all"
+          >
             Configure All
           </button>
         </div>
@@ -220,40 +274,95 @@ export default function AdminPayrollDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-400 font-bold">
-              {summary.staffList.map(staff => (
-                <tr key={staff._id} className="hover:bg-slate-50/80 transition-all group">
+              {currentStaff.map((staff) => (
+                <tr
+                  key={staff._id}
+                  className="hover:bg-slate-50/80 transition-all group"
+                >
                   <td className="p-8">
-                    <p className="text-slate-900 uppercase text-sm">{staff.name}</p>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">{staff.department}</p>
+                    <p className="text-slate-900 uppercase text-sm">
+                      {staff.name}
+                    </p>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">
+                      {staff.department}
+                    </p>
                   </td>
                   <td className="p-8">
                     {staff.hasStructure ? (
-                      <span className="text-indigo-600">₹{staff.monthlyGross.toLocaleString()}</span>
+                      <span className="text-indigo-600">
+                        ₹{staff.monthlyGross.toLocaleString()}
+                      </span>
                     ) : (
-                      <span className="text-slate-300 italic text-xs">Not Configured</span>
+                      <span className="text-slate-300 italic text-xs">
+                        Not Configured
+                      </span>
                     )}
                   </td>
                   <td className="p-8">
-                    <span className={`px-4 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest ${
-                      staff.payrollStatus === 'PAID' ? 'bg-emerald-100 text-emerald-600' :
-                      staff.payrollStatus === 'READY' ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-400'
-                    }`}>
+                    <span
+                      className={`px-4 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest ${
+                        staff.payrollStatus === "PAID"
+                          ? "bg-emerald-100 text-emerald-600"
+                          : staff.payrollStatus === "READY"
+                            ? "bg-indigo-100 text-indigo-600"
+                            : "bg-slate-100 text-slate-400"
+                      }`}
+                    >
                       {staff.payrollStatus}
                     </span>
                   </td>
                   <td className="p-8 text-right">
-                    <button 
-                      onClick={() => navigate(staff.hasStructure ? `../salary-setup?id=${staff._id}` : '../salary-setup')}
+                    <button
+                      onClick={() =>
+                        navigate(
+                          staff.hasStructure
+                            ? `../salary-setup?id=${staff._id}`
+                            : "../salary-setup",
+                        )
+                      }
                       className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-900 transition-all"
                     >
                       {staff.hasStructure ? <FaTools /> : <FaArrowRight />}
-                      <span className="text-[10px] uppercase font-bold tracking-widest">{staff.hasStructure ? 'Manage' : 'Setup'}</span>
+                      <span className="text-[10px] uppercase font-bold tracking-widest">
+                        {staff.hasStructure ? "Manage" : "Setup"}
+                      </span>
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <div className="flex justify-center gap-2 p-6">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              className="px-4 py-2 border rounded-lg text-sm"
+            >
+              Prev
+            </button>
+
+         {visiblePages.map((page) => (
+  <button
+    key={page}
+    onClick={() => setCurrentPage(page)}
+    className={`px-4 py-2 border rounded-lg text-sm ${
+      currentPage === page
+        ? "bg-indigo-600 text-white"
+        : "bg-white"
+    }`}
+  >
+    {page}
+  </button>
+))}
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              className="px-4 py-2 border rounded-lg text-sm"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

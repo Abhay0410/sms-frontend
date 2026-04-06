@@ -149,7 +149,7 @@ export default function ParentProfileManage() {
 
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mt-4 bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold mt-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
             My Profile
           </h1>
           <p className="text-gray-600 font-medium mt-1">
@@ -158,7 +158,7 @@ export default function ParentProfileManage() {
         </div>
 
         {/* Profile Header Card */}
-        <div className="mt-6 rounded-2xl bg-gradient-to-r from-green-500 to-teal-600 p-8 shadow-2xl">
+        <div className="mt-6 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-700 p-8 shadow-2xl">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative group">
               <div className="h-32 w-32 rounded-2xl border-4 border-white shadow-2xl overflow-hidden bg-gray-100">

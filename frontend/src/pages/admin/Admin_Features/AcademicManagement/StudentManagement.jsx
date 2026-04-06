@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api.js";
+import Swal from "sweetalert2";
 
 import {
   FaUserGraduate,
@@ -142,60 +143,151 @@ export default function StudentManagement() {
     }
   };
 
+  // const handleBulkStatusUpdate = async (status) => {
+  //   if (selectedStudents.length === 0) {
+  //     toast.error("Please select students first");
+  //     return;
+  //   }
+
+  //   if (
+  //     !window.confirm(
+  //       `Update status to ${status} for ${selectedStudents.length} students?`,
+  //     )
+  //   ) {
+  //     return;
+  //   }
+
+  //   try {
+  //     await api.put(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_UPDATE_STATUS, {
+  //       studentIds: selectedStudents,
+  //       status,
+  //     });
+
+  //     toast.success(`Status updated for ${selectedStudents.length} students`);
+  //     setSelectedStudents([]);
+  //     loadData();
+  //   } catch (error) {
+  //     toast.error(error.message || "Failed to update status");
+  //   }
+  // };
+
   const handleBulkStatusUpdate = async (status) => {
-    if (selectedStudents.length === 0) {
-      toast.error("Please select students first");
-      return;
-    }
+  if (selectedStudents.length === 0) {
+    toast.error("Please select students first");
+    return;
+  }
 
-    if (
-      !window.confirm(
-        `Update status to ${status} for ${selectedStudents.length} students?`,
-      )
-    ) {
-      return;
-    }
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: `Update status to ${status} for ${selectedStudents.length} students?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, update",
+    cancelButtonText: "Cancel",
+  });
 
-    try {
-      await api.put(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_UPDATE_STATUS, {
-        studentIds: selectedStudents,
-        status,
-      });
+  if (!result.isConfirmed) {
+    return;
+  }
 
-      toast.success(`Status updated for ${selectedStudents.length} students`);
-      setSelectedStudents([]);
-      loadData();
-    } catch (error) {
-      toast.error(error.message || "Failed to update status");
-    }
-  };
+  try {
+    await api.put(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_UPDATE_STATUS, {
+      studentIds: selectedStudents,
+      status,
+    });
+
+    Swal.fire({
+      icon: "success",
+      title: "Updated!",
+      text: `Status updated for ${selectedStudents.length} students`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+    setSelectedStudents([]);
+    loadData();
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.message || "Failed to update status",
+    });
+  }
+};
+
+  // const handleBulkDelete = async () => {
+  //   if (selectedStudents.length === 0) {
+  //     toast.error("Please select students first");
+  //     return;
+  //   }
+
+  //   if (
+  //     !window.confirm(
+  //       `Delete ${selectedStudents.length} students? This cannot be undone!`,
+  //     )
+  //   ) {
+  //     return;
+  //   }
+
+  //   try {
+  //     await api.delete(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_DELETE, {
+  //       data: { studentIds: selectedStudents },
+  //     });
+
+  //     toast.success(`${selectedStudents.length} students deleted`);
+  //     setSelectedStudents([]);
+  //     loadData();
+  //   } catch (error) {
+  //     toast.error(error.message || "Failed to delete students");
+  //   }
+  // };
 
   const handleBulkDelete = async () => {
-    if (selectedStudents.length === 0) {
-      toast.error("Please select students first");
-      return;
-    }
+  if (selectedStudents.length === 0) {
+    toast.error("Please select students first");
+    return;
+  }
 
-    if (
-      !window.confirm(
-        `Delete ${selectedStudents.length} students? This cannot be undone!`,
-      )
-    ) {
-      return;
-    }
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: `Delete ${selectedStudents.length} students? This cannot be undone!`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete",
+    cancelButtonText: "Cancel",
+  });
 
-    try {
-      await api.delete(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_DELETE, {
-        data: { studentIds: selectedStudents },
-      });
+  if (!result.isConfirmed) {
+    return;
+  }
 
-      toast.success(`${selectedStudents.length} students deleted`);
-      setSelectedStudents([]);
-      loadData();
-    } catch (error) {
-      toast.error(error.message || "Failed to delete students");
-    }
-  };
+  try {
+    await api.delete(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_DELETE, {
+      data: { studentIds: selectedStudents },
+    });
+
+    Swal.fire({
+      icon: "success",
+      title: "Deleted!",
+      text: `${selectedStudents.length} students deleted`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+    setSelectedStudents([]);
+    loadData();
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.message || "Failed to delete students",
+    });
+  }
+};
 
   if (loading && students.length === 0) {
     return (
@@ -214,13 +306,14 @@ export default function StudentManagement() {
     <div className="min-h-screen bg-blue-50 px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="rounded-2xl bg-white border border-slate-500 shadow-sm p-6">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="rounded-2xl  bg-slate-800  border border-white shadow-sm p-6">
+
+          <div className="flex flex-colgap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
+              <h2 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
                 Student Management
               </h2>
-              <p className="font-medium text-gray-500  text-sm flex items-center gap-1 mt-1">
+              <p className="font-medium text-gray-200  text-sm flex items-center gap-1 mt-1">
                 <FaUserGraduate className="text-blue-600" />
                 Manage all students, bulk operations, and promotions
               </p>

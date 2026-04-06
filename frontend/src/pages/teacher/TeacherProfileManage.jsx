@@ -239,7 +239,7 @@ export default function TeacherProfileManage() {
         </div>
 
         {/* Profile Overview Card */}
-        <div className="mt-6 mb-2 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 p-8 shadow-2xl relative overflow-hidden">
+        <div className="mt-6 mb-2 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-700 p-8 shadow-2xl relative overflow-hidden">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative">
               <div className="relative h-32 w-32 rounded-full shadow-2xl overflow-hidden bg-gray-200 flex items-center justify-center">
@@ -597,7 +597,12 @@ export default function TeacherProfileManage() {
                     onChange={onChange}
                     placeholder="Enter phone number"
                   />
+
                 </div> */}
+                <div>
+                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number
+                  </label>
                 <input
                   type="tel"
                   name="phone"
@@ -615,6 +620,7 @@ export default function TeacherProfileManage() {
                   disabled={!isEditing}
                   className="w-full rounded-lg border border-slate-400 p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-colors"
                 />
+                </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">

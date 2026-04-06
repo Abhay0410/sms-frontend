@@ -62,12 +62,12 @@ export default function GetTeacherClassesAndSubjects() {
         
         {/* Teacher Info Header */}
         {data.teacher && (
-          <div className=" mb-4 p-4 bg-white rounded-xl shadow-lg border border-slate-400">
-            <h2 className="text-3xl font-bold text-slate-900 mb-1 tracking-tight">
+          <div className=" mb-4 p-4 bg-gradient-to-r from-slate-800 to-slate-800 rounded-xl shadow-lg border border-slate-400">
+            <h2 className="text-3xl font-bold  text-white mb-1 tracking-tight">
               {data.teacher.name}
             </h2>
-            <p className="text-gray-600 font-medium">
-              Teacher ID: <span className="font-medium text-gray-500 ">{data.teacher.teacherID}</span>
+            <p className="text-gray-200 font-medium">
+              Teacher ID: <span className="font-medium text-gray-200 ">{data.teacher.teacherID}</span>
             </p>
             <div className="mt-4 flex gap-4 text-sm">
               {/* <span className={`px-3 py-1 rounded-full ${

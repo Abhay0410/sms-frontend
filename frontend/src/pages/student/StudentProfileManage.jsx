@@ -259,7 +259,7 @@ export default function StudentProfileManage() {
         )}
 
         {/* Profile Header Card */}
-        <div className="mt-6 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-600 p-8 shadow-2xl">
+        <div className="mt-6 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-700 p-8 shadow-2xl mb-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative">
               <div className="h-32 w-32 rounded-2xl border-4 border-white shadow-2xl overflow-hidden">
@@ -571,6 +571,10 @@ export default function StudentProfileManage() {
                     />
                   </div> */}
 
+                    <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number
+                    </label>
                   <input
                     type="tel"
                     name="phone"
@@ -588,6 +592,7 @@ export default function StudentProfileManage() {
                     disabled={!isEditing}
                     className="w-full rounded-xl border border-slate-400 p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
                   />
+                  </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">

@@ -74,7 +74,7 @@ export default function ViewTimetable() {
   const maxPeriodsCount = getMaxPeriodsCount();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50  p-4">
+    <div className="min-h-screen bg-blue-50 p-4">
       <div className="mx-auto max-w-7xl">
         {/* <BackButton to="/student/student-dashboard" /> */}
 

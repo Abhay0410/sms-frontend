@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 export default function SalaryStatus() {
   const [salaries, setSalaries] = useState([]);
+  console.log(salaries);
   const [filteredSalaries, setFilteredSalaries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());

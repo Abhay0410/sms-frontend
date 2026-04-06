@@ -1,6 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "../../../../services/api";
-import { FaSync, FaCheckCircle, FaSpinner, FaHistory, FaFileInvoiceDollar, FaDownload, FaEye, FaTimes, FaPrint } from "react-icons/fa";
+import {
+  FaSync,
+  FaCheckCircle,
+  FaSpinner,
+  FaHistory,
+  FaFileInvoiceDollar,
+  FaDownload,
+  FaEye,
+  FaTimes,
+  FaPrint,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
@@ -9,7 +19,7 @@ export default function MonthlyPayRun() {
   const [processedSlips, setProcessedSlips] = useState([]);
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState(null);
-  
+
   const [showModal, setShowModal] = useState(false);
   const [selectedSlipData, setSelectedSlipData] = useState(null);
 
@@ -17,24 +27,32 @@ export default function MonthlyPayRun() {
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [academicYear, setAcademicYear] = useState("2025-2026");
-  const[session, setSession] = useState([]);
+  const [session, setSession] = useState([]);
+
+  // Pending Table Pagination
+  const [pendingPage, setPendingPage] = useState(1);
+
+  // Processed Table Pagination
+  const [processedPage, setProcessedPage] = useState(1);
+
+  const rowsPerPage = 5;
 
   // New state for extra earnings
   const [extraEarnings, setExtraEarnings] = useState({}); // Structure: { teacherId: { amount: 0, remark: "" } }
 
-  // New state for manual override amounts  
+  // New state for manual override amounts
   const [manualAmounts, setManualAmounts] = useState({}); // { teacherId: 25000 }
 
   // 2. Input change handler
   const handleManualAmountChange = (id, value) => {
-    setManualAmounts(prev => ({ ...prev, [id]: value }));
+    setManualAmounts((prev) => ({ ...prev, [id]: value }));
   };
 
   // 1. Row Add karne ka function
   const handleAddExtraRow = (staffId) => {
-    setExtraEarnings(prev => ({
+    setExtraEarnings((prev) => ({
       ...prev,
-      [staffId]: [...(prev[staffId] || []), { amount: "", remark: "" }]
+      [staffId]: [...(prev[staffId] || []), { amount: "", remark: "" }],
     }));
   };
 
@@ -42,12 +60,22 @@ export default function MonthlyPayRun() {
   const handleExtraFieldChange = (staffId, index, field, value) => {
     const updated = [...(extraEarnings[staffId] || [])];
     updated[index] = { ...updated[index], [field]: value };
-    setExtraEarnings(prev => ({ ...prev, [staffId]: updated }));
+    setExtraEarnings((prev) => ({ ...prev, [staffId]: updated }));
   };
 
   const monthNames = [
-    "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
-    "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
+    "JUNE",
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER",
   ];
 
   // Format date safely
@@ -55,7 +83,7 @@ export default function MonthlyPayRun() {
     if (!dateString) return "N/A";
     try {
       const date = new Date(dateString);
-      return isNaN(date.getTime()) ? "N/A" : date.toLocaleDateString('en-IN');
+      return isNaN(date.getTime()) ? "N/A" : date.toLocaleDateString("en-IN");
     } catch {
       return "N/A";
     }
@@ -69,7 +97,7 @@ export default function MonthlyPayRun() {
 
   // Format currency for display
   const displayCurrency = (amount) => {
-    return formatCurrency(amount).toLocaleString('en-IN');
+    return formatCurrency(amount).toLocaleString("en-IN");
   };
 
   // 1. Fetch Data
@@ -78,46 +106,57 @@ export default function MonthlyPayRun() {
     try {
       // 1. Fetch attendance and payroll lists
       const [attResp, payResp] = await Promise.all([
-        api.get(API_ENDPOINTS.ADMIN.PAYROLL.ATTENDANCE_STATS(selectedMonth, selectedYear)),
-        api.get(`${API_ENDPOINTS.ADMIN.PAYROLL.LIST}?month=${selectedMonth}&year=${selectedYear}`)
+        api.get(
+          API_ENDPOINTS.ADMIN.PAYROLL.ATTENDANCE_STATS(
+            selectedMonth,
+            selectedYear,
+          ),
+        ),
+        api.get(
+          `${API_ENDPOINTS.ADMIN.PAYROLL.LIST}?month=${selectedMonth}&year=${selectedYear}`,
+        ),
       ]);
-      
+
       const processedData = payResp?.data || payResp || [];
       const attendanceData = attResp?.data || attResp || [];
 
       // 2. Identify who is already processed (Strict employeeId match)
-      const processedIds = processedData.map(p => {
-        // ✅ STRICT FIX: Always use employeeId as per your Payroll Schema
-        return p.employeeId?.toString();
-      }).filter(Boolean);
-      
+      const processedIds = processedData
+        .map((p) => {
+          // ✅ STRICT FIX: Always use employeeId as per your Payroll Schema
+          return p.employeeId?.toString();
+        })
+        .filter(Boolean);
+
       // 3. Filter pending staff
-      const pendingStaff = attendanceData.filter(s => {
-          const staffId = s.teacherId?.toString() || s._id?.toString();
-          return staffId && !processedIds.includes(staffId);
+      const pendingStaff = attendanceData.filter((s) => {
+        const staffId = s.teacherId?.toString() || s._id?.toString();
+        return staffId && !processedIds.includes(staffId);
       });
 
-      const formattedPending = pendingStaff.map(staff => ({
+      const formattedPending = pendingStaff.map((staff) => ({
         id: staff.teacherId || staff._id,
         teacherID: staff.teacherID,
         name: staff.name,
         presentDays: staff.presentDays,
         totalDays: staff.totalDays,
-        attendanceFactor: staff.attendanceFactor
+        attendanceFactor: staff.attendanceFactor,
       }));
 
       setStats(formattedPending);
 
-      setProcessedSlips(processedData.map(slip => ({
-        _id: slip._id,
-        employeeId: slip.employeeId,
-        employeeName: slip.employeeName || "Processing...",
-        netSalary: Math.round(slip.netSalary || 0),
-        paymentStatus: slip.paymentStatus,
-        month: slip.month,
-        year: slip.year,
-        generatedAt: slip.createdAt
-      })));
+      setProcessedSlips(
+        processedData.map((slip) => ({
+          _id: slip._id,
+          employeeId: slip.employeeId,
+          employeeName: slip.employeeName || "Processing...",
+          netSalary: Math.round(slip.netSalary || 0),
+          paymentStatus: slip.paymentStatus,
+          month: slip.month,
+          year: slip.year,
+          generatedAt: slip.createdAt,
+        })),
+      );
 
       setStats(formattedPending);
     } catch (err) {
@@ -128,31 +167,27 @@ export default function MonthlyPayRun() {
     }
   }, [selectedMonth, selectedYear]);
 
-   const fetchSessions = async () => {
-  try {
-    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+  const fetchSessions = async () => {
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-    console.log("SESSION API RESPONSE:", res);
+      console.log("SESSION API RESPONSE:", res);
 
-    // ✅ handle multiple possible structures
-    const sessionData =
-      res?.data?.sessions || 
-      res?.data || 
-      res || 
-      [];
+      // ✅ handle multiple possible structures
+      const sessionData = res?.data?.sessions || res?.data || res || [];
 
-    setSession(sessionData);
+      setSession(sessionData);
 
-    // ✅ safe find
-    const active = sessionData?.find((s) => s?.isActive);
+      // ✅ safe find
+      const active = sessionData?.find((s) => s?.isActive);
 
-    if (active) {
-      setAcademicYear(active.endYear);
+      if (active) {
+        setAcademicYear(active.endYear);
+      }
+    } catch (err) {
+      console.error("Session fetch error", err);
     }
-  } catch (err) {
-    console.error("Session fetch error", err);
-  }
-};
+  };
 
   useEffect(() => {
     loadData();
@@ -169,110 +204,116 @@ export default function MonthlyPayRun() {
         employeeIds: [teacherId],
         // ✅ Pass extra earnings for this specific teacher
         extraEarnings: {
-          [teacherId]: extraEarnings[teacherId] || []
+          [teacherId]: extraEarnings[teacherId] || [],
         },
         // ✅ CORRECTED: Map specific teacher's amount
-        manualAmount: manualAmounts[teacherId] ? Number(manualAmounts[teacherId]) : null
+        manualAmount: manualAmounts[teacherId]
+          ? Number(manualAmounts[teacherId])
+          : null,
       };
-      
-      const response = await api.post(API_ENDPOINTS.ADMIN.PAYROLL.RUN_PAYROLL, payload);
-      
+
+      const response = await api.post(
+        API_ENDPOINTS.ADMIN.PAYROLL.RUN_PAYROLL,
+        payload,
+      );
+
       // 🚩 Logic: Check for partial failures even in 200 OK
       if (response.data?.data?.failed?.length > 0) {
         const errorMsg = response.data.data.failed[0].reason;
         toast.error(`Failed: ${errorMsg}`);
       } else {
         toast.success("Salary Slip Generated!");
-        
+
         // Clear force amount after success
-        setManualAmounts(prev => {
-            const newState = {...prev};
-            delete newState[teacherId];
-            return newState;
+        setManualAmounts((prev) => {
+          const newState = { ...prev };
+          delete newState[teacherId];
+          return newState;
         });
-        
+
         // REFRESH BOTH TABLES
         await loadData();
       }
     } catch (err) {
       // 🚩 Yahan backend ka res.status(400) catch hoga
-      const serverMsg = err?.response?.data?.message || "Salary structure not found!";
+      const serverMsg =
+        err?.response?.data?.message || "Salary structure not found!";
       toast.error(serverMsg, {
         position: "top-center",
-        autoClose: 5000
+        autoClose: 5000,
       });
     } finally {
       setProcessingId(null);
     }
   };
 
-// ✅ UPDATED: View Salary Slip Details with Modal (Fixed Logic)
-const handleViewSlip = async (slipId, employeeName) => {
-  try {
-    const endpoint = API_ENDPOINTS.ADMIN.PAYROLL.VIEW_SLIP(slipId);
-    const response = await api.get(endpoint);
-    
-    // ✅ FIX: Extract 'slip' and 'staff' correctly from your backend response
-    const { slip, staff } = response.data?.data || response.data || {};
+  // ✅ UPDATED: View Salary Slip Details with Modal (Fixed Logic)
+  const handleViewSlip = async (slipId, employeeName) => {
+    try {
+      const endpoint = API_ENDPOINTS.ADMIN.PAYROLL.VIEW_SLIP(slipId);
+      const response = await api.get(endpoint);
 
-    const processedData = {
-      slip: {
-        ...slip,
-        earnings: slip.earnings || {},
-        deductions: slip.deductions || {}
-      },
-      employee: {
-        name: staff?.name || employeeName,
-        employeeId: staff?.teacherID || staff?.adminID || slip.employeeId,
-        department: staff?.department || "Teaching",
-        paymentMode: staff?.salary?.paymentMode || "Bank Transfer"
-      }
-    };
-    
-    setSelectedSlipData(processedData);
-    setShowModal(true);
-  } catch {
-    toast.error("Slip data loading failed");
-  }
-};
+      // ✅ FIX: Extract 'slip' and 'staff' correctly from your backend response
+      const { slip, staff } = response.data?.data || response.data || {};
 
-// ✅ Download PDF Function - Updated with Axios Blob
-const handleDownloadPDF = async (slipId) => {
-  try {
-    toast.info("Generating PDF, please wait...");
-    
-    // ✅ Use Axios with responseType 'blob'
-    const response = await api.axios.get(
-      API_ENDPOINTS.ADMIN.PAYROLL.DOWNLOAD_SLIP(slipId),
-      { responseType: 'blob' }
-    );
+      const processedData = {
+        slip: {
+          ...slip,
+          earnings: slip.earnings || {},
+          deductions: slip.deductions || {},
+        },
+        employee: {
+          name: staff?.name || employeeName,
+          employeeId: staff?.teacherID || staff?.adminID || slip.employeeId,
+          department: staff?.department || "Teaching",
+          paymentMode: staff?.salary?.paymentMode || "Bank Transfer",
+        },
+      };
 
-    // ✅ Create a URL for the blob
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    
-    // Set filename
-    link.setAttribute('download', `SalarySlip_${slipId}.pdf`);
-    
-    document.body.appendChild(link);
-    link.click();
-    
-    // Cleanup
-    link.parentNode.removeChild(link);
-    window.URL.revokeObjectURL(url);
-    
-    toast.success("Download started!");
-  } catch (err) {
-    console.error("Download Error:", err);
-    toast.error("Failed to download PDF. Please try again.");
-  }
-};
+      setSelectedSlipData(processedData);
+      setShowModal(true);
+    } catch {
+      toast.error("Slip data loading failed");
+    }
+  };
+
+  // ✅ Download PDF Function - Updated with Axios Blob
+  const handleDownloadPDF = async (slipId) => {
+    try {
+      toast.info("Generating PDF, please wait...");
+
+      // ✅ Use Axios with responseType 'blob'
+      const response = await api.axios.get(
+        API_ENDPOINTS.ADMIN.PAYROLL.DOWNLOAD_SLIP(slipId),
+        { responseType: "blob" },
+      );
+
+      // ✅ Create a URL for the blob
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Set filename
+      link.setAttribute("download", `SalarySlip_${slipId}.pdf`);
+
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Download started!");
+    } catch (err) {
+      console.error("Download Error:", err);
+      toast.error("Failed to download PDF. Please try again.");
+    }
+  };
 
   // ✅ Print Slip Function
   const handlePrintSlip = () => {
     if (!selectedSlipData) return;
-    
+
     const printContent = `
       <html>
         <head>
@@ -292,9 +333,11 @@ const handleDownloadPDF = async (slipId) => {
         <body>
           <div class="header">
             <h1>SALARY SLIP</h1>
-            <p><strong>${isNaN(selectedSlipData.slip.month) 
-              ? selectedSlipData.slip.month 
-              : monthNames[parseInt(selectedSlipData.slip.month) - 1]} ${selectedSlipData.slip.year}</strong></p>
+            <p><strong>${
+              isNaN(selectedSlipData.slip.month)
+                ? selectedSlipData.slip.month
+                : monthNames[parseInt(selectedSlipData.slip.month) - 1]
+            } ${selectedSlipData.slip.year}</strong></p>
             <p>${selectedSlipData.employee.name} • ${selectedSlipData.slip.paymentStatus}</p>
           </div>
           
@@ -322,8 +365,8 @@ const handleDownloadPDF = async (slipId) => {
               <tr><td>Tax Deducted at Source (TDS)</td><td>-₹${displayCurrency(selectedSlipData.slip.deductions.tds)}</td></tr>
               <tr class="total deductions"><td>Total Deductions</td><td>-₹${displayCurrency(
                 (selectedSlipData.slip.deductions.epfEmployee || 0) +
-                (selectedSlipData.slip.deductions.professionalTax || 0) +
-                (selectedSlipData.slip.deductions.tds || 0)
+                  (selectedSlipData.slip.deductions.professionalTax || 0) +
+                  (selectedSlipData.slip.deductions.tds || 0),
               )}</td></tr>
             </table>
           </div>
@@ -338,14 +381,14 @@ const handleDownloadPDF = async (slipId) => {
             <p>• This is a system-generated salary slip</p>
             <p>• For any discrepancies, contact accounts department within 7 days</p>
             <p>• Salary is credited on the 5th of every month</p>
-            <p>• Generated on: ${new Date().toLocaleDateString('en-IN')} ${new Date().toLocaleTimeString('en-IN')}</p>
+            <p>• Generated on: ${new Date().toLocaleDateString("en-IN")} ${new Date().toLocaleTimeString("en-IN")}</p>
             <p>School Management System © ${new Date().getFullYear()}</p>
           </div>
         </body>
       </html>
     `;
-    
-    const printWindow = window.open('', '_blank');
+
+    const printWindow = window.open("", "_blank");
     printWindow.document.write(printContent);
     printWindow.document.close();
     printWindow.focus();
@@ -362,15 +405,19 @@ const handleDownloadPDF = async (slipId) => {
       return toast.warning("Valid Transaction ID is required");
     }
 
-    const paymentMode = window.confirm("Is this a Bank Transfer (NEFT/IMPS)? Click Cancel for CASH.") ? 'NEFT' : 'CASH';
+    const paymentMode = window.confirm(
+      "Is this a Bank Transfer (NEFT/IMPS)? Click Cancel for CASH.",
+    )
+      ? "NEFT"
+      : "CASH";
 
     try {
       // API endpoint call
       await api.put(API_ENDPOINTS.ADMIN.PAYROLL.MARK_PAID_V2(slipId), {
         transactionId: transactionId.trim(),
-        paymentMode: paymentMode
+        paymentMode: paymentMode,
       });
-      
+
       toast.success(`Salary successfully marked as PAID via ${paymentMode}`);
       loadData(); // Refresh list
     } catch (err) {
@@ -385,7 +432,9 @@ const handleDownloadPDF = async (slipId) => {
       return;
     }
 
-    const confirmed = window.confirm(`Generate salary slips for all ${stats.length} pending staff?`);
+    const confirmed = window.confirm(
+      `Generate salary slips for all ${stats.length} pending staff?`,
+    );
     if (!confirmed) return;
 
     setProcessingId("BULK");
@@ -393,11 +442,11 @@ const handleDownloadPDF = async (slipId) => {
       const payload = {
         month: selectedMonth.toString(),
         year: selectedYear.toString(),
-        employeeIds: stats.map(s => s.id).filter(Boolean),
+        employeeIds: stats.map((s) => s.id).filter(Boolean),
         // ✅ ADD THIS: Bulk data transfer
-        extraEarnings: extraEarnings
+        extraEarnings: extraEarnings,
       };
-      
+
       await api.post(API_ENDPOINTS.ADMIN.PAYROLL.RUN_PAYROLL, payload);
       toast.success(`Generated ${stats.length} salary slips!`);
       loadData();
@@ -408,34 +457,77 @@ const handleDownloadPDF = async (slipId) => {
     }
   };
 
+  // Pending Staff Pagination
+  const pendingStart = (pendingPage - 1) * rowsPerPage;
+  const pendingEnd = pendingStart + rowsPerPage;
+  const paginatedStats = stats.slice(pendingStart, pendingEnd);
+
+  const pendingTotalPages = Math.ceil(stats.length / rowsPerPage);
+
+  // Processed Slips Pagination
+  const processedStart = (processedPage - 1) * rowsPerPage;
+  const processedEnd = processedStart + rowsPerPage;
+  const paginatedProcessedSlips = processedSlips.slice(
+    processedStart,
+    processedEnd,
+  );
+
+  const processedTotalPages = Math.ceil(processedSlips.length / rowsPerPage);
+
+  const maxVisiblePages = 10;
+
+  const pendingStartPage = Math.max(
+    1,
+    pendingPage - Math.floor(maxVisiblePages / 2),
+  );
+
+  const pendingEndPage = Math.min(
+    pendingTotalPages,
+    pendingStartPage + maxVisiblePages - 1,
+  );
+
+  const pendingPages = [];
+  for (let i = pendingStartPage; i <= pendingEndPage; i++) {
+    pendingPages.push(i);
+  }
+
   return (
     <div className=" space-y-12">
       {/* HEADER & FILTERS */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Payroll Processing</h2>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+            Payroll Processing
+          </h2>
           <div className="flex gap-4 mt-2">
-            <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} className="bg-white border border-slate-400 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500">
-              {monthNames.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-            </select>
-            
             <select
-            value={academicYear}
-            onChange={(e) => setAcademicYear(e.target.value)}
-            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
-          >
-            {session?.map((s) => (
-              <option key={s._id} value={s.endYear}>
-        {s.endYear}
-              </option>
-            ))}
-          </select>
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              className="bg-white border border-slate-400 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500"
+            >
+              {monthNames.map((m, i) => (
+                <option key={m} value={i + 1}>
+                  {m}
+                </option>
+              ))}
+            </select>
 
+            <select
+              value={academicYear}
+              onChange={(e) => setAcademicYear(e.target.value)}
+              className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
+            >
+              {session?.map((s) => (
+                <option key={s._id} value={s.endYear}>
+                  {s.endYear}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
         <div className="flex gap-3">
-          <button 
-            onClick={handleBulkGenerate} 
+          <button
+            onClick={handleBulkGenerate}
             disabled={loading || stats.length === 0 || processingId === "BULK"}
             className="flex items-center gap-3 bg-purple-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -449,8 +541,8 @@ const handleDownloadPDF = async (slipId) => {
               </>
             )}
           </button>
-          <button 
-            onClick={loadData} 
+          <button
+            onClick={loadData}
             disabled={loading}
             className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-sm transition-all disabled:opacity-50"
           >
@@ -462,189 +554,392 @@ const handleDownloadPDF = async (slipId) => {
       {/* TABLE 1: PENDING FOR GENERATION */}
       <section>
         <h3 className="text-xs font-bold uppercase text-amber-700 tracking-widest mb-4 flex items-center gap-2">
-            <FaSpinner className="animate-pulse" /> Pending Generation ({stats.length})
+          <FaSpinner className="animate-pulse" /> Pending Generation (
+          {stats.length})
         </h3>
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-400">
-            <table className="w-full text-left">
+          <table className="w-full text-left">
             <thead className="bg-slate-900 text-white text-[10px] uppercase font-bold tracking-wider border-b border-slate-400">
-                <tr>
+              <tr>
                 <th className="p-6">Staff Details</th>
                 <th className="p-6 text-center">Attendance</th>
                 <th className="p-6 text-center">Override Total (₹)</th>
                 <th className="p-6 text-center">Extra Activities</th>
                 <th className="p-6 text-right">Action</th>
-                </tr>
+              </tr>
             </thead>
             <tbody className="divide-y divide-slate-400">
-                {stats.map(row => (
-                <tr key={row.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="p-6">
-                        <p className="font-bold text-slate-900">{row.name}</p>
-                        <p className="text-[10px] text-slate-500 font-medium">ID: {row.teacherID}</p>
-                    </td>
-                    <td className="p-6 text-center">
-                        <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-bold text-xs">{row.attendanceFactor}x</span>
-                    </td>
-                    <td className="p-6">
-                        <input 
-                            type="number" placeholder="Force Gross Amount" 
-                            className="w-full p-2.5 bg-white border border-slate-400 rounded-xl font-bold text-slate-800 outline-none focus:border-amber-500 text-center transition-all"
-                            value={manualAmounts[row.id] || ""}
-                            onChange={(e) => handleManualAmountChange(row.id, e.target.value)}
-                        />
-                    </td>
-                    <td className="p-6">
-                        <div className="space-y-2">
-                            {(extraEarnings[row.id] || []).map((ex, i) => (
-                            <div key={i} className="flex gap-1 animate-in slide-in-from-left-2">
-                                <input type="number" placeholder="₹" className="w-16 bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-xs font-bold" value={ex.amount} onChange={(e) => handleExtraFieldChange(row.id, i, "amount", e.target.value)} />
-                                <input type="text" placeholder="Reason" className="flex-1 bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-[10px] italic" value={ex.remark} onChange={(e) => handleExtraFieldChange(row.id, i, "remark", e.target.value)} />
-                            </div>
-                            ))}
-                            <button onClick={() => handleAddExtraRow(row.id)} className="text-[9px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-tighter transition-colors">+ Add Line Item</button>
-                        </div>
-                    </td>
-                    <td className="p-6 text-right">
-                        <button 
-                            onClick={() => handleGenerateSlip(row.id)} 
-                            disabled={processingId === row.id} 
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-emerald-100 transition-all flex items-center gap-2 ml-auto"
+              {paginatedStats.map((row) => (
+                <tr
+                  key={row.id}
+                  className="hover:bg-slate-50/50 transition-colors"
+                >
+                  <td className="p-6">
+                    <p className="font-bold text-slate-900">{row.name}</p>
+                    <p className="text-[10px] text-slate-500 font-medium">
+                      ID: {row.teacherID}
+                    </p>
+                  </td>
+                  <td className="p-6 text-center">
+                    <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-bold text-xs">
+                      {row.attendanceFactor}x
+                    </span>
+                  </td>
+                  <td className="p-6">
+                    <input
+                      type="number"
+                      placeholder="Force Gross Amount"
+                      className="w-full p-2.5 bg-white border border-slate-400 rounded-xl font-bold text-slate-800 outline-none focus:border-amber-500 text-center transition-all"
+                      value={manualAmounts[row.id] || ""}
+                      onChange={(e) =>
+                        handleManualAmountChange(row.id, e.target.value)
+                      }
+                    />
+                  </td>
+                  <td className="p-6">
+                    <div className="space-y-2">
+                      {(extraEarnings[row.id] || []).map((ex, i) => (
+                        <div
+                          key={i}
+                          className="flex gap-1 animate-in slide-in-from-left-2"
                         >
-                            {processingId === row.id ? <FaSpinner className="animate-spin" /> : <><FaCheckCircle /> Generate</>}
-                        </button>
-                    </td>
+                          <input
+                            type="number"
+                            placeholder="₹"
+                            className="w-16 bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-xs font-bold"
+                            value={ex.amount}
+                            onChange={(e) =>
+                              handleExtraFieldChange(
+                                row.id,
+                                i,
+                                "amount",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <input
+                            type="text"
+                            placeholder="Reason"
+                            className="flex-1 bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-[10px] italic"
+                            value={ex.remark}
+                            onChange={(e) =>
+                              handleExtraFieldChange(
+                                row.id,
+                                i,
+                                "remark",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => handleAddExtraRow(row.id)}
+                        className="text-[9px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-tighter transition-colors"
+                      >
+                        + Add Line Item
+                      </button>
+                    </div>
+                  </td>
+                  <td className="p-6 text-right">
+                    <button
+                      onClick={() => handleGenerateSlip(row.id)}
+                      disabled={processingId === row.id}
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-emerald-100 transition-all flex items-center gap-2 ml-auto"
+                    >
+                      {processingId === row.id ? (
+                        <FaSpinner className="animate-spin" />
+                      ) : (
+                        <>
+                          <FaCheckCircle /> Generate
+                        </>
+                      )}
+                    </button>
+                  </td>
                 </tr>
-                ))}
-                {stats.length === 0 && <tr><td colSpan="5" className="p-10 text-center text-slate-400 font-medium italic">No pending staff for this period.</td></tr>}
+              ))}
+              {stats.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="p-10 text-center text-slate-400 font-medium italic"
+                  >
+                    No pending staff for this period.
+                  </td>
+                </tr>
+              )}
             </tbody>
-            </table>
+          </table>
+
+          <div className="flex justify-center gap-2 p-6">
+            <button
+              onClick={() => setPendingPage((prev) => Math.max(prev - 1, 1))}
+              className="px-4 py-2 border rounded-lg text-sm"
+            >
+              Prev
+            </button>
+
+            {pendingPages.map((page) => (
+              <button
+                key={page}
+                onClick={() => setPendingPage(page)}
+                className={`px-4 py-2 border rounded-lg text-sm ${
+                  pendingPage === page ? "bg-indigo-600 text-white" : "bg-white"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() =>
+                setPendingPage((prev) => Math.min(prev + 1, pendingTotalPages))
+              }
+              className="px-4 py-2 border rounded-lg text-sm"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </section>
 
       {/* TABLE 2: PROCESSED SLIPS */}
       <section className="bg-white rounded-2xl border border-slate-400 p-8 shadow-sm">
         <h3 className="font-bold uppercase text-xs text-slate-500 mb-6 flex items-center gap-2 tracking-widest">
-            <FaHistory className="text-slate-400" /> Processed Salary Slips ({processedSlips.length})
+          <FaHistory className="text-slate-400" /> Processed Salary Slips (
+          {processedSlips.length})
         </h3>
         <div className="bg-white rounded-2xl overflow-hidden border border-slate-400 shadow-sm">
-            <table className="w-full text-left">
-              <thead className="bg-slate-50 text-slate-400 text-[9px] uppercase font-bold tracking-widest border-b border-slate-400">
-                <tr>
-                    <th className="p-5">Employee</th>
-                    <th className="p-5 text-center">Net Payout</th>
-                    <th className="p-5 text-center">Month</th>
-                    <th className="p-5 text-center">Status</th>
-                    <th className="p-5 text-right">Actions</th>
+          <table className="w-full text-left">
+            <thead className="bg-slate-50 text-slate-400 text-[9px] uppercase font-bold tracking-widest border-b border-slate-400">
+              <tr>
+                <th className="p-5">Employee</th>
+                <th className="p-5 text-center">Net Payout</th>
+                <th className="p-5 text-center">Month</th>
+                <th className="p-5 text-center">Status</th>
+                <th className="p-5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-400">
+              {paginatedProcessedSlips.map((slip) => (
+                <tr
+                  key={slip._id}
+                  className="hover:bg-slate-50/50 transition-colors"
+                >
+                  <td className="p-5">
+                    <p className="font-bold text-slate-800">
+                      {slip.employeeName}
+                    </p>
+                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
+                      Ref: {slip._id.slice(-6)}
+                    </p>
+                  </td>
+                  <td className="p-5 text-center text-indigo-600 font-bold text-base">
+                    ₹{slip.netSalary.toLocaleString()}
+                  </td>
+                  <td className="p-5 text-center text-xs font-bold text-slate-500 uppercase">
+                    {monthNames[slip.month - 1]} {slip.year}
+                  </td>
+                  <td className="p-5 text-center">
+                    <span
+                      className={`px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase ${slip.paymentStatus === "PAID" ? "bg-emerald-100 text-emerald-700" : "bg-orange-100 text-orange-700"}`}
+                    >
+                      {slip.paymentStatus}
+                    </span>
+                  </td>
+                  <td className="p-5 text-right">
+                    <div className="flex justify-end gap-2">
+                      {slip.paymentStatus !== "PAID" && (
+                        <button
+                          onClick={() => handleMarkPaid(slip._id)}
+                          className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 p-2.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-all"
+                          title="Mark as Paid"
+                        >
+                          <FaCheckCircle /> Pay
+                        </button>
+                      )}
+                      <button
+                        onClick={() =>
+                          handleViewSlip(slip._id, slip.employeeName)
+                        }
+                        className="bg-slate-100 hover:bg-slate-200 p-2.5 rounded-xl text-slate-600 transition-all"
+                      >
+                        <FaEye />
+                      </button>
+                      <button
+                        onClick={() => handleDownloadPDF(slip._id)}
+                        className="bg-indigo-50 hover:bg-indigo-100 p-2.5 rounded-xl text-indigo-600 transition-all"
+                      >
+                        <FaDownload />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-400">
-                {processedSlips.map(slip => (
-                  <tr key={slip._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="p-5">
-                        <p className="font-bold text-slate-800">{slip.employeeName}</p>
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">Ref: {slip._id.slice(-6)}</p>
-                    </td>
-                    <td className="p-5 text-center text-indigo-600 font-bold text-base">₹{slip.netSalary.toLocaleString()}</td>
-                    <td className="p-5 text-center text-xs font-bold text-slate-500 uppercase">{monthNames[slip.month - 1]} {slip.year}</td>
-                    <td className="p-5 text-center">
-                        <span className={`px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase ${slip.paymentStatus === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>
-                            {slip.paymentStatus}
-                        </span>
-                    </td>
-                    <td className="p-5 text-right">
-                       <div className="flex justify-end gap-2">
-                        {slip.paymentStatus !== 'PAID' && (
-                          <button 
-                            onClick={() => handleMarkPaid(slip._id)}
-                            className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 p-2.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-all"
-                            title="Mark as Paid"
-                          >
-                            <FaCheckCircle /> Pay
-                          </button>
-                        )}
-                        <button onClick={() => handleViewSlip(slip._id, slip.employeeName)} className="bg-slate-100 hover:bg-slate-200 p-2.5 rounded-xl text-slate-600 transition-all"><FaEye /></button>
-                        <button onClick={() => handleDownloadPDF(slip._id)} className="bg-indigo-50 hover:bg-indigo-100 p-2.5 rounded-xl text-indigo-600 transition-all"><FaDownload /></button>
-                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="flex justify-center gap-2 p-6">
+            <button
+              onClick={() => setProcessedPage((prev) => Math.max(prev - 1, 1))}
+              className="px-4 py-2 border rounded-lg text-sm"
+            >
+              Prev
+            </button>
+
+            {[...Array(processedTotalPages)].map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setProcessedPage(index + 1)}
+                className={`px-4 py-2 border rounded-lg text-sm ${
+                  processedPage === index + 1
+                    ? "bg-indigo-600 text-white"
+                    : "bg-white"
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() =>
+                setProcessedPage((prev) =>
+                  Math.min(prev + 1, processedTotalPages),
+                )
+              }
+              className="px-4 py-2 border rounded-lg text-sm"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </section>
 
       {/* SUMMARY CARD */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
-          <div className="text-sm text-slate-500 font-semibold">Pending Staff</div>
-          <div className="text-3xl font-bold text-amber-700 mt-2">{stats.length}</div>
-          <div className="text-xs text-slate-400 mt-1">Awaiting salary generation</div>
-        </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
-          <div className="text-sm text-slate-500 font-semibold">Processed Slips</div>
-          <div className="text-3xl font-bold text-emerald-600 mt-2">{processedSlips.length}</div>
-          <div className="text-xs text-slate-400 mt-1">Successfully generated</div>
-        </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
-          <div className="text-sm text-slate-500 font-semibold">Total Salary</div>
-          <div className="text-3xl font-bold text-slate-800 mt-2">
-            ₹{processedSlips.reduce((sum, slip) => sum + (slip.netSalary || 0), 0).toLocaleString('en-IN')}
+          <div className="text-sm text-slate-500 font-semibold">
+            Pending Staff
           </div>
-          <div className="text-xs text-slate-400 mt-1">Total processed amount</div>
+          <div className="text-3xl font-bold text-amber-700 mt-2">
+            {stats.length}
+          </div>
+          <div className="text-xs text-slate-400 mt-1">
+            Awaiting salary generation
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
+          <div className="text-sm text-slate-500 font-semibold">
+            Processed Slips
+          </div>
+          <div className="text-3xl font-bold text-emerald-600 mt-2">
+            {processedSlips.length}
+          </div>
+          <div className="text-xs text-slate-400 mt-1">
+            Successfully generated
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-400 p-6">
+          <div className="text-sm text-slate-500 font-semibold">
+            Total Salary
+          </div>
+          <div className="text-3xl font-bold text-slate-800 mt-2">
+            ₹
+            {processedSlips
+              .reduce((sum, slip) => sum + (slip.netSalary || 0), 0)
+              .toLocaleString("en-IN")}
+          </div>
+          <div className="text-xs text-slate-400 mt-1">
+            Total processed amount
+          </div>
         </div>
       </div>
 
       {/* ✅ SALARY SLIP MODAL */}
       {showModal && selectedSlipData && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-          <div className="bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-sm border border-slate-400" style={{ animation: 'slideUp 0.4s ease-out' }}>
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          style={{ animation: "fadeIn 0.3s ease-out" }}
+        >
+          <div
+            className="bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-sm border border-slate-400"
+            style={{ animation: "slideUp 0.4s ease-out" }}
+          >
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white flex justify-between items-center">
               <div>
-                <h3 className="text-2xl font-bold uppercase tracking-tight">Salary Slip</h3>
+                <h3 className="text-2xl font-bold uppercase tracking-tight">
+                  Salary Slip
+                </h3>
                 <div className="flex items-center gap-4 mt-2">
-                  <p className="text-sm font-bold">{selectedSlipData.employee.name}</p>
+                  <p className="text-sm font-bold">
+                    {selectedSlipData.employee.name}
+                  </p>
                   <span className="text-xs bg-white/20 px-3 py-1 rounded-full">
                     {isNaN(selectedSlipData.slip.month)
                       ? selectedSlipData.slip.month
-                      : monthNames[parseInt(selectedSlipData.slip.month) - 1]} {selectedSlipData.slip.year}
+                      : monthNames[
+                          parseInt(selectedSlipData.slip.month) - 1
+                        ]}{" "}
+                    {selectedSlipData.slip.year}
                   </span>
-                  <span className={`text-xs px-3 py-1 rounded-full font-bold ${
-                    selectedSlipData.slip.paymentStatus === 'PAID' ? 'bg-emerald-500' :
-                    selectedSlipData.slip.paymentStatus === 'PROCESSED' ? 'bg-blue-500' : 'bg-orange-500'
-                  }`}>
+                  <span
+                    className={`text-xs px-3 py-1 rounded-full font-bold ${
+                      selectedSlipData.slip.paymentStatus === "PAID"
+                        ? "bg-emerald-500"
+                        : selectedSlipData.slip.paymentStatus === "PROCESSED"
+                          ? "bg-blue-500"
+                          : "bg-orange-500"
+                    }`}
+                  >
                     {selectedSlipData.slip.paymentStatus}
                   </span>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setShowModal(false)}
                 className="h-12 w-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all font-bold text-xl"
               >
                 <FaTimes />
               </button>
             </div>
-            
+
             {/* Modal Body */}
             <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
               {/* Employee Details */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 p-6 rounded-2xl">
                 <div>
-                  <p className="text-xs text-slate-500 font-semibold uppercase">Employee ID</p>
-                  <p className="font-bold">{selectedSlipData.employee.employeeId || "N/A"}</p>
+                  <p className="text-xs text-slate-500 font-semibold uppercase">
+                    Employee ID
+                  </p>
+                  <p className="font-bold">
+                    {selectedSlipData.employee.employeeId || "N/A"}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 font-semibold uppercase">Department</p>
-                  <p className="font-bold">{selectedSlipData.employee.department}</p>
+                  <p className="text-xs text-slate-500 font-semibold uppercase">
+                    Department
+                  </p>
+                  <p className="font-bold">
+                    {selectedSlipData.employee.department}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 font-semibold uppercase">Generated On</p>
+                  <p className="text-xs text-slate-500 font-semibold uppercase">
+                    Generated On
+                  </p>
                   <p className="font-bold text-indigo-600">
-                    {selectedSlipData.slip.createdAt 
-                      ? new Date(selectedSlipData.slip.createdAt).toLocaleString('en-IN', {
-                          day: '2-digit', month: 'short', year: 'numeric',
-                          hour: '2-digit', minute: '2-digit', hour12: true
-                        }) 
+                    {selectedSlipData.slip.createdAt
+                      ? new Date(
+                          selectedSlipData.slip.createdAt,
+                        ).toLocaleString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        })
                       : "Pending Generation"}
                   </p>
                 </div>
@@ -654,50 +949,88 @@ const handleDownloadPDF = async (slipId) => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Earnings */}
                 <div className="space-y-4">
-                  <h4 className="text-sm font-bold uppercase text-emerald-600 tracking-widest border-b pb-3">Earnings</h4>
+                  <h4 className="text-sm font-bold uppercase text-emerald-600 tracking-widest border-b pb-3">
+                    Earnings
+                  </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-slate-700">Basic Pay</span>
-                      <span className="font-bold">₹{displayCurrency(selectedSlipData.slip.earnings.basic)}</span>
+                      <span className="font-bold">
+                        ₹{displayCurrency(selectedSlipData.slip.earnings.basic)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-700">House Rent Allowance (HRA)</span>
-                      <span className="font-bold">₹{displayCurrency(selectedSlipData.slip.earnings.hra)}</span>
+                      <span className="text-slate-700">
+                        House Rent Allowance (HRA)
+                      </span>
+                      <span className="font-bold">
+                        ₹{displayCurrency(selectedSlipData.slip.earnings.hra)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-700">Special Allowance</span>
-                      <span className="font-bold">₹{displayCurrency(selectedSlipData.slip.earnings.specialAllowance)}</span>
+                      <span className="font-bold">
+                        ₹
+                        {displayCurrency(
+                          selectedSlipData.slip.earnings.specialAllowance,
+                        )}
+                      </span>
                     </div>
                     <div className="flex justify-between pt-3 border-t border-slate-400 text-lg font-bold text-emerald-700">
                       <span>Gross Salary</span>
-                      <span>₹{displayCurrency(selectedSlipData.slip.grossSalary)}</span>
+                      <span>
+                        ₹{displayCurrency(selectedSlipData.slip.grossSalary)}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Deductions */}
                 <div className="space-y-4">
-                  <h4 className="text-sm font-bold uppercase text-rose-600 tracking-widest border-b pb-3">Deductions</h4>
+                  <h4 className="text-sm font-bold uppercase text-rose-600 tracking-widest border-b pb-3">
+                    Deductions
+                  </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-slate-700">EPF (Employee Contribution)</span>
-                      <span className="font-bold text-rose-600">-₹{displayCurrency(selectedSlipData.slip.deductions.epfEmployee)}</span>
+                      <span className="text-slate-700">
+                        EPF (Employee Contribution)
+                      </span>
+                      <span className="font-bold text-rose-600">
+                        -₹
+                        {displayCurrency(
+                          selectedSlipData.slip.deductions.epfEmployee,
+                        )}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-700">Professional Tax</span>
-                      <span className="font-bold text-rose-600">-₹{displayCurrency(selectedSlipData.slip.deductions.professionalTax)}</span>
+                      <span className="font-bold text-rose-600">
+                        -₹
+                        {displayCurrency(
+                          selectedSlipData.slip.deductions.professionalTax,
+                        )}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-700">Tax Deducted at Source (TDS)</span>
-                      <span className="font-bold text-rose-600">-₹{displayCurrency(selectedSlipData.slip.deductions.tds)}</span>
+                      <span className="text-slate-700">
+                        Tax Deducted at Source (TDS)
+                      </span>
+                      <span className="font-bold text-rose-600">
+                        -₹
+                        {displayCurrency(selectedSlipData.slip.deductions.tds)}
+                      </span>
                     </div>
                     <div className="flex justify-between pt-3 border-t border-slate-400 text-lg font-bold text-rose-700">
                       <span>Total Deductions</span>
-                      <span>-₹{displayCurrency(
-                        (selectedSlipData.slip.deductions.epfEmployee || 0) +
-                        (selectedSlipData.slip.deductions.professionalTax || 0) +
-                        (selectedSlipData.slip.deductions.tds || 0)
-                      )}</span>
+                      <span>
+                        -₹
+                        {displayCurrency(
+                          (selectedSlipData.slip.deductions.epfEmployee || 0) +
+                            (selectedSlipData.slip.deductions.professionalTax ||
+                              0) +
+                            (selectedSlipData.slip.deductions.tds || 0),
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -707,19 +1040,27 @@ const handleDownloadPDF = async (slipId) => {
               <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-8 rounded-3xl text-white">
                 <div className="flex flex-col md:flex-row justify-between items-center">
                   <div>
-                    <p className="text-sm font-bold uppercase opacity-90">Net Take-Home Pay</p>
-                    <h2 className="text-4xl font-bold mt-2">₹{displayCurrency(selectedSlipData.slip.netSalary)}</h2>
-                    <p className="text-sm opacity-90 mt-2">Payable via {selectedSlipData.employee.paymentMode}</p>
+                    <p className="text-sm font-bold uppercase opacity-90">
+                      Net Take-Home Pay
+                    </p>
+                    <h2 className="text-4xl font-bold mt-2">
+                      ₹{displayCurrency(selectedSlipData.slip.netSalary)}
+                    </h2>
+                    <p className="text-sm opacity-90 mt-2">
+                      Payable via {selectedSlipData.employee.paymentMode}
+                    </p>
                   </div>
                   <div className="flex gap-3 mt-6 md:mt-0">
-                    <button 
+                    <button
                       onClick={handlePrintSlip}
                       className="bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-2xl font-bold text-sm uppercase tracking-widest flex items-center gap-2 transition-all"
                     >
                       <FaPrint /> Print
                     </button>
-                    <button 
-                      onClick={() => handleDownloadPDF(selectedSlipData.slip._id)}
+                    <button
+                      onClick={() =>
+                        handleDownloadPDF(selectedSlipData.slip._id)
+                      }
                       className="bg-white text-indigo-600 hover:bg-slate-100 px-6 py-3 rounded-2xl font-bold text-sm uppercase tracking-widest flex items-center gap-2 transition-all"
                     >
                       <FaDownload /> Download PDF
@@ -733,9 +1074,15 @@ const handleDownloadPDF = async (slipId) => {
                 <p className="font-bold text-slate-700 mb-1">Notes:</p>
                 <ul className="list-disc list-inside space-y-1">
                   <li>This is a system-generated salary slip</li>
-                  <li>For any discrepancies, contact accounts department within 7 days</li>
+                  <li>
+                    For any discrepancies, contact accounts department within 7
+                    days
+                  </li>
                   <li>Salary is credited on the 5th of every month</li>
-                  <li>Generated on: {new Date().toLocaleDateString('en-IN')} {new Date().toLocaleTimeString('en-IN')}</li>
+                  <li>
+                    Generated on: {new Date().toLocaleDateString("en-IN")}{" "}
+                    {new Date().toLocaleTimeString("en-IN")}
+                  </li>
                 </ul>
               </div>
             </div>

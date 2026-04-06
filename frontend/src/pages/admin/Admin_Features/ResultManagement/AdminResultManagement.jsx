@@ -403,11 +403,11 @@ export default function AdminResultManagement() {
 
         {/* Results Table */}
         <div className="bg-white rounded-xl border border-slate-400 shadow-md overflow-hidden">
-          <div className="flex items-center justify-between p-6 border-b border-slate-400 bg-slate-50">
-            <h3 className="text-xl font-bold text-slate-900">
+          <div className="flex items-center bg-slate-800 justify-between p-6 border-b border-slate-400 ">
+            <h3 className="text-xl font-bold text-white">
               All Results ({filteredResults.length})
             </h3>
-            <div className="flex items-center gap-2 text-sm text-slate-500">
+            <div className="flex items-center gap-2 text-sm text-gray-200">
               Sort by: 
               <select
                 value={`${filters.sortBy}-${filters.sortOrder}`}
@@ -415,12 +415,12 @@ export default function AdminResultManagement() {
                   const [sortBy, sortOrder] = e.target.value.split('-');
                   setFilters({ ...filters, sortBy, sortOrder });
                 }}
-                className="rounded border-2 border-slate-400 p-1 text-xs focus:border-purple-500 outline-none"
+                className="rounded   border-2 border-slate-400 p-1 text-xs focus:border-purple-500 outline-none"
               >
-                <option value="createdAt-desc">Newest First</option>
-                <option value="studentName-asc">Student Name (A-Z)</option>
-                <option value="className-asc">Class Name</option>
-                <option value="overallPercentage-desc">Percentage (High-Low)</option>
+                <option className="text-black" value="createdAt-desc">Newest First</option>
+                <option className="text-black" value="studentName-asc">Student Name (A-Z)</option>
+                <option className="text-black" value="className-asc">Class Name</option>
+                <option className="text-black" value="overallPercentage-desc">Percentage (High-Low)</option>
               </select>
             </div>
           </div>
