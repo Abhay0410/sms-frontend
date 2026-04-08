@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
+import Swal from "sweetalert2";
 import {
   FaPlus,
   FaEdit,
@@ -24,6 +25,10 @@ import {
   FaSort,
   FaSortAmountDown,
   FaSortAmountUp,
+  FaTrash,
+  FaIdCard,
+  FaEnvelope,
+  FaEye,
 } from "react-icons/fa";
 
 const getClassPriority = (className) => {
@@ -791,7 +796,7 @@ export default function ClassManagement() {
       {showAllClasses && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden">
-            <div className="px-6 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white flex justify-between items-center">
+            <div className="px-6 py-4 bg-slate-800 text-white flex justify-between items-center">
               <div>
                 <h3 className="text-xl font-semibold">All Classes</h3>
                 <p className="text-indigo-100 text-sm">
@@ -815,8 +820,15 @@ export default function ClassManagement() {
                       setActiveClassName(cls.className);
                       setShowAllClasses(false);
                     }}
-                    className="p-4 border border-slate-200 rounded-xl hover:border-indigo-300 hover:shadow-sm cursor-pointer transition-all"
+                    className="relative group p-4 border border-slate-200 rounded-xl hover:border-indigo-300 hover:shadow-sm cursor-pointer transition-all bg-white"
                   >
+                    <button
+                      onClick={(e) => handleDeleteClass(e, cls._id, cls.className)}
+                      className="absolute top-3 right-3 p-1.5 bg-red-50 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-100 transition-all z-10"
+                      title="Delete Class"
+                    >
+                      <FaTrash size={12} />
+                    </button>
                     <p className="font-semibold text-slate-800">
                       {cls.className}
                     </p>
@@ -851,8 +863,8 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-6xl h-[85vh] bg-white rounded-[2.5rem] shadow-2xl flex overflow-hidden">
-        <div className="w-72 bg-gradient-to-b from-slate-50 to-white border-r border-slate-100 p-8 flex flex-col justify-between">
+      <div className="w-full max-w-6xl h-[85vh] bg-white rounded-2xl shadow-2xl flex overflow-hidden">
+        <div className="w-72 bg-slate-50 border-r border-slate-200 p-8 flex flex-col justify-between">
           <div>
             <div className="mb-10">
               <h3 className="text-2xl font-black text-slate-900">
@@ -862,10 +874,10 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
                 {classData.academicYear}
               </p>
               <div className="mt-4 flex items-center gap-2">
-                <div className="px-3 py-1 bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 rounded-lg text-xs font-bold">
+                <div className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold">
                   {classData.sections?.length || 0} Sections
                 </div>
-                <div className="px-3 py-1 bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-600 rounded-lg text-xs font-bold">
+                <div className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold">
                   {classData.sections?.reduce(
                     (sum, s) => sum + s.currentStrength,
                     0,
@@ -880,10 +892,10 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold transition-all ${
+                  className={`w-full flex items-center gap-4 px-5 py-3.5 rounded-xl font-bold transition-all ${
                     activeTab === item.id
-                      ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      ? "bg-indigo-600 text-white shadow-md"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-200"
                   }`}
                 >
                   {item.icon} {item.label}
@@ -894,7 +906,7 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
 
           <button
             onClick={onClose}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-700 text-white font-bold text-sm hover:opacity-90 transition-all"
+            className="w-full py-3 rounded-xl bg-slate-800 text-white font-bold text-sm hover:bg-slate-700 shadow-sm transition-all"
           >
             Close Manager
           </button>
@@ -914,7 +926,14 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
 
           <div className="flex-1 overflow-y-auto p-8">
             {activeTab === "sections" && (
-              <SectionsTab classData={classData} onReload={onReload} />
+              <SectionsTab 
+                classData={classData} 
+                onReload={onReload} 
+                onViewStudents={(sectionName) => {
+                  setEnrollSection(sectionName);
+                  setActiveTab("students");
+                }} 
+              />
             )}
             {activeTab === "students" && (
               <AssignStudentsTab
@@ -931,13 +950,48 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
   );
 }
 
-function SectionsTab({ classData, onReload }) {
+function SectionsTab({ classData, onReload, onViewStudents }) {
   const [showAddSection, setShowAddSection] = useState(false);
+  const [editingSection, setEditingSection] = useState(null);
   const [sectionForm, setSectionForm] = useState({
     sectionName: "",
     capacity: "40",
   });
   const [loading, setLoading] = useState(false);
+
+  const handleDeleteSection = async (section) => {
+    if (section.currentStrength > 0) {
+      return Swal.fire("Cannot Delete", `Section ${section.sectionName} has enrolled students. Please transfer them first.`, "error");
+    }
+    const result = await Swal.fire({
+      title: "Delete Section?",
+      text: `Are you sure you want to delete Section ${section.sectionName}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/api/admin/classes/${classData._id}/section/${section.sectionName}`);
+        Swal.fire("Deleted!", "Section has been deleted.", "success");
+        onReload();
+      } catch (error) {
+        Swal.fire("Error", error.response?.data?.message || "Failed to delete section", "error");
+      }
+    }
+  };
+
+  const handleDuplicateSection = (section) => {
+    setSectionForm({
+      sectionName: "", // Force user to enter new name to prevent duplicates
+      capacity: section.capacity.toString(),
+    });
+    setShowAddSection(true);
+    toast.info(`Duplicating settings from Section ${section.sectionName}. Please enter a new Section Code.`);
+  };
 
   const addSection = async (e) => {
     e.preventDefault();
@@ -963,6 +1017,24 @@ function SectionsTab({ classData, onReload }) {
     }
   };
 
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      await api.put(`/api/admin/classes/${classData._id}/section/${editingSection.originalName}`, {
+        sectionName: editingSection.sectionName.toUpperCase(),
+        capacity: parseInt(editingSection.capacity),
+      });
+      toast.success("Section updated successfully!");
+      setEditingSection(null);
+      onReload();
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || "Failed to update section");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -970,7 +1042,7 @@ function SectionsTab({ classData, onReload }) {
         {!showAddSection && (
           <button
             onClick={() => setShowAddSection(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-bold text-sm hover:opacity-90 transition-all"
+            className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-sm"
           >
             <FaPlus /> New Section
           </button>
@@ -980,7 +1052,7 @@ function SectionsTab({ classData, onReload }) {
       {showAddSection && (
         <form
           onSubmit={addSection}
-          className="p-6 rounded-2xl bg-gradient-to-b from-slate-50 to-white border-2 border-dashed border-slate-300"
+          className="p-6 rounded-xl bg-slate-50 border border-slate-200"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -989,9 +1061,9 @@ function SectionsTab({ classData, onReload }) {
               </label>
               <input
                 required
-                maxLength={2}
-                placeholder="A, B, C..."
-                className="w-full p-3 bg-white rounded-xl border-2 border-slate-200 font-medium text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
+                list="section-suggestions"
+                placeholder="e.g., A, B or Rose..."
+                className="w-full p-3 bg-white rounded-xl border border-slate-300 font-medium text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
                 value={sectionForm.sectionName}
                 onChange={(e) =>
                   setSectionForm({
@@ -1000,6 +1072,12 @@ function SectionsTab({ classData, onReload }) {
                   })
                 }
               />
+              <datalist id="section-suggestions">
+                <option value="A" />
+                <option value="B" />
+                <option value="C" />
+                <option value="D" />
+              </datalist>
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">
@@ -1011,7 +1089,7 @@ function SectionsTab({ classData, onReload }) {
                 max="100"
                 required
                 placeholder="40"
-                className="w-full p-3 bg-white rounded-xl border-2 border-slate-200 font-medium text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
+                className="w-full p-3 bg-white rounded-xl border border-slate-300 font-medium text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
                 value={sectionForm.capacity}
                 onChange={(e) =>
                   setSectionForm({ ...sectionForm, capacity: e.target.value })
@@ -1022,7 +1100,7 @@ function SectionsTab({ classData, onReload }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-bold text-sm hover:opacity-90 transition-all disabled:opacity-50"
+                className="w-full py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all disabled:opacity-50 shadow-sm"
               >
                 {loading ? "Adding..." : "Create Section"}
               </button>
@@ -1039,67 +1117,92 @@ function SectionsTab({ classData, onReload }) {
       )}
 
       {classData.sections?.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {classData.sections?.map((section) => {
-            const fillPercentage =
-              (section.currentStrength / section.capacity) * 100;
-
-            return (
-              <div
-                key={section._id}
-                className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-500 text-white flex items-center justify-center font-bold">
-                      {section.sectionName}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-slate-900">
-                        Section {section.sectionName}
-                      </h4>
-                      <p className="text-sm text-slate-500">
-                        {section.currentStrength}/{section.capacity} students
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-bold ${
-                      fillPercentage >= 90
-                        ? "bg-red-100 text-red-600"
-                        : fillPercentage >= 70
-                          ? "bg-amber-100 text-amber-600"
-                          : "bg-emerald-100 text-emerald-600"
-                    }`}
-                  >
-                    {fillPercentage.toFixed(0)}%
-                  </span>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-                    <div
-                      className={`h-2 rounded-full ${
-                        fillPercentage >= 90
-                          ? "bg-gradient-to-r from-red-500 to-orange-500"
-                          : fillPercentage >= 70
-                            ? "bg-gradient-to-r from-amber-500 to-yellow-500"
-                            : "bg-gradient-to-r from-emerald-500 to-green-500"
-                      }`}
-                      style={{ width: `${fillPercentage}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-xs text-slate-500">
-                    <span>
-                      {section.capacity - section.currentStrength} seats
-                      available
-                    </span>
-                    <span>{fillPercentage.toFixed(0)}% full</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+          <table className="w-full text-left">
+            <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase font-bold text-slate-500 tracking-wider">
+              <tr>
+                <th className="px-6 py-4">Section Name</th>
+                <th className="px-6 py-4 text-center">Capacity</th>
+                <th className="px-6 py-4 text-center">Enrolled</th>
+                <th className="px-6 py-4 text-center">Vacancies</th>
+                <th className="px-6 py-4 w-1/3">Fill Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+              {classData.sections?.map((section) => {
+                const fillPercentage = (section.currentStrength / section.capacity) * 100;
+                return (
+                  <tr key={section._id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                          {section.sectionName}
+                        </div>
+                        <span className="font-bold text-slate-900">Section {section.sectionName}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">{section.capacity}</td>
+                    <td className="px-6 py-4 text-center">{section.currentStrength}</td>
+                    <td className="px-6 py-4 text-center text-emerald-600 font-bold">
+                      {section.capacity - section.currentStrength}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              fillPercentage >= 95 ? "bg-red-500" : fillPercentage >= 80 ? "bg-amber-500" : "bg-emerald-500"
+                            }`}
+                            style={{ width: `${fillPercentage}%` }}
+                          />
+                        </div>
+                        <span className={`text-xs font-bold w-14 text-right flex items-center justify-end gap-1 ${
+                          fillPercentage >= 95 ? "text-red-600" : fillPercentage >= 80 ? "text-amber-600" : "text-emerald-600"
+                        }`}>
+                          {fillPercentage.toFixed(0)}%
+                          {fillPercentage >= 90 && <FaExclamationTriangle title="Near capacity!" className={fillPercentage >= 95 ? "text-red-500" : "text-amber-500"} />}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => onViewStudents(section.sectionName)}
+                          title="View Enrolled Students"
+                          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        >
+                          <FaUserGraduate size={14} />
+                        </button>
+                        <button
+                          onClick={() => setEditingSection({ ...section, originalName: section.sectionName })}
+                          title="Edit Section Details"
+                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        >
+                          <FaEdit size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleDuplicateSection(section)}
+                          title="Duplicate Section"
+                          className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        >
+                          <FaCopy size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSection(section)}
+                          title={section.currentStrength > 0 ? "Cannot delete section with enrolled students" : "Delete Section"}
+                          className={`p-2 rounded-lg transition-colors ${section.currentStrength > 0 ? "text-slate-300 cursor-not-allowed" : "text-slate-400 hover:text-red-600 hover:bg-red-50"}`}
+                          disabled={section.currentStrength > 0}
+                        >
+                          <FaTrash size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       ) : (
         <div className="text-center py-12 bg-gradient-to-b from-slate-50 to-white rounded-2xl border border-slate-200">
@@ -1114,10 +1217,50 @@ function SectionsTab({ classData, onReload }) {
           </p>
           <button
             onClick={() => setShowAddSection(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl font-bold text-sm hover:opacity-90 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 shadow-sm transition-all"
           >
             <FaPlus /> Create First Section
           </button>
+        </div>
+      )}
+
+      {/* Edit Section Modal */}
+      {editingSection && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 bg-slate-800 text-white flex justify-between items-center">
+              <h3 className="font-bold text-lg flex items-center gap-2"><FaEdit className="text-blue-400" /> Edit Section {editingSection.originalName}</h3>
+              <button onClick={() => setEditingSection(null)} className="text-slate-300 hover:text-white transition-colors">
+                <FaTimes />
+              </button>
+            </div>
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Section Code / Name</label>
+                <input
+                  required
+                  className="w-full p-3 bg-slate-50 rounded-xl border border-slate-300 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
+                  value={editingSection.sectionName}
+                  onChange={(e) => setEditingSection({ ...editingSection, sectionName: e.target.value.toUpperCase() })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Maximum Capacity</label>
+                <input
+                  type="number" min="1" max="200" required
+                  className="w-full p-3 bg-slate-50 rounded-xl border border-slate-300 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
+                  value={editingSection.capacity}
+                  onChange={(e) => setEditingSection({ ...editingSection, capacity: e.target.value })}
+                />
+              </div>
+              <div className="flex gap-3 pt-4 border-t border-slate-100 mt-6">
+                <button type="button" onClick={() => setEditingSection(null)} className="flex-1 py-2.5 border border-slate-300 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-colors">Cancel</button>
+                <button type="submit" disabled={loading} className="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 shadow-sm transition-colors">
+                  {loading ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
@@ -1141,6 +1284,7 @@ function AssignStudentsTab({
   const [mode, setMode] = useState("enroll"); // "enroll" or "transfer"
   const [fromSection, setFromSection] = useState("");
   const [toSection, setToSection] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
 
   const loadStudents = useCallback(async () => {
     try {
@@ -1202,28 +1346,28 @@ function AssignStudentsTab({
       student?.studentID?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const handleAction = async () => {
-    if (mode === "enroll") {
-      if (!selectedSection) {
-        toast.error("Please select a target section");
-        return;
-      }
-    } else {
-      if (!fromSection || !toSection) {
-        toast.error("Please select both FROM and TO sections");
-        return;
-      }
-      if (fromSection === toSection) {
-        toast.error("Source and destination sections cannot be same");
-        return;
-      }
+  const handleAction = () => {
+    const targetSection = mode === "enroll" ? selectedSection : toSection;
+    if (!targetSection) {
+      toast.error(mode === "enroll" ? "Please select a target section" : "Please select a destination section");
+      return;
     }
-
+    if (mode === "transfer" && !fromSection) {
+      toast.error("Please select a source section");
+      return;
+    }
+    if (mode === "transfer" && fromSection === toSection) {
+      toast.error("Source and destination sections cannot be same");
+      return;
+    }
     if (selectedStudents.length === 0) {
       toast.error("Please select students to process");
       return;
     }
+    confirmAction();
+  };
 
+  const confirmAction = async () => {
     try {
       setLoading(true);
 
@@ -1246,12 +1390,21 @@ function AssignStudentsTab({
       }
 
       setSelectedStudents([]);
+      setShowPreview(false);
       await loadStudents();
       onReload();
     } catch (err) {
       toast.error(err.message || "Failed to process students");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedStudents(filteredStudents.map((s) => s._id));
+    } else {
+      setSelectedStudents([]);
     }
   };
 
@@ -1263,165 +1416,174 @@ function AssignStudentsTab({
     return section ? section.capacity - section.currentStrength : 0;
   };
 
+  const getInitials = (name) => {
+    if (!name) return "";
+    return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  };
+
   return (
-    <div className="space-y-6 animate-in slide-in-from-right duration-500">
-      {/* Mode Selection Tabs */}
-      <div className="flex gap-4 border-b border-slate-100 pb-4">
-        <button
-          onClick={() => {
-            setMode("enroll");
-            setSelectedStudents([]);
-            setFromSection("");
-          }}
-          className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
-            mode === "enroll"
-              ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-          }`}
-        >
-          <FaPlus className="inline mr-2" />
-          Enroll Students
-        </button>
-        <button
-          onClick={() => {
-            setMode("transfer");
-            setSelectedStudents([]);
-            setSelectedSection("");
-          }}
-          className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
-            mode === "transfer"
-              ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-          }`}
-        >
-          <FaExchangeAlt className="inline mr-2" />
-          Transfer Between Sections
-        </button>
+    <div className="space-y-8 animate-in slide-in-from-right duration-500 pb-28 relative">
+      {/* Mode Selection Tabs (Segmented Control) */}
+      <div className="flex justify-start mb-4">
+        <div className="relative flex bg-slate-100/80 p-1.5 rounded-xl w-full max-w-sm shadow-inner border border-slate-200/60">
+          <div 
+            className={`absolute top-1.5 bottom-1.5 w-[calc(50%-0.375rem)] bg-white rounded-lg shadow-sm transition-transform duration-300 ease-in-out ${
+              mode === "transfer" ? "translate-x-full" : "translate-x-0"
+            }`}
+          ></div>
+          <button
+            onClick={() => {
+              setMode("enroll");
+              setSelectedStudents([]);
+              setFromSection("");
+            }}
+            className={`relative z-10 flex-1 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-colors duration-300 flex items-center justify-center gap-2 ${
+              mode === "enroll" ? "text-indigo-700" : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <FaPlus /> ENROLL
+          </button>
+          <button
+            onClick={() => {
+              setMode("transfer");
+              setSelectedStudents([]);
+              setSelectedSection("");
+            }}
+            className={`relative z-10 flex-1 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-colors duration-300 flex items-center justify-center gap-2 ${
+              mode === "transfer" ? "text-blue-700" : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <FaExchangeAlt /> TRANSFER
+          </button>
+        </div>
       </div>
 
       {/* Control Panel */}
-      <div className="bg-gradient-to-b from-slate-50 to-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+      <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
         {mode === "enroll" ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
-                Enroll to Section
+              <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest">
+                Target Section
               </label>
-              <select
-                value={selectedSection}
-                onChange={(e) => {
-                  setSelectedSection(e.target.value);
-                  if (onSectionChange) onSectionChange(e.target.value);
-                }}
-                className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
-              >
-                <option value="">Select Target Section</option>
-                {sections.map((s) => (
-                  <option key={s._id} value={s.sectionName}>
-                    Section {s.sectionName} ({getVacancies(s.sectionName)}{" "}
-                    vacancies)
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <FaBuilding className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                  value={selectedSection}
+                  onChange={(e) => {
+                    setSelectedSection(e.target.value);
+                    if (onSectionChange) onSectionChange(e.target.value);
+                  }}
+                  className="w-full pl-11 pr-10 py-3 bg-white rounded-xl border border-slate-300 font-bold text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all shadow-sm appearance-none cursor-pointer"
+                >
+                  <option value="">Select Target Section</option>
+                  {sections.map((s) => (
+                    <option key={s._id} value={s.sectionName}>
+                      Section {s.sectionName}
+                    </option>
+                  ))}
+                </select>
+                <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
+              </div>
+              {selectedSection && (
+                <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-200">
+                  <FaUserGraduate size={10} />
+                  {getVacancies(selectedSection)} Vacancies Available
+                </div>
+              )}
             </div>
 
             <div>
-              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
-                Filter Registry
+              <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest">
+                Search Students
               </label>
-              <input
-                type="text"
-                placeholder="Search name or ID..."
-                className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-end">
-              <button
-                onClick={handleAction}
-                disabled={
-                  loading || !selectedStudents.length || !selectedSection
-                }
-                className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all disabled:opacity-50 active:scale-95"
-              >
-                {loading
-                  ? "Processing..."
-                  : `Enroll ${selectedStudents.length} Students`}
-              </button>
+              <div className="relative">
+                <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search by name or ID..."
+                  className="w-full pl-11 pr-4 py-3 bg-white rounded-xl border border-slate-300 font-bold text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all shadow-sm"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
-                From Section
+              <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest">
+                1. Source Section
               </label>
-              <select
-                value={fromSection}
-                onChange={(e) => {
-                  setFromSection(e.target.value);
-                  setSelectedStudents([]); // Clear selection when source changes
-                }}
-                className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
-              >
-                <option value="">Select Source Section</option>
-                {sections.map((s) => (
-                  <option key={s._id} value={s.sectionName}>
-                    Section {s.sectionName} ({s.currentStrength} students)
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <FaBuilding className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                  value={fromSection}
+                  onChange={(e) => {
+                    setFromSection(e.target.value);
+                    setSelectedStudents([]); 
+                  }}
+                  className="w-full pl-11 pr-10 py-3 bg-white rounded-xl border border-slate-300 font-bold text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all shadow-sm appearance-none cursor-pointer"
+                >
+                  <option value="">Select Source Section</option>
+                  {sections.map((s) => (
+                    <option key={s._id} value={s.sectionName}>
+                      Section {s.sectionName}
+                    </option>
+                  ))}
+                </select>
+                <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
+              </div>
+              {fromSection && (
+                <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-bold border border-slate-300">
+                  <FaUsers size={10} />
+                  {sections.find(s => s.sectionName === fromSection)?.currentStrength || 0} Students Enrolled
+                </div>
+              )}
             </div>
 
             <div>
-              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
-                To Section
+              <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest">
+                2. Target Section
               </label>
-              <select
-                value={toSection}
-                onChange={(e) => setToSection(e.target.value)}
-                className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all"
-              >
-                <option value="">Select Destination Section</option>
-                {sections.map((s) => (
-                  <option key={s._id} value={s.sectionName}>
-                    Section {s.sectionName} ({getVacancies(s.sectionName)}{" "}
-                    vacancies)
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <FaArrowRight className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <select
+                  value={toSection}
+                  onChange={(e) => setToSection(e.target.value)}
+                  className="w-full pl-11 pr-10 py-3 bg-white rounded-xl border border-slate-300 font-bold text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all shadow-sm appearance-none cursor-pointer"
+                >
+                  <option value="">Select Destination Section</option>
+                  {sections.map((s) => (
+                    <option key={s._id} value={s.sectionName}>
+                      Section {s.sectionName}
+                    </option>
+                  ))}
+                </select>
+                <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
+              </div>
+              {toSection && (
+                <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold border border-blue-200">
+                  <FaUserGraduate size={10} />
+                  {getVacancies(toSection)} Vacancies Available
+                </div>
+              )}
             </div>
 
             <div>
-              <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">
-                Filter Students
+              <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest">
+                Search Students
               </label>
-              <input
-                type="text"
-                placeholder="Search students..."
-                className="w-full p-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-end">
-              <button
-                onClick={handleAction}
-                disabled={
-                  loading ||
-                  !selectedStudents.length ||
-                  !fromSection ||
-                  !toSection
-                }
-                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-100 hover:opacity-90 transition-all disabled:opacity-50 active:scale-95"
-              >
-                {loading
-                  ? "Transferring..."
-                  : `Transfer ${selectedStudents.length} Students`}
-              </button>
+              <div className="relative">
+                <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search by name or ID..."
+                  className="w-full pl-11 pr-4 py-3 bg-white rounded-xl border border-slate-300 font-bold text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all shadow-sm"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -1438,22 +1600,10 @@ function AssignStudentsTab({
           </div>
         ) : filteredStudents.length > 0 ? (
           <>
-            <div className="flex justify-between items-center px-2 mb-4">
+            <div className="flex justify-between items-center px-1 mb-2 mt-4">
               <div>
                 <span className="text-xs font-bold text-slate-500">
                   Showing {filteredStudents.length} students
-                  {mode === "enroll" && selectedSection && (
-                    <span className="text-indigo-600 ml-2">
-                      • Section {selectedSection} has{" "}
-                      {getVacancies(selectedSection)} vacancies
-                    </span>
-                  )}
-                  {mode === "transfer" && fromSection && toSection && (
-                    <span className="text-blue-600 ml-2">
-                      • {fromSection} → {toSection} • {getVacancies(toSection)}{" "}
-                      vacancies available
-                    </span>
-                  )}
                 </span>
               </div>
               <div className="flex gap-2">
@@ -1462,7 +1612,7 @@ function AssignStudentsTab({
                     onClick={() =>
                       setSelectedStudents(filteredStudents.map((s) => s._id))
                     }
-                    className="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:underline hover:text-slate-900"
+                    className="text-[11px] font-bold text-indigo-600 uppercase tracking-widest hover:underline hover:text-indigo-800"
                   >
                     Select All
                   </button>
@@ -1470,7 +1620,7 @@ function AssignStudentsTab({
                 {selectedStudents.length > 0 && (
                   <button
                     onClick={() => setSelectedStudents([])}
-                    className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline"
+                    className="text-[11px] font-bold text-rose-600 uppercase tracking-widest hover:underline"
                   >
                     Clear Selection
                   </button>
@@ -1478,79 +1628,80 @@ function AssignStudentsTab({
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredStudents.map((s) => {
                 const isSelected = selectedStudents.includes(s._id);
                 const isEnrolled = !!s.section;
-
                 return (
                   <div
                     key={s._id}
                     onClick={() =>
                       setSelectedStudents((prev) =>
-                        prev.includes(s._id)
-                          ? prev.filter((id) => id !== s._id)
-                          : [...prev, s._id],
+                        prev.includes(s._id) ? prev.filter((id) => id !== s._id) : [...prev, s._id]
                       )
                     }
-                    className={`p-5 rounded-[1.5rem] border-2 cursor-pointer transition-all ${
-                      isSelected
-                        ? mode === "enroll"
-                          ? "border-indigo-600 bg-gradient-to-r from-indigo-50 to-blue-50 shadow-lg"
-                          : "border-blue-600 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg"
-                        : "border-slate-50 bg-white hover:border-slate-200 shadow-sm"
-                    }`}
+                    className={`group relative bg-white rounded-2xl transition-all duration-200 cursor-pointer overflow-hidden border
+                      ${
+                        isSelected
+                          ? mode === "enroll" 
+                            ? "ring-2 ring-indigo-500 ring-offset-2 border-transparent bg-indigo-50/40 shadow-md scale-[1.02]"
+                            : "ring-2 ring-blue-500 ring-offset-2 border-transparent bg-blue-50/40 shadow-md scale-[1.02]"
+                          : "border-slate-200 hover:border-indigo-300 hover:shadow-md"
+                      }
+                    `}
                   >
-                    <div className="flex items-center gap-5">
-                      <div
-                        className={`h-8 w-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                          isSelected
-                            ? mode === "enroll"
-                              ? "bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100"
-                              : "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-100"
-                            : "border-slate-200"
-                        }`}
-                      >
-                        {isSelected && <FaCheckCircle size={14} />}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="font-black text-slate-900 text-lg uppercase tracking-tight">
-                              {s.name}
-                            </p>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                              {s.studentID}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            {isEnrolled && (
-                              <span
-                                className={`text-xs font-bold px-3 py-1 rounded-full ${
-                                  mode === "transfer" &&
-                                  fromSection === s.section
-                                    ? "bg-blue-100 text-blue-600"
-                                    : "bg-slate-100 text-slate-600"
-                                }`}
-                              >
-                                {mode === "transfer"
-                                  ? "Transfer from "
-                                  : "Currently in "}
-                                Section {s.section}
-                              </span>
-                            )}
-                            {!isEnrolled && mode === "enroll" && (
-                              <span className="text-xs font-bold bg-amber-100 text-amber-600 px-3 py-1 rounded-full">
-                                Unassigned
-                              </span>
-                            )}
-                            {mode === "transfer" && (
-                              <FaExchangeAlt
-                                className={`${isSelected ? "text-blue-400" : "text-slate-300"}`}
-                              />
-                            )}
-                          </div>
+                    <div className="p-4 flex items-center gap-4">
+                      {/* Checkbox Area */}
+                      <div className="flex-shrink-0">
+                        <div
+                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                            isSelected
+                              ? mode === "enroll" ? "bg-indigo-500 border-indigo-500 text-white" : "bg-blue-500 border-blue-500 text-white"
+                              : "border-slate-300 bg-slate-50 group-hover:border-indigo-400"
+                          }`}
+                        >
+                          {isSelected && <FaCheckCircle className="text-sm" />}
                         </div>
+                      </div>
+
+                      {/* Avatar */}
+                      <div className="flex-shrink-0">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg border-2 ${
+                            isSelected 
+                                ? mode === "enroll" ? "bg-indigo-100 text-indigo-700 border-indigo-200" : "bg-blue-100 text-blue-700 border-blue-200"
+                                : "bg-slate-100 text-slate-600 border-slate-200"
+                        }`}>
+                          {getInitials(s.name)}
+                        </div>
+                      </div>
+
+                      {/* Details */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-slate-900 text-base truncate mb-0.5">
+                          {s.name}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="text-xs font-mono text-slate-500">
+                            {s.studentID}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Badge */}
+                      <div className="flex-shrink-0">
+                        {!isEnrolled ? (
+                            <span className="px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold rounded-md uppercase tracking-wider">
+                              Unassigned
+                            </span>
+                          ) : mode === "transfer" && s.section === fromSection ? (
+                            <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold rounded-md uppercase tracking-wider">
+                              Sec {s.section}
+                            </span>
+                          ) : (
+                            <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded-md uppercase tracking-wider">
+                              Sec {s.section}
+                            </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1559,31 +1710,33 @@ function AssignStudentsTab({
             </div>
           </>
         ) : (
-          <div className="py-24 text-center opacity-60 flex flex-col items-center">
+          <div className="py-20 text-center bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center">
             {mode === "enroll" ? (
               <>
-                <FaUserGraduate size={64} className="mb-4 text-slate-300" />
-                <p className="font-black uppercase tracking-[0.3em] text-xs text-slate-400 mb-2">
+                <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
+                  <FaUserGraduate size={40} className="text-indigo-400" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">
+                  No Students Available
+                </h3>
+                <p className="text-slate-500 text-sm max-w-sm text-center leading-relaxed">
                   {selectedSection
-                    ? `No students available for Section ${selectedSection}`
-                    : "Select a target section to view available students"}
-                </p>
-                <p className="text-slate-500 text-sm max-w-md">
-                  All students are either already enrolled in this section or
-                  there are no unassigned students.
+                    ? `All students are either already enrolled in Section ${selectedSection} or there are no unassigned students matching your search.`
+                    : "Select a target section to view available students to enroll."}
                 </p>
               </>
             ) : (
               <>
-                <FaExchangeAlt size={64} className="mb-4 text-slate-300" />
-                <p className="font-black uppercase tracking-[0.3em] text-xs text-slate-400 mb-2">
+                <div className="w-24 h-24 bg-blue-50/50 rounded-full flex items-center justify-center mb-6">
+                  <FaExchangeAlt size={40} className="text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">
+                  No Students to Transfer
+                </h3>
+                <p className="text-slate-500 text-sm max-w-sm text-center leading-relaxed">
                   {fromSection
-                    ? `No students found in Section ${fromSection}`
-                    : "Select a source section to view transferable students"}
-                </p>
-                <p className="text-slate-500 text-sm max-w-md">
-                  The selected source section has no enrolled students to
-                  transfer.
+                    ? `Section ${fromSection} currently has no enrolled students matching your search to transfer.`
+                    : "Select a source section to view transferable students."}
                 </p>
               </>
             )}
@@ -1591,43 +1744,47 @@ function AssignStudentsTab({
         )}
       </div>
 
-      {/* Quick Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-200">
-          <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
-            Total Students
-          </p>
-          <p className="text-2xl font-black text-slate-900">
-            {students.length}
-          </p>
+      {/* Smart Action Panel (Sticky Bottom) */}
+      {selectedStudents.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-4xl bg-slate-900 rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-50 flex items-center justify-between animate-in slide-in-from-bottom-8 border border-slate-700">
+          <div className="flex items-center gap-4">
+            <div className={`h-12 w-12 rounded-xl flex items-center justify-center font-black text-xl shadow-inner ${mode === 'enroll' ? 'bg-indigo-500 text-white' : 'bg-blue-500 text-white'}`}>
+              {selectedStudents.length}
+            </div>
+            <div>
+              <p className="font-bold text-white text-sm uppercase tracking-wide">
+                Students Selected
+              </p>
+              <p className="text-xs font-medium text-slate-400 mt-0.5">
+                {mode === "enroll" && selectedSection
+                  ? `${getVacancies(selectedSection)} vacancies left in Sec ${selectedSection}`
+                  : ""}
+                {mode === "transfer" && toSection
+                  ? `${getVacancies(toSection)} vacancies left in Sec ${toSection}`
+                  : ""}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setSelectedStudents([])}
+              className="px-5 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-bold hover:bg-slate-700 hover:text-white transition-all text-sm hidden md:block border border-slate-700"
+            >
+              Clear Selection
+            </button>
+            <button
+              onClick={handleAction}
+              disabled={loading || !selectedStudents.length || (mode === "enroll" ? !selectedSection : (!fromSection || !toSection))}
+              className={`px-8 py-3 text-white rounded-xl font-black uppercase tracking-wider hover:-translate-y-0.5 active:scale-95 transition-all text-sm flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none ${
+                mode === "enroll" ? "bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30" : "bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/30"
+              }`}
+            >
+              {loading ? "Processing..." : mode === "enroll" ? "Proceed to Enroll" : "Proceed to Transfer"}{" "}
+              <FaArrowRight />
+            </button>
+          </div>
         </div>
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-200">
-          <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
-            {mode === "enroll"
-              ? "Selected for Enrollment"
-              : "Selected for Transfer"}
-          </p>
-          <p className="text-2xl font-black text-slate-900">
-            {selectedStudents.length}
-          </p>
-        </div>
-        <div
-          className={`p-4 rounded-2xl border ${
-            mode === "enroll"
-              ? "bg-gradient-to-br from-indigo-50 to-blue-50 border-indigo-200"
-              : "bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200"
-          }`}
-        >
-          <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
-            Current Mode
-          </p>
-          <p className="text-lg font-black text-slate-900">
-            {mode === "enroll"
-              ? "📥 Enroll Students"
-              : "🔄 Transfer Between Sections"}
-          </p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -1763,8 +1920,8 @@ function CreateClassModal({ academicYear, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-md p-4">
-      <div className="w-full max-w-xl bg-white rounded-[2.5rem] overflow-hidden shadow-2xl">
-        <div className="bg-gradient-to-r from-indigo-600 to-blue-600 p-8 text-white">
+      <div className="w-full max-w-xl bg-white rounded-2xl overflow-hidden shadow-2xl">
+        <div className="bg-slate-800 p-6 text-white border-b border-slate-700">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-2xl font-black">Add New Class</h3>
@@ -1774,9 +1931,9 @@ function CreateClassModal({ academicYear, onClose, onSuccess }) {
             </div>
             <button
               onClick={onClose}
-              className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center hover:rotate-90 transition-all hover:bg-white/20"
+              className="h-8 w-8 rounded-lg bg-slate-700 flex items-center justify-center hover:bg-slate-600 transition-all"
             >
-              <FaTimes size={18} className="text-white" />
+              <FaTimes size={14} className="text-white" />
             </button>
           </div>
         </div>
@@ -1786,21 +1943,25 @@ function CreateClassModal({ academicYear, onClose, onSuccess }) {
             <label className="block text-sm font-bold text-slate-700 mb-3">
               Class Grade
             </label>
-            <select
+            <input
+              type="text"
               required
+              list="class-suggestions"
+              placeholder="e.g., Nursery, LKG, 1, 11 Science"
               value={form.className}
               onChange={(e) => setForm({ ...form, className: e.target.value })}
-              className="w-full p-5 bg-gradient-to-b from-slate-50 to-white rounded-2xl border-2 border-slate-200 font-bold text-slate-900 text-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
-            >
-              <option value="">Select Class</option>
+              className="w-full p-4 bg-white rounded-xl border border-slate-300 font-medium text-slate-900 text-base focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
+            />
+            <datalist id="class-suggestions">
+              <option value="Nursery" />
+              <option value="LKG" />
+              <option value="UKG" />
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
-                <option key={num} value={String(num)}>
-                  Class {num}
-                </option>
+                <option key={num} value={String(num)} />
               ))}
-            </select>
+            </datalist>
             <p className="text-sm text-slate-500 mt-3">
-              Select the class grade you want to create for {academicYear}
+              Select a class from the list or type a custom class name for {academicYear}
             </p>
           </div>
 
@@ -1808,14 +1969,14 @@ function CreateClassModal({ academicYear, onClose, onSuccess }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-4 font-bold text-slate-600 hover:text-slate-900 transition-colors"
+              className="flex-1 py-3 border border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-[2] py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-bold uppercase text-sm shadow-xl shadow-indigo-100 flex items-center justify-center gap-3 hover:opacity-90 transition-all"
+              className="flex-[2] py-3 bg-indigo-600 text-white rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-sm"
             >
               {loading ? (
                 <>
