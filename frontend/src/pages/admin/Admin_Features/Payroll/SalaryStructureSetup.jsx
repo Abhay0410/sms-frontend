@@ -138,7 +138,7 @@ export default function SalaryStructureSetup() {
   };
 
   return (
-    <div className=" max-w-6xl mx-auto">
+    <div className="  ">
       <div className="flex items-center gap-4 mb-10">
         <div className="h-16 w-16 bg-indigo-600 text-white rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-indigo-100">
           <FaCalculator size={28} />
@@ -152,7 +152,7 @@ export default function SalaryStructureSetup() {
       </div>
 
       {/* Policy UI Panel */}
-      <div className=" bg-[#051224] rounded-2xl p-6 mb-8 text-white shadow-xl">
+      <div className=" bg-[#051224] rounded-2xl p-6 mb-8 text-white shadow-xl mx-auto">
         <div className="flex justify-between items-center cursor-pointer" onClick={() => setShowPolicy(!showPolicy)}>
           <div className="flex items-center gap-3">
             <FaShieldAlt className="text-orange-400" />

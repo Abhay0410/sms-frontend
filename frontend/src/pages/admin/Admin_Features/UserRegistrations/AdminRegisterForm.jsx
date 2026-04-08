@@ -247,7 +247,7 @@ const AdminRegisterForm = () => {
       <div className="max-w-5xl mx-auto">
         <div className="mb-4 text-center md:text-left">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <FaUserShield className="text-indigo-600" /> Administrative Staff Enrollment  
+            <FaUserShield className="text-indigo-600 size-10" /> Administrative Staff Enrollment  
           </h1>
           <p className="text-gray-500 font-medium text-sm mt-1">Create secure accounts for Principal, Librarian, or Accountants</p>
         </div>
@@ -376,7 +376,7 @@ const AdminRegisterForm = () => {
                   disabled={loading}
                   className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
-                  {loading ? <FaSpinner className="animate-spin" /> : <><FaCheck /> Initialize Account</>}
+                  {loading ? <FaSpinner className="animate-spin" /> : <><FaCheck /> Admin Register</>}
                 </button>
             </div>
           </form>

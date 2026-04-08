@@ -228,21 +228,29 @@ export default function SetClassFees() {
     );
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 ">
       {/* Header Info */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 rounded-xl border border-slate-400 shadow-sm gap-4"
+        className="flex flex-col md:flex-row justify-between items-start md:items-center  pb-4 gap-4"
       >
-        <div>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
-            Class Fee Management
-          </h2>
-          <p className="text-slate-600 text-sm font-medium mt-1">
-            Configure automated installments for all students
-          </p>
-        </div>
+        <div className="flex items-start gap-3">
+  
+  <div className="h-16 w-16 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center">
+    <FaLayerGroup size={32} />
+  </div>
+
+  <div>
+    <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-1">
+      Class Fee Management
+    </h2>
+    <p className="text-slate-600 text-sm font-medium mt-1">
+      Configure automated installments for all students
+    </p>
+  </div>
+
+</div>
         <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-400 shadow-sm">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
             Session:
@@ -255,7 +263,7 @@ export default function SetClassFees() {
               setAcademicYear(value);
               localStorage.setItem("academicYear", value); // ✅ save
             }}
-            className="px-4 py-2.5 bg-slate-100 border  rounded-xl text-sm font-medium text-black"
+            className="px-4 py-2.5 bg-slate-100 border border-slate-300  rounded-xl text-sm font-medium text-black"
           >
             {session?.map((s) => (
               <option key={s._id} value={`${s.startYear}-${s.endYear}`}>

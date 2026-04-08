@@ -268,7 +268,7 @@ const fetchSessions = async () => {
 
   return (
     <div className="h-screen bg-blue-50 flex flex-col overflow-hidden font-sans text-slate-900">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 pb-3">
         <div className="h-14 w-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 transform -rotate-2 hover:rotate-0 transition-all duration-300">
           <FaChalkboardTeacher className="text-white text-2xl" />
         </div>

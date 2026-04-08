@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../services/api";
+import { FaUserShield } from "react-icons/fa";
 import BackButton from "../../components/BackButton";
 import OptimizedImage from "../../components/OptimizedImage";
 
@@ -149,14 +150,26 @@ export default function AdminProfileManage() {
     <div className="min-h-screen bg-blue-50 to-indigo-50 px-4 md:px-6 pb-6 ">
       <div className="mx-auto max-w-4xl">
         {/* Header Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold  bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
-            Administrator Profile
-          </h1>
-          <p className="text-gray-500 mt-2 font-medium text-sm">
-            Manage your system credentials and personal records
-          </p>
-        </div>
+        <div className="flex justify-center mb-8">
+
+  <div className="flex items-start gap-3">
+    
+    <div className="h-16 w-16 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
+      <FaUserShield size={32} />
+    </div>
+
+    <div>
+      <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent uppercase tracking-tight">
+        Administrator Profile
+      </h1>
+      <p className="text-gray-500 mt-1 font-medium text-sm">
+        Manage your system credentials and personal records
+      </p>
+    </div>
+
+  </div>
+
+</div>
 
         {/* Profile Header Card */}
         <div className="mt-6 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 p-8 shadow-2xl relative overflow-hidden">
@@ -192,8 +205,6 @@ export default function AdminProfileManage() {
             </div>
           </div>
         </div>
-
-       
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}

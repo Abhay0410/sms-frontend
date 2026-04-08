@@ -552,7 +552,7 @@ export default function StudentParentRegisterForm() {
       <div className="max-w-5xl mx-auto">
         <div className="mb-4 text-center md:text-left">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <FaUserGraduate className="text-indigo-600" /> Student & Parent
+            <FaUserGraduate className="text-indigo-600 size-8" /> Student & Parent
             Enrollment
           </h1>
           <p className="text-gray-500 text-sm font-medium mt-1">
@@ -1211,7 +1211,7 @@ export default function StudentParentRegisterForm() {
                 ) : (
                   <>
                     <FaCheck className="h-4 w-4" />
-                    Initialize Accounts
+                    Student Register
                   </>
                 )}
               </button>

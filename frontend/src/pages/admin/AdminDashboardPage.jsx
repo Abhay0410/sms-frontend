@@ -152,7 +152,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-10 animate-in fade-in duration-1000">
       {/* Dynamic Header */}
-      <div className="flex justify-between items-center bg-white p-8 rounded-2xl border border-slate-400 shadow-sm">
+      <div className="flex justify-between  items-center bg-white p-4 rounded-2xl border border-slate-400 shadow-sm">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             School Insights
@@ -175,7 +175,7 @@ export default function AdminDashboardPage() {
           <div
             key={i}
             onClick={() => navigate(card.path)}
-            className="bg-white p-4 rounded-2xl border border-slate-400 shadow-sm hover:shadow-md group hover:bg-slate-900 transition-all duration-300 flex flex-col justify-between cursor-pointer"
+            className="bg-white p-4 rounded-2xl border  border-slate-400 shadow-sm hover:shadow-md group hover:bg-slate-900 transition-all duration-300 flex flex-col justify-between cursor-pointer"
           >
             <div className="flex items-center justify-between mb-2">
               <div
@@ -253,15 +253,17 @@ export default function AdminDashboardPage() {
 
         {/* Quick Actions Panel */}
         <div className="bg-slate-900 p-10 rounded-3xl shadow-2xl relative overflow-hidden border border-slate-700">
-          <div className="absolute bottom-0 right-0 w-32 h-32 bg-red-600/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-32 h-32 bg-red-600/10 rounded-full blur-3xl text-white"></div>
           <h3 className="text-xl font-bold text-white mb-8 uppercase tracking-widest">
             Operations
           </h3>
-          <div className="space-y-4">
+          <div className="space-y-4 text-white">
             <QuickActionBtn
               icon={<FaPlus />}
               label="Register Student"
-              color="bg-blue-500"
+               
+              color="bg-blue-500 text-white "
+            
               onClick={() =>
                 navigate(`/school/${schoolSlug}/admin/register-student`)
               }
@@ -270,7 +272,8 @@ export default function AdminDashboardPage() {
             <QuickActionBtn
               icon={<FaBook />}
               label="Add Curriculum"
-              color="bg-emerald-500"
+              color="bg-emerald-500 text-white"
+             
               onClick={() =>
                 navigate(`/school/${schoolSlug}/admin/subject-management`)
               }
@@ -278,7 +281,8 @@ export default function AdminDashboardPage() {
             <QuickActionBtn
               icon={<FaWallet />}
               label="Verify Fees"
-              color="bg-rose-500"
+              color="bg-rose-500 text-white"
+            
               onClick={() =>
                 navigate(`/school/${schoolSlug}/admin/fee-history`)
               }
@@ -325,7 +329,7 @@ function QuickActionBtn({ icon, label, color, onClick }) {
         >
           {icon}
         </div>
-        <span className="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">
+        <span className="text-sm font-bold text-white group-hover:text-white transition-colors">
           {label}
         </span>
       </div>

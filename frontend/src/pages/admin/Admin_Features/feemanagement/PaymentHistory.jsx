@@ -390,12 +390,12 @@ export default function PaymentHistory() {
   }, [fetchPayments]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 p-4">
+    <div className="space-y-8 animate-in fade-in duration-700 ">
       {/* Header */}
-      <div className="bg-blue-50 p-8 rounded-2xl border-slate-400 border shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-blue-50    flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-5">
-          <div className="h-16 w-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl">
-            <FaReceipt />
+          <div className="h-16 w-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-3xl">
+            <FaReceipt size={32} />
           </div>
           <div>
             <h2 className="text-3xl font-bold text-slate-900 tracking-tight">

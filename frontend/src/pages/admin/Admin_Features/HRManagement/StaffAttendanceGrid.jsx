@@ -193,14 +193,20 @@ export default function StaffAttendanceGrid() {
     <div className="min-h-screen bg-blue-50 ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-4">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
-            Staff Attendance Matrix
-          </h1>
-          <p className="text-gray-500 text-sm font-medium flex items-center gap-2 mt-1">
-            <FaCalendarAlt className="text-orange-500" />
-            Monthly overview for {monthNames[month - 1]} {year}
-          </p>
+        <div className="flex items-start gap-3 pb-3 mb-4">
+          <div className="h-16 w-16 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
+            <FaCalendarAlt size={32} />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Staff Attendance Matrix
+            </h1>
+
+            <p className="text-gray-500 text-sm font-medium mt-1">
+              Monthly overview for {monthNames[month - 1]} {year}
+            </p>
+          </div>
         </div>
 
         {/* Stats Summary */}

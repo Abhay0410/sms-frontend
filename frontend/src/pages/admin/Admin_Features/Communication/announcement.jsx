@@ -3,15 +3,34 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api";
 import {
-  FaPlus, FaTimes, FaCheck, FaTrash, FaBell,
-  FaGraduationCap, FaUsers, FaSpinner, FaPaperclip, FaSearch,
-  FaChevronDown, FaChevronUp, FaFile, FaFilePdf, FaFileImage,
-  FaCalendarAlt, FaFilter, FaEye, FaEyeSlash, FaThumbtack,
-  FaExclamationTriangle, FaInfoCircle, FaBullhorn
+  FaPlus,
+  FaTimes,
+  FaCheck,
+  FaTrash,
+  FaBell,
+  FaGraduationCap,
+  FaUsers,
+  FaSpinner,
+  FaPaperclip,
+  FaSearch,
+  FaChevronDown,
+  FaChevronUp,
+  FaFile,
+  FaFilePdf,
+  FaFileImage,
+  FaCalendarAlt,
+  FaFilter,
+  FaEye,
+  FaEyeSlash,
+  FaThumbtack,
+  FaExclamationTriangle,
+  FaInfoCircle,
+  FaBullhorn,
 } from "react-icons/fa";
 
 // Constants
-const BACKEND_URL = import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
+const BACKEND_URL =
+  import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
 
 export default function AdminAnnouncements() {
   const [isCreating, setIsCreating] = useState(false);
@@ -55,13 +74,15 @@ export default function AdminAnnouncements() {
     try {
       setLoading(true);
       const activeFilters = {};
-      Object.keys(filters).forEach(key => {
+      Object.keys(filters).forEach((key) => {
         if (filters[key] !== "") activeFilters[key] = filters[key];
       });
 
       const params = { page: currentPage, limit: 10, ...activeFilters };
-      const res = await api.get(API_ENDPOINTS.ADMIN.ANNOUNCEMENT.ALL, { params });
-      
+      const res = await api.get(API_ENDPOINTS.ADMIN.ANNOUNCEMENT.ALL, {
+        params,
+      });
+
       const responseBody = res.data;
 
       if (Array.isArray(responseBody)) {
@@ -87,13 +108,17 @@ export default function AdminAnnouncements() {
       const res = await api.get(API_ENDPOINTS.ADMIN.ANNOUNCEMENT.CLASSES);
       const data = res.data?.data || res.data;
       if (Array.isArray(data)) setClasses(data);
-    } catch (err) { 
+    } catch (err) {
       console.error("Class load error:", err);
     }
   }, []);
 
-  useEffect(() => { loadData(); }, [loadData]);
-  useEffect(() => { loadClasses(); }, [loadClasses]);
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+  useEffect(() => {
+    loadClasses();
+  }, [loadClasses]);
 
   const handleSearch = () => setCurrentPage(1);
   const handleReset = () => {
@@ -105,41 +130,63 @@ export default function AdminAnnouncements() {
     const { name, value, type, checked } = e.target;
     if (name.startsWith("targetAudience.")) {
       const field = name.split(".")[1];
-      setCreateForm(prev => ({
+      setCreateForm((prev) => ({
         ...prev,
-        targetAudience: { ...prev.targetAudience, [field]: type === "checkbox" ? checked : value },
+        targetAudience: {
+          ...prev.targetAudience,
+          [field]: type === "checkbox" ? checked : value,
+        },
       }));
     } else {
-      setCreateForm(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+      setCreateForm((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
     }
   };
 
   const handleClassChange = (classItem, e) => {
     const { value: selection, checked } = e.target;
-    setCreateForm(prev => {
+    setCreateForm((prev) => {
       let specClasses = [...prev.targetAudience.specificClasses];
-      const existingIndex = specClasses.findIndex(sc => sc.class === classItem.id);
+      const existingIndex = specClasses.findIndex(
+        (sc) => sc.class === classItem.id,
+      );
 
       if (checked) {
         if (selection === "ALL_SECTIONS") {
-          const newEntry = { class: classItem.id, allSections: true, sections: [] };
+          const newEntry = {
+            class: classItem.id,
+            allSections: true,
+            sections: [],
+          };
           if (existingIndex === -1) specClasses.push(newEntry);
           else specClasses[existingIndex] = newEntry;
         }
       } else {
-        specClasses = specClasses.filter(sc => sc.class !== classItem.id);
+        specClasses = specClasses.filter((sc) => sc.class !== classItem.id);
       }
-      return { ...prev, targetAudience: { ...prev.targetAudience, specificClasses: specClasses } };
+      return {
+        ...prev,
+        targetAudience: {
+          ...prev.targetAudience,
+          specificClasses: specClasses,
+        },
+      };
     });
   };
 
   const handleFileChange = (e) => {
     const selected = Array.from(e.target.files);
     setFiles(selected);
-    setPreviewFiles([]); 
-    selected.forEach(file => {
+    setPreviewFiles([]);
+    selected.forEach((file) => {
       const reader = new FileReader();
-      reader.onload = () => setPreviewFiles(prev => [...prev, { src: reader.result, name: file.name }]);
+      reader.onload = () =>
+        setPreviewFiles((prev) => [
+          ...prev,
+          { src: reader.result, name: file.name },
+        ]);
       reader.readAsDataURL(file);
     });
   };
@@ -157,9 +204,12 @@ export default function AdminAnnouncements() {
     formData.append("content", createForm.content);
     formData.append("type", createForm.type);
     formData.append("priority", createForm.priority);
-    formData.append("targetAudience", JSON.stringify(createForm.targetAudience));
+    formData.append(
+      "targetAudience",
+      JSON.stringify(createForm.targetAudience),
+    );
     formData.append("isPinned", createForm.isPinned);
-    files.forEach(file => formData.append("attachments", file));
+    files.forEach((file) => formData.append("attachments", file));
 
     try {
       await api.post(API_ENDPOINTS.ADMIN.ANNOUNCEMENT.CREATE, formData);
@@ -186,14 +236,18 @@ export default function AdminAnnouncements() {
     if (!deleteConfirmationId) return;
     setDeleting(deleteConfirmationId);
     try {
-      await api.delete(API_ENDPOINTS.ADMIN.ANNOUNCEMENT.DELETE(deleteConfirmationId));
-      setAllAnnouncements(prev => prev.filter(a => a._id !== deleteConfirmationId));
+      await api.delete(
+        API_ENDPOINTS.ADMIN.ANNOUNCEMENT.DELETE(deleteConfirmationId),
+      );
+      setAllAnnouncements((prev) =>
+        prev.filter((a) => a._id !== deleteConfirmationId),
+      );
       toast.success("Announcement deleted successfully");
-    } catch (err) { 
+    } catch (err) {
       console.error("Delete error:", err);
-      toast.error("Failed to delete announcement"); 
-    } finally { 
-      setDeleting(null); 
+      toast.error("Failed to delete announcement");
+    } finally {
+      setDeleting(null);
       setDeleteConfirmationId(null);
     }
   };
@@ -202,14 +256,18 @@ export default function AdminAnnouncements() {
   const togglePinAnnouncement = async (announcement) => {
     try {
       // Send only the field to update to avoid validation errors with full object
-      await api.put(API_ENDPOINTS.ADMIN.ANNOUNCEMENT.UPDATE(announcement._id), { 
-        isPinned: !announcement.isPinned 
+      await api.put(API_ENDPOINTS.ADMIN.ANNOUNCEMENT.UPDATE(announcement._id), {
+        isPinned: !announcement.isPinned,
       });
-      
-      setAllAnnouncements(prev => 
-        prev.map(a => a._id === announcement._id ? { ...a, isPinned: !a.isPinned } : a)
+
+      setAllAnnouncements((prev) =>
+        prev.map((a) =>
+          a._id === announcement._id ? { ...a, isPinned: !a.isPinned } : a,
+        ),
       );
-      toast.success(announcement.isPinned ? "Announcement unpinned" : "Announcement pinned");
+      toast.success(
+        announcement.isPinned ? "Announcement unpinned" : "Announcement pinned",
+      );
     } catch (err) {
       console.error("Pin error:", err);
       toast.error("Failed to update announcement");
@@ -217,31 +275,38 @@ export default function AdminAnnouncements() {
   };
 
   const priorityColor = (p) => {
-    if (p === "HIGH") return "bg-gradient-to-r from-red-50 to-red-100 text-red-700 border-l-4 border-red-500";
-    if (p === "MEDIUM") return "bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border-l-4 border-amber-500";
+    if (p === "HIGH")
+      return "bg-gradient-to-r from-red-50 to-red-100 text-red-700 border-l-4 border-red-500";
+    if (p === "MEDIUM")
+      return "bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border-l-4 border-amber-500";
     return "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-l-4 border-blue-500";
   };
 
   const typeColor = (t) => {
-    switch(t) {
-      case "GENERAL": return "bg-indigo-100 text-indigo-700";
-      case "ACADEMIC": return "bg-emerald-100 text-emerald-700";
-      case "EVENT": return "bg-purple-100 text-purple-700";
-      case "URGENT": return "bg-rose-100 text-rose-700";
-      default: return "bg-slate-100 text-slate-700";
+    switch (t) {
+      case "GENERAL":
+        return "bg-indigo-100 text-indigo-700";
+      case "ACADEMIC":
+        return "bg-emerald-100 text-emerald-700";
+      case "EVENT":
+        return "bg-purple-100 text-purple-700";
+      case "URGENT":
+        return "bg-rose-100 text-rose-700";
+      default:
+        return "bg-slate-100 text-slate-700";
     }
   };
 
   // Format date nicely
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -249,14 +314,20 @@ export default function AdminAnnouncements() {
     <div className="min-h-screen bg-blue-50 font-sans ">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
-            Announcement Management
-          </h1>
-          <p className="text-gray-500 text-sm font-medium flex items-center gap-2">
-            <FaBullhorn className="text-indigo-600" />
-            Create and manage announcements for students, teachers, and parents
-          </p>
+        <div className="flex items-start gap-3 mb-8 pb-2">
+          <div className="h-16 w-16 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
+            <FaBullhorn size={32} />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Announcement Management
+            </h1>
+            <p className="text-gray-500 text-sm font-medium mt-1">
+              Create and manage announcements for students, teachers, and
+              parents
+            </p>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -328,35 +399,37 @@ export default function AdminAnnouncements() {
               <div className="flex-1 max-w-2xl">
                 <div className="relative">
                   <FaSearch className="absolute left-4 top-3.5 text-slate-400" />
-                  <input 
+                  <input
                     className="w-full pl-12 pr-4 py-3 border border-slate-400 rounded-xl outline-none focus:border-indigo-700 transition-all"
                     placeholder="Search announcements by title or content..."
                     value={filters.search}
-                    onChange={(e) => setFilters({...filters, search: e.target.value})}
+                    onChange={(e) =>
+                      setFilters({ ...filters, search: e.target.value })
+                    }
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-3">
-                <button 
+                <button
                   onClick={() => setShowFilters(!showFilters)}
                   className={`px-5 py-3 rounded-xl border border-slate-400 flex items-center gap-2 transition-all ${
-                    showFilters 
-                      ? 'bg-amber-50 text-amber-700' 
-                      : 'bg-white text-slate-700 hover:bg-slate-50'
+                    showFilters
+                      ? "bg-amber-50 text-amber-700"
+                      : "bg-white text-slate-700 hover:bg-slate-50"
                   }`}
                 >
                   <FaFilter /> Filters
                 </button>
-                
-                <button 
+
+                <button
                   onClick={handleSearch}
                   className="px-6 py-3 bg-slate-900 text-white rounded-xl hover:shadow-md transition-all"
                 >
                   Search
                 </button>
-                
-                <button 
+
+                <button
                   onClick={() => setIsCreating(true)}
                   className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-all flex items-center gap-2"
                 >
@@ -370,11 +443,15 @@ export default function AdminAnnouncements() {
               <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-400 animate-slideDown">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Type</label>
-                    <select 
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Type
+                    </label>
+                    <select
                       className="w-full px-4 py-2.5 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
                       value={filters.type}
-                      onChange={(e) => setFilters({...filters, type: e.target.value})}
+                      onChange={(e) =>
+                        setFilters({ ...filters, type: e.target.value })
+                      }
                     >
                       <option value="">All Types</option>
                       <option value="GENERAL">General</option>
@@ -383,13 +460,17 @@ export default function AdminAnnouncements() {
                       <option value="URGENT">Urgent</option>
                     </select>
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Priority</label>
-                    <select 
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Priority
+                    </label>
+                    <select
                       className="w-full px-4 py-2.5 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
                       value={filters.priority}
-                      onChange={(e) => setFilters({...filters, priority: e.target.value})}
+                      onChange={(e) =>
+                        setFilters({ ...filters, priority: e.target.value })
+                      }
                     >
                       <option value="">All Priorities</option>
                       <option value="LOW">Low</option>
@@ -397,22 +478,26 @@ export default function AdminAnnouncements() {
                       <option value="HIGH">High</option>
                     </select>
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Status</label>
-                    <select 
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Status
+                    </label>
+                    <select
                       className="w-full px-4 py-2.5 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
                       value={filters.isActive}
-                      onChange={(e) => setFilters({...filters, isActive: e.target.value})}
+                      onChange={(e) =>
+                        setFilters({ ...filters, isActive: e.target.value })
+                      }
                     >
                       <option value="">All Status</option>
                       <option value="true">Active</option>
                       <option value="false">Inactive</option>
                     </select>
                   </div>
-                  
+
                   <div className="flex items-end">
-                    <button 
+                    <button
                       onClick={handleReset}
                       className="w-full px-4 py-2.5 bg-white border border-slate-400 text-slate-700 rounded-lg hover:bg-slate-50 transition-all"
                     >
@@ -429,10 +514,14 @@ export default function AdminAnnouncements() {
             <div className="p-8 animate-fadeIn">
               <div className="flex justify-between items-center mb-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-2">Create New Announcement</h2>
-                  <p className="text-slate-500 text-sm font-medium">Fill in the details below to create an announcement</p>
+                  <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                    Create New Announcement
+                  </h2>
+                  <p className="text-slate-500 text-sm font-medium">
+                    Fill in the details below to create an announcement
+                  </p>
                 </div>
-                <button 
+                <button
                   onClick={() => setIsCreating(false)}
                   className="p-3 bg-slate-100 hover:bg-slate-200 rounded-full transition-all"
                 >
@@ -445,23 +534,27 @@ export default function AdminAnnouncements() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <div className="lg:col-span-2 space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Announcement Title</label>
-                      <input 
-                        name="title" 
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Announcement Title
+                      </label>
+                      <input
+                        name="title"
                         placeholder="Enter announcement title..."
                         className="w-full px-4 py-3.5 border border-slate-400 rounded-xl font-semibold outline-none focus:border-indigo-700 transition-all"
-                        required 
+                        required
                         onChange={handleCreateChange}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Content</label>
-                      <textarea 
-                        name="content" 
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Content
+                      </label>
+                      <textarea
+                        name="content"
                         placeholder="Enter announcement details..."
                         className="w-full px-4 py-3.5 border border-slate-400 rounded-xl h-48 resize-none outline-none focus:border-indigo-700 transition-all"
-                        required 
+                        required
                         onChange={handleCreateChange}
                       />
                     </div>
@@ -470,8 +563,10 @@ export default function AdminAnnouncements() {
                   {/* Settings Panel */}
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Type</label>
-                      <select 
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Type
+                      </label>
+                      <select
                         name="type"
                         className="w-full px-4 py-3 border border-slate-400 rounded-xl outline-none focus:border-indigo-700"
                         onChange={handleCreateChange}
@@ -484,21 +579,23 @@ export default function AdminAnnouncements() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Priority</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Priority
+                      </label>
                       <div className="grid grid-cols-3 gap-2">
-                        {["LOW", "MEDIUM", "HIGH"].map(level => (
-                          <label 
-                            key={level} 
+                        {["LOW", "MEDIUM", "HIGH"].map((level) => (
+                          <label
+                            key={level}
                             className={`flex items-center justify-center p-3 rounded-lg border cursor-pointer transition-all ${
-                              createForm.priority === level 
-                                ? 'bg-amber-50 border-amber-500 text-amber-700 font-semibold' 
-                                : 'bg-white border-slate-400 hover:bg-slate-50'
+                              createForm.priority === level
+                                ? "bg-amber-50 border-amber-500 text-amber-700 font-semibold"
+                                : "bg-white border-slate-400 hover:bg-slate-50"
                             }`}
                           >
-                            <input 
-                              type="radio" 
-                              name="priority" 
-                              value={level} 
+                            <input
+                              type="radio"
+                              name="priority"
+                              value={level}
                               checked={createForm.priority === level}
                               onChange={handleCreateChange}
                               className="hidden"
@@ -511,16 +608,20 @@ export default function AdminAnnouncements() {
 
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-400">
                       <label className="flex items-center gap-3 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          name="isPinned" 
+                        <input
+                          type="checkbox"
+                          name="isPinned"
                           checked={createForm.isPinned}
                           onChange={handleCreateChange}
                           className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
                         />
-                        <span className="text-sm font-medium text-slate-700">Pin to top</span>
+                        <span className="text-sm font-medium text-slate-700">
+                          Pin to top
+                        </span>
                       </label>
-                      <p className="text-xs text-slate-500 mt-2">Pinned announcements appear first</p>
+                      <p className="text-xs text-slate-500 mt-2">
+                        Pinned announcements appear first
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -530,21 +631,28 @@ export default function AdminAnnouncements() {
                   <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                     <FaUsers className="text-indigo-600" /> Target Audience
                   </h3>
-                  
+
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold text-slate-700 mb-3">User Groups</h4>
+                      <h4 className="font-semibold text-slate-700 mb-3">
+                        User Groups
+                      </h4>
                       <div className="space-y-3">
-                        {['students', 'teachers', 'parents'].map(role => (
-                          <label key={role} className="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-400 hover:border-indigo-500 transition-all">
-                            <input 
-                              type="checkbox" 
-                              name={`targetAudience.${role}`} 
-                              checked={createForm.targetAudience[role]} 
+                        {["students", "teachers", "parents"].map((role) => (
+                          <label
+                            key={role}
+                            className="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-400 hover:border-indigo-500 transition-all"
+                          >
+                            <input
+                              type="checkbox"
+                              name={`targetAudience.${role}`}
+                              checked={createForm.targetAudience[role]}
                               onChange={handleCreateChange}
                               className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
-                            /> 
-                            <span className="capitalize font-medium text-slate-700">{role}</span>
+                            />
+                            <span className="capitalize font-medium text-slate-700">
+                              {role}
+                            </span>
                           </label>
                         ))}
                       </div>
@@ -552,18 +660,28 @@ export default function AdminAnnouncements() {
 
                     <div>
                       <h4 className="font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                        <FaGraduationCap className="text-indigo-600" /> Specific Classes
+                        <FaGraduationCap className="text-indigo-600" /> Specific
+                        Classes
                       </h4>
                       <div className="max-h-48 overflow-y-auto space-y-2 border border-slate-400 bg-white p-4 rounded-xl">
-                        {classes.map(cls => (
+                        {classes.map((cls) => (
                           <div key={cls.id} className="pb-2 last:pb-0">
                             <label className="flex gap-3 items-center text-sm font-medium cursor-pointer p-2 rounded hover:bg-slate-50">
-                              <input 
-                                type="checkbox" 
-                                onChange={(e) => handleClassChange(cls, { target: { value: "ALL_SECTIONS", checked: e.target.checked }})}
+                              <input
+                                type="checkbox"
+                                onChange={(e) =>
+                                  handleClassChange(cls, {
+                                    target: {
+                                      value: "ALL_SECTIONS",
+                                      checked: e.target.checked,
+                                    },
+                                  })
+                                }
                                 className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
                               />
-                              <span className="text-slate-700">{cls.className}</span>
+                              <span className="text-slate-700">
+                                {cls.className}
+                              </span>
                             </label>
                           </div>
                         ))}
@@ -576,26 +694,35 @@ export default function AdminAnnouncements() {
                 <div className="border-2 border-dashed border-slate-400 p-8 rounded-2xl text-center hover:border-indigo-400 hover:bg-indigo-50 transition-all">
                   <label className="cursor-pointer">
                     <FaPaperclip className="text-4xl text-slate-400 mx-auto mb-3 group-hover:text-indigo-500" />
-                    <p className="text-slate-600 font-medium mb-1">Drop files here or click to upload</p>
-                    <p className="text-sm text-slate-500">Supports PDF, Images, Documents</p>
-                    <input 
-                      type="file" 
-                      multiple 
-                      hidden 
+                    <p className="text-slate-600 font-medium mb-1">
+                      Drop files here or click to upload
+                    </p>
+                    <p className="text-sm text-slate-500">
+                      Supports PDF, Images, Documents
+                    </p>
+                    <input
+                      type="file"
+                      multiple
+                      hidden
                       onChange={handleFileChange}
                       className="hidden"
                     />
                   </label>
-                  
+
                   {previewFiles.length > 0 && (
                     <div className="mt-6 flex flex-wrap gap-3 justify-center">
                       {previewFiles.map((f, i) => (
-                        <div key={i} className="bg-slate-900 text-white px-4 py-2 rounded-lg flex items-center gap-3 shadow-sm">
+                        <div
+                          key={i}
+                          className="bg-slate-900 text-white px-4 py-2 rounded-lg flex items-center gap-3 shadow-sm"
+                        >
                           <FaFile className="text-indigo-300" />
-                          <span className="text-sm font-medium truncate max-w-[150px]">{f.name}</span>
-                          <FaTimes 
-                            className="text-slate-300 hover:text-red-300 cursor-pointer transition-colors" 
-                            onClick={() => removeFile(i)} 
+                          <span className="text-sm font-medium truncate max-w-[150px]">
+                            {f.name}
+                          </span>
+                          <FaTimes
+                            className="text-slate-300 hover:text-red-300 cursor-pointer transition-colors"
+                            onClick={() => removeFile(i)}
                           />
                         </div>
                       ))}
@@ -605,15 +732,15 @@ export default function AdminAnnouncements() {
 
                 {/* Form Actions */}
                 <div className="flex justify-end gap-4 pt-6 border-t border-slate-400">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => setIsCreating(false)}
                     className="px-8 py-3 bg-white border border-slate-400 text-slate-700 rounded-xl hover:bg-slate-50 transition-all"
                   >
                     Cancel
                   </button>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={saving}
                     className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -634,39 +761,53 @@ export default function AdminAnnouncements() {
               {loading ? (
                 <div className="p-16 text-center">
                   <FaSpinner className="animate-spin inline text-3xl text-indigo-600 mb-4" />
-                  <p className="text-slate-600 font-medium">Loading announcements...</p>
+                  <p className="text-slate-600 font-medium">
+                    Loading announcements...
+                  </p>
                 </div>
               ) : allAnnouncements.length === 0 ? (
                 <div className="p-16 text-center">
                   <FaBell className="text-5xl text-slate-200 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-slate-700 mb-2">No announcements found</h3>
-                  <p className="text-slate-500">Create your first announcement to get started</p>
+                  <h3 className="text-xl font-bold text-slate-700 mb-2">
+                    No announcements found
+                  </h3>
+                  <p className="text-slate-500">
+                    Create your first announcement to get started
+                  </p>
                 </div>
               ) : (
                 allAnnouncements.map((ann) => (
-                  <div 
-                    key={ann._id} 
-                    className={`p-6 hover:bg-slate-50 transition-all group ${ann.isPinned ? 'bg-amber-50/50' : ''}`}
+                  <div
+                    key={ann._id}
+                    className={`p-6 hover:bg-slate-50 transition-all group ${ann.isPinned ? "bg-amber-50/50" : ""}`}
                   >
                     <div className="flex justify-between items-start gap-6">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-3">
-                          <button 
+                          <button
                             onClick={() => togglePinAnnouncement(ann)}
-                            className={`transition-all ${ann.isPinned ? 'text-indigo-600 hover:text-indigo-800' : 'text-slate-300 hover:text-indigo-400'}`}
-                            title={ann.isPinned ? "Unpin announcement" : "Pin to top"}
+                            className={`transition-all ${ann.isPinned ? "text-indigo-600 hover:text-indigo-800" : "text-slate-300 hover:text-indigo-400"}`}
+                            title={
+                              ann.isPinned ? "Unpin announcement" : "Pin to top"
+                            }
                           >
-                            <FaThumbtack className={`text-xl ${ann.isPinned ? '' : 'transform -rotate-45'}`} />
+                            <FaThumbtack
+                              className={`text-xl ${ann.isPinned ? "" : "transform -rotate-45"}`}
+                            />
                           </button>
                           <div className="flex-1">
                             <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-700 transition-colors">
                               {ann.title}
                             </h3>
                             <div className="flex items-center gap-3 mt-1">
-                              <span className={`${priorityColor(ann.priority)} px-3 py-1 rounded-lg text-xs font-bold uppercase`}>
+                              <span
+                                className={`${priorityColor(ann.priority)} px-3 py-1 rounded-lg text-xs font-bold uppercase`}
+                              >
                                 {ann.priority}
                               </span>
-                              <span className={`${typeColor(ann.type)} px-3 py-1 rounded-lg text-xs font-medium`}>
+                              <span
+                                className={`${typeColor(ann.type)} px-3 py-1 rounded-lg text-xs font-medium`}
+                              >
                                 {ann.type}
                               </span>
                               <span className="text-slate-400 text-xs flex items-center gap-1">
@@ -676,7 +817,9 @@ export default function AdminAnnouncements() {
                           </div>
                         </div>
 
-                        <p className={`text-slate-600 mb-4 ${expandedAnnouncement === ann._id ? '' : 'line-clamp-2'}`}>
+                        <p
+                          className={`text-slate-600 mb-4 ${expandedAnnouncement === ann._id ? "" : "line-clamp-2"}`}
+                        >
                           {ann.content}
                         </p>
 
@@ -700,67 +843,89 @@ export default function AdminAnnouncements() {
                         </div>
 
                         {/* Attachments */}
-                        {expandedAnnouncement === ann._id && ann.attachments?.length > 0 && (
-                          <div className="mt-4 p-4 bg-white rounded-xl border border-slate-400 shadow-sm animate-fadeIn">
-                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                              <FaPaperclip /> Attachments ({ann.attachments.length})
-                            </h4>
-                            <div className="flex flex-wrap gap-3">
-                              {ann.attachments.map((file, idx) => {
-                                const fileUrl = file?.fileUrl || "";
-                                const fileLink = fileUrl.startsWith('http') 
-                                  ? fileUrl 
-                                  : `${BACKEND_URL}${fileUrl}`;
-                                
-                                return (
-                                  <a 
-                                    key={idx}
-                                    href={fileLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="flex items-center gap-2 p-3 bg-white border border-slate-400 rounded-lg hover:border-indigo-500 hover:shadow-sm transition-all group/item"
-                                  >
-                                    <div className={`p-2 rounded-lg ${
-                                      file.fileType === 'image' 
-                                        ? 'bg-rose-100 text-rose-600' 
-                                        : 'bg-blue-100 text-blue-600'
-                                    }`}>
-                                      {file.fileType === 'image' ? <FaFileImage /> : <FaFilePdf />}
-                                    </div>
-                                    <div>
-                                      <p className="text-sm font-medium text-slate-700 group-hover/item:text-indigo-700">
-                                        {file.fileName}
-                                      </p>
-                                      <p className="text-xs text-slate-500">
-                                        {file.fileSize ? `${(file.fileSize / 1024).toFixed(1)} KB` : ''}
-                                      </p>
-                                    </div>
-                                  </a>
-                                );
-                              })}
+                        {expandedAnnouncement === ann._id &&
+                          ann.attachments?.length > 0 && (
+                            <div className="mt-4 p-4 bg-white rounded-xl border border-slate-400 shadow-sm animate-fadeIn">
+                              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <FaPaperclip /> Attachments (
+                                {ann.attachments.length})
+                              </h4>
+                              <div className="flex flex-wrap gap-3">
+                                {ann.attachments.map((file, idx) => {
+                                  const fileUrl = file?.fileUrl || "";
+                                  const fileLink = fileUrl.startsWith("http")
+                                    ? fileUrl
+                                    : `${BACKEND_URL}${fileUrl}`;
+
+                                  return (
+                                    <a
+                                      key={idx}
+                                      href={fileLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="flex items-center gap-2 p-3 bg-white border border-slate-400 rounded-lg hover:border-indigo-500 hover:shadow-sm transition-all group/item"
+                                    >
+                                      <div
+                                        className={`p-2 rounded-lg ${
+                                          file.fileType === "image"
+                                            ? "bg-rose-100 text-rose-600"
+                                            : "bg-blue-100 text-blue-600"
+                                        }`}
+                                      >
+                                        {file.fileType === "image" ? (
+                                          <FaFileImage />
+                                        ) : (
+                                          <FaFilePdf />
+                                        )}
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-medium text-slate-700 group-hover/item:text-indigo-700">
+                                          {file.fileName}
+                                        </p>
+                                        <p className="text-xs text-slate-500">
+                                          {file.fileSize
+                                            ? `${(file.fileSize / 1024).toFixed(1)} KB`
+                                            : ""}
+                                        </p>
+                                      </div>
+                                    </a>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
                       </div>
 
                       {/* Action Buttons */}
                       <div className="flex flex-col gap-2">
-                        <button 
-                          onClick={() => setExpandedAnnouncement(expandedAnnouncement === ann._id ? null : ann._id)} 
+                        <button
+                          onClick={() =>
+                            setExpandedAnnouncement(
+                              expandedAnnouncement === ann._id ? null : ann._id,
+                            )
+                          }
                           className={`p-3 rounded-xl transition-all ${
-                            expandedAnnouncement === ann._id 
-                              ? 'bg-slate-900 text-white' 
-                              : 'bg-white border border-slate-400 text-slate-700 hover:bg-slate-50'
+                            expandedAnnouncement === ann._id
+                              ? "bg-slate-900 text-white"
+                              : "bg-white border border-slate-400 text-slate-700 hover:bg-slate-50"
                           }`}
-                          title={expandedAnnouncement === ann._id ? "Collapse" : "Expand"}
+                          title={
+                            expandedAnnouncement === ann._id
+                              ? "Collapse"
+                              : "Expand"
+                          }
                         >
-                          {expandedAnnouncement === ann._id ? <FaChevronUp /> : <FaChevronDown />}
+                          {expandedAnnouncement === ann._id ? (
+                            <FaChevronUp />
+                          ) : (
+                            <FaChevronDown />
+                          )}
                         </button>
-                        
-                        <button 
-                          onClick={() => handleDelete(ann._id)} 
-                          disabled={deleting === ann._id} 
+
+                        <button
+                          onClick={() => handleDelete(ann._id)}
+                          disabled={deleting === ann._id}
                           className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 hover:text-red-700 transition-all disabled:opacity-50"
                           title="Delete announcement"
                         >
@@ -782,30 +947,34 @@ export default function AdminAnnouncements() {
           {!isCreating && totalPages > 1 && (
             <div className="border-t border-slate-400 p-6">
               <div className="flex justify-center gap-2">
-                <button 
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
                   disabled={currentPage === 1}
                   className="px-4 py-2.5 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
-                
+
                 {[...Array(totalPages)].map((_, i) => (
-                  <button 
-                    key={i} 
-                    onClick={() => setCurrentPage(i + 1)} 
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
                     className={`w-10 h-10 rounded-lg font-medium transition-all ${
-                      currentPage === i + 1 
-                        ? 'bg-amber-500 text-white shadow-sm' 
-                        : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
+                      currentPage === i + 1
+                        ? "bg-amber-500 text-white shadow-sm"
+                        : "bg-slate-200 text-slate-800 hover:bg-slate-300"
                     }`}
                   >
                     {i + 1}
                   </button>
                 ))}
-                
-                <button 
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className="px-4 py-2.5 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -824,9 +993,12 @@ export default function AdminAnnouncements() {
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FaTrash className="text-2xl text-red-600" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Announcement?</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">
+                  Delete Announcement?
+                </h3>
                 <p className="text-slate-500">
-                  Are you sure you want to delete this announcement? This action cannot be undone.
+                  Are you sure you want to delete this announcement? This action
+                  cannot be undone.
                 </p>
               </div>
               <div className="flex gap-3">

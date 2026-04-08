@@ -15,6 +15,7 @@ import {
   FaExclamationTriangle,
   FaUserClock,
   FaUserInjured,
+  FaCalendarCheck,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
@@ -307,14 +308,20 @@ export default function LeaveRequests() {
     <div className="space-y-6 bg-blue-50  min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-            Staff Leave Management
-          </h1>
-          <p className="text-slate-600 text-sm font-medium mt-1 flex items-center gap-2">
-            <FaCalendarAlt className="text-amber-500" />
-            Review and process staff leave applications
-          </p>
+        <div className="flex items-start gap-3 pb-3">
+          <div className="h-16 w-16 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center">
+            <FaCalendarCheck size={32} />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Staff Leave Management
+            </h1>
+
+            <p className="text-slate-600 text-sm font-medium mt-1">
+              Review and process staff leave applications
+            </p>
+          </div>
         </div>
 
         <button
@@ -661,8 +668,7 @@ export default function LeaveRequests() {
           <div className="bg-slate-50 border-t border-slate-400 p-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-slate-600">
-                Showing{" "}
-                <span className="font-semibold">{requests.length}</span>{" "}
+                Showing <span className="font-semibold">{requests.length}</span>{" "}
                 of <span className="font-semibold">{pagination.total}</span>{" "}
                 requests
               </div>

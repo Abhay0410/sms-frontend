@@ -463,7 +463,7 @@ export default function TeacherRegisterForm() {
       <div className="max-w-5xl mx-auto">
         <div className="mb-4 text-center md:text-left">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <FaChalkboardTeacher className="text-indigo-600" /> Teacher
+            <FaChalkboardTeacher className="text-indigo-600 size-10" /> Teacher
             Enrollment
           </h1>
           <p className="text-slate-500 text-sm font-medium mt-1">
@@ -803,7 +803,7 @@ export default function TeacherRegisterForm() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase text-slate-500">
+                    <label className="text-[10px] font-bold uppercase text-slate-400">
                       Universal Account No (UAN)
                     </label>
                     {/* <input
@@ -835,7 +835,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase text-slate-500">
+                    <label className="text-[10px] font-bold uppercase text-slate-400">
                       PF Member ID
                     </label>
                     <input
@@ -846,7 +846,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase text-slate-500">
+                    <label className="text-[10px] font-bold uppercase text-slate-400">
                       Payment Mode
                     </label>
                     <select
@@ -998,7 +998,7 @@ export default function TeacherRegisterForm() {
                 ) : (
                   <>
                     <FaCheck className="h-4 w-4" />
-                    Initialize Account
+                    Enroll Teacher
                   </>
                 )}
               </button>

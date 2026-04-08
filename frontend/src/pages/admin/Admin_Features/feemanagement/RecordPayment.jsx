@@ -14,6 +14,7 @@ import {
   FaDownload,
   FaCheck,
   FaTimes,
+   FaHandHoldingUsd,
   FaExclamationCircle,
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
@@ -776,19 +777,27 @@ export default function RecordPayment() {
   `;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <style>{scrollbarStyles}</style>
 
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white p-6 rounded-xl border border-slate-400 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-            Fee Collection
-          </h1>
-          <p className="text-sm font-medium text-gray-600 mt-1">
-            Record payments and manage transactions
-          </p>
-        </div>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6   transition-all duration-300 hover:scale-[1.02]">
+        <div className="flex items-start gap-3">
+  
+  <div className="h-16 w-16 bg-green-200 text-green-700 rounded-xl flex items-center justify-center">
+    <FaHandHoldingUsd size={32} />
+  </div>
+
+  <div>
+    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+      Fee Collection
+    </h1>
+    <p className="text-sm font-medium text-gray-600 mt-1">
+      Record payments and manage transactions
+    </p>
+  </div>
+
+</div>
 
         <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-400 shadow-sm">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-2">
@@ -801,7 +810,7 @@ export default function RecordPayment() {
               setAcademicYear(value);
               localStorage.setItem("academicYear", value); // ✅ save
             }}
-            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-slate-900"
+            className="px-4 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-medium text-slate-900"
           >
             {session?.map((s) => (
               <option key={s._id} value={`${s.startYear}-${s.endYear}`}>

@@ -30,10 +30,10 @@ export default function TimetableManagement() {
   const [selectedSection, setSelectedSection] = useState("");
   const [timetableData, setTimetableData] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   const [academicYear, setAcademicYear] = useState(() => {
-  return localStorage.getItem("academicYear") || getCurrentAcademicYear();
-});
+    return localStorage.getItem("academicYear") || getCurrentAcademicYear();
+  });
 
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showPeriodModal, setShowPeriodModal] = useState(false);
@@ -299,13 +299,13 @@ export default function TimetableManagement() {
       // ✅ Active session select
 
       if (!localStorage.getItem("academicYear")) {
-  const active = sessionData.find((s) => s?.isActive);
-  if (active) {
-    const year = `${active.startYear}-${active.endYear}`;
-    setAcademicYear(year);
-    localStorage.setItem("academicYear", year);
-  }
-}
+        const active = sessionData.find((s) => s?.isActive);
+        if (active) {
+          const year = `${active.startYear}-${active.endYear}`;
+          setAcademicYear(year);
+          localStorage.setItem("academicYear", year);
+        }
+      }
     } catch (err) {
       console.error("Session fetch error", err);
     }
@@ -503,22 +503,28 @@ export default function TimetableManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50  px-4 md:px-6 pb-6 ">
+    <div className="min-h-screen bg-blue-50   ">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className=" flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
-              Timetable Management
-            </h2>
-            <p className="text-sm text-gray-500 font-medium flex items-center gap-2 mt-1">
-              <FaClock className="text-teal-600" />
-              Create and manage class schedules
-            </p>
+          <div className="flex items-start gap-3">
+            <div className="h-16 w-16 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center">
+              <FaClock size={32} />
+            </div>
+
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+                Timetable Management
+              </h2>
+
+              <p className="text-sm text-gray-500 font-medium">
+                Create and manage class schedules
+              </p>
+            </div>
           </div>
           <div className="flex flex-wrap gap-3 items-center">
             <select
-            value={academicYear}
+              value={academicYear}
               onChange={(e) => {
                 const value = e.target.value;
                 setAcademicYear(value);

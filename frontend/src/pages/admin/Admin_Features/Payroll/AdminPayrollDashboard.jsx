@@ -133,6 +133,7 @@ import {
   FaArrowRight,
   FaCheckCircle,
   FaTools,
+  FaChartLine,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -192,13 +193,19 @@ export default function AdminPayrollDashboard() {
   return (
     <div className=" space-y-10">
       <div className="flex justify-between items-end ">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
-            Payroll Command Center
-          </h1>
-          <p className="text-gray-500 font-medium text-sm  mt-1">
-            Real-time Financial Overview
-          </p>
+        <div className="flex items-start gap-3 pb-2">
+          <div className="h-16 w-16 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
+            <FaChartLine size={32} />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+              Payroll Command Center
+            </h1>
+            <p className="text-gray-500 font-medium text-sm mt-1">
+              Real-time Financial Overview
+            </p>
+          </div>
         </div>
         <div className="bg-indigo-50 px-6 py-3 rounded-2xl border border-indigo-100">
           <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
@@ -340,19 +347,17 @@ export default function AdminPayrollDashboard() {
               Prev
             </button>
 
-         {visiblePages.map((page) => (
-  <button
-    key={page}
-    onClick={() => setCurrentPage(page)}
-    className={`px-4 py-2 border rounded-lg text-sm ${
-      currentPage === page
-        ? "bg-indigo-600 text-white"
-        : "bg-white"
-    }`}
-  >
-    {page}
-  </button>
-))}
+            {visiblePages.map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-4 py-2 border rounded-lg text-sm ${
+                  currentPage === page ? "bg-indigo-600 text-white" : "bg-white"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
 
             <button
               onClick={() =>
