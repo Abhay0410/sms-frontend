@@ -336,7 +336,7 @@ export default function ClassManagement() {
     <div className="min-h-screen bg-blue-50   ">
       <div className="mx-auto max-w-7xl">
         {/* Header Section - Professional Title */}
-        <div className="">
+        <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-14 w-14 bg-indigo-100 rounded-xl flex items-center justify-center">
               <FaBuilding className="text-indigo-600 text-xl size-10 " />

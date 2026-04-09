@@ -231,7 +231,7 @@ export default function LibraryInventory() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-start gap-3 mb-4 pb-3">
-          <div className="h-16 w-16 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
+          <div className="h-16 w-16 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
             <FaBook size={32} />
           </div>
 
@@ -307,7 +307,7 @@ export default function LibraryInventory() {
                   <input
                     type="text"
                     placeholder="Search by title, author, ISBN, or serial code..."
-                    className="w-full pl-12 pr-4 py-3 bg-white border border-slate-400 rounded-xl outline-none focus:border-orange-500 transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-white border border-slate-400 rounded-xl outline-none focus:border-blue-500 transition-all"
                     value={filters.search}
                     onChange={(e) =>
                       setFilters({ ...filters, search: e.target.value })
@@ -319,7 +319,7 @@ export default function LibraryInventory() {
               {/* Control Buttons */}
               <div className="flex gap-3">
                 <select
-                  className="bg-white border border-slate-400 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500"
+                  className="bg-white border border-slate-400 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-blue-500"
                   value={filters.category}
                   onChange={(e) =>
                     setFilters({ ...filters, category: e.target.value })
@@ -335,7 +335,7 @@ export default function LibraryInventory() {
                 </select>
 
                 <select
-                  className="bg-white border border-slate-400 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500"
+                  className="bg-white border border-slate-400 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-blue-500"
                   value={filters.status}
                   onChange={(e) =>
                     setFilters({ ...filters, status: e.target.value })
@@ -351,7 +351,7 @@ export default function LibraryInventory() {
 
                 <button
                   onClick={() => setShowAddModal(true)}
-                  className="px-6 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl font-bold hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+                  className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
                 >
                   <FaPlus /> Add Book
                 </button>
@@ -430,7 +430,7 @@ export default function LibraryInventory() {
                             {book.category?.charAt(0)}
                           </div>
                           <div className="flex-1">
-                            <p className="font-bold text-slate-900 group-hover:text-orange-700 transition-colors">
+                            <p className="font-bold text-slate-900 group-hover:text-indigo-700 transition-colors">
                               {book.title}
                             </p>
                             <p className="text-sm text-slate-600 mb-1">
@@ -539,7 +539,7 @@ export default function LibraryInventory() {
                       onClick={() => setCurrentPage(i + 1)}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         currentPage === i + 1
-                          ? "bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-sm"
+                          ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-sm"
                           : "bg-white text-slate-600 border border-slate-400 hover:bg-slate-50"
                       }`}
                     >
@@ -566,7 +566,7 @@ export default function LibraryInventory() {
         {/* ✅ 4. CLEANED STATUS LEGEND (Removed unused statuses) */}
         <div className="mt-8 p-6 bg-white rounded-2xl border border-slate-400 shadow-sm">
           <h4 className="font-bold text-slate-700 mb-4 flex items-center gap-2">
-            <FaChartBar className="text-orange-500" /> Status Legend
+            <FaChartBar className="text-indigo-500" /> Status Legend
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-400">
@@ -598,7 +598,7 @@ export default function LibraryInventory() {
       {showAddModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl my-8">
-            <div className="p-6 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-t-2xl">
+            <div className="p-6 bg-slate-800 text-white rounded-t-2xl">
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-2xl font-bold">
@@ -680,7 +680,7 @@ export default function LibraryInventory() {
                       }
                       placeholder="Library serial code"
                     />
-                    <FaBarcode className="absolute right-3 top-3.5 text-orange-500" />
+                    <FaBarcode className="absolute right-3 top-3.5 text-orange-400" />
                   </div>
                 </div>
 
@@ -759,7 +759,7 @@ export default function LibraryInventory() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl font-bold hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-500 text-white rounded-xl font-bold hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {saving ? (
                     <span className="flex items-center justify-center gap-2">

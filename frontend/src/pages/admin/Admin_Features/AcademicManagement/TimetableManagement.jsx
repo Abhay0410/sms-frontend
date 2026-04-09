@@ -700,7 +700,7 @@ export default function TimetableManagement() {
                       setShowPeriodModal(true);
                     }}
                     disabled={timetableData.status === "published"}
-                    className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="flex items-center gap-2 rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     <FaPlus />
                     Add Period
@@ -1492,13 +1492,13 @@ function PeriodModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4  ">
       <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto ">
-        <div className="border-b border-slate-100 p-6 bg-gradient-to-r from-teal-50 to-cyan-50 sticky top-0 z-10">
+        <div className="border-b border-slate-100 p-6 bg-slate-800 sticky top-0 z-10">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-slate-900">
+              <h3 className="text-2xl font-bold text-white">
                 {editingPeriod?._id ? "Edit Period" : "Add Period"}
               </h3>
-              <p className="text-sm text-slate-600 mt-1">{form.day}</p>
+              <p className="text-sm text-gray-100 mt-1">{form.day}</p>
             </div>
             <button
               onClick={onClose}
@@ -1511,7 +1511,7 @@ function PeriodModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Break Period Checkbox */}
-          <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
+          <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200">
             <input
               type="checkbox"
               checked={form.isBreak}
@@ -1640,7 +1640,7 @@ function PeriodModal({
 
               {/* Teacher assignment info */}
               <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
-                <p className="text-xs text-blue-700">
+                <p className="text-xs text-slate-700">
                   <strong>Note:</strong> Teacher will be automatically assigned
                   based on subject selection from Teacher Management.
                   {form.subject && !subjectTeachers[form.subject] && (
@@ -1681,7 +1681,7 @@ function PeriodModal({
             <button
               type="submit"
               disabled={loading || fetchLoading}
-              className="flex-1 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 px-6 py-3 font-semibold text-white shadow-lg hover:shadow-xl disabled:opacity-50 transition-all"
+              className="flex-1 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white shadow-lg hover:shadow-xl disabled:opacity-50 transition-all"
             >
               {loading ? "Saving..." : editingPeriod?._id ? "Update" : "Add"}
             </button>

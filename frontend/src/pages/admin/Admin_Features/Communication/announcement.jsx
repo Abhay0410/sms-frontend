@@ -431,7 +431,7 @@ export default function AdminAnnouncements() {
 
                 <button
                   onClick={() => setIsCreating(true)}
-                  className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-all flex items-center gap-2"
+                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all flex items-center gap-2"
                 >
                   <FaPlus /> New Announcement
                 </button>

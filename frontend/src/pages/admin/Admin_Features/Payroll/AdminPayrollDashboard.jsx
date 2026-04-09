@@ -272,7 +272,7 @@ export default function AdminPayrollDashboard() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-white text-slate-400 text-[10px] uppercase font-bold tracking-[0.2em]">
+            <thead className="bg-white text-slate-500 text-[10px] uppercase font-bold tracking-[0.1em]">
               <tr className="border-b border-slate-400">
                 <th className="p-8">Member</th>
                 <th className="p-8">Structure</th>
@@ -287,10 +287,10 @@ export default function AdminPayrollDashboard() {
                   className="hover:bg-slate-50/80 transition-all group"
                 >
                   <td className="p-8">
-                    <p className="text-slate-900 uppercase text-sm">
+                    <p className="text-slate-900 uppercase text-sm ">
                       {staff.name}
                     </p>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">
+                    <p className="text-[10px] uppercase text-slate-400  ">
                       {staff.department}
                     </p>
                   </td>

@@ -309,7 +309,7 @@ export default function LeaveRequests() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-3 pb-3">
-          <div className="h-16 w-16 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center">
+          <div className="h-16 w-16 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
             <FaCalendarCheck size={32} />
           </div>
 
@@ -407,7 +407,7 @@ export default function LeaveRequests() {
                 placeholder="Search by name, reason, or leave type..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-100 outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-amber-100 outline-none"
               />
             </div>
           </div>
@@ -417,7 +417,7 @@ export default function LeaveRequests() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-400 focus:border-amber-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-400 focus:border-indigo-500 outline-none"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -432,7 +432,7 @@ export default function LeaveRequests() {
             <select
               value={leaveTypeFilter}
               onChange={(e) => setLeaveTypeFilter(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-400 focus:border-amber-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-400 focus:border-indigo-500 outline-none"
             >
               {leaveTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -863,25 +863,25 @@ export default function LeaveRequests() {
       {showConfirmationModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-[#FFFFFF] rounded-2xl w-full max-w-md shadow-2xl">
-            <div className="p-6 border-b border-slate-200">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-4">
+            <div className="p-6 border-b border-slate-200  bg-slate-800">
+              <div className="flex items-start justify-between ">
+                <div className="flex items-center gap-4 ">
                   <div
-                    className={`p-3 rounded-xl ${confirmationData.action === "APPROVED" ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}
+                    className={`p-3 rounded-xl ${confirmationData.action === "APPROVED" ? "bg-emerald-100 text-emerald-700" : "bg-white text-rose-700"}`}
                   >
                     {confirmationData.action === "APPROVED" ? (
-                      <FaCheckCircle className="h-8 w-8" />
+                      <FaCheckCircle className="h-8 w-8 " />
                     ) : (
                       <FaTimesCircle className="h-8 w-8" />
                     )}
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">
+                    <h3 className="text-xl font-bold text-white">
                       {confirmationData.action === "APPROVED"
                         ? "Approve Leave Request"
                         : "Reject Leave Request"}
                     </h3>
-                    <p className="text-slate-600 mt-1">
+                    <p className="text-gray-100 mt-1">
                       For: {confirmationData.teacherName}
                     </p>
                   </div>
@@ -897,14 +897,14 @@ export default function LeaveRequests() {
 
             <div className="p-6">
               <div className="space-y-4">
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
                   <div className="flex items-start gap-3">
-                    <FaExclamationTriangle className="text-amber-600 mt-0.5 flex-shrink-0" />
+                    <FaExclamationTriangle className="text-slate-600 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-amber-800">
+                      <p className="text-sm font-medium text-slate-800">
                         Confirm Action
                       </p>
-                      <p className="text-sm text-amber-700 mt-1">
+                      <p className="text-sm text-slate-700 mt-1">
                         Are you sure you want to{" "}
                         {confirmationData.action.toLowerCase()} this leave
                         request? This action cannot be undone.
@@ -957,7 +957,7 @@ export default function LeaveRequests() {
                   className={`flex-1 py-3.5 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 ${
                     confirmationData.action === "APPROVED"
                       ? "bg-gradient-to-r from-emerald-700 to-green-700 hover:from-emerald-800 hover:to-green-800"
-                      : "bg-gradient-to-r from-rose-700 to-pink-700 hover:from-rose-800 hover:to-pink-800"
+                      : "bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700"
                   } ${processingId === confirmationData.id ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   {processingId === confirmationData.id ? (

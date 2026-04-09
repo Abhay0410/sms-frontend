@@ -236,21 +236,19 @@ export default function SetClassFees() {
         className="flex flex-col md:flex-row justify-between items-start md:items-center  pb-4 gap-4"
       >
         <div className="flex items-start gap-3">
-  
-  <div className="h-16 w-16 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center">
-    <FaLayerGroup size={32} />
-  </div>
+          <div className="h-16 w-16 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
+            <FaLayerGroup size={32} />
+          </div>
 
-  <div>
-    <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-1">
-      Class Fee Management
-    </h2>
-    <p className="text-slate-600 text-sm font-medium mt-1">
-      Configure automated installments for all students
-    </p>
-  </div>
-
-</div>
+          <div>
+            <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-1">
+              Class Fee Management
+            </h2>
+            <p className="text-slate-600 text-sm font-medium mt-1">
+              Configure automated installments for all students
+            </p>
+          </div>
+        </div>
         <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-400 shadow-sm">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
             Session:
@@ -365,7 +363,7 @@ export default function SetClassFees() {
               exit={{ scale: 0.95, opacity: 0 }}
               className="bg-white rounded-[3rem] shadow-2xl max-w-5xl w-full max-h-[92vh] overflow-hidden flex flex-col"
             >
-              <div className="p-8 border-b border-slate-400 flex justify-between items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+              <div className="p-8 border-b border-slate-400 flex justify-between items-center bg-slate-700 text-white">
                 <div>
                   <h3 className="text-2xl font-bold tracking-tight">
                     Fee Setup: {selectedClass.className}
@@ -398,7 +396,7 @@ export default function SetClassFees() {
                       onClick={addFeeRow}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.98 }}
-                      className="px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                      className="px-4 py-3 bg-indigo-600 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                     >
                       <FaPlus /> Add Fee Item
                     </motion.button>
@@ -575,7 +573,7 @@ export default function SetClassFees() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="flex-[2] bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 rounded-xl font-bold shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-70 flex items-center justify-center gap-3"
+                    className="flex-[2] bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-70 flex items-center justify-center gap-3"
                   >
                     {saving ? (
                       <>

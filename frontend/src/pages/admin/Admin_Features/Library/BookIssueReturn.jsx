@@ -147,7 +147,7 @@ export default function BookIssueReturn() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-start gap-3 mb-8">
-          <div className="h-16 w-16 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
+          <div className="h-16 w-16 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
             <FaBookReader size={32} />
           </div>
 
@@ -214,7 +214,7 @@ export default function BookIssueReturn() {
                   onClick={() => setActiveTab("ISSUE")}
                   className={`flex-1 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 ${
                     activeTab === "ISSUE"
-                      ? "bg-white shadow-sm text-orange-600 border border-slate-400"
+                      ? "bg-white shadow-sm text-emerald-600 border border-slate-400"
                       : "text-slate-500"
                   }`}
                 >
@@ -241,7 +241,7 @@ export default function BookIssueReturn() {
                           key={type}
                           type="button"
                           onClick={() => setUserType(type)}
-                          className={`px-6 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${userType === type ? "bg-white text-orange-600 shadow-sm border border-slate-400" : "text-slate-500"}`}
+                          className={`px-6 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${userType === type ? "bg-white text-emerald-700 shadow-sm border border-slate-400" : "text-slate-500"}`}
                         >
                           {type}
                         </button>
@@ -263,7 +263,7 @@ export default function BookIssueReturn() {
                               userId: e.target.value,
                             })
                           }
-                          className="w-full pl-12 pr-4 py-4 bg-white border border-slate-400 rounded-2xl focus:border-orange-500 outline-none transition-all font-bold"
+                          className="w-full pl-12 pr-4 py-4 bg-white border border-slate-400 rounded-2xl focus:border-emerald-500 outline-none transition-all font-bold"
                           placeholder={`Scan or enter ${userType} ID`}
                         />
                       </div>
@@ -283,7 +283,7 @@ export default function BookIssueReturn() {
                               dueDate: e.target.value,
                             })
                           }
-                          className="w-full mt-2 p-4 bg-white border border-slate-400 rounded-2xl focus:border-orange-500 outline-none font-bold"
+                          className="w-full mt-2 p-4 bg-white border border-slate-400 rounded-2xl focus:border-emerald-500 outline-none font-bold"
                         />
                       </div>
                       <div>
@@ -299,7 +299,7 @@ export default function BookIssueReturn() {
                               serialCode: e.target.value,
                             })
                           }
-                          className="w-full mt-2 p-4 bg-white border border-slate-400 rounded-2xl focus:border-orange-500 outline-none font-bold"
+                          className="w-full mt-2 p-4 bg-white border border-slate-400 rounded-2xl focus:border-emerald-500 outline-none font-bold"
                           placeholder="BK-000"
                         />
                       </div>
@@ -307,7 +307,7 @@ export default function BookIssueReturn() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg shadow-slate-200"
+                      className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-slate-200"
                     >
                       {loading ? (
                         <FaSpinner className="animate-spin mx-auto" />

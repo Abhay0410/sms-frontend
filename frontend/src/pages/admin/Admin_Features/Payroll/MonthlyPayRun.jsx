@@ -502,7 +502,7 @@ export default function MonthlyPayRun() {
         
         <div className="flex items-start gap-3">
 
-  <div className="h-16 w-16 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center">
+  <div className="h-16 w-16 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center">
     <FaCogs size={32} />
   </div>
 
@@ -547,7 +547,7 @@ export default function MonthlyPayRun() {
           <button
             onClick={handleBulkGenerate}
             disabled={loading || stats.length === 0 || processingId === "BULK"}
-            className="flex items-center gap-3 bg-purple-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-3 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {processingId === "BULK" ? (
               <>
@@ -571,7 +571,7 @@ export default function MonthlyPayRun() {
 
       {/* TABLE 1: PENDING FOR GENERATION */}
       <section>
-        <h3 className="text-xs font-bold uppercase text-amber-700 tracking-widest mb-4 flex items-center gap-2">
+        <h3 className="text-xs font-bold uppercase text-indigo-700 tracking-widest mb-4 flex items-center gap-2">
           <FaSpinner className="animate-pulse" /> Pending Generation (
           {stats.length})
         </h3>

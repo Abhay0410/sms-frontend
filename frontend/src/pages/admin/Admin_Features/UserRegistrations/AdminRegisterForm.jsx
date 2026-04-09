@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaCheck, FaSpinner, FaUserShield } from "react-icons/fa";
@@ -93,7 +93,11 @@ const AdminRegisterForm = () => {
       return;
     }
     setSchool(JSON.parse(stored));
+
+    
   }, [navigate]);
+
+  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -286,7 +290,7 @@ const AdminRegisterForm = () => {
             {/* Personal Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormInput 
-                label="Staff Member Full Name *" 
+                label="Staff Member Full Name " 
                 name="name" 
                 value={form.name} 
                 onChange={handleChange} 
@@ -295,7 +299,7 @@ const AdminRegisterForm = () => {
                 error={errors.name}
               />
               <FormInput 
-                label="Work Email Address *" 
+                label="Work Email Address " 
                 name="email" 
                 type="email" 
                 value={form.email} 
@@ -305,7 +309,7 @@ const AdminRegisterForm = () => {
                 error={errors.email}
               />
               <FormInput 
-                label="Contact Number *" 
+                label="Contact Number " 
                 name="phone" 
                 value={form.phone} 
                 onChange={handleChange} 

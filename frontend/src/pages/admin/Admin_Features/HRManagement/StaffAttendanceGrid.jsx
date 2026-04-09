@@ -194,7 +194,7 @@ export default function StaffAttendanceGrid() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-start gap-3 pb-3 mb-4">
-          <div className="h-16 w-16 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
+          <div className="h-16 w-16 bg-emerald-100 text-green-600 rounded-xl flex items-center justify-center">
             <FaCalendarAlt size={32} />
           </div>
 
@@ -275,7 +275,7 @@ export default function StaffAttendanceGrid() {
                   <input
                     type="text"
                     placeholder="Search staff by name or ID..."
-                    className="w-full pl-12 pr-4 py-3 bg-white border border-slate-400 rounded-xl outline-none focus:border-orange-500 transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-white border border-slate-400 rounded-xl outline-none focus:border-emerald-500 transition-all"
                     value={searchTerm}
                     onChange={(e) => {
                       setSearchTerm(e.target.value);
@@ -291,7 +291,7 @@ export default function StaffAttendanceGrid() {
                   onClick={() => setShowFilters(!showFilters)}
                   className={`px-5 py-3 rounded-xl border flex items-center gap-2 transition-all ${
                     showFilters
-                      ? "bg-amber-50 border-amber-300 text-amber-700"
+                      ? "bg-amber-50 border-emerald-300 text-emerald-700"
                       : "bg-white border-slate-400 text-slate-700 hover:bg-slate-50"
                   }`}
                 >
@@ -316,7 +316,7 @@ export default function StaffAttendanceGrid() {
                   <select
                     value={month}
                     onChange={(e) => setMonth(Number(e.target.value))}
-                    className="bg-white border border-slate-400 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-orange-500"
+                    className="bg-white border border-slate-400 rounded-xl px-4 py-2.5 font-medium outline-none focus:border-emerald-500"
                   >
                     {monthNames.map((m, i) => (
                       <option key={m} value={i + 1}>
@@ -365,7 +365,7 @@ export default function StaffAttendanceGrid() {
                       Status Filter
                     </label>
                     <select
-                      className="w-full px-4 py-2.5 bg-white border border-slate-400 rounded-lg outline-none focus:border-orange-500"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-400 rounded-lg outline-none focus:border-emerald-500"
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
                     >
@@ -607,7 +607,7 @@ export default function StaffAttendanceGrid() {
                   onClick={() => setCurrentPage(i + 1)}
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     currentPage === i + 1
-                      ? "bg-amber-500 text-white shadow-sm"
+                      ? "bg-emerald-500 text-white shadow-sm hover:bg-emerald-600"
                       : "bg-white text-slate-600 border border-slate-400 hover:bg-slate-50"
                   }`}
                 >
