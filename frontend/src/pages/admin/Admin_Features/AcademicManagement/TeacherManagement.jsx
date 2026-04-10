@@ -93,16 +93,15 @@ export default function TeacherManagement() {
       setTeachers(teacherList);
       setClasses(classList);
 
-      // ✅ CRITICAL FIX: Selected teacher ko refresh karein naye session ke data ke saath
-      if (selectedTeacher) {
-        const updatedTeacher = teacherList.find((t) => t._id === selectedTeacher._id);
-        if (updatedTeacher) {
-          setSelectedTeacher(updatedTeacher); // Naya data jisme sirf current year ke assignments hon
-        } else if (teacherList.length > 0) {
+      if (teacherList.length > 0) {
+        const currentId = selectedTeacher?._id;
+        const match = teacherList.find(t => t._id === currentId);
+        // Sirf tabhi update karein agar teacher change hua ho ya pehli baar load ho rha ho
+        if (!currentId || !match) {
           setSelectedTeacher(teacherList[0]);
+        } else if (match) {
+          setSelectedTeacher(match); 
         }
-      } else if (teacherList.length > 0) {
-        setSelectedTeacher(teacherList[0]);
       }
     } catch (error) {
       console.error("Error loading data:", error);
@@ -112,43 +111,44 @@ export default function TeacherManagement() {
     }
   }, [academicYear, selectedTeacher?._id]);
 
-const fetchSessions = async () => {
-  try {
-    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+  const fetchSessions = useCallback(async () => {
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-    console.log("FULL RES:", res);
+      console.log("FULL RES:", res);
 
-    // ✅ Always correct data
-   let sessionData = Array.isArray(res) ? res : res?.data || [];
+      // ✅ Always correct data
+      let sessionData = Array.isArray(res) ? res : res?.data || [];
 
-    // ✅ Remove duplicates (safe)
-    sessionData = sessionData.filter(
-      (s, index, self) =>
-        index ===
-        self.findIndex(
-          (x) =>
-            x.startYear === s.startYear &&
-            x.endYear === s.endYear
-        )
-    );
+      // ✅ Remove duplicates (safe)
+      sessionData = sessionData.filter(
+        (s, index, self) =>
+          index ===
+          self.findIndex(
+            (x) =>
+              x.startYear === s.startYear &&
+              x.endYear === s.endYear
+          )
+      );
 
-    // ✅ Sort
-    sessionData.sort((a, b) => a.startYear - b.startYear);
+      // ✅ Sort
+      sessionData.sort((a, b) => a.startYear - b.startYear);
 
-    console.log("FINAL SESSION DATA:", sessionData);
+      console.log("FINAL SESSION DATA:", sessionData);
 
-    setSessions(sessionData);
+      setSessions(sessionData);
 
-    // ✅ Active session select
-    setAcademicYear((prev) => {
-      if (prev) return prev; // Do not override if a year is already selected
-      const active = sessionData.find((s) => s?.isActive);
-      return active ? `${active.startYear}-${active.endYear}` : "";
-    });
-  } catch (err) {
-    console.error("Session fetch error", err);
-  }
-};
+      // ✅ Active session select
+      setAcademicYear((prev) => {
+        if (prev) return prev; // Do not override if a year is already selected
+        const active = sessionData.find((s) => s?.isActive);
+        return active ? `${active.startYear}-${active.endYear}` : "";
+      });
+    } catch (err) {
+      console.error("Session fetch error", err);
+    }
+  }, []);
+
   // ✅ FIXED: Schedule Fetching with correct API
   const fetchTeacherSchedule = useCallback(
     async (teacherId) => {
@@ -201,17 +201,19 @@ const fetchSessions = async () => {
 
   useEffect(() => {
     fetchSessions();
-  }, []);
+  }, [fetchSessions]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (academicYear) {
+      loadData();
+    }
+  }, [academicYear, loadData]);
 
   useEffect(() => {
-    if (selectedTeacher?._id) {
+    if (selectedTeacher?._id && academicYear) {
       fetchTeacherSchedule(selectedTeacher._id);
     }
-  }, [selectedTeacher, academicYear, fetchTeacherSchedule]);
+  }, [selectedTeacher?._id, academicYear, fetchTeacherSchedule]);
 
   const openAssignModal = (teacher, type) => {
     setSelectedTeacher(teacher);
