@@ -147,6 +147,8 @@ const Select = ({ label, error, required, options, ...props }) => (
   </div>
 );
 
+
+
 export default function StudentParentRegisterForm() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -156,6 +158,7 @@ export default function StudentParentRegisterForm() {
   const [studentForm, setStudentForm] = useState({
     studentName: "",
     studentEmail: "",
+    mobileNumber: "",
     dateOfBirth: null,
     gender: "",
     bloodGroup: "",
@@ -271,9 +274,15 @@ export default function StudentParentRegisterForm() {
     }
   };
 
+ 
+
+
   useEffect(() => {
     fetchSessions();
   }, []);
+
+
+  
 
   const validateForm = () => {
     let tempErrors = {};
@@ -439,6 +448,7 @@ export default function StudentParentRegisterForm() {
       setStudentForm({
         studentName: "",
         studentEmail: "",
+        studentMobile: "",
         dateOfBirth: null,
         gender: "",
         bloodGroup: "",
@@ -552,7 +562,7 @@ export default function StudentParentRegisterForm() {
       <div className="max-w-5xl mx-auto">
         <div className="mb-4 text-center md:text-left">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <FaUserGraduate className="text-indigo-600" /> Student & Parent
+            <FaUserGraduate className="text-indigo-600 size-8" /> Student & Parent
             Enrollment
           </h1>
           <p className="text-gray-500 text-sm font-medium mt-1">
@@ -588,6 +598,21 @@ export default function StudentParentRegisterForm() {
                   error={errors.studentEmail}
                   placeholder="student@example.com"
                 />
+
+                
+                <Input
+                  label="Mobile Number (Optional)"
+                  type="tel"
+                  name="mobileNumber"
+                  value={studentForm.mobileNumber}
+                  onChange={onStudentChange}
+                  error={errors.studentMobile}
+                  placeholder="10-digit mobile number"
+                  maxLength="10"
+                  pattern="[0-9]{10}"
+                />
+
+                
 
                 <div className="flex flex-col gap-1">
                   <label className="text-sm font-semibold text-slate-700">
@@ -1211,7 +1236,7 @@ export default function StudentParentRegisterForm() {
                 ) : (
                   <>
                     <FaCheck className="h-4 w-4" />
-                    Initialize Accounts
+                    Student Register
                   </>
                 )}
               </button>

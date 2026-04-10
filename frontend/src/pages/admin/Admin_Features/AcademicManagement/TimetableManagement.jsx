@@ -30,10 +30,10 @@ export default function TimetableManagement() {
   const [selectedSection, setSelectedSection] = useState("");
   const [timetableData, setTimetableData] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   const [academicYear, setAcademicYear] = useState(() => {
-  return localStorage.getItem("academicYear") || getCurrentAcademicYear();
-});
+    return localStorage.getItem("academicYear") || getCurrentAcademicYear();
+  });
 
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showPeriodModal, setShowPeriodModal] = useState(false);
@@ -299,13 +299,13 @@ export default function TimetableManagement() {
       // ✅ Active session select
 
       if (!localStorage.getItem("academicYear")) {
-  const active = sessionData.find((s) => s?.isActive);
-  if (active) {
-    const year = `${active.startYear}-${active.endYear}`;
-    setAcademicYear(year);
-    localStorage.setItem("academicYear", year);
-  }
-}
+        const active = sessionData.find((s) => s?.isActive);
+        if (active) {
+          const year = `${active.startYear}-${active.endYear}`;
+          setAcademicYear(year);
+          localStorage.setItem("academicYear", year);
+        }
+      }
     } catch (err) {
       console.error("Session fetch error", err);
     }
@@ -503,22 +503,28 @@ export default function TimetableManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50  px-4 md:px-6 pb-6 ">
+    <div className="min-h-screen bg-blue-50   ">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className=" flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
-              Timetable Management
-            </h2>
-            <p className="text-sm text-gray-500 font-medium flex items-center gap-2 mt-1">
-              <FaClock className="text-teal-600" />
-              Create and manage class schedules
-            </p>
+          <div className="flex items-start gap-3">
+            <div className="h-16 w-16 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center">
+              <FaClock size={32} />
+            </div>
+
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+                Timetable Management
+              </h2>
+
+              <p className="text-sm text-gray-500 font-medium">
+                Create and manage class schedules
+              </p>
+            </div>
           </div>
           <div className="flex flex-wrap gap-3 items-center">
             <select
-            value={academicYear}
+              value={academicYear}
               onChange={(e) => {
                 const value = e.target.value;
                 setAcademicYear(value);
@@ -694,7 +700,7 @@ export default function TimetableManagement() {
                       setShowPeriodModal(true);
                     }}
                     disabled={timetableData.status === "published"}
-                    className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="flex items-center gap-2 rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     <FaPlus />
                     Add Period
@@ -1486,13 +1492,13 @@ function PeriodModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4  ">
       <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto ">
-        <div className="border-b border-slate-100 p-6 bg-gradient-to-r from-teal-50 to-cyan-50 sticky top-0 z-10">
+        <div className="border-b border-slate-100 p-6 bg-slate-800 sticky top-0 z-10">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-slate-900">
+              <h3 className="text-2xl font-bold text-white">
                 {editingPeriod?._id ? "Edit Period" : "Add Period"}
               </h3>
-              <p className="text-sm text-slate-600 mt-1">{form.day}</p>
+              <p className="text-sm text-gray-100 mt-1">{form.day}</p>
             </div>
             <button
               onClick={onClose}
@@ -1505,7 +1511,7 @@ function PeriodModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Break Period Checkbox */}
-          <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
+          <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200">
             <input
               type="checkbox"
               checked={form.isBreak}
@@ -1634,7 +1640,7 @@ function PeriodModal({
 
               {/* Teacher assignment info */}
               <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
-                <p className="text-xs text-blue-700">
+                <p className="text-xs text-slate-700">
                   <strong>Note:</strong> Teacher will be automatically assigned
                   based on subject selection from Teacher Management.
                   {form.subject && !subjectTeachers[form.subject] && (
@@ -1675,7 +1681,7 @@ function PeriodModal({
             <button
               type="submit"
               disabled={loading || fetchLoading}
-              className="flex-1 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 px-6 py-3 font-semibold text-white shadow-lg hover:shadow-xl disabled:opacity-50 transition-all"
+              className="flex-1 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white shadow-lg hover:shadow-xl disabled:opacity-50 transition-all"
             >
               {loading ? "Saving..." : editingPeriod?._id ? "Update" : "Add"}
             </button>

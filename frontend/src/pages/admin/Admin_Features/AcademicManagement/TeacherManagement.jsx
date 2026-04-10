@@ -268,7 +268,7 @@ const fetchSessions = async () => {
 
   return (
     <div className="h-screen bg-blue-50 flex flex-col overflow-hidden font-sans text-slate-900">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 pb-3">
         <div className="h-14 w-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 transform -rotate-2 hover:rotate-0 transition-all duration-300">
           <FaChalkboardTeacher className="text-white text-2xl" />
         </div>
@@ -614,7 +614,7 @@ const fetchSessions = async () => {
                       title={!academicYear ? "Select an Academic Session first" : "Assign Class Teacher"}
                       disabled={!academicYear}
                       onClick={() => openAssignModal(selectedTeacher, "classTeacher")}
-                      className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                      className="px-2  py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
                     >
                       <FaPlus size={10} /> Assign Class
                     </button>
@@ -622,7 +622,7 @@ const fetchSessions = async () => {
                       title={!academicYear ? "Select an Academic Session first" : "Assign Subject Teacher"}
                       disabled={!academicYear}
                       onClick={() => openAssignModal(selectedTeacher, "subject")}
-                      className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                      className="px-2 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
                     >
                       <FaPlus size={10} /> Assign Subject
                     </button>

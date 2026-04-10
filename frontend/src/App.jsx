@@ -3,6 +3,7 @@ import { useEffect, useState, Suspense, lazy } from "react";
 import { Routes, Route, Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ScrollToTop from "./components/ScrollToTop/ScrollToTop.jsx";
 
 import api from "./services/api.js";
 
@@ -163,50 +164,55 @@ export default function App() {
         pauseOnHover
         theme="light"
       />
+
+        <ScrollToTop />
       
       <Suspense fallback={<PageLoader />}>
-        <Routes>
-          {/* ✅ 1. School Selection (Homepage) */}
-          <Route 
-            path="/" 
-            element={
-              isLoggedIn && school ? (
-                <Navigate to={getDashboardPath()} replace />
-              ) : (
-                <SchoolSelection setSchool={setSchool} />
-              )
-            } 
-          />
+  {/* Scroll to top on route change */}
 
-          {/* ✅ 2. School-Specific Login Page */}
-          <Route path="/school/:schoolSlug/login" 
-            element={
-              isLoggedIn && school ? (
-                <Navigate to={getDashboardPath()} replace />
-              ) : (
-                <Signin setIsLoggedIn={setIsLoggedIn} setUserRole={setUserRole} setSchool={setSchool} />
-              )
-            }
-          />
 
-          {/* ✅ 3. Generic Login (Redirects to school selection) */}
-          <Route
-            path="/login"
-            element={<Navigate to="/" replace />}
-          />
+  <Routes>
+    {/* ✅ 1. School Selection (Homepage) */}
+    <Route 
+      path="/" 
+      element={
+        isLoggedIn && school ? (
+          <Navigate to={getDashboardPath()} replace />
+        ) : (
+          <SchoolSelection setSchool={setSchool} />
+        )
+      } 
+    />
 
-          {/* ✅ 4. Legacy Redirect */}
-          <Route path="/signin" element={<Navigate to="/" replace />} />
+    {/* ✅ 2. School-Specific Login Page */}
+    <Route path="/school/:schoolSlug/login" 
+      element={
+        isLoggedIn && school ? (
+          <Navigate to={getDashboardPath()} replace />
+        ) : (
+          <Signin setIsLoggedIn={setIsLoggedIn} setUserRole={setUserRole} setSchool={setSchool} />
+        )
+      }
+    />
 
-          {/* ✅ 5. Protected Routes using RoleRouteHandler */}
-          <Route path="/school/:schoolSlug/:role/*" element={<PrivateRoute allowedRoles={["admin", "teacher", "student", "parent"]} />}>
-            <Route path="*" element={<RoleRouteHandler isLoggedIn={isLoggedIn} userRole={userRole} school={school} />} />
-          </Route>
+    {/* ✅ 3. Generic Login (Redirects to school selection) */}
+    <Route
+      path="/login"
+      element={<Navigate to="/" replace />}
+    />
 
-          {/* ✅ 6. Catch-all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
+    {/* ✅ 4. Legacy Redirect */}
+    <Route path="/signin" element={<Navigate to="/" replace />} />
+
+    {/* ✅ 5. Protected Routes using RoleRouteHandler */}
+    <Route path="/school/:schoolSlug/:role/*" element={<PrivateRoute allowedRoles={["admin", "teacher", "student", "parent"]} />}>
+      <Route path="*" element={<RoleRouteHandler isLoggedIn={isLoggedIn} userRole={userRole} school={school} />} />
+    </Route>
+
+    {/* ✅ 6. Catch-all */}
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes>
+</Suspense>
     </>
   );
 }

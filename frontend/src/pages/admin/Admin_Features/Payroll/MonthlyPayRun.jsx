@@ -10,6 +10,7 @@ import {
   FaEye,
   FaTimes,
   FaPrint,
+  FaCogs,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
@@ -176,10 +177,16 @@ export default function MonthlyPayRun() {
       setSession(sessionData);
 
       // ✅ safe find
-      const active = sessionData?.find((s) => s?.isActive);
+      const currentYear = new Date().getFullYear();
 
-      if (active) {
-        setAcademicYear(active.endYear);
+      const matchedSession = sessionData.find(
+        (s) => Number(s.endYear) === currentYear,
+      );
+
+      if (matchedSession) {
+        setAcademicYear(matchedSession.endYear);
+      } else {
+        setAcademicYear(currentYear);
       }
     } catch (err) {
       console.error("Session fetch error", err);
@@ -492,41 +499,55 @@ export default function MonthlyPayRun() {
     <div className=" space-y-12">
       {/* HEADER & FILTERS */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
-            Payroll Processing
-          </h2>
-          <div className="flex gap-4 mt-2">
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(Number(e.target.value))}
-              className="bg-white border border-slate-400 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500"
-            >
-              {monthNames.map((m, i) => (
-                <option key={m} value={i + 1}>
-                  {m}
-                </option>
-              ))}
-            </select>
+        
+        <div className="flex items-start gap-3">
 
-            <select
-              value={academicYear}
-              onChange={(e) => setAcademicYear(e.target.value)}
-              className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
-            >
-              {session?.map((s) => (
-                <option key={s._id} value={s.endYear}>
-                  {s.endYear}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+  <div className="h-16 w-16 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center">
+    <FaCogs size={32} />
+  </div>
+
+  <div>
+    <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+      Payroll Processing
+    </h2>
+
+    <p className="text-gray-500 font-medium text-sm mt-1">
+      Process monthly salaries and generate payroll records
+    </p>
+
+    <div className="flex gap-4 mt-3">
+      <select
+        value={selectedMonth}
+        onChange={(e) => setSelectedMonth(Number(e.target.value))}
+        className="bg-white border border-slate-400 rounded-xl px-4 py-2 font-bold text-sm outline-none focus:border-amber-500"
+      >
+        {monthNames.map((m, i) => (
+          <option key={m} value={i + 1}>
+            {m}
+          </option>
+        ))}
+      </select>
+
+      <select
+        value={academicYear}
+        onChange={(e) => setAcademicYear(e.target.value)}
+        className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
+      >
+        {session?.map((s) => (
+          <option key={s._id} value={s.endYear}>
+            {s.endYear}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+</div>
         <div className="flex gap-3">
           <button
             onClick={handleBulkGenerate}
             disabled={loading || stats.length === 0 || processingId === "BULK"}
-            className="flex items-center gap-3 bg-purple-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-3 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {processingId === "BULK" ? (
               <>
@@ -550,7 +571,7 @@ export default function MonthlyPayRun() {
 
       {/* TABLE 1: PENDING FOR GENERATION */}
       <section>
-        <h3 className="text-xs font-bold uppercase text-amber-700 tracking-widest mb-4 flex items-center gap-2">
+        <h3 className="text-xs font-bold uppercase text-indigo-700 tracking-widest mb-4 flex items-center gap-2">
           <FaSpinner className="animate-pulse" /> Pending Generation (
           {stats.length})
         </h3>
@@ -561,9 +582,11 @@ export default function MonthlyPayRun() {
                 <th className="p-6">Staff Details</th>
                 <th className="p-6 text-center">
                   Adjustment Gross (Optional)
-                  <div className="text-[9px] text-slate-400 font-normal normal-case tracking-normal mt-1">Leave blank to use standard salary</div>
+                  <div className="text-[9px] text-slate-400 font-normal normal-case tracking-normal mt-1">
+                    Leave blank to use standard salary
+                  </div>
                 </th>
-                <th className="p-6 text-center">Extra Activities</th>
+                <th className="p-6 text-center w-[320px]">Extra Activities</th>
                 <th className="p-6 text-right">Action</th>
               </tr>
             </thead>
@@ -574,10 +597,17 @@ export default function MonthlyPayRun() {
                   className="hover:bg-slate-50/50 transition-colors"
                 >
                   <td className="p-6">
-                    <p className="font-bold text-slate-900">{row.name}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">
-                      ID: {row.teacherID}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 bg-indigo-100 rounded-full flex items-center justify-center font-bold text-indigo-600">
+                        {row.name[0]}
+                      </div>
+                      <div>
+                        <p className="font-bold">{row.name}</p>
+                        <p className="text-xs text-slate-500">
+                          {row.teacherID}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                   <td className="p-6">
                     <input
@@ -590,17 +620,14 @@ export default function MonthlyPayRun() {
                       }
                     />
                   </td>
-                  <td className="p-6">
+                  {/* <td className="p-6">
                     <div className="space-y-2">
                       {(extraEarnings[row.id] || []).map((ex, i) => (
-                        <div
-                          key={i}
-                          className="flex gap-1 animate-in slide-in-from-left-2"
-                        >
+                        <div key={i} className="flex gap-2 flex-wrap">
                           <input
                             type="number"
                             placeholder="₹"
-                            className="w-16 bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-xs font-bold"
+                            className="w-20 min-w-[80px] bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-xs font-bold"
                             value={ex.amount}
                             onChange={(e) =>
                               handleExtraFieldChange(
@@ -614,7 +641,7 @@ export default function MonthlyPayRun() {
                           <input
                             type="text"
                             placeholder="Reason"
-                            className="flex-1 bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-[10px] italic"
+                            className="w-full max-w-[180px] bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-[10px] italic"
                             value={ex.remark}
                             onChange={(e) =>
                               handleExtraFieldChange(
@@ -627,6 +654,54 @@ export default function MonthlyPayRun() {
                           />
                         </div>
                       ))}
+                      <button
+                        onClick={() => handleAddExtraRow(row.id)}
+                        className="text-[9px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-tighter transition-colors"
+                      >
+                        + Add Line Item
+                      </button>
+                    </div>
+                  </td> */}
+
+                  <td className="p-6 text-center">
+                    <div className="space-y-2 flex flex-col items-center">
+                      {(extraEarnings[row.id] || []).map((ex, i) => (
+                        <div
+                          key={i}
+                          className="flex gap-2 flex-wrap justify-center"
+                        >
+                          <input
+                            type="number"
+                            placeholder="₹"
+                            className="w-20 min-w-[80px] bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-xs font-bold"
+                            value={ex.amount}
+                            onChange={(e) =>
+                              handleExtraFieldChange(
+                                row.id,
+                                i,
+                                "amount",
+                                e.target.value,
+                              )
+                            }
+                          />
+
+                          <input
+                            type="text"
+                            placeholder="Reason"
+                            className="w-full max-w-[180px] bg-white border border-slate-400 outline-none focus:border-amber-500 rounded-lg p-1 text-[10px] italic"
+                            value={ex.remark}
+                            onChange={(e) =>
+                              handleExtraFieldChange(
+                                row.id,
+                                i,
+                                "remark",
+                                e.target.value,
+                              )
+                            }
+                          />
+                        </div>
+                      ))}
+
                       <button
                         onClick={() => handleAddExtraRow(row.id)}
                         className="text-[9px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-tighter transition-colors"

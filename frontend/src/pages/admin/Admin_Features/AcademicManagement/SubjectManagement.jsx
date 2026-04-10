@@ -16,6 +16,7 @@ import {
   FaFilter,
   FaDownload,
   FaPrint,
+  FaBookOpen,
   FaStar,
   FaRegStar,
   FaClock,
@@ -98,47 +99,44 @@ export default function SubjectManagement() {
   }, [academicYear]);
 
   const fetchSessions = async () => {
-  try {
-    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-    console.log("FULL RES:", res);
+      console.log("FULL RES:", res);
 
-    // ✅ Always correct data
-   let sessionData = Array.isArray(res) ? res : res?.data || [];
+      // ✅ Always correct data
+      let sessionData = Array.isArray(res) ? res : res?.data || [];
 
-    // ✅ Remove duplicates (safe)
-    sessionData = sessionData.filter(
-      (s, index, self) =>
-        index ===
-        self.findIndex(
-          (x) =>
-            x.startYear === s.startYear &&
-            x.endYear === s.endYear
-        )
-    );
+      // ✅ Remove duplicates (safe)
+      sessionData = sessionData.filter(
+        (s, index, self) =>
+          index ===
+          self.findIndex(
+            (x) => x.startYear === s.startYear && x.endYear === s.endYear,
+          ),
+      );
 
-    // ✅ Sort
-    sessionData.sort((a, b) => a.startYear - b.startYear);
+      // ✅ Sort
+      sessionData.sort((a, b) => a.startYear - b.startYear);
 
-    console.log("FINAL SESSION DATA:", sessionData);
+      console.log("FINAL SESSION DATA:", sessionData);
 
-    setSessions(sessionData);
+      setSessions(sessionData);
 
-    // ✅ Active session select
-   setAcademicYear((prev) => {
-  if (prev) return prev; // agar already selected hai to override mat karo
+      // ✅ Active session select
+      setAcademicYear((prev) => {
+        if (prev) return prev; // agar already selected hai to override mat karo
 
-  const saved = localStorage.getItem("academicYear");
-  if (saved) return saved;
+        const saved = localStorage.getItem("academicYear");
+        if (saved) return saved;
 
-  const active = sessionData.find((s) => s?.isActive);
-  return active ? `${active.startYear}-${active.endYear}` : "";
-});
-
-  } catch (err) {
-    console.error("Session fetch error", err);
-  }
-};
+        const active = sessionData.find((s) => s?.isActive);
+        return active ? `${active.startYear}-${active.endYear}` : "";
+      });
+    } catch (err) {
+      console.error("Session fetch error", err);
+    }
+  };
 
   const loadSubjects = useCallback(async () => {
     if (!selectedClass) return;
@@ -161,7 +159,6 @@ export default function SubjectManagement() {
 
   useEffect(() => {
     if (selectedClass) loadSubjects();
-  
   }, [selectedClass, loadSubjects]);
 
   useEffect(() => {
@@ -305,20 +302,29 @@ export default function SubjectManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 px-4 md:px-8 pb-10">
+    <div className="min-h-screen bg-blue-50 ">
       <style>{noScrollStyle}</style>
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="pb-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-                Curriculum Planner
-              </h1>
-              <p className="text-gray-500 text-sm font-medium mt-1">
-                Configure master curriculum for {academicYear}
-              </p>
+            <div className="flex items-start gap-3">
+              {/* Icon */}
+              <div className="h-16 w-16 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
+                <FaBookOpen size={32} />
+              </div>
+
+              {/* Heading + Description */}
+              <div>
+                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                  Curriculum Planner
+                </h1>
+                <p className="text-gray-500 text-sm font-medium mt-1">
+                  Configure master curriculum for {academicYear}
+                </p>
+              </div>
             </div>
+
             <div className="flex items-center gap-3">
               <select
                 value={academicYear}
@@ -331,6 +337,7 @@ export default function SubjectManagement() {
                   </option>
                 ))}
               </select>
+
               <button
                 onClick={() => setShowAddModal(true)}
                 disabled={!selectedClass}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaCheck, FaSpinner, FaUserShield } from "react-icons/fa";
@@ -93,7 +93,11 @@ const AdminRegisterForm = () => {
       return;
     }
     setSchool(JSON.parse(stored));
+
+    
   }, [navigate]);
+
+  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -247,7 +251,7 @@ const AdminRegisterForm = () => {
       <div className="max-w-5xl mx-auto">
         <div className="mb-4 text-center md:text-left">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <FaUserShield className="text-indigo-600" /> Administrative Staff Enrollment  
+            <FaUserShield className="text-indigo-600 size-10" /> Administrative Staff Enrollment  
           </h1>
           <p className="text-gray-500 font-medium text-sm mt-1">Create secure accounts for Principal, Librarian, or Accountants</p>
         </div>
@@ -286,7 +290,7 @@ const AdminRegisterForm = () => {
             {/* Personal Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormInput 
-                label="Staff Member Full Name *" 
+                label="Staff Member Full Name " 
                 name="name" 
                 value={form.name} 
                 onChange={handleChange} 
@@ -295,7 +299,7 @@ const AdminRegisterForm = () => {
                 error={errors.name}
               />
               <FormInput 
-                label="Work Email Address *" 
+                label="Work Email Address " 
                 name="email" 
                 type="email" 
                 value={form.email} 
@@ -305,7 +309,7 @@ const AdminRegisterForm = () => {
                 error={errors.email}
               />
               <FormInput 
-                label="Contact Number *" 
+                label="Contact Number " 
                 name="phone" 
                 value={form.phone} 
                 onChange={handleChange} 
@@ -376,7 +380,7 @@ const AdminRegisterForm = () => {
                   disabled={loading}
                   className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
-                  {loading ? <FaSpinner className="animate-spin" /> : <><FaCheck /> Initialize Account</>}
+                  {loading ? <FaSpinner className="animate-spin" /> : <><FaCheck /> Admin Register</>}
                 </button>
             </div>
           </form>

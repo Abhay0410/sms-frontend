@@ -14,6 +14,7 @@ import {
   FaFilter,
   FaSearch,
   FaSort,
+  FaClipboardCheck,
 } from "react-icons/fa";
 
 export default function AdminResultManagement() {
@@ -36,7 +37,7 @@ export default function AdminResultManagement() {
   const loadResults = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       // Load statistics
       const statsRes = await api.get(API_ENDPOINTS.ADMIN.RESULT.STATISTICS);
       setStats(statsRes);
@@ -44,7 +45,7 @@ export default function AdminResultManagement() {
       // Load results with filters
       const params = { page: 1, limit: 50, ...filters };
       const res = await api.get(API_ENDPOINTS.ADMIN.RESULT.ALL, { params });
-      
+
       let resultsData;
       if (Array.isArray(res)) {
         resultsData = res;
@@ -53,11 +54,10 @@ export default function AdminResultManagement() {
       } else {
         resultsData = [];
       }
-      
+
       setResults(resultsData);
       setFilteredResults(resultsData);
-      
-    } catch  {
+    } catch {
       toast.error("Failed to load results");
     } finally {
       setLoading(false);
@@ -71,33 +71,36 @@ export default function AdminResultManagement() {
   // Filter and search
   useEffect(() => {
     let filtered = [...results];
-    
+
     if (filters.examType) {
-      filtered = filtered.filter(r => r.examType === filters.examType);
+      filtered = filtered.filter((r) => r.examType === filters.examType);
     }
     if (filters.className) {
-      filtered = filtered.filter(r => r.className?.includes(filters.className));
+      filtered = filtered.filter((r) =>
+        r.className?.includes(filters.className),
+      );
     }
     if (filters.section) {
-      filtered = filtered.filter(r => r.section === filters.section);
+      filtered = filtered.filter((r) => r.section === filters.section);
     }
     if (filters.status) {
-      filtered = filtered.filter(r => r.result === filters.status);
+      filtered = filtered.filter((r) => r.result === filters.status);
     }
     if (filters.search) {
       const search = filters.search.toLowerCase();
-      filtered = filtered.filter(r => 
-        r.studentName?.toLowerCase().includes(search) ||
-        r.studentID?.toLowerCase().includes(search) ||
-        r.rollNumber?.toString().includes(search)
+      filtered = filtered.filter(
+        (r) =>
+          r.studentName?.toLowerCase().includes(search) ||
+          r.studentID?.toLowerCase().includes(search) ||
+          r.rollNumber?.toString().includes(search),
       );
     }
 
     // Sort
     filtered.sort((a, b) => {
-      const aVal = a[filters.sortBy] || '';
-      const bVal = b[filters.sortBy] || '';
-      if (filters.sortOrder === 'asc') {
+      const aVal = a[filters.sortBy] || "";
+      const bVal = b[filters.sortBy] || "";
+      if (filters.sortOrder === "asc") {
         return aVal > bVal ? 1 : -1;
       }
       return aVal < bVal ? 1 : -1;
@@ -106,30 +109,30 @@ export default function AdminResultManagement() {
     setFilteredResults(filtered);
   }, [results, filters]);
 
- // In AdminResultManagement.jsx
-// const handleView = (resultId) => {
-//   // ✅ Now use the correct absolute path
-//   navigate(`/admin/results/${resultId}/view`);
-// };
+  // In AdminResultManagement.jsx
+  // const handleView = (resultId) => {
+  //   // ✅ Now use the correct absolute path
+  //   navigate(`/admin/results/${resultId}/view`);
+  // };
 
   const handleDownload = async (resultId) => {
     try {
       toast.info("Generating PDF...");
       const response = await api.get(
         API_ENDPOINTS.ADMIN.RESULT.DOWNLOAD(resultId),
-        { responseType: 'blob' }
+        { responseType: "blob" },
       );
-      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `result_${resultId}.pdf`);
+      link.setAttribute("download", `result_${resultId}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       toast.success("Result downloaded!");
-    } catch  {
+    } catch {
       toast.error("Failed to download result");
     }
   };
@@ -139,7 +142,7 @@ export default function AdminResultManagement() {
       await api.put(API_ENDPOINTS.ADMIN.RESULT.APPROVE(resultId));
       toast.success("Result approved!");
       loadResults();
-    } catch  {
+    } catch {
       toast.error("Failed to approve");
     }
   };
@@ -180,11 +183,13 @@ export default function AdminResultManagement() {
       return;
     }
     try {
-      await api.put(API_ENDPOINTS.ADMIN.RESULT.BULK_APPROVE, { resultIds: selectedResults });
+      await api.put(API_ENDPOINTS.ADMIN.RESULT.BULK_APPROVE, {
+        resultIds: selectedResults,
+      });
       toast.success(`${selectedResults.length} results approved!`);
       setSelectedResults([]);
       loadResults();
-    } catch  {
+    } catch {
       toast.error("Failed to bulk approve");
     }
   };
@@ -195,7 +200,9 @@ export default function AdminResultManagement() {
       return;
     }
     try {
-      await api.put(API_ENDPOINTS.ADMIN.RESULT.BULK_PUBLISH, { resultIds: selectedResults });
+      await api.put(API_ENDPOINTS.ADMIN.RESULT.BULK_PUBLISH, {
+        resultIds: selectedResults,
+      });
       toast.success(`${selectedResults.length} results published!`);
       setSelectedResults([]);
       loadResults();
@@ -209,23 +216,37 @@ export default function AdminResultManagement() {
       PASS: "bg-green-100 text-green-800",
       FAIL: "bg-red-100 text-red-800",
       PASS_BY_GRACE: "bg-yellow-100 text-yellow-800",
-      ABSENT: "bg-gray-100 text-gray-800"
+      ABSENT: "bg-gray-100 text-gray-800",
     };
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badges[status] || 'bg-gray-100 text-gray-800'}`}>
-        {status === 'PASS_BY_GRACE' ? 'PASS*' : status}
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-semibold ${badges[status] || "bg-gray-100 text-gray-800"}`}
+      >
+        {status === "PASS_BY_GRACE" ? "PASS*" : status}
       </span>
     );
   };
 
   const getApprovalBadge = (isApproved, isPublished) => {
     if (isPublished) {
-      return <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">PUBLISHED</span>;
+      return (
+        <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">
+          PUBLISHED
+        </span>
+      );
     }
     if (isApproved) {
-      return <span className="px-3 py-1 bg-emerald-100 text-emerald-700 border-emerald-300 text-xs font-bold rounded-full">APPROVED</span>;
+      return (
+        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 border-emerald-300 text-xs font-bold rounded-full">
+          APPROVED
+        </span>
+      );
     }
-    return <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full">DRAFT</span>;
+    return (
+      <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full">
+        DRAFT
+      </span>
+    );
   };
 
   if (loading) {
@@ -237,13 +258,21 @@ export default function AdminResultManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 px-4 md:px-6  ">
+    <div className="min-h-screen bg-blue-50   ">
       <div className="max-w-7xl mx-auto">
-      
-        
-        <div className=" mb-4">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Result Management</h1>
-          <p className="text-slate-600 text-sm font-medium mt-1">Manage, approve, publish, and download examination results</p>
+        <div className="flex items-start gap-3 mb-4 pb-4">
+          <div className="h-16 w-16 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
+            <FaClipboardCheck size={32} />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Result Management
+            </h1>
+            <p className="text-slate-600 text-sm font-medium mt-1">
+              Manage, approve, publish, and download examination results
+            </p>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -297,17 +326,19 @@ export default function AdminResultManagement() {
         {/* Filters & Bulk Actions */}
         <div className="bg-white rounded-xl shadow-md border border-slate-400 p-4 mb-6">
           <div className="flex flex-wrap gap-4 items-center justify-between">
-            
             {/* Selection & Bulk Actions */}
             <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
               <div className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg h-[42px]">
                 <input
                   type="checkbox"
                   className="w-4 h-4 cursor-pointer accent-purple-600"
-                  checked={selectedResults.length === filteredResults.length && filteredResults.length > 0}
+                  checked={
+                    selectedResults.length === filteredResults.length &&
+                    filteredResults.length > 0
+                  }
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setSelectedResults(filteredResults.map(r => r._id));
+                      setSelectedResults(filteredResults.map((r) => r._id));
                     } else {
                       setSelectedResults([]);
                     }
@@ -343,15 +374,19 @@ export default function AdminResultManagement() {
                 <input
                   type="text"
                   value={filters.search}
-                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                  onChange={(e) =>
+                    setFilters({ ...filters, search: e.target.value })
+                  }
                   className="w-full rounded-lg border border-slate-400 pl-10 pr-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px]"
                   placeholder="Student name, ID, roll..."
                 />
               </div>
-              
+
               <select
                 value={filters.examType}
-                onChange={(e) => setFilters({ ...filters, examType: e.target.value })}
+                onChange={(e) =>
+                  setFilters({ ...filters, examType: e.target.value })
+                }
                 className="w-full sm:w-auto rounded-lg border border-slate-400 px-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px] bg-white cursor-pointer"
               >
                 <option value="">All Exam Types</option>
@@ -361,10 +396,12 @@ export default function AdminResultManagement() {
                 <option value="UNIT_TEST">Unit Test</option>
                 <option value="MID_TERM">Mid Term</option>
               </select>
-              
+
               <select
                 value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                onChange={(e) =>
+                  setFilters({ ...filters, status: e.target.value })
+                }
                 className="w-full sm:w-auto rounded-lg border border-slate-400 px-3 py-2.5 text-sm font-medium focus:border-purple-500 outline-none h-[42px] bg-white cursor-pointer"
               >
                 <option value="">All Results</option>
@@ -373,7 +410,7 @@ export default function AdminResultManagement() {
                 <option value="PASS_BY_GRACE">PASS BY GRACE</option>
                 <option value="ABSENT">ABSENT</option>
               </select>
-              
+
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => loadResults()}
@@ -382,22 +419,23 @@ export default function AdminResultManagement() {
                   <FaFilter /> Filter
                 </button>
                 <button
-                  onClick={() => setFilters({
-                    examType: "",
-                    className: "",
-                    section: "",
-                    status: "",
-                    search: "",
-                    sortBy: "createdAt",
-                    sortOrder: "desc",
-                  })}
+                  onClick={() =>
+                    setFilters({
+                      examType: "",
+                      className: "",
+                      section: "",
+                      status: "",
+                      search: "",
+                      sortBy: "createdAt",
+                      sortOrder: "desc",
+                    })
+                  }
                   className="px-5 py-2.5 bg-slate-100 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-200 font-semibold text-sm transition-all flex items-center justify-center h-[42px] flex-1 sm:flex-none"
                 >
                   Clear
                 </button>
               </div>
             </div>
-            
           </div>
         </div>
 
@@ -408,19 +446,27 @@ export default function AdminResultManagement() {
               All Results ({filteredResults.length})
             </h3>
             <div className="flex items-center gap-2 text-sm text-gray-200">
-              Sort by: 
+              Sort by:
               <select
                 value={`${filters.sortBy}-${filters.sortOrder}`}
                 onChange={(e) => {
-                  const [sortBy, sortOrder] = e.target.value.split('-');
+                  const [sortBy, sortOrder] = e.target.value.split("-");
                   setFilters({ ...filters, sortBy, sortOrder });
                 }}
                 className="rounded   border-2 border-slate-400 p-1 text-xs focus:border-purple-500 outline-none"
               >
-                <option className="text-black" value="createdAt-desc">Newest First</option>
-                <option className="text-black" value="studentName-asc">Student Name (A-Z)</option>
-                <option className="text-black" value="className-asc">Class Name</option>
-                <option className="text-black" value="overallPercentage-desc">Percentage (High-Low)</option>
+                <option className="text-black" value="createdAt-desc">
+                  Newest First
+                </option>
+                <option className="text-black" value="studentName-asc">
+                  Student Name (A-Z)
+                </option>
+                <option className="text-black" value="className-asc">
+                  Class Name
+                </option>
+                <option className="text-black" value="overallPercentage-desc">
+                  Percentage (High-Low)
+                </option>
               </select>
             </div>
           </div>
@@ -432,10 +478,13 @@ export default function AdminResultManagement() {
                   <th className="p-4 text-center w-12">
                     <input
                       type="checkbox"
-                      checked={selectedResults.length === filteredResults.length && filteredResults.length > 0}
+                      checked={
+                        selectedResults.length === filteredResults.length &&
+                        filteredResults.length > 0
+                      }
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedResults(filteredResults.map(r => r._id));
+                          setSelectedResults(filteredResults.map((r) => r._id));
                         } else {
                           setSelectedResults([]);
                         }
@@ -443,36 +492,67 @@ export default function AdminResultManagement() {
                       className="h-4 w-4 rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer accent-purple-600"
                     />
                   </th>
-                  <th className="p-4 text-left font-bold uppercase tracking-wider text-xs">Student</th>
-                  <th className="p-4 text-left font-bold uppercase tracking-wider text-xs">Class</th>
-                  <th className="p-4 text-left font-bold uppercase tracking-wider text-xs">Exam</th>
-                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Marks</th>
-                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">%</th>
-                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Grade</th>
-                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Result</th>
-                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Status</th>
-                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">Actions</th>
+                  <th className="p-4 text-left font-bold uppercase tracking-wider text-xs">
+                    Student
+                  </th>
+                  <th className="p-4 text-left font-bold uppercase tracking-wider text-xs">
+                    Class
+                  </th>
+                  <th className="p-4 text-left font-bold uppercase tracking-wider text-xs">
+                    Exam
+                  </th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">
+                    Marks
+                  </th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">
+                    %
+                  </th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">
+                    Grade
+                  </th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">
+                    Result
+                  </th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">
+                    Status
+                  </th>
+                  <th className="p-4 text-center font-bold uppercase tracking-wider text-xs">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-sm">
                 {filteredResults.length === 0 ? (
                   <tr>
-                    <td colSpan="10" className="px-6 py-12 text-center text-slate-500">
+                    <td
+                      colSpan="10"
+                      className="px-6 py-12 text-center text-slate-500"
+                    >
                       No results found
                     </td>
                   </tr>
                 ) : (
                   filteredResults.map((result) => (
-                    <tr key={result._id} className={`transition-colors duration-150 ${selectedResults.includes(result._id) ? 'bg-purple-50/60' : 'hover:bg-slate-50'}`}>
+                    <tr
+                      key={result._id}
+                      className={`transition-colors duration-150 ${selectedResults.includes(result._id) ? "bg-purple-50/60" : "hover:bg-slate-50"}`}
+                    >
                       <td className="p-4 text-center">
                         <input
                           type="checkbox"
                           checked={selectedResults.includes(result._id)}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setSelectedResults([...selectedResults, result._id]);
+                              setSelectedResults([
+                                ...selectedResults,
+                                result._id,
+                              ]);
                             } else {
-                              setSelectedResults(selectedResults.filter(id => id !== result._id));
+                              setSelectedResults(
+                                selectedResults.filter(
+                                  (id) => id !== result._id,
+                                ),
+                              );
                             }
                           }}
                           className="h-4 w-4 rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer accent-purple-600"
@@ -480,26 +560,38 @@ export default function AdminResultManagement() {
                       </td>
                       <td className="p-4">
                         <div>
-                          <p className="font-semibold text-slate-900">{result.studentName}</p>
+                          <p className="font-semibold text-slate-900">
+                            {result.studentName}
+                          </p>
                           <p className="text-sm text-slate-600">
                             {result.studentID} | Roll: {result.rollNumber}
                           </p>
                         </div>
                       </td>
                       <td className="p-4">
-                        <p className="font-medium text-slate-900">{result.className}</p>
-                        <p className="text-sm text-slate-600">Sec {result.section}</p>
+                        <p className="font-medium text-slate-900">
+                          {result.className}
+                        </p>
+                        <p className="text-sm text-slate-600">
+                          Sec {result.section}
+                        </p>
                       </td>
                       <td className="p-4">
-                        <p className="font-medium text-slate-900">{result.examType}</p>
-                        <p className="text-sm text-slate-600">{result.examYear}</p>
+                        <p className="font-medium text-slate-900">
+                          {result.examType}
+                        </p>
+                        <p className="text-sm text-slate-600">
+                          {result.examYear}
+                        </p>
                       </td>
                       <td className="p-4 text-center">
                         <p className="font-bold">
                           {result.totalObtainedMarks}/{result.totalMaxMarks}
                         </p>
                         {result.totalGraceMarks > 0 && (
-                          <p className="text-xs text-red-600">*{result.totalGraceMarks} grace</p>
+                          <p className="text-xs text-red-600">
+                            *{result.totalGraceMarks} grace
+                          </p>
                         )}
                       </td>
                       <td className="p-4 text-center">
@@ -516,7 +608,10 @@ export default function AdminResultManagement() {
                         {getStatusBadge(result.result)}
                       </td>
                       <td className="p-4 text-center">
-                        {getApprovalBadge(result.isApproved, result.isPublished)}
+                        {getApprovalBadge(
+                          result.isApproved,
+                          result.isPublished,
+                        )}
                       </td>
                       <td className="p-4">
                         <div className="flex items-center justify-center gap-2 flex-wrap">
@@ -534,7 +629,7 @@ export default function AdminResultManagement() {
                           >
                             <FaDownload />
                           </button>
-                          
+
                           {/* Conditional Action Buttons */}
                           {!result.isApproved ? (
                             <button
@@ -553,7 +648,7 @@ export default function AdminResultManagement() {
                               <FaTimesCircle />
                             </button>
                           )}
-                          
+
                           {result.isApproved && !result.isPublished ? (
                             <button
                               onClick={() => handlePublish(result._id)}

@@ -24,7 +24,7 @@ export default function StudentManagement() {
   const [loading, setLoading] = useState(true);
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [sessions, setSessions] = useState([]);
-  const [academicYear, setAcademicYear] = useState("2025-2026");  
+  const [academicYear, setAcademicYear] = useState("2025-2026");
   const [filters, setFilters] = useState({
     status: "",
     className: "",
@@ -47,43 +47,40 @@ export default function StudentManagement() {
   }
 
   const fetchSessions = async () => {
-  try {
-    const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+    try {
+      const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
 
-    console.log("FULL RES:", res);
+      console.log("FULL RES:", res);
 
-    // ✅ Always correct data
-   let sessionData = Array.isArray(res) ? res : res?.data || [];
+      // ✅ Always correct data
+      let sessionData = Array.isArray(res) ? res : res?.data || [];
 
-    // ✅ Remove duplicates (safe)
-    sessionData = sessionData.filter(
-      (s, index, self) =>
-        index ===
-        self.findIndex(
-          (x) =>
-            x.startYear === s.startYear &&
-            x.endYear === s.endYear
-        )
-    );
+      // ✅ Remove duplicates (safe)
+      sessionData = sessionData.filter(
+        (s, index, self) =>
+          index ===
+          self.findIndex(
+            (x) => x.startYear === s.startYear && x.endYear === s.endYear,
+          ),
+      );
 
-    // ✅ Sort
-    sessionData.sort((a, b) => a.startYear - b.startYear);
+      // ✅ Sort
+      sessionData.sort((a, b) => a.startYear - b.startYear);
 
-    console.log("FINAL SESSION DATA:", sessionData);
+      console.log("FINAL SESSION DATA:", sessionData);
 
-    setSessions(sessionData);
+      setSessions(sessionData);
 
-    // ✅ Active session select
-    const active = sessionData.find((s) => s?.isActive);
+      // ✅ Active session select
+      const active = sessionData.find((s) => s?.isActive);
 
-    if (active) {
-      setAcademicYear(`${active.startYear}-${active.endYear}`);
+      if (active) {
+        setAcademicYear(`${active.startYear}-${active.endYear}`);
+      }
+    } catch (err) {
+      console.error("Session fetch error", err);
     }
-
-  } catch (err) {
-    console.error("Session fetch error", err);
-  }
-};
+  };
 
   useEffect(() => {
     fetchSessions();
@@ -172,50 +169,50 @@ export default function StudentManagement() {
   // };
 
   const handleBulkStatusUpdate = async (status) => {
-  if (selectedStudents.length === 0) {
-    toast.error("Please select students first");
-    return;
-  }
+    if (selectedStudents.length === 0) {
+      toast.error("Please select students first");
+      return;
+    }
 
-  const result = await Swal.fire({
-    title: "Are you sure?",
-    text: `Update status to ${status} for ${selectedStudents.length} students?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, update",
-    cancelButtonText: "Cancel",
-  });
-
-  if (!result.isConfirmed) {
-    return;
-  }
-
-  try {
-    await api.put(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_UPDATE_STATUS, {
-      studentIds: selectedStudents,
-      status,
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `Update status to ${status} for ${selectedStudents.length} students?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, update",
+      cancelButtonText: "Cancel",
     });
 
-    Swal.fire({
-      icon: "success",
-      title: "Updated!",
-      text: `Status updated for ${selectedStudents.length} students`,
-      timer: 2000,
-      showConfirmButton: false,
-    });
+    if (!result.isConfirmed) {
+      return;
+    }
 
-    setSelectedStudents([]);
-    loadData();
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: error.message || "Failed to update status",
-    });
-  }
-};
+    try {
+      await api.put(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_UPDATE_STATUS, {
+        studentIds: selectedStudents,
+        status,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: `Status updated for ${selectedStudents.length} students`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      setSelectedStudents([]);
+      loadData();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to update status",
+      });
+    }
+  };
 
   // const handleBulkDelete = async () => {
   //   if (selectedStudents.length === 0) {
@@ -245,49 +242,49 @@ export default function StudentManagement() {
   // };
 
   const handleBulkDelete = async () => {
-  if (selectedStudents.length === 0) {
-    toast.error("Please select students first");
-    return;
-  }
+    if (selectedStudents.length === 0) {
+      toast.error("Please select students first");
+      return;
+    }
 
-  const result = await Swal.fire({
-    title: "Are you sure?",
-    text: `Delete ${selectedStudents.length} students? This cannot be undone!`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete",
-    cancelButtonText: "Cancel",
-  });
-
-  if (!result.isConfirmed) {
-    return;
-  }
-
-  try {
-    await api.delete(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_DELETE, {
-      data: { studentIds: selectedStudents },
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `Delete ${selectedStudents.length} students? This cannot be undone!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
     });
 
-    Swal.fire({
-      icon: "success",
-      title: "Deleted!",
-      text: `${selectedStudents.length} students deleted`,
-      timer: 2000,
-      showConfirmButton: false,
-    });
+    if (!result.isConfirmed) {
+      return;
+    }
 
-    setSelectedStudents([]);
-    loadData();
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: error.message || "Failed to delete students",
-    });
-  }
-};
+    try {
+      await api.delete(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.BULK_DELETE, {
+        data: { studentIds: selectedStudents },
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: `${selectedStudents.length} students deleted`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      setSelectedStudents([]);
+      loadData();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to delete students",
+      });
+    }
+  };
 
   if (loading && students.length === 0) {
     return (
@@ -303,44 +300,29 @@ export default function StudentManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 px-4 md:px-6 pb-6 ">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen bg-blue-50   ">
+      <div className="h-screen bg-blue-50 flex flex-col overflow-hidden font-sans text-slate-900">
         {/* Header */}
-        <div className="rounded-2xl  bg-slate-800  border border-white shadow-sm p-6">
 
-          <div className="flex flex-colgap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-                Student Management
-              </h2>
-              <p className="font-medium text-gray-200  text-sm flex items-center gap-1 mt-1">
-                <FaUserGraduate className="text-blue-600" />
-                Manage all students, bulk operations, and promotions
-              </p>
+        <div className="">
+          <div className="flex gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-2 flex items-center gap-4">
+              <div className="h-16 w-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <FaUserGraduate size={32} />
+              </div>
+
+              {/* Heading + Icon */}
+
+              <div>
+                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                  Student Management
+                </h1>
+                <p className="text-gray-500 text-sm font-medium mt-1">
+                  Manage all students, bulk operations, and promotions.
+                </p>
+              </div>
             </div>
           </div>
-
-          {/* Statistics */}
-          {/* {statistics && (
-            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="rounded-2xl bg-white p-4 shadow-md border border-slate-100">
-                <p className="text-sm text-slate-600">Total Students</p>
-                <p className="text-3xl font-bold text-slate-900">{statistics.totalStudents}</p>
-              </div>
-              <div className="rounded-2xl bg-green-50 p-4 shadow-md border border-green-200">
-                <p className="text-sm text-green-700">Enrolled</p>
-                <p className="text-3xl font-bold text-green-900">{statistics.byStatus?.ENROLLED || 0}</p>
-              </div>
-              <div className="rounded-2xl bg-yellow-50 p-4 shadow-md border border-yellow-200">
-                <p className="text-sm text-yellow-700">Registered</p>
-                <p className="text-3xl font-bold text-yellow-900">{statistics.byStatus?.REGISTERED || 0}</p>
-              </div>
-              <div className="rounded-2xl bg-blue-50 p-4 shadow-md border border-blue-200">
-                <p className="text-sm text-blue-700">Alumni</p>
-                <p className="text-3xl font-bold text-blue-900">{statistics.byStatus?.ALUMNI || 0}</p>
-              </div>
-            </div>
-          )} */}
         </div>
 
         {/* Filters */}

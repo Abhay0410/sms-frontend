@@ -14,6 +14,7 @@ import {
   FaArrowRight,
   FaFilter,
   FaChartPie,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
 
@@ -288,13 +289,19 @@ export default function FeeOverview() {
     <div className="space-y-5 animate-in fade-in duration-500">
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
-            Fee Overview
-          </h1>
-          <p className="text-gray-500 text-sm font-medium mt-1 ">
-            Comprehensive financial analytics and reports
-          </p>
+        <div className="flex items-start gap-3 ">
+          <div className="h-16 w-16 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
+            <FaMoneyBillWave size={35} />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-1">
+              Fee Overview
+            </h1>
+            <p className="text-gray-500 text-sm font-medium">
+              Comprehensive financial analytics and reports
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-400 shadow-sm">
@@ -308,7 +315,7 @@ export default function FeeOverview() {
               setAcademicYear(value);
               localStorage.setItem("academicYear", value); // ✅ save
             }}
-            className="px-4 py-2.5 bg-slate-100 border border-slate-600 rounded-xl text-sm font-medium text-black"
+            className="px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm font-medium text-black"
           >
             {session?.map((s) => (
               <option key={s._id} value={`${s.startYear}-${s.endYear}`}>

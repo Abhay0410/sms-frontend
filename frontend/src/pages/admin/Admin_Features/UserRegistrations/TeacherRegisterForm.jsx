@@ -1,5 +1,5 @@
 // pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
@@ -65,12 +65,16 @@ const Input = ({ label, error, required, ...props }) => (
     <input
       {...props}
       className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-        error 
-          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+        error
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
           : "border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
       }`}
     />
-    {error && <span className="text-[11px] font-bold text-rose-600 animate-pulse">{error}</span>}
+    {error && (
+      <span className="text-[11px] font-bold text-rose-600 animate-pulse">
+        {error}
+      </span>
+    )}
   </div>
 );
 
@@ -82,17 +86,21 @@ const FormSelect = ({ label, error, required, options, ...props }) => (
     <select
       {...props}
       className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-        error 
-          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+        error
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
           : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
       }`}
     >
       <option value="">Select {label}</option>
-      {options.map(opt => (
-        <option key={opt.value || opt} value={opt.value || opt}>{opt.label || opt}</option>
+      {options.map((opt) => (
+        <option key={opt.value || opt} value={opt.value || opt}>
+          {opt.label || opt}
+        </option>
       ))}
     </select>
-    {error && <span className="text-[11px] font-bold text-rose-600">{error}</span>}
+    {error && (
+      <span className="text-[11px] font-bold text-rose-600">{error}</span>
+    )}
   </div>
 );
 
@@ -110,7 +118,7 @@ export default function TeacherRegisterForm() {
     },
     gender: "",
     dateOfBirth: "",
-    qualification: [""],
+    qualification: [{ degree: "", specialization: "" }],
     subjects: [],
     department: "",
     joiningDate: "",
@@ -190,11 +198,15 @@ export default function TeacherRegisterForm() {
     fetchSubjects();
   }, []);
 
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const onChange = (e) => {
     const { name, value } = e.target;
 
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
 
     if (["street", "city", "state", "country", "pincode"].includes(name)) {
@@ -246,14 +258,28 @@ export default function TeacherRegisterForm() {
   // ✅ Qualification handlers
   const handleQualificationChange = (index, value) => {
     const updated = [...form.qualification];
-    updated[index] = value;
+    updated[index].degree = value;
+
     setForm((prev) => ({ ...prev, qualification: updated }));
+  };
+
+  const handleSpecializationChange = (index, value) => {
+    const updated = [...form.qualification];
+    updated[index].specialization = value;
+
+    setForm((prev) => ({
+      ...prev,
+      qualifications: updated,
+    }));
   };
 
   const addQualification = () => {
     setForm((prev) => ({
       ...prev,
-      qualification: [...prev.qualification, ""],
+      qualification: [
+        ...prev.qualification,
+        { degree: "", specialization: "" },
+      ],
     }));
   };
 
@@ -281,25 +307,26 @@ export default function TeacherRegisterForm() {
       newErrors.phone = "Must be 10 digits";
     }
     if (form.panNumber && !panRegex.test(form.panNumber)) {
-        newErrors.panNumber = "Invalid PAN format (e.g., ABCDE1234F)";
+      newErrors.panNumber = "Invalid PAN format (e.g., ABCDE1234F)";
     }
     if (!form.gender) newErrors.gender = "Gender is required";
     if (!form.dateOfBirth) newErrors.dateOfBirth = "Date of Birth is required";
     if (!form.joiningDate) newErrors.joiningDate = "Joining Date is required";
     if (!form.department) newErrors.department = "Department is required";
-    if (!form.address.street.trim()) newErrors.street = "Street Address is required";
+    if (!form.address.street.trim())
+      newErrors.street = "Street Address is required";
     if (!form.address.city.trim()) newErrors.city = "City is required";
     if (!form.address.state) newErrors.state = "State is required";
     if (!form.address.pincode.trim()) {
-        newErrors.pincode = "Pincode is required";
+      newErrors.pincode = "Pincode is required";
     } else if (!pincodeRegex.test(form.address.pincode)) {
-        newErrors.pincode = "Pincode must be 6 digits";
+      newErrors.pincode = "Pincode must be 6 digits";
     }
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-        toast.error("Please fix the highlighted errors.");
-        return false;
+      toast.error("Please fix the highlighted errors.");
+      return false;
     }
     return true;
   };
@@ -310,7 +337,7 @@ export default function TeacherRegisterForm() {
 
     try {
       setLoading(true);
-      
+
       const formatDateForBackend = (dateStr) => {
         if (!dateStr) return null;
         const [day, month, year] = dateStr.split("/");
@@ -327,7 +354,10 @@ export default function TeacherRegisterForm() {
       formData.append("isActive", true);
       formData.append("dateOfBirth", formatDateForBackend(form.dateOfBirth));
       formData.append("joiningDate", formatDateForBackend(form.joiningDate));
-      formData.append("qualification", JSON.stringify(form.qualification.filter(Boolean)));
+      formData.append(
+        "qualification",
+        JSON.stringify(form.qualification.filter(Boolean)),
+      );
       formData.append("subjects", JSON.stringify(form.subjects));
       formData.append("address", JSON.stringify(form.address));
       formData.append("salary", JSON.stringify(form.salary));
@@ -405,7 +435,6 @@ export default function TeacherRegisterForm() {
       });
       setErrors({});
       setProfilePicture(null);
-
     } catch (err) {
       // --- THE ROBUST ERROR PARSER ---
       const serverData = err?.response?.data;
@@ -423,10 +452,14 @@ export default function TeacherRegisterForm() {
       const lowerMsg = cleanReason.toLowerCase();
 
       // Mapping conflicts to specific teacher fields
-      if (lowerMsg.includes("email")) mappedErrors.email = "Email already registered.";
-      if (lowerMsg.includes("phone")) mappedErrors.phone = "Phone number already exists.";
-      if (lowerMsg.includes("pan")) mappedErrors.panNumber = "PAN card already registered.";
-      if (lowerMsg.includes("department")) mappedErrors.department = "Select a valid department.";
+      if (lowerMsg.includes("email"))
+        mappedErrors.email = "Email already registered.";
+      if (lowerMsg.includes("phone"))
+        mappedErrors.phone = "Phone number already exists.";
+      if (lowerMsg.includes("pan"))
+        mappedErrors.panNumber = "PAN card already registered.";
+      if (lowerMsg.includes("department"))
+        mappedErrors.department = "Select a valid department.";
 
       setErrors(mappedErrors);
 
@@ -442,17 +475,20 @@ export default function TeacherRegisterForm() {
             </div>
         `,
         confirmButtonColor: "#4f46e5",
-        confirmButtonText: "Review Details"
+        confirmButtonText: "Review Details",
       });
 
       // Auto-scroll logic
-      const firstError = Object.keys(mappedErrors).find(key => mappedErrors[key]);
+      const firstError = Object.keys(mappedErrors).find(
+        (key) => mappedErrors[key],
+      );
       if (firstError) {
-        const el = document.getElementsByName(firstError)[0] || document.querySelector(`[name="${firstError}"]`);
-        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const el =
+          document.getElementsByName(firstError)[0] ||
+          document.querySelector(`[name="${firstError}"]`);
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
         setTimeout(() => el?.focus(), 500);
       }
-
     } finally {
       setLoading(false);
     }
@@ -463,7 +499,7 @@ export default function TeacherRegisterForm() {
       <div className="max-w-5xl mx-auto">
         <div className="mb-4 text-center md:text-left">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <FaChalkboardTeacher className="text-indigo-600" /> Teacher
+            <FaChalkboardTeacher className="text-indigo-600 size-10" /> Teacher
             Enrollment
           </h1>
           <p className="text-slate-500 text-sm font-medium mt-1">
@@ -551,7 +587,9 @@ export default function TeacherRegisterForm() {
 
               {/* Date of Birth */}
               <div>
-                <label className={`text-sm font-semibold ${errors.dateOfBirth ? 'text-rose-500' : 'text-slate-700'}`}>
+                <label
+                  className={`text-sm font-semibold ${errors.dateOfBirth ? "text-rose-500" : "text-slate-700"}`}
+                >
                   Date of Birth <span className="text-red-500">*</span>
                 </label>
                 <DatePicker
@@ -567,23 +605,30 @@ export default function TeacherRegisterForm() {
                       ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`
                       : "";
                     setForm((prev) => ({ ...prev, dateOfBirth: formatted }));
-                    if (errors.dateOfBirth) setErrors(prev => ({ ...prev, dateOfBirth: null }));
+                    if (errors.dateOfBirth)
+                      setErrors((prev) => ({ ...prev, dateOfBirth: null }));
                   }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
                   className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${
-                    errors.dateOfBirth 
-                      ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+                    errors.dateOfBirth
+                      ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
                       : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
                   }`}
                   required
                 />
-                {errors.dateOfBirth && <span className="text-[11px] font-bold text-rose-600">{errors.dateOfBirth}</span>}
+                {errors.dateOfBirth && (
+                  <span className="text-[11px] font-bold text-rose-600">
+                    {errors.dateOfBirth}
+                  </span>
+                )}
               </div>
 
               {/* Joining Date */}
               <div>
-                <label className={`text-sm font-semibold ${errors.joiningDate ? 'text-rose-500' : 'text-slate-700'}`}>
+                <label
+                  className={`text-sm font-semibold ${errors.joiningDate ? "text-rose-500" : "text-slate-700"}`}
+                >
                   Joining Date <span className="text-red-500">*</span>
                 </label>
                 <DatePicker
@@ -599,18 +644,23 @@ export default function TeacherRegisterForm() {
                       ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`
                       : "";
                     setForm((prev) => ({ ...prev, joiningDate: formatted }));
-                    if (errors.joiningDate) setErrors(prev => ({ ...prev, joiningDate: null }));
+                    if (errors.joiningDate)
+                      setErrors((prev) => ({ ...prev, joiningDate: null }));
                   }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
                   className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${
-                    errors.joiningDate 
-                      ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+                    errors.joiningDate
+                      ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
                       : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
                   }`}
                   required
                 />
-                {errors.joiningDate && <span className="text-[11px] font-bold text-rose-600">{errors.joiningDate}</span>}
+                {errors.joiningDate && (
+                  <span className="text-[11px] font-bold text-rose-600">
+                    {errors.joiningDate}
+                  </span>
+                )}
               </div>
 
               {/* Profile Picture */}
@@ -627,49 +677,69 @@ export default function TeacherRegisterForm() {
               </div>
 
               {/* Qualification */}
-              <div className="md:col-span-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Qualification
-                </label>
 
-                <div className="space-y-3">
-                  {form.qualification.map((q, index) => (
-                    <div key={index} className="flex gap-2">
-                      <input
-                        type="text"
-                        value={q}
-                        onChange={(e) =>
-                          handleQualificationChange(index, e.target.value)
-                        }
-                        className="flex-1 p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="e.g. B.Ed, M.Ed"
-                      />
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Qualification */}
+                <div className="md:col-span-2">
+                  <label className="text-sm font-semibold text-slate-700 block mb-4">
+                    Qualification & Specialization
+                  </label>
 
-                      {/* + Button (only last input) */}
-                      {index === form.qualification.length - 1 && (
-                        <button
-                          type="button"
-                          onClick={addQualification}
-                          className="rounded-lg bg-indigo-600 px-4 text-white hover:bg-indigo-700"
-                        >
-                          +
-                        </button>
-                      )}
+                  <div className="space-y-3">
+  {form.qualification.map((item, index) => (
+    <div key={index} className="flex gap-3 items-center">
+      
+      {/* Qualification */}
+      <input
+        type="text"
+        value={item.degree}
+        onChange={(e) =>
+          handleQualificationChange(index, e.target.value)
+        }
+        placeholder="e.g. B.Ed"
+        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+      />
 
-                      {/* Remove button (if more than one) */}
-                      {form.qualification.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeQualification(index)}
-                          className="rounded-lg bg-red-500 px-4 text-white hover:bg-red-600"
-                        >
-                          −
-                        </button>
-                      )}
-                    </div>
-                  ))}
+      {/* Specialization */}
+      <input
+        type="text"
+        value={item.specialization}
+        onChange={(e) =>
+          handleSpecializationChange(index, e.target.value)
+        }
+        placeholder="e.g. Mathematics"
+        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+      />
+
+      {/* Buttons */}
+      <div className="flex gap-2">
+        {index === form.qualification.length - 1 && (
+          <button
+            type="button"
+            onClick={addQualification}
+            className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            +
+          </button>
+        )}
+
+        {form.qualification.length > 1 && (
+          <button
+            type="button"
+            onClick={() => removeQualification(index)}
+            className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          >
+            −
+          </button>
+        )}
+      </div>
+
+    </div>
+  ))}
+</div>
                 </div>
               </div>
+
               {/* Department + Subjects */}
               <div className="md:col-span-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -688,7 +758,9 @@ export default function TeacherRegisterForm() {
 
                   {/* Subjects */}
                   <div>
-                    <label className={`text-sm font-semibold ${errors.subjects ? 'text-rose-500' : 'text-slate-700'}`}>
+                    <label
+                      className={`text-sm font-semibold ${errors.subjects ? "text-rose-500" : "text-slate-700"}`}
+                    >
                       Subjects
                     </label>
 
@@ -715,13 +787,17 @@ export default function TeacherRegisterForm() {
                           }));
                         }}
                         placeholder="Select subjects"
-                        className={`basic-multi-select mt-1 ${errors.subjects ? 'react-select-error' : ''}`}
+                        className={`basic-multi-select mt-1 ${errors.subjects ? "react-select-error" : ""}`}
                         classNamePrefix="mt-1 select"
                       />
                     ) : (
                       <p>No subjects available</p>
                     )}
-                    {errors.subjects && <span className="text-[11px] font-bold text-rose-600">{errors.subjects}</span>}
+                    {errors.subjects && (
+                      <span className="text-[11px] font-bold text-rose-600">
+                        {errors.subjects}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -803,7 +879,7 @@ export default function TeacherRegisterForm() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase text-slate-500">
+                    <label className="text-[10px] font-bold uppercase text-slate-400">
                       Universal Account No (UAN)
                     </label>
                     {/* <input
@@ -835,7 +911,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase text-slate-500">
+                    <label className="text-[10px] font-bold uppercase text-slate-400">
                       PF Member ID
                     </label>
                     <input
@@ -846,7 +922,7 @@ export default function TeacherRegisterForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase text-slate-500">
+                    <label className="text-[10px] font-bold uppercase text-slate-400">
                       Payment Mode
                     </label>
                     <select
@@ -998,7 +1074,7 @@ export default function TeacherRegisterForm() {
                 ) : (
                   <>
                     <FaCheck className="h-4 w-4" />
-                    Initialize Account
+                    Enroll Teacher
                   </>
                 )}
               </button>
