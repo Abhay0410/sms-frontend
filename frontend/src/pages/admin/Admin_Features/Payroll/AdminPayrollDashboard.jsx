@@ -252,7 +252,7 @@ export default function AdminPayrollDashboard() {
       </div> */}
 
       {/* 📋 Staff Status Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-400 overflow-hidden">
+      {/* <div className="bg-white rounded-2xl shadow-sm border border-slate-400 overflow-hidden">
         <div className="p-10 border-b border-slate-400 flex justify-between items-center bg-slate-50/50">
           <div>
             <h3 className="text-xl font-bold text-slate-800">
@@ -369,7 +369,176 @@ export default function AdminPayrollDashboard() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
+
+      <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+
+  {/* Header */}
+  <div className="px-8 py-6 border-b  bg-slate-800 border-slate-200 flex justify-between items-center ">
+    <div>
+      <h3 className="text-lg font-semibold text-white">
+        Staff Payroll Directory
+      </h3>
+      <p className="text-gray-200 text-xs mt-1">
+        Manage individual salary structures
+      </p>
+    </div>
+
+    <button
+      onClick={() => navigate("../salary-setup")}
+      className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition"
+    >
+      Configure All
+    </button>
+  </div>
+
+
+  <div className="overflow-x-auto">
+
+    <table className="w-full">
+
+      {/* Table Header */}
+      <thead className="bg-slate-100 text-slate-600 text-xs uppercase">
+        <tr>
+          <th className="px-8 py-4 text-left">Member</th>
+          <th className="px-8 py-4 text-left">Structure</th>
+          <th className="px-8 py-4 text-left">Status</th>
+          <th className="px-8 py-4 text-right">Action</th>
+        </tr>
+      </thead>
+
+
+      {/* Table Body */}
+      <tbody className="divide-y divide-slate-200">
+
+        {currentStaff.map((staff) => (
+          <tr key={staff._id} className="hover:bg-slate-50 transition">
+
+            {/* Member */}
+            <td className="px-8 py-4 flex items-center gap-3">
+
+              <div className="h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold">
+                {staff.name.charAt(0)}
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold  text-slate-800">
+                  {staff.name}
+                </p>
+                <p className="text-xs uppercase text-slate-400">
+                  {staff.department}
+                </p>
+              </div>
+
+            </td>
+
+
+            {/* Salary */}
+            <td className="px-8 py-4">
+
+              {staff.hasStructure ? (
+                <span className="font-semibold text-indigo-600">
+                  ₹{staff.monthlyGross.toLocaleString()}
+                </span>
+              ) : (
+                <span className="text-xs text-gray-400 italic">
+                  Not Configured
+                </span>
+              )}
+
+            </td>
+
+
+            {/* Status */}
+            <td className="px-8 py-4">
+
+              <span
+                className={`px-3 py-1 text-xs rounded-full font-medium ${
+                  staff.payrollStatus === "PAID"
+                    ? "bg-emerald-100 text-emerald-600"
+                    : staff.payrollStatus === "READY"
+                    ? "bg-indigo-100 text-indigo-600"
+                    : "bg-gray-100 text-gray-500"
+                }`}
+              >
+                {staff.payrollStatus}
+              </span>
+
+            </td>
+
+
+            {/* Action Buttons */}
+            <td className="px-8 py-4 text-right">
+
+              {staff.hasStructure ? (
+                <button
+                  onClick={() =>
+                    navigate(`../salary-setup?id=${staff._id}`)
+                  }
+                  className="bg-indigo-500 text-white hover:text-indigo-600 hover:bg-indigo-100 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 ml-auto"
+                >
+                  <FaTools />
+                  Manage
+                </button>
+              ) : (
+                <button
+                  onClick={() =>
+                    navigate(`../salary-setup?id=${staff._id}`)
+                  }
+                  className="bg-emerald-500 text-white hover:text-emerald-600 hover:bg-emerald-100 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 ml-auto"
+                >
+                  <FaArrowRight />
+                  Setup
+                </button>
+              )}
+
+            </td>
+
+          </tr>
+        ))}
+
+      </tbody>
+
+    </table>
+
+
+    {/* Pagination */}
+    <div className="flex justify-center gap-2 p-6 border-t border-slate-200">
+
+      <button
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        className="px-4 py-2 border rounded-lg text-sm hover:bg-slate-100"
+      >
+        Prev
+      </button>
+
+      {visiblePages.map((page) => (
+        <button
+          key={page}
+          onClick={() => setCurrentPage(page)}
+          className={`px-4 py-2 rounded-lg text-sm ${
+            currentPage === page
+              ? "bg-indigo-600 text-white"
+              : "border hover:bg-slate-100"
+          }`}
+        >
+          {page}
+        </button>
+      ))}
+
+      <button
+        onClick={() =>
+          setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+        }
+        className="px-4 py-2 border rounded-lg text-sm hover:bg-slate-100"
+      >
+        Next
+      </button>
+
+    </div>
+
+  </div>
+</div>
     </div>
   );
 }

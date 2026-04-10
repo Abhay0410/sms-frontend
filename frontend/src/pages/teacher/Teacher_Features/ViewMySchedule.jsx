@@ -174,17 +174,25 @@ export default function ViewMySchedule() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-blue-50 p-4 ">
+    <div className="min-h-screen bg-blue-50  ">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+        <div className="flex items-center">
+          <div className="h-16 w-16 bg-indigo-100  rounded-xl flex items-center justify-center">
+                <FaCalendarWeek className="text-indigo-600 size-10 " />
+            </div>
+
+            <div className="p-5">
+          <h2 className="text-3xl font-bold  text-slate-900 tracking-tight flex items-center gap-3">
+           
+          
             My Teaching Schedule
           </h2>
-          <p className="mt-1 text-gray-600 flex  font-medium items-center gap-2">
-            <FaCalendarWeek className="text-slate-600" />
+
+          <p className="mt-1  text-gray-600 font-medium">
             View your weekly teaching schedule
           </p>
+          </div>
         </div>
 
         {/* Academic Year Filter - UPDATED */}

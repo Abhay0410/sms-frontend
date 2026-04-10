@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import { toast } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
 import { FaUserTie, FaCalculator, FaShieldAlt, FaSave, FaInfoCircle } from "react-icons/fa";
 
 export default function SalaryStructureSetup() {
@@ -9,6 +10,8 @@ export default function SalaryStructureSetup() {
   const [selectedStaff, setSelectedStaff] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [searchParams] = useSearchParams();
+const staffIdFromUrl = searchParams.get("id");
 
   // Form State
   const [monthlyGross, setMonthlyGross] = useState("");
@@ -51,6 +54,12 @@ export default function SalaryStructureSetup() {
         // Fetching combined staff list (Teachers + Admins)
         const resp = await api.get(API_ENDPOINTS.ADMIN.STAFF.LIST);
         setStaffList(resp.data || []);
+
+         if (staffIdFromUrl) {
+        setSelectedStaff(staffIdFromUrl);
+        handleStaffChange(staffIdFromUrl);
+      }
+      
       } catch  {
         toast.error("Failed to load staff list");
       } finally {
