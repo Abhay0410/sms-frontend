@@ -1628,7 +1628,7 @@ function AssignStudentsTab({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredStudents.map((s) => {
                 const isSelected = selectedStudents.includes(s._id);
                 const isEnrolled = !!s.section;
@@ -1640,24 +1640,24 @@ function AssignStudentsTab({
                         prev.includes(s._id) ? prev.filter((id) => id !== s._id) : [...prev, s._id]
                       )
                     }
-                    className={`group relative bg-white rounded-2xl transition-all duration-200 cursor-pointer overflow-hidden border
+                    className={`group relative bg-white rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden border
                       ${
                         isSelected
                           ? mode === "enroll" 
-                            ? "ring-2 ring-indigo-500 ring-offset-2 border-transparent bg-indigo-50/40 shadow-md scale-[1.02]"
-                            : "ring-2 ring-blue-500 ring-offset-2 border-transparent bg-blue-50/40 shadow-md scale-[1.02]"
-                          : "border-slate-200 hover:border-indigo-300 hover:shadow-md"
+                            ? "border-indigo-600 bg-indigo-50/60 shadow-md ring-1 ring-indigo-600"
+                            : "border-blue-600 bg-blue-50/60 shadow-md ring-1 ring-blue-600"
+                          : "border-slate-100 hover:border-slate-300 hover:shadow-lg hover:-translate-y-1"
                       }
                     `}
                   >
-                    <div className="p-4 flex items-center gap-4">
+                    <div className="p-5 flex items-start sm:items-center gap-4 h-full">
                       {/* Checkbox Area */}
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 mt-1 sm:mt-0">
                         <div
                           className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                             isSelected
-                              ? mode === "enroll" ? "bg-indigo-500 border-indigo-500 text-white" : "bg-blue-500 border-blue-500 text-white"
-                              : "border-slate-300 bg-slate-50 group-hover:border-indigo-400"
+                              ? mode === "enroll" ? "bg-indigo-600 border-indigo-600 text-white" : "bg-blue-600 border-blue-600 text-white"
+                              : "border-slate-200 bg-slate-50 group-hover:border-slate-400"
                           }`}
                         >
                           {isSelected && <FaCheckCircle className="text-sm" />}
@@ -1665,7 +1665,7 @@ function AssignStudentsTab({
                       </div>
 
                       {/* Avatar */}
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 mt-1 sm:mt-0">
                         <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg border-2 ${
                             isSelected 
                                 ? mode === "enroll" ? "bg-indigo-100 text-indigo-700 border-indigo-200" : "bg-blue-100 text-blue-700 border-blue-200"
@@ -1676,11 +1676,11 @@ function AssignStudentsTab({
                       </div>
 
                       {/* Details */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-slate-900 text-base truncate mb-0.5">
+                      <div className="flex-1 min-w-0 flex flex-col justify-center">
+                        <h4 className="font-bold text-slate-900 text-sm sm:text-base leading-snug mb-1">
                           {s.name}
                         </h4>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap items-center gap-2 mt-0.5">
                           <span className="text-xs font-mono text-slate-500">
                             {s.studentID}
                           </span>
@@ -1688,17 +1688,17 @@ function AssignStudentsTab({
                       </div>
 
                       {/* Badge */}
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 flex items-center mt-1 sm:mt-0">
                         {!isEnrolled ? (
-                            <span className="px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold rounded-md uppercase tracking-wider">
+                            <span className="px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold rounded-md uppercase tracking-wider">
                               Unassigned
                             </span>
                           ) : mode === "transfer" && s.section === fromSection ? (
-                            <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold rounded-md uppercase tracking-wider">
+                            <span className="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold rounded-md uppercase tracking-wider">
                               Sec {s.section}
                             </span>
                           ) : (
-                            <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded-md uppercase tracking-wider">
+                            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded-md uppercase tracking-wider">
                               Sec {s.section}
                             </span>
                         )}
@@ -1746,9 +1746,9 @@ function AssignStudentsTab({
 
       {/* Smart Action Panel (Sticky Bottom) */}
       {selectedStudents.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-4xl bg-slate-900 rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-50 flex items-center justify-between animate-in slide-in-from-bottom-8 border border-slate-700">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-4xl bg-slate-900/95 backdrop-blur-md rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-[60] flex items-center justify-between animate-in slide-in-from-bottom-8 border border-slate-700">
           <div className="flex items-center gap-4">
-            <div className={`h-12 w-12 rounded-xl flex items-center justify-center font-black text-xl shadow-inner ${mode === 'enroll' ? 'bg-indigo-500 text-white' : 'bg-blue-500 text-white'}`}>
+            <div className={`h-12 w-12 rounded-xl flex items-center justify-center font-black text-xl shadow-inner ${mode === 'enroll' ? 'bg-indigo-600 text-white' : 'bg-blue-600 text-white'}`}>
               {selectedStudents.length}
             </div>
             <div>
