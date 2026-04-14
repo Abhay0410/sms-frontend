@@ -446,7 +446,7 @@ export default function TeacherManagement() {
                     </div>
 
                     {/* Col 5: Quick Actions (10%) */}
-                    <div className="w-[10%] px-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-[10%] px-2 flex flex-col justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -611,12 +611,12 @@ export default function TeacherManagement() {
                     </span>
                   </div>
                   {/* Action Buttons */}
-                  <div className="flex gap-2">
+                  <div className=" gap-2">
                     <button
                       title={!academicYear ? "Select an Academic Session first" : "Assign Class Teacher"}
                       disabled={!academicYear}
                       onClick={() => openAssignModal(selectedTeacher, "classTeacher")}
-                      className="px-2  py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                      className="px-4  py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
                     >
                       <FaPlus size={10} /> Assign Class
                     </button>
@@ -624,7 +624,7 @@ export default function TeacherManagement() {
                       title={!academicYear ? "Select an Academic Session first" : "Assign Subject Teacher"}
                       disabled={!academicYear}
                       onClick={() => openAssignModal(selectedTeacher, "subject")}
-                      className="px-2 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
+                      className="px-2.5  mt-2 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm"
                     >
                       <FaPlus size={10} /> Assign Subject
                     </button>
@@ -988,7 +988,7 @@ function AssignmentModal({
     <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
         {/* Header */}
-        <div className="p-6 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-t-2xl">
+        <div className="p-6 bg-slate-700 text-white rounded-t-2xl">
           <div className="flex items-start justify-between">
             <div>
               <h3 className="text-xl font-bold ">
