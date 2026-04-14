@@ -13,9 +13,10 @@ import {
   FaUserGraduate,
 } from "react-icons/fa";
 
-export default function BulkImport() {
+export default function BulkImport({ type = "academic" }) {
+  const importType = type;
   const [file, setFile] = useState(null);
-  const [importType, setImportType] = useState("academic"); // Default changed to Academic first
+  // Default changed to Academic first
   const [loading, setLoading] = useState(false);
   const [academicYear, setAcademicYear] = useState("2025-2026");
   const [session, setSession] = useState([]);
@@ -211,6 +212,12 @@ export default function BulkImport() {
     fetchSessions();
   }, []);
 
+  const phaseTitle = {
+    academic: "Academic Setup",
+    teacher: "Teacher Import",
+    student: "Student Import",
+  };
+
   const handleDownloadSample = () => {
     try {
       const data = sampleData[importType];
@@ -289,27 +296,9 @@ export default function BulkImport() {
             <form onSubmit={handleUpload} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">
-                    Execution Phase
+                  <label className="text-[14px] font-semibold text-slate-400 uppercase tracking-widest ml-2">
+                    {phaseTitle[importType]}
                   </label>
-                  <select
-                    value={importType}
-                    onChange={(e) => {
-                      setImportType(e.target.value);
-                      setFile(null);
-                    }}
-                    className="w-full bg-slate-50 border-none rounded-2xl p-5 font-bold text-slate-700 outline-none focus:ring-2 ring-indigo-500/20"
-                  >
-                    <option value="academic">
-                      Step 1: Academic Structure (Classes/Subjects)
-                    </option>
-                    <option value="teacher">
-                      Step 2: Staff Onboarding (Teachers)
-                    </option>
-                    <option value="student">
-                      Step 3: Student Enrollment (With Fees/Parents)
-                    </option>
-                  </select>
                 </div>
 
                 <div className="space-y-2">
