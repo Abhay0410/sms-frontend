@@ -209,93 +209,151 @@ export default function EnquiryPage() {
 
       {/* 1. New Enquiry */}
       <Section id="new-enquiry" title="New Enquiry">
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-          {/* 👨‍🎓 Student Details */}
-          <input placeholder="Student Name" className="input" />
+          {/* 👨‍🎓 Student Name */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Student Name</label>
+            <input placeholder="Enter student name" className="input w-full" />
+          </div>
 
-          <select className="input">
-            <option value="">Select Class</option>
-            <option>Nursery</option>
-            <option>LKG</option>
-            <option>UKG</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
-            <option>6</option>
-            <option>7</option>
-            <option>8</option>
-            <option>9</option>
-            <option>10</option>
-            <option>11</option>
-            <option>12</option>
-          </select>
+          {/* Class */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Class</label>
+            <select className="input w-full">
+              <option value="">Select Class</option>
+              <option>Nursery</option>
+              <option>LKG</option>
+              <option>UKG</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8</option>
+              <option>9</option>
+              <option>10</option>
+              <option>11</option>
+              <option>12</option>
+            </select>
+          </div>
 
-          <select className="input">
-            <option value="">Gender</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-          </select>
+          {/* Gender */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Gender</label>
+            <select className="input w-full">
+              <option value="">Select Gender</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
 
-          <input type="date" className="input" />
+          {/* DOB */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Date of Birth</label>
+            <input type="date" className="input w-full" />
+          </div>
 
-          {/* 👨‍👩‍👧 Parent Details */}
-          <input placeholder="Parent Name" className="input" />
+          {/* 👨‍👩‍👧 Parent Name */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Parent Name</label>
+            <input placeholder="Enter parent name" className="input w-full" />
+          </div>
 
-          <select className="input">
-            <option value="">Relation</option>
-            <option>Father</option>
-            <option>Mother</option>
-            <option>Guardian</option>
-          </select>
+          {/* Relation */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Relation</label>
+            <select className="input w-full">
+              <option value="">Select Relation</option>
+              <option>Father</option>
+              <option>Mother</option>
+              <option>Guardian</option>
+            </select>
+          </div>
 
-          <input placeholder="Phone Number" className="input" />
-          <input placeholder="Alternate Phone" className="input" />
+          {/* Phone */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Phone Number</label>
+            <input placeholder="Enter phone number" className="input w-full" />
+          </div>
 
-          <input placeholder="Email" className="input md:col-span-2" />
+          {/* Alternate Phone */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Alternate Phone</label>
+            <input placeholder="Enter alternate number" className="input w-full" />
+          </div>
 
-          {/* 📍 Address */}
-          <input placeholder="City" className="input" />
-          <input placeholder="State" className="input" />
+          {/* Email FULL WIDTH */}
+          <div className="flex flex-col md:col-span-2">
+            <label className="text-sm font-medium mb-1">Email</label>
+            <input placeholder="Enter email" className="input w-full" />
+          </div>
 
-          {/* 📢 Source */}
-          <select className="input">
-            <option value="">Enquiry Source</option>
-            <option>Walk-in</option>
-            <option>Website</option>
-            <option>Referral</option>
-            <option>Social Media</option>
-            <option>Advertisement</option>
-          </select>
+          {/* City */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">City</label>
+            <input placeholder="Enter city" className="input w-full" />
+          </div>
 
-          {/* 📅 Follow-up */}
-          <input type="date" className="input" />
+          {/* State */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">State</label>
+            <input placeholder="Enter state" className="input w-full" />
+          </div>
 
-          {/* 🚐 Optional */}
-          <select className="input">
-            <option value="">Transport Required?</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
+          {/* Source */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Enquiry Source</label>
+            <select className="input w-full">
+              <option value="">Select Source</option>
+              <option>Walk-in</option>
+              <option>Website</option>
+              <option>Referral</option>
+              <option>Social Media</option>
+              <option>Advertisement</option>
+            </select>
+          </div>
 
-          <select className="input">
-            <option value="">Hostel Required?</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
+          {/* Follow-up Date */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Next Follow-up</label>
+            <input type="date" className="input w-full" />
+          </div>
 
-          {/* 📝 Notes */}
-          <textarea
+          {/* Transport */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Transport Required?</label>
+            <select className="input w-full">
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
 
-            placeholder="Notes / Remarks"
-            className="col-span-2 input h-24"
-          />
+          {/* Hostel */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Hostel Required?</label>
+            <select className="input w-full">
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
 
-          {/* 🚀 Submit */}
-          <button className="col-span-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold">
+          {/* Notes FULL WIDTH */}
+          <div className="flex flex-col md:col-span-2">
+            <label className="text-sm font-medium mb-1">Notes / Remarks</label>
+            <textarea
+              placeholder="Write notes..."
+              className="input w-full h-24"
+            />
+          </div>
+
+          {/* Submit FULL WIDTH */}
+          <button className="md:col-span-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold">
             Submit Enquiry
           </button>
 

@@ -148,7 +148,7 @@ const AdminRoutes = ({ school }) => {
   title: "Enquiry",
   icon: <FaPhone />,
   subTabs: [
-    { title: "New Enquiry", path: "enquiry#new" },
+    { title: "New Enquiry", path: "enquiry#new-enquiry" },
     { title: "Enquiry Details", path: "enquiry#details" },
     { title: "Enquiry Details - II", path: "enquiry#details2" },
     { title: "Done Followup", path: "enquiry#done" },
