@@ -12,6 +12,7 @@ import {
   FaUserTie,
   FaUserGraduate,
   FaMoneyBillWave,
+  FaFileInvoiceDollar,
 } from "react-icons/fa";
 
 export default function BulkImport({ type = "academic" }) {
@@ -31,6 +32,8 @@ export default function BulkImport({ type = "academic" }) {
       "Name,AdmissionID,RollNumber,Email,ClassName,Section,ParentName,ParentPhone,Gender,ParentID,ParentEmail\nAarav Sharma,STU26051,1,aarav@mail.com,10,B,Rajesh Sharma,9812345670,Male,PAR250001,rajesh@parent.com",
     fee:
       "ClassName,FeeHead,Amount,Frequency,DueDateDay\n10,Tuition Fee,2000,MONTHLY,10\n10,Exam Fee,500,ONE_TIME,15\n9,Tuition Fee,1800,MONTHLY,10",
+    payment:
+      "StudentID,Amount,Mode,Date,Remarks\nSTU26001,5000,CASH,2026-04-10,Migration Import\nSTU26002,1200,NEFT,2026-03-15,Q1 Partial",
   };
 
   // Instruction Data Map
@@ -72,6 +75,16 @@ export default function BulkImport({ type = "academic" }) {
         "This will auto-generate fee roadmaps for all students in the class.",
       ],
     },
+    payment: {
+      icon: <FaFileInvoiceDollar className="text-rose-500" />,
+      title: "Bulk Fee Payments Migration",
+      steps: [
+        "Headers: StudentID, Amount, Mode, Date, Remarks",
+        "StudentID must match exactly with the student record in DB.",
+        "Payments follow FIFO logic: oldest pending dues are cleared first.",
+        "Ensure Fee Structure and Students are already imported.",
+      ],
+    },
   };
 
   const handleFileChange = (e) => {
@@ -98,7 +111,9 @@ export default function BulkImport({ type = "academic" }) {
     else if (importType === "teacher")
       endpoint = "/api/admin/onboarding/import-teachers";
     else if (importType === "fee")
-      endpoint = "/api/admin/onboarding/import-fees";
+      endpoint = "/api/admin/onboarding/import-fee-structures";
+    else if (importType === "payment")
+      endpoint = "/api/admin/onboarding/import-fee-payments";
     else endpoint = "/api/admin/onboarding/import-students";
 
     setLoading(true);
@@ -122,70 +137,6 @@ export default function BulkImport({ type = "academic" }) {
     }
   };
 
-  //  const fetchSessions = async () => {
-  //   try {
-  //     // const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
-  //     const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION, {
-  //   headers: {
-  //     "Cache-Control": "no-cache",
-  //   },
-  // });
-  //     console.log(API_ENDPOINTS.SESSION.GET_All_SESSION);
-
-  //   const sessionData = res?.data || [];
-
-  //     const currentYear = new Date().getFullYear();
-
-  //     // ✅ filter: past 2 + present + next 3
-  //     sessionData = sessionData.filter(
-  //       (s) =>
-  //         s.startYear >= currentYear - 2 &&
-  //         s.startYear <= currentYear + 3
-  //     );
-
-  //     // ✅ sort
-  //     sessionData.sort((a, b) => a.startYear - b.startYear);
-
-  //     setSession(sessionData);
-
-  //     // ✅ active select
-  //     const active = sessionData.find((s) => s?.isActive);
-
-  //     if (active) {
-  //       setAcademicYear(`${active.startYear}-${active.endYear}`);
-  //     } else if (sessionData.length > 0) {
-  //       const latest = sessionData[sessionData.length - 1];
-  //       setAcademicYear(`${latest.startYear}-${latest.endYear}`);
-  //     }
-
-  //   } catch (err) {
-  //     console.error("Session fetch error", err);
-  //   }
-  // };
-
-  // const fetchSessions = async () => {
-  //   try {
-  //     const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
-
-  // console.log("FULL RES:", res);
-
-  // // 🔥 handle both cases
-  // const sessionData = Array.isArray(res) ? res : res?.data || [];
-
-  // console.log("SESSION DATA:", sessionData);
-
-  // setSession(sessionData);
-
-  //     const active = sessionData.find((s) => s?.isActive);
-
-  //     if (active) {
-  //       setAcademicYear(`${active.startYear}-${active.endYear}`);
-  //     }
-
-  //   } catch (err) {
-  //     console.error("Session fetch error", err);
-  //   }
-  // };
 
   const fetchSessions = async () => {
     try {
@@ -232,6 +183,7 @@ export default function BulkImport({ type = "academic" }) {
     teacher: "Teacher Import",
     student: "Student Import",
     fee: "Fee Structure Import",
+    payment: "Fee Payments Migration",
   };
 
   const handleDownloadSample = () => {
