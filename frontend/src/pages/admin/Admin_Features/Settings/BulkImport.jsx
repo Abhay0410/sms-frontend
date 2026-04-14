@@ -11,6 +11,7 @@ import {
   FaUniversity,
   FaUserTie,
   FaUserGraduate,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 
 export default function BulkImport({ type = "academic" }) {
@@ -28,6 +29,8 @@ export default function BulkImport({ type = "academic" }) {
       "Name,TeacherID,Email,Phone,Designation,Department\nAbhay Singh,TCHR26001,abhay@school.com,9876543210,Senior Teacher,Science\nJohn Doe,TCHR26002,john@school.com,8877665544,Librarian,Library",
     student:
       "Name,AdmissionID,RollNumber,Email,ClassName,Section,ParentName,ParentPhone,Gender,ParentID,ParentEmail\nAarav Sharma,STU26051,1,aarav@mail.com,10,B,Rajesh Sharma,9812345670,Male,PAR250001,rajesh@parent.com",
+    fee:
+      "ClassName,FeeHead,Amount,Frequency,DueDateDay\n10,Tuition Fee,2000,MONTHLY,10\n10,Exam Fee,500,ONE_TIME,15\n9,Tuition Fee,1800,MONTHLY,10",
   };
 
   // Instruction Data Map
@@ -59,6 +62,16 @@ export default function BulkImport({ type = "academic" }) {
         "Parents and Fee Roadmaps are auto-generated.",
       ],
     },
+    fee: {
+      icon: <FaMoneyBillWave className="text-amber-500" />,
+      title: "Fee Structure Mapping",
+      steps: [
+        "Headers: ClassName, FeeHead, Amount, Frequency, DueDateDay",
+        "Fee Heads must be created in the Fee Master before importing.",
+        "Frequency: MONTHLY, QUARTERLY, YEARLY, or ONE_TIME.",
+        "This will auto-generate fee roadmaps for all students in the class.",
+      ],
+    },
   };
 
   const handleFileChange = (e) => {
@@ -84,6 +97,8 @@ export default function BulkImport({ type = "academic" }) {
       endpoint = "/api/admin/onboarding/import-academics";
     else if (importType === "teacher")
       endpoint = "/api/admin/onboarding/import-teachers";
+    else if (importType === "fee")
+      endpoint = "/api/admin/onboarding/import-fees";
     else endpoint = "/api/admin/onboarding/import-students";
 
     setLoading(true);
@@ -216,6 +231,7 @@ export default function BulkImport({ type = "academic" }) {
     academic: "Academic Setup",
     teacher: "Teacher Import",
     student: "Student Import",
+    fee: "Fee Structure Import",
   };
 
   const handleDownloadSample = () => {

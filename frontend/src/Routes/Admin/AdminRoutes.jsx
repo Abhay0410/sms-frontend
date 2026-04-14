@@ -77,6 +77,7 @@ const AdminRoutes = ({ school }) => {
               { title: "Academic Import", path: "bulk-import-academic" },
               { title: "Teacher Import", path: "bulk-import-teacher" },
               { title: "Student Import", path: "bulk-import-student" },
+              { title: "Fee Import", path: "bulk-import-fee" },
             ],
           },
         ],
@@ -228,6 +229,10 @@ const AdminRoutes = ({ school }) => {
             <Route
               path="bulk-import-student"
               element={<BulkImport type="student" school={school} />}
+            />
+            <Route
+              path="bulk-import-fee"
+              element={<BulkImport type="fee" school={school} />}
             />
           </>
         )}
