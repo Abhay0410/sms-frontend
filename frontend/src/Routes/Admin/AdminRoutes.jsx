@@ -71,17 +71,18 @@ const AdminRoutes = ({ school }) => {
           { title: "Teacher Register", path: "register-teacher" },
           { title: "Student Register", path: "register-student" },
           { title: "Admin Register", path: "admin-register" },
-          {
-            title: "Bulk Import",
-            subTabs: [
-              { title: "Academic Import", path: "bulk-import-academic" },
+          
+        ],
+        visibleTo: ["Principal", "Administrator"],
+      },
+      {title:"Bulk Imports",
+        icon:<FaFileAlt size={20}/>,
+        subTabs:[{ title: "Academic Import", path: "bulk-import-academic" },
               { title: "Teacher Import", path: "bulk-import-teacher" },
               { title: "Student Import", path: "bulk-import-student" },
               { title: "Fee Head Import", path: "bulk-import-fee" },
               { title: "Fee Payment Import", path: "bulk-import-payment" },
             ],
-          },
-        ],
         visibleTo: ["Principal", "Administrator"],
       },
       {

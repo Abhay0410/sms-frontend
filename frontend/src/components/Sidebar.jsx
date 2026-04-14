@@ -44,18 +44,40 @@ const Sidebar = ({ isOpen, setIsOpen, sections, title, role }) => {
   //   }
   // };
 
-  const handleMenuClick = (item) => {
+//   const handleMenuClick = (item) => {
+//   if (item.subTabs) {
+//     toggleSection(item.title);
+//   } else {
+//     const [basePath, hash] = item.path.split("#");
+
+//     const targetPath = getSchoolPath(basePath);
+
+//     // ✅ ALWAYS NAVIGATE WITH HASH
+//     const finalPath = hash ? `${targetPath}#${hash}` : targetPath;
+
+//     navigate(finalPath);
+
+//     if (window.innerWidth < 768) setIsOpen(false);
+//   }
+// };
+const handleMenuClick = (item) => {
   if (item.subTabs) {
     toggleSection(item.title);
   } else {
     const [basePath, hash] = item.path.split("#");
-
     const targetPath = getSchoolPath(basePath);
-
-    // ✅ ALWAYS NAVIGATE WITH HASH
     const finalPath = hash ? `${targetPath}#${hash}` : targetPath;
 
-    navigate(finalPath);
+    // 👇 SAME HASH CLICK FIX
+    if (window.location.hash === `#${hash}`) {
+      window.location.hash = ""; // reset
+
+      setTimeout(() => {
+        navigate(finalPath);
+      }, 50);
+    } else {
+      navigate(finalPath);
+    }
 
     if (window.innerWidth < 768) setIsOpen(false);
   }
@@ -67,13 +89,22 @@ const Sidebar = ({ isOpen, setIsOpen, sections, title, role }) => {
   //   return location.pathname === schoolPath;
   // };
 
-  const isActive = (path) => {
+const isActive = (path) => {
   if (!path) return false;
 
-  const [basePath] = path.split("#"); // 👈 ignore hash
+  const [basePath, hash] = path.split("#");
+
   const schoolPath = getSchoolPath(basePath);
 
-  return location.pathname === schoolPath;
+  const currentPath = location.pathname;
+  const currentHash = location.hash.replace("#", "");
+
+  // ✅ match both path + hash
+  if (hash) {
+    return currentPath === schoolPath && currentHash === hash;
+  }
+
+  return currentPath === schoolPath;
 };
 
   // ✅ Check if any subTab is active
