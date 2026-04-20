@@ -263,6 +263,19 @@ export const API_ENDPOINTS = {
       STATS: "/api/admin/library/stats",
       RECENT_TRANSACTIONS: "/api/admin/library/recent",
     },
+
+    // Transport Management
+    TRANSPORT: {
+      VEHICLES: "/api/admin/transport/vehicles",
+      VEHICLE_BY_ID: (id) => `/api/admin/transport/vehicles/${id}`,
+      
+      STAFF: "/api/admin/transport/staff",
+      STAFF_BY_ID: (id) => `/api/admin/transport/staff/${id}`,
+      
+      FUEL: "/api/admin/transport/fuel",
+      TRIPS: "/api/admin/transport/trips",
+      REPORT: "/api/admin/transport/report",
+    },
   },
 
   // ========================================

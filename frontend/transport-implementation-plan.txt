@@ -1,0 +1,41 @@
+TRANSPORT MANAGEMENT MODULE - IMPLEMENTATION PLAN
+=================================================
+
+Phase 1: API & Service Layer Setup
+----------------------------------
+[x] Add Transport API endpoints to `src/constants/apiEndpoints.js`.
+
+
+Phase 2: Layout & Dashboard Shell
+---------------------------------
+[x] Update Admin Sidebar navigation to include a "Transport" link mapping to `/admin/transport`.
+[x] Create `src/pages/admin/Admin_Features/Transport/TransportDashboard.jsx`.
+    [x] Set up a Tabbed navigation interface (Vehicles, Staff, Fuel Logs, Trip Logs, Reports).
+    [x] Ensure smooth switching between tabs without page reloads.
+
+Phase 3: Tab Views Implementation (`src/pages/admin/Admin_Features/Transport/tabs/`)
+-------------------------------------------------------------------
+[x] Build `VehicleManagementTab.jsx`: Data table with Type & Status badges, and "Add Vehicle" button.
+[x] Build `StaffManagementTab.jsx`: Table showing drivers/helpers, license expiries, and assigned vehicles.
+[x] Build `FuelLogsTab.jsx`: Table for diesel entries, volume (L), total cost, logged by, and date filters.
+[x] Build `TripLogsTab.jsx`: Daily logbook table (start/end odometer, distance, driver, vehicle).
+[x] Build `TransportReportsTab.jsx`: Dashboard with summary cards (Total Vehicles, Monthly Fuel Cost) and aggregate table (efficiency/mileage per vehicle).
+
+Phase 4: Modals & Forms (`src/pages/admin/Admin_Features/Transport/modals/`)
+-------------------------------------------------------------
+[x] Build `VehicleModal.jsx`: Form for Reg No., Capacity, Type (Bus/Van/Car), Status.
+[x] Build `StaffModal.jsx`: Form for Driver/Helper info, License No., and assigning an active vehicle.
+[x] Build `FuelLogModal.jsx`: Form for Date, Vehicle (dropdown), Liters, Total Cost, Current Odometer.
+[x] Build `TripLogModal.jsx`: Form for Vehicle, Driver, Start Km, End Km, Route description.
+
+Phase 5: UI State, Validation & Polish
+--------------------------------------
+[x] Implement React Hook Form across all modals for validation.
+[x] Add global Toast/Snackbar notifications for all API success/error responses.
+[x] Implement loading spinners/skeletons during data fetching and form submissions.
+[x] Final end-to-end testing of the Transport module.
+
+Backend Consistency Notes:
+--------------------------------------
+[ ] In `admin.transport.controller.js`, `getTransportReport` returns an array. The frontend has been updated to manually calculate the grand totals (`totalVehicles`, `monthlyFuelCost`, etc.) from this array to render the dashboard. 
+[ ] The `successResponse` utility puts the payload in a `.data` property. The frontend tabs have been updated to extract `response.data.data` safely.

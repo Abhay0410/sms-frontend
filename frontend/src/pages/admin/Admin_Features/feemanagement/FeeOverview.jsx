@@ -8,7 +8,7 @@ import {
   FaCheckCircle,
   FaExclamationCircle,
   FaUsers,
-  FaDollarSign,
+  FaRupeeSign,
   FaCalendarAlt,
   FaChartBar,
   FaArrowRight,
@@ -472,7 +472,7 @@ export default function FeeOverview() {
               color="purple"
             />
             <StatCard
-              icon={<FaDollarSign />}
+              icon={<FaRupeeSign />}
               label={
                 selectedMonth === "ALL"
                   ? "Annual Revenue"

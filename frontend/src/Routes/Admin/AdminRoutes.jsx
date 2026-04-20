@@ -12,6 +12,7 @@ import {
   FaUserCog,
   FaWallet,
   FaBookReader,
+  FaBus,
 } from "react-icons/fa";
 import AdminDashboardPage from "../../pages/admin/AdminDashboardPage.jsx";
 import TeacherRegisterForm from "../../pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx";
@@ -40,6 +41,11 @@ import LibraryInventory from "../../pages/admin/Admin_Features/Library/LibraryIn
 import BulkImport from "../../pages/admin/Admin_Features/Settings/BulkImport.jsx";
 import  {FaPhone} from "react-icons/fa";
 import EnquiryPage from "../../pages/admin/Admin_Features/Enquiry/EnquiryPage.jsx";
+import VehicleManagementTab from "../../pages/admin/Admin_Features/Transport/VehicleManagementTab.jsx";
+import StaffManagementTab from "../../pages/admin/Admin_Features/Transport/StaffManagementTab.jsx";
+import FuelLogsTab from "../../pages/admin/Admin_Features/Transport/FuelLogsTab.jsx";
+import TripLogsTab from "../../pages/admin/Admin_Features/Transport/TripLogsTab.jsx";
+import TransportReportsTab from "../../pages/admin/Admin_Features/Transport/TransportReportsTab.jsx";
 const AdminRoutes = ({ school }) => {
   // ✅ Accept school prop
   // 1. Logged in user ki details lein
@@ -144,6 +150,17 @@ const AdminRoutes = ({ school }) => {
         visibleTo: ["Principal", "Librarian"],
       },
 
+      {
+        title: "Transport",
+        icon: <FaBus />,
+        subTabs: [
+          { title: "Add Vehicles", path: "transport-vehicles" },
+          { title: "Add Driver/Helper", path: "transport-staff" },
+          { title: "Fuel Logs", path: "transport-fuel" },
+          { title: "Trip Logs", path: "transport-trips" },
+          { title: "Reports", path: "transport-reports" },
+        ],
+      },
       {
   title: "Enquiry",
   icon: <FaPhone />,
@@ -287,6 +304,13 @@ const AdminRoutes = ({ school }) => {
         {/* Library Management */}
         <Route path="library-circulation" element={<BookIssueReturn />} />
         <Route path="library-inventory" element={<LibraryInventory />} />
+
+        {/* Transport Management */}
+        <Route path="transport-vehicles" element={<VehicleManagementTab school={school} />} />
+        <Route path="transport-staff" element={<StaffManagementTab school={school} />} />
+        <Route path="transport-fuel" element={<FuelLogsTab school={school} />} />
+        <Route path="transport-trips" element={<TripLogsTab school={school} />} />
+        <Route path="transport-reports" element={<TransportReportsTab school={school} />} />
 
         {/* Fee Management */}
         <Route path="fee-overview" element={<FeeOverview school={school} />} />
