@@ -276,6 +276,23 @@ export const API_ENDPOINTS = {
       TRIPS: "/api/admin/transport/trips",
       REPORT: "/api/admin/transport/report",
     },
+
+    // Expense & Financial Ledger
+    EXPENSE: {
+      CATEGORIES: "/api/admin/expense/categories",
+      SUMMARY: "/api/admin/expense/summary",
+      BASE: "/api/admin/expense", // GET, POST
+      DELETE: (id) => `/api/admin/expense/${id}`,
+    },
+
+    // Inventory Management
+    INVENTORY: {
+      ITEMS: "/api/admin/inventory/items",
+      PURCHASES: "/api/admin/inventory/purchases",
+      CONSUMPTION_REPORT: "/api/admin/inventory/reports/consumption",
+      ISSUES: "/api/admin/inventory/issues",
+      UPDATE_ISSUE_STATUS: (issueId) => `/api/admin/inventory/issues/${issueId}/status`,
+    },
   },
 
   // ========================================

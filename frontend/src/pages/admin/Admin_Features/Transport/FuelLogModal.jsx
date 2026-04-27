@@ -91,7 +91,7 @@ const FuelLogModal = ({ isOpen, onClose, onSuccess }) => {
               <input type="number" required step="0.01" name="quantityLiters" value={formData.quantityLiters} onChange={handleChange} placeholder="0.00" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Total Cost ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Total Cost (₹)</label>
               <input type="number" required step="0.01" name="totalCost" value={formData.totalCost} onChange={handleChange} placeholder="0.00" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
             </div>
           </div>

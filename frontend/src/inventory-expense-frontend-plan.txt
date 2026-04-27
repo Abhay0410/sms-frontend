@@ -1,0 +1,81 @@
+INVENTORY & EXPENSE MANAGEMENT - FRONTEND IMPLEMENTATION PLAN
+=============================================================
+
+Overview
+--------
+This plan outlines the frontend architecture and UI/UX approach to integrate the new Expense and Inventory modules. We will use a tabbed dashboard structure similar to the Transport module, utilizing React Hook Form for dynamic validations, and Recharts for financial analytics.
+
+Phase 1: Routing & Navigation Integration
+-----------------------------------------
+1. API Endpoints: Define all new endpoints in `src/constants/apiEndpoints.js` under `EXPENSE` and `INVENTORY`.
+2. Sidebar Updates: Update `AdminRoutes.jsx` to include two new main sections:
+   - "Financial Ledger" (mapped to `/admin/expense`)
+   - "Inventory & Assets" (mapped to `/admin/inventory`)
+
+Phase 2: Expense Module (The Financial Hub)
+-------------------------------------------
+Location: `src/pages/admin/Admin_Features/Expense/`
+
+1. ExpenseDashboard.jsx (Main Container): Tabbed interface.
+2. ExpenseOverviewTab.jsx: 
+   - Summary cards: Total Expense, Payroll Expense, Transport Expense, Inventory Purchases.
+   - Recharts Pie/Bar charts mapping `source` and `category`.
+3. ExpenseCategoriesTab.jsx:
+   - Data table to create/edit custom categories.
+   - Visual lock/disabled delete button for `isSystemGenerated` categories.
+4. ExpenseLedgerTab.jsx:
+   - Master table listing all financial outflows.
+   - Advanced filters: Date Range, Source (Manual, Payroll, Transport, Inventory), and Category.
+   - Visual badges distinguishing automated system expenses vs. manual entries.
+5. ManualExpenseModal.jsx:
+   - Form: Category dropdown, Amount, Date, Payment Mode, Description.
+
+Phase 3: Inventory Master & Purchases (Stock In)
+------------------------------------------------
+Location: `src/pages/admin/Admin_Features/Inventory/`
+
+1. InventoryDashboard.jsx (Main Container): Tabbed interface.
+2. ItemMasterTab.jsx:
+   - Table displaying all cataloged items.
+   - Columns: Item Name, Category, Type (Asset/Consumable badge), Unit, In Storage, In Use.
+   - UI Toggle/Switch: "Show Available in Storage Only" (maps to `?inStorageOnly=true`).
+3. AddItemModal.jsx:
+   - Form: Item Name, Category (Dropdown), Type (Asset/Consumable Toggle), Unit, Minimum Stock Level.
+4. PurchaseStockModal.jsx:
+   - Form triggered from the Master list.
+   - Fields: Quantity, Unit Price, Total Amount (auto-calculated), Vendor Name, Bill Date.
+   - Note: Displays an info banner explaining "This will automatically create a purchase expense in the Financial Ledger."
+
+Phase 4: Inventory Allocation Engine (Stock Out)
+------------------------------------------------
+1. IssueItemModal.jsx (Smart Dynamic Form):
+   - Step 1: Select Item (Shows available `inStorage` count).
+   - Step 2: Select Quantity (Validates against available stock).
+   - Step 3: Target Select - `issuedToType` (Dropdown: Class, Room, Department, Staff) -> Shows dependent dropdown (e.g., specific Class list).
+   - Step 4 (Dynamic): If item is `ASSET`, render a dynamic field array for `allocationDetails` (e.g., inputs to log Serial Numbers or Mac Addresses based on quantity).
+2. AllocationsTab.jsx:
+   - Table of issued items. 
+   - Columns: Item Name, Issued To, Quantity, Issue Date, Status.
+   - Status Badges: 'ISSUED' (Blue), 'CONSUMED' (Gray), 'RETURNED' (Green), 'DAMAGED' (Red).
+
+Phase 5: Asset Lifecycle & Management (Returns & Damages)
+---------------------------------------------------------
+1. Lifecycle Actions:
+   - Add action buttons on the `AllocationsTab.jsx` table for items with 'ISSUED' status.
+2. AssetReturnModal.jsx:
+   - Form to log the return date and condition. Updates status to 'RETURNED' and moves stock back to `inStorage`.
+3. AssetDamageModal.jsx:
+   - Form to mark quantity as 'DAMAGED'. Moves stock from `inUse` to `damaged`.
+
+Phase 6: Reporting & Analytics
+------------------------------
+1. InventoryReportsTab.jsx:
+   - Stock Valuation Report: Table multiplying `inStorage` * average purchase price.
+   - Consumption Analytics: Bar chart showing which Department/Class consumes the most materials.
+   - Low Stock Alerts: A dedicated danger-colored section highlighting items where `inStorage <= minimumStockLevel`.
+
+Phase 7: Polish & Interactivity
+-------------------------------
+- Global state updates using Revalidation / React Hooks to ensure when a Purchase is made, the Expense Dashboard immediately reflects it.
+- Toast notifications for all lifecycle events.
+- Implement debounced search for the Master Ledger and Inventory tables.

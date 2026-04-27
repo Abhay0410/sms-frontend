@@ -13,6 +13,7 @@ import {
   FaWallet,
   FaBookReader,
   FaBus,
+  FaBoxOpen
 } from "react-icons/fa";
 import AdminDashboardPage from "../../pages/admin/AdminDashboardPage.jsx";
 import TeacherRegisterForm from "../../pages/admin/Admin_Features/UserRegistrations/TeacherRegisterForm.jsx";
@@ -46,6 +47,8 @@ import StaffManagementTab from "../../pages/admin/Admin_Features/Transport/Staff
 import FuelLogsTab from "../../pages/admin/Admin_Features/Transport/FuelLogsTab.jsx";
 import TripLogsTab from "../../pages/admin/Admin_Features/Transport/TripLogsTab.jsx";
 import TransportReportsTab from "../../pages/admin/Admin_Features/Transport/TransportReportsTab.jsx";
+import ExpenseDashboard from "../../pages/admin/Admin_Features/Expense/ExpenseDashboard.jsx";
+import InventoryDashboard from "../../pages/admin/Admin_Features/Inventory/InventoryDashboard.jsx";
 const AdminRoutes = ({ school }) => {
   // ✅ Accept school prop
   // 1. Logged in user ki details lein
@@ -70,6 +73,7 @@ const AdminRoutes = ({ school }) => {
         icon: <FaHome />,
         path: "admin-dashboard",
       },
+
       {
         title: "User Registration",
         icon: <FaUsers />,
@@ -113,6 +117,18 @@ const AdminRoutes = ({ school }) => {
           { title: "Set Class Fees", path: "fee-structure" },
         ],
         visibleTo: ["Principal", "Accountant"],
+      },
+      {
+        title: "Inventory & Assets",
+        icon: <FaBoxOpen />,
+        path: "inventory",
+        visibleTo: ["Principal", "Administrator"],
+      },
+            {
+        title: "Financial Ledger",
+        icon: <FaMoneyBill />,
+        path: "expense",
+        visibleTo: ["Principal", "Accountant", "Administrator"],
       },
       {
         title: "Result Management",
@@ -311,6 +327,12 @@ const AdminRoutes = ({ school }) => {
         <Route path="transport-fuel" element={<FuelLogsTab school={school} />} />
         <Route path="transport-trips" element={<TripLogsTab school={school} />} />
         <Route path="transport-reports" element={<TransportReportsTab school={school} />} />
+
+        {/* Financial Ledger / Expense */}
+        <Route path="expense" element={<ExpenseDashboard />} />
+
+        {/* Inventory Management */}
+        <Route path="inventory" element={<InventoryDashboard />} />
 
         {/* Fee Management */}
         <Route path="fee-overview" element={<FeeOverview school={school} />} />
