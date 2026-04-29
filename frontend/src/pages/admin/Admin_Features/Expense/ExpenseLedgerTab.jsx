@@ -11,7 +11,7 @@ const ExpenseLedgerTab = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
   const [timeframe, setTimeframe] = useState('ALL_TIME');
 
@@ -188,8 +188,8 @@ const ExpenseLedgerTab = () => {
                      <p className="text-xs text-gray-500 mt-1">Via: {expense.paymentMode || 'N/A'}</p>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">{expense.category?.name || 'Uncategorized'}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getSourceBadge(expense.source)}`}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap ${getSourceBadge(expense.source)}`}>
                       {expense.source?.replace('_', ' ')}
                     </span>
                   </td>

@@ -15,7 +15,8 @@ import {
   FaCalendarAlt,
   FaSearch,
   FaEye,
-  FaArrowRight
+  FaArrowRight,
+  FaMapMarkerAlt
 } from "react-icons/fa";
 
 export default function StaffAttendance() {
@@ -220,6 +221,7 @@ export default function StaffAttendance() {
                 <th className="text-left p-4 font-semibold text-white">Department</th>
                 <th className="text-left p-4 font-semibold text-white">Time Log</th>
                 <th className="text-left p-4 font-semibold text-white">Working Hours</th>
+                <th className="text-left p-4 font-semibold text-white">Location</th>
                 <th className="text-left p-4 font-semibold text-white">Status</th>
                 <th className="text-left p-4 font-semibold text-white">Actions</th>
               </tr>
@@ -227,7 +229,7 @@ export default function StaffAttendance() {
             <tbody className="divide-y divide-slate-400">
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="p-8 text-center">
+                  <td colSpan="7" className="p-8 text-center">
                     <div className="flex flex-col items-center justify-center">
                       <div className="animate-spin rounded-full h-10 w-10 border-4 border-teal-200 border-t-teal-600"></div>
                       <p className="mt-4 text-slate-600">Loading attendance data...</p>
@@ -236,7 +238,7 @@ export default function StaffAttendance() {
                 </tr>
               ) : filteredAttendance.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="p-8 text-center">
+                  <td colSpan="7" className="p-8 text-center">
                     <div className="flex flex-col items-center justify-center">
                       <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
                         <FaUserTimes className="h-8 w-8 text-slate-400" />
@@ -293,6 +295,22 @@ export default function StaffAttendance() {
                           <FaClock className="text-slate-400" />
                           <span className="font-medium text-slate-900">{getTotalWorkingHours(record)}</span>
                         </div>
+                      </td>
+
+                      <td className="p-4">
+                        {record.location?.latitude && record.location?.longitude ? (
+                          <a
+                            href={`https://www.google.com/maps?q=${record.location.latitude},${record.location.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors"
+                          >
+                            <FaMapMarkerAlt className="text-blue-500" />
+                            View Map
+                          </a>
+                        ) : (
+                          <span className="text-sm text-slate-400 italic">Not Captured</span>
+                        )}
                       </td>
                       
                       <td className="p-4">

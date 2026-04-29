@@ -15,7 +15,7 @@ const AllocationsTab = () => {
   const [damageIssue, setDamageIssue] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
   const [timeframe, setTimeframe] = useState('ALL_TIME');
 

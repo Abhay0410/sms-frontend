@@ -89,8 +89,8 @@ const fetchData = useCallback(async () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
             accuracy: position.coords.accuracy
           });
         },
@@ -118,9 +118,33 @@ const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       
+      // Forcefully wait for location if it hasn't been captured yet
+      let currentLocation = location;
+      if (!currentLocation && navigator.geolocation) {
+        currentLocation = await new Promise((resolve) => {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const newLoc = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy
+              };
+              setLocation(newLoc);
+              resolve(newLoc);
+            },
+            (error) => {
+              console.error("Location error during submit:", error);
+              toast.warning("Could not capture exact location. Proceeding without it.");
+              resolve(null);
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          );
+        });
+      }
+
       const attendanceData = {
         type,
-        location: location || { lat: null, lng: null },
+        location: currentLocation || { latitude: null, longitude: null },
         device: deviceInfo,
         timestamp: new Date().toISOString()
       };
@@ -289,7 +313,7 @@ const fetchData = useCallback(async () => {
                 <div>
                   <p className="text-sm font-medium text-blue-800">Location Verified</p>
                   <p className="text-xs text-blue-600">
-                    Coordinates: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+                    Coordinates: {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
                     {location.accuracy && ` (Accuracy: ${Math.round(location.accuracy)}m)`}
                   </p>
                 </div>
