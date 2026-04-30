@@ -178,18 +178,11 @@ const AdminRoutes = ({ school }) => {
         ],
       },
       {
-  title: "Enquiry",
-  icon: <FaPhone />,
-  subTabs: [
-    { title: "New Enquiry", path: "enquiry#new-enquiry" },
-    { title: "Enquiry Details", path: "enquiry#details" },
-    { title: "Enquiry Details - II", path: "enquiry#details2" },
-    { title: "Done Followup", path: "enquiry#done" },
-    { title: "Pending Followup", path: "enquiry#pending" },
-    { title: "Enquiry Search", path: "enquiry#search" },
-    { title: "Enquiry Status", path: "enquiry#status" }
-  ]
-},
+        title: "Enquiry",
+        icon: <FaPhone />,
+        path: "enquiry",
+        visibleTo: ["Principal", "Administrator"],
+      },
       {
         title: "Communication",
         icon: <FaBullhorn />,

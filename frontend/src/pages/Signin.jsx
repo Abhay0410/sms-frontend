@@ -121,6 +121,7 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
     }
     
     setLoading(true);
+    let isSuccess = false;
 
     try {
       // Endpoint logic
@@ -150,6 +151,8 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
       const userData = res.data?.admin || res.data?.teacher || res.data?.student || res.data?.parent;
       
       if (token && userData) {
+        isSuccess = true;
+
         // Save auth data
         api.setToken(token);
         localStorage.setItem("token", token);
@@ -177,7 +180,7 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
         toast.success(`Welcome to ${school.schoolName}!`);
         
         // ✅ Redirect to school-specific dashboard
-        navigate(`/school/${schoolSlugForUrl}/${role}/${role}-dashboard`);
+        navigate(`/school/${schoolSlugForUrl}/${role}/${role}-dashboard`, { replace: true });
       } else {
         throw new Error("Invalid response from server");
       }
@@ -193,7 +196,11 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
         toast.info("Make sure you're logging into the correct school");
       }
     } finally {
-      setLoading(false);
+      // Stop the loading spinner ONLY if login failed. 
+      // If successful, keep it spinning while React Router transitions to the dashboard.
+      if (!isSuccess) {
+        setLoading(false);
+      }
     }
   };
 

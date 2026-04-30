@@ -1,0 +1,81 @@
+ENQUIRY & LEAD MANAGEMENT SYSTEM - FRONTEND IMPLEMENTATION PLAN
+===============================================================
+
+Overview & Objective
+--------------------
+This plan outlines the frontend architecture to integrate the newly completed backend Enquiry module. The goal is to transition the current static, monolithic `EnquiryPage.jsx` into a dynamic, tabbed, Kanban-style CRM interface. 
+
+Phase 1: API & Service Layer Setup
+----------------------------------
+Location: `src/constants/apiEndpoints.js` & `src/services/api.js`
+1. Define all new endpoints matching the Express router:
+   - `GET /api/admin/enquiry/dashboard`
+   - `GET /api/admin/enquiry/analytics`
+   - `GET /api/admin/enquiry`
+   - `POST /api/admin/enquiry`
+   - `GET /api/admin/enquiry/:id`
+   - `POST /api/admin/enquiry/:id/follow-ups`
+   - `PATCH /api/admin/enquiry/:id/status`
+   - `POST /api/admin/enquiry/:id/convert`
+   - `POST /api/admin/enquiry/:id/close`
+   - `POST /api/admin/enquiry/mass-assign`
+
+Phase 2: Architectural Refactoring (Tabbed Dashboard)
+-----------------------------------------------------
+Location: `src/pages/admin/Admin_Features/Enquiry/`
+Action: Refactor the current scrolling `EnquiryPage.jsx` into a modular tabbed interface (similar to the Transport/Inventory modules).
+
+1. `EnquiryDashboard.jsx` (Main Container): Tab navigation shell.
+   - Tabs: [ Analytics & Pipeline ] | [ All Enquiries ] | [ Action Center (Follow-ups) ] | [ Add New ]
+
+Phase 3: Tab Views Implementation
+---------------------------------
+1. `EnquiryAnalyticsTab.jsx` (Dashboard & Pipeline)
+   - Top Stat Cards: Total Leads, New, Visited, Converted, Conversion Rate (fetching from `/analytics`).
+   - Kanban Board: Visual drag-and-drop or categorized columns for lead states (NEW -> PENDING -> FOLLOWED_UP -> VISITED). Data sourced from `/dashboard`.
+
+2. `EnquiryMasterTab.jsx` (All Enquiries)
+   - Comprehensive data table listing all enquiries (`GET /`).
+   - Filters: Status, Priority (HOT, WARM, COLD), Source, Date Range.
+   - Row Actions: View/Edit Details, Quick Call (Follow-up), Convert.
+   - Mass Selection: Checkboxes for `massAssignEnquiries` (assign to specific admin/counselor).
+
+3. `ActionCenterTab.jsx` (Follow-ups & Tasks)
+   - Divided into "Overdue Tasks" (Red highlights) and "Today's Tasks" (Blue highlights).
+   - Sourced from the `/dashboard` endpoint grouping logic.
+   - Quick "Log Follow-up" button on each row.
+
+4. `NewEnquiryTab.jsx` (Capture)
+   - React Hook Form implementation of the 'New Enquiry' section from the original file.
+   - Uses `POST /` to create.
+   - Fields: Student details, Parent details, Source, Target Class, Priority.
+
+Phase 4: Modals & CRM Workflows (The Detail View)
+-------------------------------------------------
+Location: `src/pages/admin/Admin_Features/Enquiry/modals/`
+
+1. `EnquiryDetailModal.jsx` (The 360 View)
+   - Triggered when clicking a lead in any table/board.
+   - Shows split view:
+     - Left: Lead details (Student, Parent, Source, Priority).
+     - Right: Vertical timeline of the `EnquiryFollowUp` history.
+   
+2. `LogFollowUpModal.jsx`
+   - Fields: Interaction Outcome (Dropdown: BUSY, INTERESTED, NOT_INTERESTED, VISIT_SCHEDULED), Notes (Textarea), Next Action Date (Datepicker).
+   - Hits `POST /:id/follow-ups`. Updates status automatically based on backend logic.
+
+3. `UpdateStatusModal.jsx`
+   - Simple modal to manually push a lead to "VISITED" or change Priority to "HOT".
+   - Hits `PATCH /:id/status`.
+
+4. `ClosureModal.jsx` (Convert or Close)
+   - Two modes: 
+     - WIN (Admit): Triggers `POST /:id/convert`. Shows confirmation that this will create a live Student/Parent record in the DB.
+     - LOSS (Close): Triggers `POST /:id/close`. Requires a "Close Reason" dropdown/text field.
+
+Phase 5: Interactivity & Polish
+-------------------------------
+1. Forms Validation: Wrap all forms with `react-hook-form` and `yup`/`zod` to ensure required fields (like phone numbers) are formatted correctly.
+2. State Management: Ensure that logging a follow-up invalidates/refreshes the dashboard stats without a full page reload.
+3. UI Indicators: Use color-coded badges for Priority (Red = HOT, Orange = WARM, Blue = COLD) and Status.
+4. Loading States: Add skeletal loaders for the Kanban board and tables while fetching data from the backend.

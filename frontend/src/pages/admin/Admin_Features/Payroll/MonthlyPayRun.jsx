@@ -44,6 +44,13 @@ export default function MonthlyPayRun() {
   // New state for manual override amounts
   const [manualAmounts, setManualAmounts] = useState({}); // { teacherId: 25000 }
 
+  // Payment Modal States
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentSlipId, setPaymentSlipId] = useState(null);
+  const [paymentMode, setPaymentMode] = useState("NEFT");
+  const [transactionId, setTransactionId] = useState("");
+  const [paymentLoading, setPaymentLoading] = useState(false);
+
   // 2. Input change handler
   const handleManualAmountChange = (id, value) => {
     setManualAmounts((prev) => ({ ...prev, [id]: value }));
@@ -402,30 +409,42 @@ export default function MonthlyPayRun() {
     }, 250);
   };
 
-  // 5. Mark as Paid
-  const handleMarkPaid = async (slipId) => {
-    const transactionId = window.prompt("Enter Transaction ID / UTR Number:");
-    if (!transactionId || transactionId.trim().length < 5) {
-      return toast.warning("Valid Transaction ID is required");
+  // 5. Mark as Paid Modal Opener
+  const handleMarkPaid = (slipId) => {
+    setPaymentSlipId(slipId);
+    setPaymentMode("NEFT");
+    setTransactionId("");
+    setShowPaymentModal(true);
+  };
+
+  // 6. Submit Payment
+  const submitPayment = async () => {
+    let finalTxId = transactionId.trim();
+
+    if (paymentMode === "NEFT") {
+      if (!finalTxId || finalTxId.length < 5) {
+        return toast.warning("Valid Transaction ID is required (min 5 chars) for Bank/NEFT payments.");
+      }
+    } else {
+      // Auto-generate a dummy transaction ID for cash
+      finalTxId = `CASH-${Date.now().toString().slice(-6)}`;
     }
 
-    const paymentMode = window.confirm(
-      "Is this a Bank Transfer (NEFT/IMPS)? Click Cancel for CASH.",
-    )
-      ? "NEFT"
-      : "CASH";
-
     try {
+      setPaymentLoading(true);
       // API endpoint call
-      await api.put(API_ENDPOINTS.ADMIN.PAYROLL.MARK_PAID_V2(slipId), {
-        transactionId: transactionId.trim(),
+      await api.put(API_ENDPOINTS.ADMIN.PAYROLL.MARK_PAID_V2(paymentSlipId), {
+        transactionId: finalTxId,
         paymentMode: paymentMode,
       });
 
       toast.success(`Salary successfully marked as PAID via ${paymentMode}`);
+      setShowPaymentModal(false);
       loadData(); // Refresh list
     } catch (err) {
       toast.error(err?.response?.data?.message || "Payment update failed");
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
@@ -1153,6 +1172,73 @@ export default function MonthlyPayRun() {
                     {new Date().toLocaleTimeString("en-IN")}
                   </li>
                 </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ RECORD PAYMENT MODAL */}
+      {showPaymentModal && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          style={{ animation: "fadeIn 0.2s ease-out" }}
+        >
+          <div
+            className="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-xl border border-slate-400"
+            style={{ animation: "slideUp 0.3s ease-out" }}
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6 text-white flex justify-between items-center">
+              <h3 className="text-xl font-bold uppercase tracking-tight">Record Payment</h3>
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="h-8 w-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all font-bold"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            
+            {/* Body */}
+            <div className="p-8 space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-3">Payment Mode</label>
+                <div className="flex gap-4">
+                  <label className="flex-1 cursor-pointer">
+                    <input type="radio" name="paymentMode" value="NEFT" checked={paymentMode === "NEFT"} onChange={(e) => setPaymentMode(e.target.value)} className="peer sr-only" />
+                    <div className="text-center p-3 rounded-xl border-2 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 text-slate-500 font-bold transition-all">Bank / NEFT</div>
+                  </label>
+                  <label className="flex-1 cursor-pointer">
+                    <input type="radio" name="paymentMode" value="CASH" checked={paymentMode === "CASH"} onChange={(e) => setPaymentMode(e.target.value)} className="peer sr-only" />
+                    <div className="text-center p-3 rounded-xl border-2 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 text-slate-500 font-bold transition-all">CASH</div>
+                  </label>
+                </div>
+              </div>
+              
+              {paymentMode === "NEFT" ? (
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Transaction ID / Ref No.</label>
+                  <input 
+                    type="text" 
+                    value={transactionId} 
+                    onChange={(e) => setTransactionId(e.target.value)} 
+                    placeholder="e.g. UTR123456789" 
+                    className="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium text-slate-800" 
+                  />
+                  <p className="text-xs text-slate-400 mt-2">Minimum 5 characters required.</p>
+                </div>
+              ) : (
+                <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl text-orange-700 text-sm font-medium flex items-center gap-2">
+                  <FaCheckCircle className="text-orange-500" />
+                  Cash payment will be recorded automatically without a transaction ID.
+                </div>
+              )}
+              
+              <div className="pt-4 flex justify-end gap-3">
+                <button onClick={() => setShowPaymentModal(false)} className="px-6 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">Cancel</button>
+                <button onClick={submitPayment} disabled={paymentLoading} className="px-6 py-3 rounded-xl font-bold text-white bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200 transition-all flex items-center gap-2">
+                  {paymentLoading ? <FaSpinner className="animate-spin" /> : <FaCheckCircle />} Confirm Payment
+                </button>
               </div>
             </div>
           </div>

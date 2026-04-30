@@ -293,6 +293,27 @@ export const API_ENDPOINTS = {
       ISSUES: "/api/admin/inventory/issues",
       UPDATE_ISSUE_STATUS: (issueId) => `/api/admin/inventory/issues/${issueId}/status`,
     },
+
+    // Enquiry & Lead Management
+    ENQUIRY: {
+      // Dashboard & Analytics
+      DASHBOARD: "/api/admin/enquiry/dashboard",
+      ANALYTICS: "/api/admin/enquiry/analytics",
+
+      // Mass Actions
+      MASS_ASSIGN: "/api/admin/enquiry/mass-assign",
+
+      // Base CRUD
+      LIST: "/api/admin/enquiry", // GET
+      CREATE: "/api/admin/enquiry", // POST
+      GET_BY_ID: (enquiryId) => `/api/admin/enquiry/${enquiryId}`,
+
+      // Workflow
+      ADD_FOLLOW_UP: (enquiryId) => `/api/admin/enquiry/${enquiryId}/follow-ups`,
+      UPDATE_STATUS: (enquiryId) => `/api/admin/enquiry/${enquiryId}/status`,
+      CONVERT_TO_STUDENT: (enquiryId) => `/api/admin/enquiry/${enquiryId}/convert`,
+      CLOSE: (enquiryId) => `/api/admin/enquiry/${enquiryId}/close`,
+    },
   },
 
   // ========================================
