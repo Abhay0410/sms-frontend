@@ -55,9 +55,9 @@ const ManualExpenseModal = ({ isOpen, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in-up border border-slate-200">
-        <div className="flex justify-between items-center p-6 border-b border-slate-200 bg-slate-50">
-          <h3 className="text-xl font-bold text-slate-800 tracking-tight">Log Manual Expense</h3>
+      <div className="bg-white rounded-3xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in-up border ">
+        <div className="flex justify-between items-center p-6  bg-slate-800">
+          <h3 className="text-xl font-bold text-white tracking-tight">Log Manual Expense</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <FaTimes />
           </button>

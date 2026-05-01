@@ -39,8 +39,8 @@ const AddItemModal = ({ isOpen, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-fade-in-up">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800">Add New Catalog Item</h3>
+        <div className="flex justify-between items-center p-6 border-b bg-slate-800 border-gray-100">
+          <h3 className="text-lg font-bold text-white">Add New Catalog Item</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <FaTimes />
           </button>

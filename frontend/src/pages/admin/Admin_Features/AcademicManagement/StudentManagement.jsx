@@ -24,7 +24,15 @@ export default function StudentManagement() {
   const [loading, setLoading] = useState(true);
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [isSessionSelected, setIsSessionSelected] = useState(false);
   const [academicYear, setAcademicYear] = useState("2025-2026");
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    perPage: 4,
+    total: 0,
+    totalPages: 0   // ✅ ADD THIS
+  });
   const [filters, setFilters] = useState({
     status: "",
     className: "",
@@ -33,11 +41,7 @@ export default function StudentManagement() {
     search: "",
   });
   const [showPromoteModal, setShowPromoteModal] = useState(false);
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    perPage: 20,
-    total: 0,
-  });
+ 
 
   function getCurrentAcademicYear() {
     const now = new Date();
@@ -82,36 +86,107 @@ export default function StudentManagement() {
     }
   };
 
+
+
   useEffect(() => {
     fetchSessions();
   }, []);
+
+
+  const fetchClasses = async () => {
+    try {
+      const res = await api.get(API_ENDPOINTS.ADMIN.CLASS.LIST);
+
+      let classData = res?.data || [];
+
+      // ✅ REMOVE DUPLICATES (based on className or _id)
+      classData = classData.filter(
+        (c, index, self) =>
+          index === self.findIndex((x) => x.className === c.className)
+      );
+
+      setClasses(classData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
+  // const loadData = useCallback(async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     const params = new URLSearchParams();
+  //     Object.entries(filters).forEach(([key, value]) => {
+  //       if (value) params.append(key, value);
+  //     });
+  //     params.append("page", pagination.currentPage);
+  //     params.append("limit", pagination.perPage);
+
+  //     const [studentsResp, statsResp] = await Promise.all([
+  //       api.get(`${API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.LIST}?${params}`),
+  //       api.get(
+  //         `${API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.STATISTICS}?academicYear=${filters.academicYear}`,
+  //       ),
+  //     ]);
+
+  //     const studentData =
+  //       studentsResp?.students || studentsResp?.data?.students || [];
+  //     const paginationData =
+  //       studentsResp?.pagination || studentsResp?.data?.pagination || {};
+
+  //     setStudents(studentData);
+  //     setPagination(paginationData);
+  //     setStatistics(statsResp?.data || statsResp);
+  //   } catch (error) {
+  //     console.error("Load error:", error);
+  //     toast.error(error.message || "Failed to load students");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [filters, pagination.currentPage, pagination.perPage]);
 
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
 
       const params = new URLSearchParams();
+
       Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.append(key, value);
+        if (!value) return;
+
+        // 🔥 FIX: academicYear tabhi bhejo jab user ne select kiya ho
+        if (key === "academicYear" && !value.trim()) return;
+
+        params.append(key, value);
       });
+
       params.append("page", pagination.currentPage);
       params.append("limit", pagination.perPage);
 
+      // 🔥 FIX: stats API bhi safe karo
+      const statsUrl = filters.academicYear
+        ? `${API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.STATISTICS}?academicYear=${filters.academicYear}`
+        : API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.STATISTICS;
+
       const [studentsResp, statsResp] = await Promise.all([
         api.get(`${API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.LIST}?${params}`),
-        api.get(
-          `${API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.STATISTICS}?academicYear=${filters.academicYear}`,
-        ),
+        api.get(statsUrl),
       ]);
 
       const studentData =
         studentsResp?.students || studentsResp?.data?.students || [];
+
       const paginationData =
         studentsResp?.pagination || studentsResp?.data?.pagination || {};
 
       setStudents(studentData);
       setPagination(paginationData);
       setStatistics(statsResp?.data || statsResp);
+
     } catch (error) {
       console.error("Load error:", error);
       toast.error(error.message || "Failed to load students");
@@ -334,8 +409,10 @@ export default function StudentManagement() {
               </label>
               <select
                 value={filters.academicYear}
-                onChange={(e) =>
+                onChange={(e) => {
                   setFilters({ ...filters, academicYear: e.target.value })
+                  setIsSessionSelected(false);
+                }
                 }
                 className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition"
               >
@@ -372,7 +449,7 @@ export default function StudentManagement() {
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Class
               </label>
-              <select
+              {/* <select
                 value={filters.className}
                 onChange={(e) =>
                   setFilters({ ...filters, className: e.target.value })
@@ -383,6 +460,23 @@ export default function StudentManagement() {
                 {[...Array(12)].map((_, i) => (
                   <option key={i + 1} value={String(i + 1)}>
                     Class {i + 1}
+                  </option>
+                ))}
+              </select> */}
+
+              <select
+                value={filters.className}
+                onChange={(e) =>
+                  setFilters({ ...filters, className: e.target.value })
+                }
+                className=" w-full rounded-lg border-2 border-slate-200 p-2 focus:border-blue-500 focus:outline-none"
+
+              >
+                <option value="">All Classes</option>
+
+                {classes.map((c) => (
+                  <option key={c._id} value={c.className}>
+                    {c.className}
                   </option>
                 ))}
               </select>
@@ -491,11 +585,10 @@ export default function StudentManagement() {
                   return (
                     <tr
                       key={student._id}
-                      className={`transition-all duration-200 ${
-                        isSelected
-                          ? "bg-indigo-50/50"
-                          : "hover:bg-slate-50/80 hover:shadow-sm"
-                      }`}
+                      className={`transition-all duration-200 ${isSelected
+                        ? "bg-indigo-50/50"
+                        : "hover:bg-slate-50/80 hover:shadow-sm"
+                        }`}
                     >
                       <td className="p-4">
                         <div className="flex justify-center">
@@ -513,11 +606,10 @@ export default function StudentManagement() {
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm ${
-                              isSelected
-                                ? "bg-indigo-100 text-indigo-700"
-                                : "bg-blue-50 text-blue-600"
-                            }`}
+                            className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm ${isSelected
+                              ? "bg-indigo-100 text-indigo-700"
+                              : "bg-blue-50 text-blue-600"
+                              }`}
                           >
                             {student.name?.charAt(0)}
                           </div>
@@ -543,13 +635,12 @@ export default function StudentManagement() {
                       </td>
                       <td className="p-4">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
-                            student.status === "ENROLLED"
-                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                              : student.status === "REGISTERED"
-                                ? "bg-amber-50 text-amber-700 border-amber-200"
-                                : "bg-slate-50 text-slate-600 border-slate-200"
-                          }`}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${student.status === "ENROLLED"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : student.status === "REGISTERED"
+                              ? "bg-amber-50 text-amber-700 border-amber-200"
+                              : "bg-slate-50 text-slate-600 border-slate-200"
+                            }`}
                         >
                           {student.status === "ENROLLED" && (
                             <FaCheckCircle
@@ -570,11 +661,10 @@ export default function StudentManagement() {
                         {student.finalResult ? (
                           <div className="flex flex-col gap-1">
                             <div
-                              className={`px-3 py-1 rounded-md text-[10px] font-bold w-fit flex items-center gap-1.5 shadow-sm border ${
-                                student.finalResult.result === "PASS"
-                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                  : "bg-rose-50 text-rose-700 border-rose-200"
-                              }`}
+                              className={`px-3 py-1 rounded-md text-[10px] font-bold w-fit flex items-center gap-1.5 shadow-sm border ${student.finalResult.result === "PASS"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-rose-50 text-rose-700 border-rose-200"
+                                }`}
                             >
                               {student.finalResult.result === "PASS" ? (
                                 <FaCheckCircle
@@ -609,44 +699,93 @@ export default function StudentManagement() {
 
           {/* Pagination */}
           {pagination.totalPages > 1 && (
-            <div className="p-4 flex items-center justify-between border-t border-slate-200">
-              <p className="text-sm text-slate-600">
-                Showing {(pagination.currentPage - 1) * pagination.perPage + 1}{" "}
-                to{" "}
-                {Math.min(
-                  pagination.currentPage * pagination.perPage,
-                  pagination.total,
-                )}{" "}
-                of {pagination.total}
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() =>
-                    setPagination({
-                      ...pagination,
-                      currentPage: pagination.currentPage - 1,
-                    })
-                  }
-                  disabled={pagination.currentPage === 1}
-                  className="px-4 py-1.5 text-sm rounded-lg border border-slate-300 hover:bg-slate-100 transition disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <button
-                  onClick={() =>
-                    setPagination({
-                      ...pagination,
-                      currentPage: pagination.currentPage + 1,
-                    })
-                  }
-                  disabled={pagination.currentPage === pagination.totalPages}
-                  className="px-4 py-1.5 text-sm rounded-lg border border-slate-300 hover:bg-slate-100 transition disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
+  <div className="p-4 flex items-center justify-between border-t border-slate-200 bg-white">
+
+    {/* LEFT INFO */}
+    <p className="text-sm text-slate-600">
+      Showing{" "}
+      <span className="font-semibold">
+        {(pagination.currentPage - 1) * pagination.perPage + 1}
+      </span>{" "}
+      to{" "}
+      <span className="font-semibold">
+        {Math.min(
+          pagination.currentPage * pagination.perPage,
+          pagination.total
+        )}
+      </span>{" "}
+      of <span className="font-semibold">{pagination.total}</span>
+    </p>
+
+    {/* RIGHT PAGINATION */}
+    <div className="flex items-center gap-2">
+
+      {/* Prev */}
+      <button
+        onClick={() =>
+          setPagination((prev) => ({
+            ...prev,
+            currentPage: prev.currentPage - 1,
+          }))
+        }
+        disabled={pagination.currentPage === 1}
+        className="px-3 py-1.5 text-sm rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-40"
+      >
+        Prev
+      </button>
+
+      {/* Page Numbers */}
+      {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+        .filter((page) => {
+          // 🔥 Show only nearby pages (smart UI)
+          return (
+            page === 1 ||
+            page === pagination.totalPages ||
+            Math.abs(page - pagination.currentPage) <= 1
+          );
+        })
+        .map((page, index, arr) => (
+          <span key={page} className="flex items-center">
+            
+            {/* Ellipsis */}
+            {index > 0 && page - arr[index - 1] > 1 && (
+              <span className="px-2 text-slate-400">...</span>
+            )}
+
+            <button
+              onClick={() =>
+                setPagination((prev) => ({
+                  ...prev,
+                  currentPage: page,
+                }))
+              }
+              className={`px-3 py-1.5 text-sm rounded-lg border transition ${
+                pagination.currentPage === page
+                  ? "bg-blue-600 text-white border-blue-600 shadow"
+                  : "border-slate-300 hover:bg-slate-100"
+              }`}
+            >
+              {page}
+            </button>
+          </span>
+        ))}
+
+      {/* Next */}
+      <button
+        onClick={() =>
+          setPagination((prev) => ({
+            ...prev,
+            currentPage: prev.currentPage + 1,
+          }))
+        }
+        disabled={pagination.currentPage === pagination.totalPages}
+        className="px-3 py-1.5 text-sm rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-40"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+)}
         </div>
 
         {/* Promote Modal */}

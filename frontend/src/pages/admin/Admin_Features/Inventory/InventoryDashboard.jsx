@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaBoxOpen, FaExchangeAlt, FaChartBar } from 'react-icons/fa';
+import { FaBoxOpen, FaExchangeAlt, FaChartBar , FaBoxes} from 'react-icons/fa';
 import ItemMasterTab from './ItemMasterTab';
 import AllocationsTab from './AllocationsTab';
 import InventoryReportsTab from './InventoryReportsTab';
@@ -14,40 +14,81 @@ const InventoryDashboard = () => {
   ];
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Inventory & Assets</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage school assets, consumables, and track stock allocations.</p>
+  <div className="min-h-screen ">
+    <div className="mx-auto max-w-7xl">
+
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+
+        <div className="flex items-center gap-4">
+
+          <div className="h-14 w-14 bg-indigo-100 rounded-2xl flex items-center justify-center">
+            <FaBoxes className="text-indigo-600 text-2xl" />
+          </div>
+
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Inventory & Assets
+            </h1>
+
+            <div className="flex items-center gap-2 mt-1">
+              <span className="h-1.5 w-1.5 bg-indigo-500 rounded-full"></span>
+
+              <p className="text-sm text-slate-500 font-medium">
+                Asset Tracking & Inventory Management
+              </p>
+            </div>
+          </div>
+
         </div>
+
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="flex border-b border-gray-200">
+      {/* Main Container */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+
+        {/* Tabs */}
+        <div className="flex flex-wrap border-b border-slate-200 bg-slate-50">
+
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-all border-b-2 ${
                 activeTab === tab.id
-                  ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/50'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? "text-indigo-600 border-indigo-600 bg-indigo-50"
+                  : "text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-100"
               }`}
             >
-              <tab.icon />
+              <tab.icon className="text-base" />
+
               {tab.label}
             </button>
           ))}
+
         </div>
 
-        <div className="p-6">
-          {activeTab === 'master' && <ItemMasterTab />}
-          {activeTab === 'allocations' && <AllocationsTab />}
-          {activeTab === 'reports' && <InventoryReportsTab />}
+        {/* Content */}
+        <div className="p-6 bg-white">
+
+          {activeTab === "master" && (
+            <ItemMasterTab />
+          )}
+
+          {activeTab === "allocations" && (
+            <AllocationsTab />
+          )}
+
+          {activeTab === "reports" && (
+            <InventoryReportsTab />
+          )}
+
         </div>
+
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default InventoryDashboard;

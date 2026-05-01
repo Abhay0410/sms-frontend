@@ -71,8 +71,8 @@ const StaffModal = ({ isOpen, onClose, onSuccess, editData = null }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800">
+        <div className="flex justify-between items-center p-6 border-b bg-slate-800 border-gray-100">
+          <h3 className="text-lg font-bold text-white">
             {editData ? 'Edit Staff Member' : 'Add Staff Member'}
           </h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -143,7 +143,7 @@ const StaffModal = ({ isOpen, onClose, onSuccess, editData = null }) => {
 
           <div className="pt-4 flex justify-end gap-3">
             <button type="button" onClick={onClose} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">Cancel</button>
-            <button type="submit" disabled={loading} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors flex items-center gap-2">
+            <button type="submit" disabled={loading} className="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 font-medium transition-colors flex items-center gap-2">
               {loading ? <FaSpinner className="animate-spin" /> : null} {editData ? 'Update Staff' : 'Save Staff'}
             </button>
           </div>
