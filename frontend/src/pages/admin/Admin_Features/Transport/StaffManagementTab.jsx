@@ -70,13 +70,13 @@ const StaffManagementTab = () => {
         ) : staffList.length > 0 ? (
           <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
             <table className="w-full text-left bg-white border-collapse">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-slate-700 border-b border-slate-200">
                 <tr>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Name / Role</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">License No.</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">License Expiry</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Assigned Vehicle</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Name / Role</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">License No.</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">License Expiry</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Assigned Vehicle</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

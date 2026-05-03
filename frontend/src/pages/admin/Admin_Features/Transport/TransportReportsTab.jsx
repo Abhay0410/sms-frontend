@@ -92,7 +92,7 @@ const TransportReportsTab = () => {
       </div>
 
       {/* Report Filter */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-300 mb-6 flex flex-wrap gap-4 items-center justify-between">
+      <div className="bg-white/80  backdrop-blur-sm/80 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-slate-300 mb-6 flex flex-wrap gap-4 items-center justify-between">
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
           <div className="flex items-center gap-2">
             <FaFilter className="text-slate-400" />
@@ -121,7 +121,7 @@ const TransportReportsTab = () => {
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+        <div className="bg-white/80 backdrop-blur-sm/80 backdrop-blur-sm/80 backdrop-blur-sm p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xl">
             <FaBus />
           </div>
@@ -131,7 +131,7 @@ const TransportReportsTab = () => {
           </div>
         </div>
         
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+        <div className="bg-white/80 backdrop-blur-sm/80 backdrop-blur-sm/80 backdrop-blur-sm/80 backdrop-blur-sm p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xl">
             <FaGasPump />
           </div>
@@ -141,7 +141,7 @@ const TransportReportsTab = () => {
           </div>
         </div>
         
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+        <div className="bg-white/80 backdrop-blur-sm/80 backdrop-blur-sm/80 backdrop-blur-sm/80 backdrop-blur-sm p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-xl">
             <FaRoute />
           </div>
@@ -151,7 +151,7 @@ const TransportReportsTab = () => {
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+        <div className="bg-white/80 backdrop-blur-sm/80 backdrop-blur-sm/80 backdrop-blur-sm/80 backdrop-blur-sm p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 text-xl">
             <FaChartBar />
           </div>
@@ -163,69 +163,174 @@ const TransportReportsTab = () => {
       </div>
 
       {/* Aggregated Table View */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
-        <div className="px-5 py-4 border-b border-slate-200 bg-slate-50">
-          <h3 className="font-bold text-slate-800">Vehicle Efficiency Breakdown</h3>
-        </div>
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-white border-b border-slate-200">
-            <tr>
-              <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Vehicle</th>
-              <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Total Trips</th>
-              <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Fuel Consumed</th>
-              <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Distance Covered</th>
-              <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Mileage (Km/L)</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {paginatedStats.map((stat, idx) => (
-              <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 font-bold text-slate-800">{stat.registrationNumber}</td>
-                <td className="p-4 text-slate-600 font-medium">{stat.totalTrips || 0}</td>
-                <td className="p-4 text-slate-600 font-medium">{stat.totalFuelLiters || 0} L</td>
-                <td className="p-4 text-slate-600 font-medium">{stat.totalDistanceKm || 0} Km</td>
-                <td className="p-4 font-bold text-indigo-600">{stat.efficiencyKmPerLiter?.toFixed(1) || '0.0'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-800/95 shadow-xl shadow-slate-900/30">
+  {/* Header */}
+  <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700 bg-slate-800/80 backdrop-blur-sm">
+    <div>
+      <h3 className="text-xl font-bold text-white tracking-wide">
+        Vehicle Efficiency Breakdown
+      </h3>
+      <p className="text-sm text-slate-400 mt-1">
+        Monitor trip performance, fuel usage & mileage insights
+      </p>
+    </div>
 
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="p-5 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-slate-600 font-medium">
-              Showing page <span className="font-bold">{currentPage}</span> of <span className="font-bold">{totalPages}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 bg-white text-slate-800 border border-slate-200 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm transition-all duration-300"
-              >
-                ← Previous
-              </button>
-              <div className="flex items-center gap-1 sm:flex">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const pageNum = Math.max(1, Math.min(currentPage - 2, totalPages - 4)) + i;
-                  if (pageNum > totalPages || pageNum < 1) return null;
-                  return (
-                    <button key={pageNum} onClick={() => setCurrentPage(pageNum)} className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-all duration-300 border ${currentPage === pageNum ? "bg-amber-500 text-white border-amber-500 shadow-sm" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"}`}>
-                      {pageNum}
-                    </button>
-                  );
-                })}
+    <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-700/60 border border-slate-600">
+      <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+      <span className="text-sm font-medium text-slate-200">
+        Live Analytics
+      </span>
+    </div>
+  </div>
+
+  {/* Table */}
+  <div className="overflow-x-auto ">
+    <table className="w-full border-collapse">
+      <thead>
+        <tr className ="bg-slate-700/40 border-b border-slate-700">
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Vehicle
+          </th>
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Trips
+          </th>
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Fuel Used
+          </th>
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Distance
+          </th>
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Mileage
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {paginatedStats.map((stat, idx) => (
+          <tr
+            key={idx}
+            className="border-b border-slate-700/70 hover:bg-white/20 backdrop-blur-sm/80 backdrop-blur-sm/80 backdrop-blur-sm/5 transition-all duration-300"
+          >
+            {/* Vehicle */}
+            <td className="px-6 py-5">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-slate-900 font-bold shadow-lg">
+                  {stat.registrationNumber?.charAt(0)}
+                </div>
+
+                <div>
+                  <p className="font-semibold text-white">
+                    {stat.registrationNumber}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Transport Vehicle
+                  </p>
+                </div>
               </div>
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-white text-slate-800 border border-slate-200 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm transition-all duration-300"
-              >
-                Next →
-              </button>
-            </div>
-          </div>
-        )}
+            </td>
+
+            {/* Trips */}
+            <td className="px-6 py-5">
+              <div className="inline-flex items-center px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                <span className="text-indigo-300 font-semibold">
+                  {stat.totalTrips || 0}
+                </span>
+              </div>
+            </td>
+
+            {/* Fuel */}
+            <td className="px-6 py-5 text-slate-200 font-medium">
+              <span className="text-amber-400 font-semibold">
+                {stat.totalFuelLiters || 0}
+              </span>{" "}
+              L
+            </td>
+
+            {/* Distance */}
+            <td className="px-6 py-5 text-slate-200 font-medium">
+              <span className="text-cyan-400 font-semibold">
+                {stat.totalDistanceKm || 0}
+              </span>{" "}
+              Km
+            </td>
+
+            {/* Mileage */}
+            <td className="px-6 py-5">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+
+                <span className="font-bold text-emerald-300">
+                  {stat.efficiencyKmPerLiter?.toFixed(1) || "0.0"} Km/L
+                </span>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Pagination */}
+  {totalPages > 1 && (
+    <div className="px-6 py-5 border-t border-slate-700 bg-slate-900/40 flex flex-col lg:flex-row items-center justify-between gap-4">
+      <div className="text-sm text-slate-400">
+        Showing page{" "}
+        <span className="font-bold text-white">{currentPage}</span> of{" "}
+        <span className="font-bold text-white">{totalPages}</span>
       </div>
+
+      <div className="flex items-center gap-2 flex-wrap justify-center">
+        {/* Prev */}
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2.5 rounded-xl border border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 font-medium"
+        >
+          ← Previous
+        </button>
+
+        {/* Pages */}
+        <div className="flex items-center gap-2">
+          {Array.from(
+            { length: Math.min(5, totalPages) },
+            (_, i) => {
+              const pageNum =
+                Math.max(1, Math.min(currentPage - 2, totalPages - 4)) + i;
+
+              if (pageNum > totalPages || pageNum < 1) return null;
+
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-11 h-11 rounded-xl font-semibold transition-all duration-300 border ${
+                    currentPage === pageNum
+                      ? "bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 border-orange-400 shadow-lg shadow-orange-500/20 scale-105"
+                      : "bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            }
+          )}
+        </div>
+
+        {/* Next */}
+        <button
+          onClick={() =>
+            setCurrentPage((p) => Math.min(totalPages, p + 1))
+          }
+          disabled={currentPage === totalPages}
+          className="px-4 py-2.5 rounded-xl border border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 font-medium"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  )}
+</div>
     </div>
   );
 };

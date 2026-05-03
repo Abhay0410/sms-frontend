@@ -43,8 +43,8 @@ export default function EnquiryDetailModal({ isOpen, onClose, enquiryId }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-          <h2 className="text-xl font-bold text-slate-800">Enquiry 360° View</h2>
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-700">
+          <h2 className="text-xl font-bold text-white">Enquiry 360° View</h2>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
             <FaTimes size={18} />
           </button>

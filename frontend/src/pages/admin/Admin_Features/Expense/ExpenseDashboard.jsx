@@ -14,7 +14,7 @@ const ExpenseDashboard = () => {
   ];
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-slate-50 min-h-screen">
+    <div className="  space-y-8 0 min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-start gap-4">
           <div className="h-16 w-16 bg-indigo-100 text-indigo-700 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-indigo-200">
@@ -28,15 +28,15 @@ const ExpenseDashboard = () => {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="flex border-b border-slate-200 bg-slate-50">
+        <div className="flex border-b border-slate-200 bg-slate-700">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/50 font-bold'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+                  ? 'text-indigo-600 border-indigo-600 bg-indigo-50 font-bold'
+                  : 'text-white'
               }`}
             >
               <tab.icon />

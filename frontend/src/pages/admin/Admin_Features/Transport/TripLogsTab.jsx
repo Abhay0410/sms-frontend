@@ -158,13 +158,13 @@ const TripLogsTab = () => {
         ) : tripLogs.length > 0 ? (
           <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
             <table className="w-full text-left bg-white border-collapse">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-slate-700 border-b border-slate-200">
                 <tr>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Vehicle</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Driver</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Route Info</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Distance (Km)</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Date</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Vehicle</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Driver</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Route Info</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Distance (Km)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

@@ -48,7 +48,7 @@ const InventoryDashboard = () => {
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
 
         {/* Tabs */}
-        <div className="flex flex-wrap border-b border-slate-200 bg-slate-50">
+        <div className="flex flex-wrap border-b  border-slate-200 bg-slate-700">
 
           {tabs.map((tab) => (
             <button
@@ -57,7 +57,7 @@ const InventoryDashboard = () => {
               className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-all border-b-2 ${
                 activeTab === tab.id
                   ? "text-indigo-600 border-indigo-600 bg-indigo-50"
-                  : "text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-100"
+                  : "text-white border-transparent "
               }`}
             >
               <tab.icon className="text-base" />

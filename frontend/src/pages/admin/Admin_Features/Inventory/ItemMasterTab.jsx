@@ -74,7 +74,7 @@ const ItemMasterTab = () => {
       ) : filteredItems.length > 0 ? (
         <div className="overflow-x-auto bg-white border border-gray-200 rounded-xl shadow-sm">
           <table className="w-full text-left">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-100 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Item Name</th>
                 <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>

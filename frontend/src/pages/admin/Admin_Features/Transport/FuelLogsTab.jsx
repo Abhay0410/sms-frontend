@@ -158,13 +158,13 @@ const FuelLogsTab = () => {
         ) : fuelLogs.length > 0 ? (
           <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
             <table className="w-full text-left bg-white border-collapse">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-slate-700 border-b border-slate-200">
                 <tr>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Vehicle</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Volume (Liters)</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Total Cost</th>
-                  <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Current Odometer</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Date</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Vehicle</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Volume (Liters)</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Total Cost</th>
+                  <th className="p-4 text-xs font-bold text-white uppercase tracking-wider">Current Odometer</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
