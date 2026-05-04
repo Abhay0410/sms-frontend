@@ -53,7 +53,7 @@ export default function NewEnquiryTab() {
 
   return (
     <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
-      <div className="mb-6 border-b border-slate-100 pb-4">
+      <div className="mb-6 border-b  border-slate-100 pb-4">
         <h2 className="text-xl font-bold text-slate-800">Capture New Enquiry</h2>
         <p className="text-sm text-slate-500 mt-1">
           Enter prospect details to log intent and add them to the admissions pipeline.

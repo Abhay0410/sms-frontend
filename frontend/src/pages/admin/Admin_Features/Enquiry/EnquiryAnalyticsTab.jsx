@@ -62,10 +62,10 @@ export default function EnquiryAnalyticsTab() {
 
   // Kanban Columns Definition
   const KANBAN_COLUMNS = [
-    { id: "NEW", title: "New Leads", color: "border-blue-400", bg: "bg-blue-50/50", header: "bg-blue-100/50 text-blue-800" },
-    { id: "PENDING", title: "Pending", color: "border-yellow-400", bg: "bg-yellow-50/50", header: "bg-yellow-100/50 text-yellow-800" },
-    { id: "FOLLOWED_UP", title: "Followed Up", color: "border-indigo-400", bg: "bg-indigo-50/50", header: "bg-indigo-100/50 text-indigo-800" },
-    { id: "VISITED", title: "Visited", color: "border-purple-400", bg: "bg-purple-50/50", header: "bg-purple-100/50 text-purple-800" },
+    { id: "NEW", title: "New Leads", color: "border-blue-400", bg: "bg-blue-50", header: "bg-blue-100 text-blue-800" },
+    { id: "PENDING", title: "Pending", color: "border-yellow-400", bg: "bg-yellow-50", header: "bg-yellow-100 text-yellow-800" },
+    { id: "FOLLOWED_UP", title: "Followed Up", color: "border-indigo-400", bg: "bg-indigo-50", header: "bg-indigo-100 text-indigo-800" },
+    { id: "VISITED", title: "Visited", color: "border-purple-400", bg: "bg-purple-50", header: "bg-purple-100 text-purple-800" },
   ];
 
   const getPriorityColor = (priority) => {
@@ -116,15 +116,15 @@ export default function EnquiryAnalyticsTab() {
       </div>
 
       {/* --- KANBAN PIPELINE BOARD --- */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+      <div className="bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h3 className="text-lg font-bold text-slate-800">Active Pipeline</h3>
-            <p className="text-sm text-slate-500">Track and manage leads through the admission stages.</p>
+            <h3 className="text-lg font-bold text-white">Active Pipeline</h3>
+            <p className="text-sm text-slate-400">Track and manage leads through the admission stages.</p>
           </div>
           <button
             onClick={fetchDashboardData}
-            className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
+            className="text-sm font-medium text-indigo-400 hover:text-indigo-800 transition-colors"
           >
             Refresh Board
           </button>

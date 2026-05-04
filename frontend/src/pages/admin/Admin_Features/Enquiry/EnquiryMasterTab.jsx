@@ -170,7 +170,7 @@ export default function EnquiryMasterTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-700 border-b border-slate-200 text-white text-xs uppercase tracking-wider">
+              <tr className="bg-slate-800 border-b border-slate-200 text-white text-xs uppercase tracking-wider">
                 <th className="p-4 font-bold">Student</th>
                 <th className="p-4 font-bold">Parent & Contact</th>
                 <th className="p-4 font-bold">Class</th>

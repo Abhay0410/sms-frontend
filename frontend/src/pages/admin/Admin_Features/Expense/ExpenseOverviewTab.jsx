@@ -115,7 +115,7 @@ const ExpenseOverviewTab = () => {
       {/* Header & Date Filters */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-xl font-bold text-slate-800 tracking-tight">Financial Overview</h3>
+          <h3 className="text-xl font-bold text-white tracking-tight">Financial Overview</h3>
           {loading && summary && <FaSpinner className="animate-spin text-indigo-600" />}
         </div>
         

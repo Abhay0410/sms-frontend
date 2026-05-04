@@ -81,7 +81,7 @@ const InventoryReportsTab = () => {
 
       {/* Consumption Analytics Chart */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="border-b border-gray-200 px-6 py-4 flex items-center gap-3">
+        <div className="border-b bg-slate-100 border-gray-200 px-6 py-4 flex items-center gap-3">
           <FaChartBar className="text-indigo-500 text-xl" />
           <h3 className="text-lg font-bold text-gray-800">Consumption Analytics</h3>
         </div>

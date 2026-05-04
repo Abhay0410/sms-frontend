@@ -27,7 +27,7 @@ const ExpenseDashboard = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-slate-800 rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="flex border-b border-slate-200 bg-slate-700">
           {tabs.map((tab) => (
             <button
@@ -35,7 +35,7 @@ const ExpenseDashboard = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'text-indigo-600 border-indigo-600 bg-indigo-50 font-bold'
+                  ? 'text-black border-indigo-600 bg-white font-bold'
                   : 'text-white'
               }`}
             >

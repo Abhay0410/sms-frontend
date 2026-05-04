@@ -65,7 +65,7 @@ export default function ActionCenterTab() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* OVERDUE TASKS */}
       <div className="bg-white rounded-2xl shadow-sm border-2 border-red-100 flex flex-col overflow-hidden">
-        <div className="bg-slate-700 p-4 border-b  flex items-center justify-between">
+        <div className="bg-slate-800 p-4 border-b  flex items-center justify-between">
           <div className="flex items-center gap-2 text-red-700">
             <FaExclamationTriangle size={18} />
             <h3 className="font-bold text-lg text-white">Overdue Follow-ups</h3>
@@ -91,7 +91,7 @@ export default function ActionCenterTab() {
 
       {/* TODAY's TASKS */}
       <div className="bg-white rounded-2xl shadow-sm border-2 border-indigo-100 flex flex-col overflow-hidden">
-        <div className="bg-slate-700 p-4 border-b border-indigo-100 flex items-center justify-between">
+        <div className="bg-slate-800 p-4 border-b border-indigo-100 flex items-center justify-between">
           <div className="flex items-center gap-2 text-white">
             <FaCalendarDay size={18} />
             <h3 className="font-bold text-lg">Today's Tasks</h3>

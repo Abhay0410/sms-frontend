@@ -45,7 +45,7 @@ const InventoryDashboard = () => {
       </div>
 
       {/* Main Container */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-slate-800 text-white  rounded-xl border border-slate-200 shadow-sm overflow-hidden">
 
         {/* Tabs */}
         <div className="flex flex-wrap border-b  border-slate-200 bg-slate-700">
@@ -54,9 +54,9 @@ const InventoryDashboard = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-all border-b-2 ${
+              className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-all  ${
                 activeTab === tab.id
-                  ? "text-indigo-600 border-indigo-600 bg-indigo-50"
+                  ? "text-black  bg-white"
                   : "text-white border-transparent "
               }`}
             >
@@ -69,7 +69,7 @@ const InventoryDashboard = () => {
         </div>
 
         {/* Content */}
-        <div className="p-6 bg-white">
+        <div className="p-6  text-white">
 
           {activeTab === "master" && (
             <ItemMasterTab />
