@@ -107,15 +107,15 @@ export default function ViewFeeDetails() {
   // ✅ 2. Extract Fee Summary safely
   const feeDetails = feeData
     ? {
-        totalFee: feeData.totalAmount,
-        paidAmount: feeData.paidAmount,
-        pendingAmount: feeData.pendingAmount,
+        totalFee: feeData.totalDue || feeData.totalAmount,
+        paidAmount: feeData.totalPaid || feeData.paidAmount,
+        pendingAmount: feeData.balancePending || feeData.pendingAmount,
         paymentStatus: feeData.status,
       }
     : null;
 
-  // ✅ 3. Extract Fee Breakdown safely
-  const feeStructure = feeData?.feeStructure || [];
+  // ✅ 3. Extract Fee Breakdown safely (Checks populated 'fee' or 'feeId' fields if nested)
+  const feeStructure = feeData?.installments || feeData?.feeStructure || feeData?.fee?.feeStructure || feeData?.feeId?.feeStructure || feeData?.feeDetails || [];
 
   // ✅ 4. Extract Payment History DIRECTLY from feeData (Fixing your issue)
   // The 'payments' array is already inside the response you shared
@@ -141,7 +141,7 @@ export default function ViewFeeDetails() {
                 <p className="text-blue-100 mb-4">{student.studentID}</p>
                 <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-sm backdrop-blur-sm">
                   <FaCheckCircle className="mr-2" />
-                  Class {student.className} • Section {student.section}
+                  {student.className?.toLowerCase().includes('class') ? student.className : `Class ${student.className}`} • Section {student.section}
                 </div>
               </div>
               <div className="md:text-right flex flex-col justify-center">
@@ -223,8 +223,8 @@ export default function ViewFeeDetails() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {feeStructure.map((item, idx) => (
                     <div key={idx} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-100">
-                      <span className="text-gray-700 font-medium">{item.feeName}</span>
-                      <span className="text-gray-900 font-bold">₹{item.amount?.toLocaleString("en-IN")}</span>
+                      <span className="text-gray-700 font-medium">{item.feeName || item.name || item.type || 'Fee Component'}</span>
+                      <span className="text-gray-900 font-bold">₹{(item.amount || item.totalAmount || item.dueAmount || item.pendingAmount || 0).toLocaleString("en-IN")}</span>
                     </div>
                   ))}
                 </div>

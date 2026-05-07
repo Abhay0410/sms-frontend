@@ -75,6 +75,7 @@ export default function MarkAttendance() {
       const selectedClassData = assignments.classes.find(
         (c) => c.classId === selectedClass,
       );
+      const academicYear = selectedClassData?.academicYear || "2025-2026";
 
       // 1) Try to get existing attendance (already marked)
       const attendanceResp = await api.get(
@@ -84,7 +85,7 @@ export default function MarkAttendance() {
             classId: selectedClass,
             sectionId: selectedSection,
             date,
-            academicYear: "2025-2026",
+            academicYear: academicYear,
           },
         },
       );
@@ -111,7 +112,6 @@ export default function MarkAttendance() {
       }
 
       // 2) If no attendance found, load fresh students list
-      // 2) If no attendance found, load fresh students list
       if (attendanceData.length === 0) {
         const studentsResp = await api.get(
           API_ENDPOINTS.TEACHER.ATTENDANCE.STUDENTS,
@@ -119,7 +119,7 @@ export default function MarkAttendance() {
             params: {
               classId: selectedClass,
               sectionId: selectedSection,
-              academicYear: "2025-2026",
+              academicYear: academicYear,
             },
           },
         );
@@ -441,7 +441,7 @@ export default function MarkAttendance() {
                     <option value="">Select a class</option>
                     {assignments.classes.map((cls) => (
                       <option key={cls.classId} value={cls.classId}>
-                        Class {cls.className} 
+                    {cls.className?.toLowerCase().includes('class') ? cls.className : `Class ${cls.className}`}
                       </option>
                     ))}
                   </select>
