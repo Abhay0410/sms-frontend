@@ -14,8 +14,10 @@ import {
   FaDownload,
   FaCheck,
   FaTimes,
-   FaHandHoldingUsd,
+  FaHandHoldingUsd,
   FaExclamationCircle,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
 import Swal from "sweetalert2";
@@ -63,11 +65,15 @@ export default function RecordPayment() {
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [session, setSession] = useState(null);
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pages: 1,
-    total: 0,
-  });
+  
+  // ✅ CHANGE ITEMS PER PAGE HERE:
+  const itemsPerPage = 7;
+
+  // Simple pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalStudents, setTotalStudents] = useState(0); // Store total count
+
   const [stats, setStats] = useState({
     totalPending: 0,
     totalPaid: 0,
@@ -281,7 +287,7 @@ export default function RecordPayment() {
               academicYear,
               search: searchTerm,
               page,
-              limit: 5,
+              limit: itemsPerPage,
               month: getFormattedMonth(),
               classId: selectedClass !== "ALL" ? selectedClass : undefined,
             },
@@ -309,14 +315,23 @@ export default function RecordPayment() {
           return;
         }
 
-        const finalPagination = {
-          current: paginationData.current || page,
-          pages: paginationData.pages || 1,
-          total: paginationData.total || studentsData.length,
-        };
-
         setStudents(studentsData);
-        setPagination(finalPagination);
+        setTotalStudents(paginationData.total || statsData.totalStudents || studentsData.length);
+        setHasMore(page < (paginationData.pages || 1));
+        const total = paginationData.total || statsData.totalStudents || studentsData.length;
+        
+        // Frontend fallback pagination if backend returns all items instead of a paginated chunk
+        if (studentsData.length > itemsPerPage) {
+          setStudents(studentsData.slice((page - 1) * itemsPerPage, page * itemsPerPage));
+          setHasMore(page * itemsPerPage < total);
+        } else {
+          setStudents(studentsData);
+          setHasMore(page < (paginationData.pages || Math.ceil(total / itemsPerPage)));
+        }
+
+        setTotalStudents(total);
+        setCurrentPage(page);
+
         setStats({
           totalPending: statsData.totalPending || 0,
           totalPaid: statsData.totalPaid || 0,
@@ -332,7 +347,24 @@ export default function RecordPayment() {
     },
     [academicYear, searchTerm, getFormattedMonth, selectedClass],
   );
-  console.log("Pagination:", pagination);
+  
+  // Pagination handlers
+  const goToNextPage = () => {
+    if (hasMore) {
+      loadStudents(currentPage + 1);
+      // Scroll to top of table
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      loadStudents(currentPage - 1);
+      // Scroll to top of table
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const fetchSessions = async () => {
     try {
       const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
@@ -688,7 +720,7 @@ export default function RecordPayment() {
       setSelectedInsts([]);
 
       // Refresh the student list
-      await loadStudents(pagination.current);
+      await loadStudents(currentPage);
     } catch (error) {
       console.error("❌ Payment recording error:", error);
 
@@ -1138,55 +1170,37 @@ export default function RecordPayment() {
           </table>
         </div>
 
-        {/* Pagination */}
-        {pagination.pages > 1 && (
-          <div className="p-5 border-t border-slate-400 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-slate-600 font-medium">
-              Showing page{" "}
-              <span className="font-bold">{pagination.current}</span> of{" "}
-              <span className="font-bold">{pagination.pages}</span>
+        {/* Simple Pagination - Only Next/Prev Buttons */}
+        {totalStudents > 0 && (
+          <div className="p-6 border-t border-slate-400 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-slate-500 text-sm">
+              Page <span className="font-bold">{currentPage}</span> • Showing{" "}
+              <span className="font-bold">
+                {(currentPage - 1) * itemsPerPage + 1} -{" "}
+                {Math.min(currentPage * itemsPerPage, totalStudents)}
+              </span>{" "}
+              of <span className="font-bold">{totalStudents}</span> records
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="flex items-center gap-4">
               <button
-                onClick={() => loadStudents(pagination.current - 1)}
-                disabled={pagination.current === 1 || loading}
-                className="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm transition-all duration-300 hover:scale-105"
+                onClick={goToPrevPage}
+                disabled={currentPage === 1 || loading}
+                className="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-900 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                ← Previous
+                <FaChevronLeft /> Previous
               </button>
-              <div className="flex items-center gap-1">
-                {Array.from(
-                  { length: Math.min(5, pagination.pages) },
-                  (_, i) => {
-                    const pageNum =
-                      Math.max(
-                        1,
-                        Math.min(pagination.current - 2, pagination.pages - 4),
-                      ) + i;
-                    if (pageNum > pagination.pages) return null;
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => loadStudents(pageNum)}
-                        disabled={loading}
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium transition-all duration-300 hover:scale-105 ${
-                          pagination.current === pageNum
-                            ? "bg-indigo-700 text-white shadow-sm"
-                            : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  },
-                )}
-              </div>
+
+              <span className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold">
+                Page {currentPage}
+              </span>
+
               <button
-                onClick={() => loadStudents(pagination.current + 1)}
-                disabled={pagination.current === pagination.pages || loading}
-                className="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm transition-all duration-300 hover:scale-105"
+                onClick={goToNextPage}
+                disabled={!hasMore || loading}
+                className="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-900 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Next →
+                Next <FaChevronRight />
               </button>
             </div>
           </div>

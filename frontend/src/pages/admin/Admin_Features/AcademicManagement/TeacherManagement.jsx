@@ -93,23 +93,24 @@ export default function TeacherManagement() {
       setTeachers(teacherList);
       setClasses(classList);
 
-      if (teacherList.length > 0) {
-        const currentId = selectedTeacher?._id;
-        const match = teacherList.find(t => t._id === currentId);
-        // Sirf tabhi update karein agar teacher change hua ho ya pehli baar load ho rha ho
-        if (!currentId || !match) {
-          setSelectedTeacher(teacherList[0]);
-        } else if (match) {
-          setSelectedTeacher(match); 
+      setSelectedTeacher((prev) => {
+        if (teacherList.length > 0) {
+          const currentId = prev?._id;
+          const match = teacherList.find(t => t._id === currentId);
+          if (!currentId || !match) {
+            return teacherList[0];
+          }
+          return match;
         }
-      }
+        return null;
+      });
     } catch (error) {
       console.error("Error loading data:", error);
       toast.error("Failed to load data");
     } finally {
       setLoading(false);
     }
-  }, [academicYear, selectedTeacher?._id]);
+  }, [academicYear]);
 
   const fetchSessions = useCallback(async () => {
     try {
@@ -252,6 +253,170 @@ export default function TeacherManagement() {
       : `${API_URL}/uploads/${t.schoolId}/teachers/${t.profilePicture}`;
   };
 
+  // Memoized Sidebar List
+  const renderedTeacherList = useMemo(() => {
+    if (paginatedTeachers.length === 0) {
+      return (
+        <div className="p-8 text-center mt-10">
+          <FaUserTie className="text-4xl text-slate-300 mx-auto mb-3" />
+          <p className="text-sm font-bold text-slate-400">
+            No faculty members found
+          </p>
+        </div>
+      );
+    }
+
+    return paginatedTeachers.map((teacher) =>
+      viewMode === "list" ? (
+        // LIST VIEW ROW
+        <div
+          key={teacher._id}
+          className={`group flex items-center px-6 h-20 border rounded-2xl transition-all cursor-pointer ${
+            selectedTeacher?._id === teacher._id
+              ? "bg-indigo-50/50 border-indigo-300 shadow-sm"
+              : "border-slate-400 hover:bg-indigo-50/30 hover:shadow-sm bg-white"
+          }`}
+          onClick={() => {
+            setSelectedTeacher(teacher);
+            setViewMode("grid");
+          }}
+        >
+          {/* Col 1: Identity (30%) */}
+          <div className="w-[30%] flex items-center gap-4 px-2">
+            <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
+              {teacher.profilePicture ? (
+                <img
+                  src={getProfilePic(teacher)}
+                  alt={teacher.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-sm font-bold text-slate-400">
+                  {teacher.name?.charAt(0)}
+                </span>
+              )}
+            </div>
+            <div className="min-w-0">
+              <h4 className="text-sm font-bold text-slate-900 truncate">
+                {teacher.name}
+              </h4>
+              <p className="text-[10px] font-mono text-slate-400">
+                {teacher.teacherID}
+              </p>
+            </div>
+          </div>
+
+          {/* Col 2: Department (20%) */}
+          <div className="w-[20%] px-2 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-emerald-400"></div>
+            <span className="text-xs font-bold text-slate-600 truncate">
+              {teacher.department || "General"}
+            </span>
+          </div>
+
+          {/* Col 3: Contact (25%) */}
+          <div className="w-[25%] px-2 flex flex-col justify-center">
+            <div className="flex items-center gap-2 text-[11px] text-slate-600 truncate">
+              <FaEnvelope size={10} className="text-slate-400 shrink-0" />{" "}
+              {teacher.email}
+            </div>
+            <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5 truncate">
+              <FaPhone size={10} className="text-slate-400 shrink-0" />{" "}
+              {teacher.phone || "N/A"}
+            </div>
+          </div>
+
+          {/* Col 4: Assignments (15%) */}
+          <div className="w-[15%] px-2 flex flex-col gap-1.5">
+            <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-lg text-[10px] font-bold w-fit">
+              <FaChalkboardTeacher size={10} />
+              {teacher.assignedClasses?.filter(
+                (ac) => ac.isClassTeacher && ac.academicYear === academicYear
+              )?.length || 0}{" "}
+              Class Roles
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg text-[10px] font-bold w-fit">
+              <FaBook size={10} />
+              {teacher.assignedClasses?.filter(
+                (ac) => !ac.isClassTeacher && ac.academicYear === academicYear
+              )?.length || 0}{" "}
+              Subjects
+            </span>
+          </div>
+
+          {/* Col 5: Quick Actions (10%) */}
+          <div className="w-[10%] px-2 flex flex-col justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                openAssignModal(teacher, "subject");
+              }}
+              className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+              title="Assign Subject"
+            >
+              <FaPlus size={12} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedTeacher(teacher);
+                setViewMode("grid");
+              }}
+              className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+              title="View Profile"
+            >
+              <FaEye size={12} />
+            </button>
+          </div>
+        </div>
+      ) : (
+        // GRID VIEW CARD
+        <div
+          key={teacher._id}
+          onClick={() => setSelectedTeacher(teacher)}
+          className={`p-5 flex items-center gap-4 cursor-pointer transition-all border-slate-400 border-b relative ${
+            selectedTeacher?._id === teacher._id
+              ? "bg-indigo-50/40"
+              : "hover:bg-slate-50"
+          }`}
+        >
+          {selectedTeacher?._id === teacher._id && (
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600"></div>
+          )}
+
+          {/* Avatar with Status Dot */}
+          <div className="relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center font-bold text-indigo-600 text-xl border-1 border-white shadow-sm overflow-hidden">
+              {teacher.profilePicture ? (
+                <img
+                  src={getProfilePic(teacher)}
+                  alt={teacher.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                teacher.name?.charAt(0)
+              )}
+            </div>
+            <div className="absolute -top-1 -right-1 h-3 w-3 bg-purple-500 rounded-full border-2 border-white"></div>
+          </div>
+
+          {/* Teacher Info */}
+          <div className="min-w-0 flex-1">
+            <h4 className="text-[15px] font-bold text-slate-900 truncate">
+              {teacher.name}
+            </h4>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+              {teacher.department || "Faculty"}
+            </p>
+            <p className="text-[10px] font-mono text-slate-400 mt-1">
+              {teacher.teacherID}
+            </p>
+          </div>
+        </div>
+      )
+    );
+  }, [paginatedTeachers, viewMode, selectedTeacher?._id, academicYear]);
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-[#F8FAFC]">
@@ -363,160 +528,7 @@ export default function TeacherManagement() {
           <div
             className={`flex-1 overflow-y-auto custom-scrollbar ${viewMode === "list" ? "p-6 space-y-2" : ""}`}
           >
-            {paginatedTeachers.length === 0 ? (
-              <div className="p-8 text-center mt-10">
-                <FaUserTie className="text-4xl text-slate-300 mx-auto mb-3" />
-                <p className="text-sm font-bold text-slate-400">
-                  No faculty members found
-                </p>
-              </div>
-            ) : (
-              paginatedTeachers.map((teacher) =>
-                viewMode === "list" ? (
-                  // LIST VIEW ROW
-                  <div
-                    key={teacher._id}
-                    className="group flex items-center px-6 h-20 border border-slate-400 rounded-2xl hover:bg-indigo-50/30 hover:shadow-sm transition-all cursor-pointer bg-white"
-                    onClick={() => {
-                      setSelectedTeacher(teacher);
-                      setViewMode("grid");
-                    }}
-                  >
-                    {/* Col 1: Identity (30%) */}
-                    <div className="w-[30%] flex items-center gap-4 px-2">
-                      <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
-                        {teacher.profilePicture ? (
-                          <img
-                            src={getProfilePic(teacher)}
-                            alt={teacher.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-sm font-bold text-slate-400">
-                            {teacher.name?.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-sm font-bold text-slate-900 truncate">
-                          {teacher.name}
-                        </h4>
-                        <p className="text-[10px] font-mono text-slate-400">
-                          {teacher.teacherID}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Col 2: Department (20%) */}
-                    <div className="w-[20%] px-2 flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-emerald-400"></div>
-                      <span className="text-xs font-bold text-slate-600 truncate">
-                        {teacher.department || "General"}
-                      </span>
-                    </div>
-
-                    {/* Col 3: Contact (25%) */}
-                    <div className="w-[25%] px-2 flex flex-col justify-center">
-                      <div className="flex items-center gap-2 text-[11px] text-slate-600 truncate">
-                        <FaEnvelope
-                          size={10}
-                          className="text-slate-400 shrink-0"
-                        />{" "}
-                        {teacher.email}
-                      </div>
-                      <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5 truncate">
-                        <FaPhone
-                          size={10}
-                          className="text-slate-400 shrink-0"
-                        />{" "}
-                        {teacher.phone || "N/A"}
-                      </div>
-                    </div>
-
-                    {/* Col 4: Assignments (15%) */}
-                    <div className="w-[15%] px-2 flex flex-col gap-1.5">
-                      <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-lg text-[10px] font-bold w-fit">
-                        <FaChalkboardTeacher size={10} />
-                        {teacher.assignedClasses?.filter(ac => ac.isClassTeacher && ac.academicYear === academicYear)?.length || 0} Class Roles
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg text-[10px] font-bold w-fit">
-                        <FaBook size={10} />
-                        {teacher.assignedClasses?.filter(ac => !ac.isClassTeacher && ac.academicYear === academicYear)?.length || 0} Subjects
-                      </span>
-                    </div>
-
-                    {/* Col 5: Quick Actions (10%) */}
-                    <div className="w-[10%] px-2 flex flex-col justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openAssignModal(teacher, "subject");
-                        }}
-                        className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                        title="Assign Subject"
-                      >
-                        <FaPlus size={12} />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedTeacher(teacher);
-                          setViewMode("grid");
-                        }}
-                        className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
-                        title="View Profile"
-                      >
-                        <FaEye size={12} />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  // GRID VIEW CARD (Existing)
-                  <div
-                    key={teacher._id}
-                    onClick={() => setSelectedTeacher(teacher)}
-                    className={`p-5 flex items-center gap-4 cursor-pointer transition-all border-slate-400 border-b relative ${
-                      selectedTeacher?._id === teacher._id
-                        ? "bg-indigo-50/40"
-                        : "hover:bg-slate-50"
-                    }`}
-                  >
-                    {selectedTeacher?._id === teacher._id && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600"></div>
-                    )}
-
-                    {/* Avatar with Status Dot */}
-                    <div className="relative">
-                      <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center font-bold text-indigo-600 text-xl border-1 border-white shadow-sm overflow-hidden">
-                        {teacher.profilePicture ? (
-                          <img
-                            src={getProfilePic(teacher)}
-                            alt={teacher.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          teacher.name?.charAt(0)
-                        )}
-                      </div>
-                      <div className="absolute -top-1 -right-1 h-3 w-3 bg-purple-500 rounded-full border-2 border-white"></div>
-                    </div>
-
-                    {/* Teacher Info */}
-                    <div className="min-w-0 flex-1">
-                      <h4 className="text-[15px] font-bold text-slate-900 truncate">
-                        {teacher.name}
-                      </h4>
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                        {teacher.department || "Faculty"}
-                      </p>
-                      <p className="text-[10px] font-mono text-slate-400 mt-1">
-                        {teacher.teacherID}
-                      </p>
-                    </div>
-                  </div>
-                ),
-              )
-            )}
+            {renderedTeacherList}
           </div>
 
           {/* Pagination Bar */}
@@ -844,9 +856,31 @@ export default function TeacherManagement() {
             setShowAssignModal(false);
             setAssignmentType(null);
           }}
-          onSuccess={() => {
+          onSuccess={(payload) => {
             setShowAssignModal(false);
-            loadData();
+            const cls = classes.find(c => c._id === payload.classId);
+            const newAssignment = {
+                class: { _id: cls?._id, className: cls?.className },
+                section: payload.sectionName,
+                isClassTeacher: assignmentType === "classTeacher",
+                subject: payload.subjectName,
+                academicYear: payload.academicYear
+            };
+            
+            setTeachers(prev => prev.map(t => {
+                if (t._id === selectedTeacher._id) {
+                    return { ...t, assignedClasses: [...(t.assignedClasses || []), newAssignment] };
+                }
+                return t;
+            }));
+
+            setSelectedTeacher(prev => {
+                if (prev._id === selectedTeacher._id) {
+                    return { ...prev, assignedClasses: [...(prev.assignedClasses || []), newAssignment] };
+                }
+                return prev;
+            });
+            setAssignmentType(null);
           }}
         />
       )}
@@ -972,7 +1006,7 @@ function AssignmentModal({
           : "Subject teacher assigned successfully",
       );
 
-      onSuccess();
+      onSuccess(payload);
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
