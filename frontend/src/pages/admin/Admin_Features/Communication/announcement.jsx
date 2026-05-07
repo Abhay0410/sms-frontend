@@ -394,13 +394,13 @@ export default function AdminAnnouncements() {
         {/* Main Content */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-400 overflow-hidden">
           {/* Toolbar */}
-          <div className="border-b border-slate-400 p-6">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="border-b bg-slate-800 border-slate-400 p-6">
+            <div className="flex   flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="flex-1 max-w-2xl">
                 <div className="relative">
                   <FaSearch className="absolute left-4 top-3.5 text-slate-400" />
                   <input
-                    className="w-full pl-12 pr-4 py-3 border border-slate-400 rounded-xl outline-none focus:border-indigo-700 transition-all"
+                    className="w-full  bg-slate-700 pl-12 pr-4 py-3 border text-white border-slate-400 rounded-xl outline-none focus:border-indigo-700 transition-all"
                     placeholder="Search announcements by title or content..."
                     value={filters.search}
                     onChange={(e) =>
@@ -424,7 +424,7 @@ export default function AdminAnnouncements() {
 
                 <button
                   onClick={handleSearch}
-                  className="px-6 py-3 bg-slate-900 text-white rounded-xl hover:shadow-md transition-all"
+                  className="px-6 py-3 bg-yellow-500 text-white rounded-xl hover:shadow-md transition-all"
                 >
                   Search
                 </button>
@@ -440,63 +440,63 @@ export default function AdminAnnouncements() {
 
             {/* Advanced Filters */}
             {showFilters && (
-              <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-400 animate-slideDown">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="mt-6 p-4 bg-slate-700 rounded-xl border border-slate-400 animate-slideDown">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-white">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Type
                     </label>
                     <select
-                      className="w-full px-4 py-2.5 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
+                      className="w-full px-4 py-2.5 border bg-slate-800 text-white border-slate-400 rounded-lg outline-none focus:border-indigo-700"
                       value={filters.type}
                       onChange={(e) =>
                         setFilters({ ...filters, type: e.target.value })
                       }
                     >
-                      <option value="">All Types</option>
-                      <option value="GENERAL">General</option>
-                      <option value="ACADEMIC">Academic</option>
-                      <option value="EVENT">Event</option>
-                      <option value="URGENT">Urgent</option>
+                      <option   value="">All Types</option>
+                      <option  value="GENERAL">General</option>
+                      <option  value="ACADEMIC">Academic</option>
+                      <option  value="EVENT">Event</option>
+                      <option  value="URGENT">Urgent</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Priority
                     </label>
                     <select
-                      className="w-full px-4 py-2.5 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
+                      className="w-full px-4 py-2.5   bg-slate-800 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
                       value={filters.priority}
                       onChange={(e) =>
                         setFilters({ ...filters, priority: e.target.value })
                       }
                     >
-                      <option value="">All Priorities</option>
-                      <option value="LOW">Low</option>
-                      <option value="MEDIUM">Medium</option>
-                      <option value="HIGH">High</option>
+                      <option   value="">All Priorities</option>
+                      <option   value="LOW">Low</option>
+                      <option  value="MEDIUM">Medium</option>
+                      <option   value="HIGH">High</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Status
                     </label>
                     <select
-                      className="w-full px-4 py-2.5 border border-slate-400 rounded-lg outline-none focus:border-indigo-700"
+                      className="w-full px-4 py-2.5 border  bg-slate-800 border-slate-400 rounded-lg outline-none focus:border-indigo-700"
                       value={filters.isActive}
                       onChange={(e) =>
                         setFilters({ ...filters, isActive: e.target.value })
                       }
                     >
-                      <option value="">All Status</option>
-                      <option value="true">Active</option>
-                      <option value="false">Inactive</option>
+                      <option  value="">All Status</option>
+                      <option    value="true">Active</option>
+                      <option   value="false">Inactive</option>
                     </select>
                   </div>
 
-                  <div className="flex items-end">
+                  <div className="flex items-end text-white">
                     <button
                       onClick={handleReset}
                       className="w-full px-4 py-2.5 bg-white border border-slate-400 text-slate-700 rounded-lg hover:bg-slate-50 transition-all"
