@@ -107,11 +107,10 @@ const Input = ({ label, error, required, ...props }) => (
     </label>
     <input
       {...props}
-      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-        error
-          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
-          : "border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-      }`}
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${error
+        ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
+        : "border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        }`}
     />
     {error && (
       <span className="text-[11px] font-bold text-rose-600 animate-pulse">
@@ -128,11 +127,10 @@ const Select = ({ label, error, required, options, ...props }) => (
     </label>
     <select
       {...props}
-      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-        error
-          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
-          : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
-      }`}
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${error
+        ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
+        : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
+        }`}
     >
       <option value="">Select {label}</option>
       {options.map((opt) => (
@@ -216,20 +214,49 @@ export default function StudentParentRegisterForm() {
     hostelResident: false,
     hostelBlock: "",
     roomNumber: "",
+
+    enrollmentNumber: "",
+    scholarNumber: "",
+    isHandicapped: false,
+
+    bankName: "",
+    accountNumber: "",
+    ifscCode: "",
+    accountHolderName: "",
+    scholarshipName: "",
+    ssid: "",
   });
 
   const onStudentChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setStudentForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  const { name, value, type, checked } = e.target;
 
-    // Clear the error for this specific field
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
-    }
-  };
+  let newValue = value;
+
+  // ✅ IFSC → uppercase
+  if (name === "ifscCode") {
+    newValue = value.toUpperCase();
+  }
+
+  // ✅ Account Number → only digits
+  if (name === "accountNumber") {
+    newValue = value.replace(/\D/g, "");
+  }
+
+  // ✅ SSID → uppercase + no spaces
+  if (name === "ssid") {
+    newValue = value.toUpperCase().replace(/\s/g, "");
+  }
+
+  setStudentForm((prev) => ({
+    ...prev,
+    [name]: type === "checkbox" ? checked : newValue,
+  }));
+
+  // clear error
+  if (errors[name]) {
+    setErrors((prev) => ({ ...prev, [name]: null }));
+  }
+};
 
   const getCurrentAcademicYear = () => {
     const now = new Date();
@@ -274,7 +301,7 @@ export default function StudentParentRegisterForm() {
     }
   };
 
- 
+
 
 
   useEffect(() => {
@@ -282,7 +309,7 @@ export default function StudentParentRegisterForm() {
   }, []);
 
 
-  
+
 
   const validateForm = () => {
     let tempErrors = {};
@@ -328,6 +355,35 @@ export default function StudentParentRegisterForm() {
     if (!studentForm.className) tempErrors.className = "Class is required";
     if (!studentForm.academicYear)
       tempErrors.academicYear = "Academic year is required";
+
+
+    
+
+if (
+  studentForm.accountNumber &&
+  !/^[0-9]{9,18}$/.test(studentForm.accountNumber)
+) {
+  tempErrors.accountNumber = "Account number must be 9–18 digits";
+}
+
+if (
+  studentForm.ifscCode &&
+  !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(studentForm.ifscCode)
+) {
+  tempErrors.ifscCode = "Invalid IFSC (e.g. SBIN0001234)";
+}
+
+
+
+
+
+if (
+  studentForm.ssid &&
+  !/^[A-Z0-9]{8,20}$/.test(studentForm.ssid)
+) {
+  tempErrors.ssid = "SSID must be 8–20 uppercase letters/numbers";
+}
+
 
     setErrors(tempErrors);
 
@@ -599,7 +655,7 @@ export default function StudentParentRegisterForm() {
                   placeholder="student@example.com"
                 />
 
-                
+
                 <Input
                   label="Mobile Number (Optional)"
                   type="tel"
@@ -612,7 +668,7 @@ export default function StudentParentRegisterForm() {
                   pattern="[0-9]{10}"
                 />
 
-                
+
 
                 <div className="flex flex-col gap-1">
                   <label className="text-sm font-semibold text-slate-700">
@@ -636,11 +692,10 @@ export default function StudentParentRegisterForm() {
                       showYearDropdown
                       showMonthDropdown
                       dropdownMode="select"
-                      className={`w-full rounded-lg border p-3 outline-none transition-all ${
-                        errors.dateOfBirth
-                          ? "border-rose-500 bg-rose-50/30"
-                          : "border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                      }`}
+                      className={`w-full rounded-lg border p-3 outline-none transition-all ${errors.dateOfBirth
+                        ? "border-rose-500 bg-rose-50/30"
+                        : "border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                        }`}
                       required
                     />
                   </div>
@@ -709,6 +764,35 @@ export default function StudentParentRegisterForm() {
                   placeholder="12-digit Aadhar"
                   error={errors.aadharNumber}
                 />
+
+                <Input
+                  label="Enrollment Number"
+                  name="enrollmentNumber"
+                  value={studentForm.enrollmentNumber}
+                  onChange={onStudentChange}
+                  placeholder="Enter enrollment number"
+                />
+
+                <Input
+                  label="Scholar Number"
+                  name="scholarNumber"
+                  value={studentForm.scholarNumber}
+                  onChange={onStudentChange}
+                  placeholder="Enter scholar number"
+                />
+
+                <div className="flex items-center mt-2">
+                  <input
+                    type="checkbox"
+                    name="isHandicapped"
+                    checked={studentForm.isHandicapped}
+                    onChange={onStudentChange}
+                    className="h-4 w-4"
+                  />
+                  <label className="ml-2 text-sm text-gray-700">
+                    Is Handicapped
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -1070,6 +1154,75 @@ export default function StudentParentRegisterForm() {
                     error={errors.previousSchool}
                   />
                 </div>
+              </div>
+
+
+            </div>
+
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">
+                Scholarship / Bank Details (Optional)
+              </h3>
+
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+                <Input
+                  label="Bank Name"
+                  name="bankName"
+                  value={studentForm.bankName}
+                  onChange={onStudentChange}
+                  placeholder="e.g. State Bank of India"
+                  error={errors.bankName}
+                />
+
+                <Input
+  label="Account Number"
+  name="accountNumber"
+  value={studentForm.accountNumber}
+  onChange={onStudentChange}
+  placeholder="e.g. 123456789012"
+  error={errors.accountNumber}
+  maxLength="18"
+  pattern="[0-9]{10}"
+/>
+
+                <Input
+  label="IFSC Code"
+  name="ifscCode"
+  value={studentForm.ifscCode}
+  onChange={onStudentChange}
+  placeholder="e.g. SBIN0001234"
+  error={errors.ifscCode}
+   maxLength={11}
+/>
+
+                <Input
+                  label="Account Holder Name"
+                  name="accountHolderName"
+                  value={studentForm.accountHolderName}
+                  onChange={onStudentChange}
+                  placeholder="e.g. Rahul Sharma"
+                  error={errors.accountHolderName}
+                />
+
+                <Input
+                  label="Scholarship Name"
+                  name="scholarshipName"
+                  value={studentForm.scholarshipName}
+                  onChange={onStudentChange}
+                  placeholder="e.g. Post Matric Scholarship"
+                  error={errors.scholarshipName}
+                />
+
+                <Input
+                  label="SSID"
+                  name="ssid"
+                  value={studentForm.ssid}
+                  onChange={onStudentChange}
+                  placeholder="e.g. SSID12345678"
+                  error={errors.ssid}
+                />
+
               </div>
             </div>
 
