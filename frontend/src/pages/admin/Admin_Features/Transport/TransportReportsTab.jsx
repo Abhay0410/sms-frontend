@@ -163,9 +163,9 @@ const TransportReportsTab = () => {
       </div>
 
       {/* Aggregated Table View */}
-      <div className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-800/95 shadow-xl shadow-slate-900/30">
+      <div className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-50">
   {/* Header */}
-  <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700 bg-slate-800/80 backdrop-blur-sm">
+  <div className="flex items-center justify-between px-6 py-5 border-b border-slate-700 bg-slate-800 backdrop-blur-sm">
     <div>
       <h3 className="text-xl font-bold text-white tracking-wide">
         Vehicle Efficiency Breakdown
@@ -187,20 +187,20 @@ const TransportReportsTab = () => {
   <div className="overflow-x-auto ">
     <table className="w-full border-collapse">
       <thead>
-        <tr className ="bg-slate-700/40 border-b border-slate-700">
-          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+        <tr className ="bg-white border-b border-slate-700">
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-700">
             Vehicle
           </th>
-          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-700">
             Trips
           </th>
-          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-700">
             Fuel Used
           </th>
-          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-700">
             Distance
           </th>
-          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
+          <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-700">
             Mileage
           </th>
         </tr>
@@ -210,7 +210,7 @@ const TransportReportsTab = () => {
         {paginatedStats.map((stat, idx) => (
           <tr
             key={idx}
-            className="border-b border-slate-700/70 hover:bg-white/20 backdrop-blur-sm/80 backdrop-blur-sm/80 backdrop-blur-sm/5 transition-all duration-300"
+            className="border-b border-slate-700/70 hover:bg-white/20 backdrop-blur-sm/80   transition-all duration-300"
           >
             {/* Vehicle */}
             <td className="px-6 py-5">
@@ -220,7 +220,7 @@ const TransportReportsTab = () => {
                 </div>
 
                 <div>
-                  <p className="font-semibold text-white">
+                  <p className="font-semibold text-slate-900">
                     {stat.registrationNumber}
                   </p>
                   <p className="text-xs text-slate-400">
@@ -233,14 +233,14 @@ const TransportReportsTab = () => {
             {/* Trips */}
             <td className="px-6 py-5">
               <div className="inline-flex items-center px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                <span className="text-indigo-300 font-semibold">
+                <span className="text-indigo-400 font-semibold">
                   {stat.totalTrips || 0}
                 </span>
               </div>
             </td>
 
             {/* Fuel */}
-            <td className="px-6 py-5 text-slate-200 font-medium">
+            <td className="px-6 py-5 text-slate-400 font-medium">
               <span className="text-amber-400 font-semibold">
                 {stat.totalFuelLiters || 0}
               </span>{" "}
@@ -248,7 +248,7 @@ const TransportReportsTab = () => {
             </td>
 
             {/* Distance */}
-            <td className="px-6 py-5 text-slate-200 font-medium">
+            <td className="px-6 py-5 text-slate-400 font-medium">
               <span className="text-cyan-400 font-semibold">
                 {stat.totalDistanceKm || 0}
               </span>{" "}
