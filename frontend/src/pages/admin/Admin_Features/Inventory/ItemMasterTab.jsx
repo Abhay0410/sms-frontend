@@ -42,7 +42,7 @@ const ItemMasterTab = () => {
   return (
     <div className="space-y-4 animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-lg font-bold text-white">Master Catalog</h2>
+        <h2 className="text-lg font-bold text-black">Master Catalog</h2>
         
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
           <div className="relative w-full sm:w-64">

@@ -44,7 +44,7 @@ const ExpenseCategoriesTab = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-bold text-white tracking-tight">Master Categories</h3>
+        <h3 className="text-xl font-bold text-black tracking-tight">Master Categories</h3>
         <button
           onClick={() => setIsAdding(!isAdding)}
           className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-md text-sm font-bold"

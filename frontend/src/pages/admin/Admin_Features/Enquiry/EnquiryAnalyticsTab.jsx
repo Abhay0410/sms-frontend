@@ -116,11 +116,11 @@ export default function EnquiryAnalyticsTab() {
       </div>
 
       {/* --- KANBAN PIPELINE BOARD --- */}
-      <div className="bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h3 className="text-lg font-bold text-white">Active Pipeline</h3>
-            <p className="text-sm text-slate-400">Track and manage leads through the admission stages.</p>
+            <h3 className="text-lg font-bold text-slate-800">Active Pipeline</h3>
+            <p className="text-sm text-slate-500">Track and manage leads through the admission stages.</p>
           </div>
           <button
             onClick={fetchDashboardData}

@@ -45,7 +45,7 @@ const InventoryDashboard = () => {
       </div>
 
       {/* Main Container */}
-      <div className="bg-slate-800 text-white  rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white text-white  rounded-xl border border-slate-200 shadow-sm overflow-hidden">
 
         {/* Tabs */}
         <div className="flex flex-wrap border-b  border-slate-200 bg-slate-700">
