@@ -113,7 +113,7 @@ const ExpenseLedgerTab = () => {
   return (
     <div className="space-y-4">
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
-        <h3 className="text-xl font-bold text-white shrink-0 tracking-tight">Master Ledger</h3>
+        <h3 className="text-xl font-bold text-black shrink-0 tracking-tight">Master Ledger</h3>
         
         <div className="flex flex-col md:flex-row items-center gap-3 w-full xl:w-auto flex-wrap justify-end">
           <div className="relative w-full md:w-64 shrink-0">
