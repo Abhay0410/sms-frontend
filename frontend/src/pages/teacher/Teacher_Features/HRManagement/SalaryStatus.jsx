@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api, { getBaseURL } from "../../../../services/api";
+import api from "../../../../services/api";
 import { FaMoneyCheckAlt, FaDownload, FaHistory, FaEye, FaPrint, FaFilePdf, FaCalendarAlt, FaRupeeSign, FaChartLine, FaFilter } from "react-icons/fa";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import { toast } from "react-toastify";
@@ -74,13 +74,33 @@ export default function SalaryStatus() {
   const handleDownload = async (slipId, event) => {
     if (event) event.stopPropagation();
     try {
-      const token = localStorage.getItem("token");
-      const baseURL = getBaseURL();
-      const downloadUrl = `${baseURL}${API_ENDPOINTS.ADMIN.PAYROLL.DOWNLOAD_SLIP(slipId)}?token=${token}`;
-      
       toast.info("Downloading salary slip...");
-      window.open(downloadUrl, '_blank');
-    } catch {
+      
+      // 1. Fetch the PDF via Axios to ensure the Bearer token is sent in headers
+      const response = await api.get(
+        API_ENDPOINTS.ADMIN.PAYROLL.DOWNLOAD_SLIP(slipId), 
+        { responseType: 'blob' } // Crucial for handling PDF binary data
+      );
+      
+      // 2. Create a blob URL from the response data
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      
+      // 3. Create a temporary anchor tag to trigger the download
+      const link = document.createElement('a');
+      link.href = url;
+      // You can customize the default file name here
+      link.setAttribute('download', `Salary_Slip_${slipId}.pdf`); 
+      document.body.appendChild(link);
+      link.click();
+      
+      // 4. Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Download started!");
+    } catch (error) {
+      console.error("Download error:", error);
       toast.error("Failed to download slip");
     }
   };
