@@ -2300,6 +2300,31 @@ export default function ClassManagement() {
     });
   };
 
+   const handleDeleteClass = async (e, classId, className) => {
+      e.stopPropagation();
+      const result = await Swal.fire({
+        title: "Delete Class?",
+        text: `Are you sure you want to delete Class ${className}? This will remove all sections and associations.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      });
+  
+      if (result.isConfirmed) {
+        try {
+          await api.delete(`${API_ENDPOINTS.ADMIN.CLASS.DELETE(classId)}`);
+          toast.success(`Class ${className} deleted successfully`);
+          loadClasses();
+        } catch (err) {
+          console.error("Delete class error:", err);
+          toast.error(err.message || "Failed to delete class");
+        }
+      }
+    };
+  
+
   console.log('selectedClass:', selectedClass);
 console.log('selectedSection:', selectedSection);
 console.log('sections:', selectedClass?.sections);
@@ -2898,8 +2923,11 @@ const selectedSectionData = selectedSection;
                     className="relative group p-4 border border-slate-200 rounded-xl hover:border-indigo-300 hover:shadow-sm cursor-pointer transition-all bg-white"
                   >
                     <button
-                      onClick={(e) => handleDeleteClass(e, cls._id, cls.className)}
-                      className="absolute top-3 right-3 p-1.5 bg-red-50 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-100 transition-all z-10"
+                      onClick={(e) =>{
+                         e.stopPropagation();
+                          handleDeleteClass(e, cls._id, cls.className)}
+                      } 
+                      className="absolute  top-3 right-3 p-1.5  text-red-500 rounded-lg  group-hover:opacity-100 hover:bg-red-100 transition-all z-10"
                       title="Delete Class"
                     >
                       <FaTrash size={12} />

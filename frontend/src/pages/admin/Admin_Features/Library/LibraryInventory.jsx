@@ -48,6 +48,7 @@ export default function LibraryInventory() {
     author: "",
     serialCode: "",
     category: "ACADEMIC",
+    customCategory: "",
     subject: "",
     rackNumber: "",
     price: "",
@@ -83,7 +84,15 @@ export default function LibraryInventory() {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.post(API_ENDPOINTS.ADMIN.LIBRARY.ADD_BOOK, formData);
+      const payload = {
+        ...formData,
+        category:
+          formData.category === "OTHERS"
+            ? formData.customCategory
+            : formData.category,
+      };
+
+      await api.post(API_ENDPOINTS.ADMIN.LIBRARY.ADD_BOOK, payload);
       toast.success("Book added successfully!");
       setShowAddModal(false);
       setFormData({
@@ -91,6 +100,7 @@ export default function LibraryInventory() {
         author: "",
         serialCode: "",
         category: "ACADEMIC",
+        customCategory: "",
         subject: "",
         rackNumber: "",
         price: "",
@@ -135,9 +145,17 @@ export default function LibraryInventory() {
     e.preventDefault();
     setSaving(true);
     try {
+      const payload = {
+        ...formData,
+        category:
+          formData.category === "OTHERS"
+            ? formData.customCategory
+            : formData.category,
+      };
+
       await api.put(
         API_ENDPOINTS.ADMIN.LIBRARY.UPDATE_BOOK(selectedBook._id),
-        formData,
+        payload,
       );
       toast.success("Book updated successfully!");
       setShowEditModal(false);
@@ -537,11 +555,10 @@ export default function LibraryInventory() {
                     <button
                       key={i}
                       onClick={() => setCurrentPage(i + 1)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        currentPage === i + 1
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === i + 1
                           ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-sm"
                           : "bg-white text-slate-600 border border-slate-400 hover:bg-slate-50"
-                      }`}
+                        }`}
                     >
                       {i + 1}
                     </button>
@@ -702,6 +719,28 @@ export default function LibraryInventory() {
                     <option value="HISTORY">History</option>
                     <option value="OTHERS">Others</option>
                   </select>
+                  {formData.category === "OTHERS" && (
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Custom Category *
+                      </label>
+
+                      <input
+                        type="text"
+                        required
+                        placeholder="Enter custom category"
+                        value={formData.customCategory}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            customCategory: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-3 bg-white border border-slate-400 rounded-xl outline-none focus:border-orange-500 transition-all"
+                      />
+                    </div>
+                  )}
+
                 </div>
 
                 <div>
@@ -869,6 +908,27 @@ export default function LibraryInventory() {
                     <option value="HISTORY">History</option>
                     <option value="OTHERS">Others</option>
                   </select>
+                  {formData.category === "OTHERS" && (
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Custom Category *
+                      </label>
+
+                      <input
+                        type="text"
+                        required
+                        placeholder="Enter custom category"
+                        value={formData.customCategory}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            customCategory: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-3 bg-white border border-slate-400 rounded-xl outline-none focus:border-indigo-500 transition-all"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">

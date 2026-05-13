@@ -1,4 +1,4 @@
-import { useEffect, useState ,useLayoutEffect } from "react";
+import { useEffect, useState, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaCheck, FaSpinner, FaUserShield } from "react-icons/fa";
@@ -33,11 +33,10 @@ const FormInput = ({ label, error, required, ...props }) => (
     </label>
     <input
       {...props}
-      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-        error 
-          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${error
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
           : "border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-      }`}
+        }`}
     />
     {error && <span className="text-[11px] font-bold text-rose-600 animate-pulse">{error}</span>}
   </div>
@@ -50,11 +49,10 @@ const FormSelect = ({ label, error, required, options, ...props }) => (
     </label>
     <select
       {...props}
-      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-        error 
-          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200" 
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${error
+          ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
           : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
-      }`}
+        }`}
     >
       <option value="">Select {label}</option>
       {options.map(opt => (
@@ -94,14 +92,14 @@ const AdminRegisterForm = () => {
     }
     setSchool(JSON.parse(stored));
 
-    
+
   }, [navigate]);
 
-  
+
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     // ✅ Special Handling for Role selection to auto-fill Department & SuperAdmin status
     if (name === "designation") {
       const selectedRole = ADMIN_ROLES.find(r => r.designation === value);
@@ -138,17 +136,29 @@ const AdminRegisterForm = () => {
       formData.append("email", form.email.trim().toLowerCase());
       formData.append("phone", form.phone.trim());
       formData.append("schoolId", school._id);
-      formData.append("dateOfBirth", form.dateOfBirth || "");
+      formData.append(
+        "dateOfBirth",
+        form.dateOfBirth
+          ? form.dateOfBirth.toISOString()
+          : ""
+      );
+
+      formData.append(
+        "joiningDate",
+        form.joiningDate
+          ? form.joiningDate.toISOString()
+          : ""
+      );
       formData.append("gender", form.gender || "");
       formData.append("designation", form.designation);
       formData.append("department", form.department);
-      formData.append("joiningDate", form.joiningDate || "");
+
       formData.append("isSuperAdmin", form.isSuperAdmin);
       formData.append("role", "admin");
-      
+
       // ✅ Explicit permissions for certain roles can be added here or in backend
-      formData.append("permissions", JSON.stringify([])); 
-      
+      formData.append("permissions", JSON.stringify([]));
+
       formData.append("address", JSON.stringify(form.address));
 
       if (form.profilePictureFile) {
@@ -251,7 +261,7 @@ const AdminRegisterForm = () => {
       <div className="max-w-5xl mx-auto">
         <div className="mb-4 text-center md:text-left">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center justify-center md:justify-start gap-3">
-            <FaUserShield className="text-indigo-600 size-10" /> Administrative Staff Enrollment  
+            <FaUserShield className="text-indigo-600 size-10" /> Administrative Staff Enrollment
           </h1>
           <p className="text-gray-500 font-medium text-sm mt-1">Create secure accounts for Principal, Librarian, or Accountants</p>
         </div>
@@ -259,7 +269,7 @@ const AdminRegisterForm = () => {
         <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
           <div className="p-1 bg-indigo-600"></div>
           <form onSubmit={handleSubmit} className="p-10 space-y-10">
-            
+
             {/* Role Selection Section - HIGHLIGHTED */}
             <div className="bg-indigo-50/50 p-8 rounded-3xl border border-indigo-100 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="md:col-span-2">
@@ -289,35 +299,35 @@ const AdminRegisterForm = () => {
 
             {/* Personal Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInput 
-                label="Staff Member Full Name " 
-                name="name" 
-                value={form.name} 
-                onChange={handleChange} 
-                required 
-                placeholder="John Doe" 
+              <FormInput
+                label="Staff Member Full Name "
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                required
+                placeholder="John Doe"
                 error={errors.name}
               />
-              <FormInput 
-                label="Work Email Address " 
-                name="email" 
-                type="email" 
-                value={form.email} 
-                onChange={handleChange} 
-                required 
-                placeholder="email@school.com" 
+              <FormInput
+                label="Work Email Address "
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+                placeholder="email@school.com"
                 error={errors.email}
               />
-              <FormInput 
-                label="Contact Number " 
-                name="phone" 
-                value={form.phone} 
-                onChange={handleChange} 
-                required 
-                placeholder="9876543210" 
+              <FormInput
+                label="Contact Number "
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                required
+                placeholder="9876543210"
                 error={errors.phone}
               />
-              
+
               <div>
                 <label className="text-sm font-medium text-slate-700">Gender</label>
                 <FormSelect name="gender" value={form.gender} onChange={handleChange} options={["Male", "Female", "Other"]} />
@@ -326,22 +336,46 @@ const AdminRegisterForm = () => {
               <div>
                 <label className="text-sm font-medium text-slate-700">Date of Birth</label>
                 <DatePicker
-                  selected={form.dateOfBirth ? new Date(form.dateOfBirth.split("/").reverse().join("-")) : null}
-                  onChange={(date) => setForm({...form, dateOfBirth: date?.toLocaleDateString('en-GB')})}
+                  selected={form.dateOfBirth}
+                  onChange={(date) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      dateOfBirth: date,
+                    }))
+                  }
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
-                  className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg outline-none focus:ring-2 ring-indigo-500"
+                  maxDate={new Date()}
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${errors.dateOfBirth
+                      ? "border-rose-500 bg-rose-50/30"
+                      : "border-gray-300 focus:ring-2 ring-indigo-500"
+                    }`}
                 />
               </div>
 
               <div>
                 <label className="text-sm font-medium text-slate-700">Joining Date</label>
                 <DatePicker
-                  selected={form.joiningDate ? new Date(form.joiningDate.split("/").reverse().join("-")) : null}
-                  onChange={(date) => setForm({...form, joiningDate: date?.toLocaleDateString('en-GB')})}
+                  selected={form.joiningDate}
+                  onChange={(date) =>
+                    setForm((prev) => ({
+                      ...prev,
+                    joiningDate: date,
+                    }))
+                  }
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
-                  className="w-full mt-1 p-2.5 border border-gray-300 rounded-lg outline-none focus:ring-2 ring-indigo-500"
+                  maxDate={new Date()}
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${errors.dateOfBirth
+                      ? "border-rose-500 bg-rose-50/30"
+                      : "border-gray-300 focus:ring-2 ring-indigo-500"
+                    }`}
                 />
               </div>
             </div>
@@ -367,21 +401,21 @@ const AdminRegisterForm = () => {
             </div>
 
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6">
-               <div className="flex items-center gap-3">
-                  <input type="checkbox" name="isSuperAdmin" checked={form.isSuperAdmin} onChange={handleChange} className="h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
-                  <div>
-                    <label className="text-sm font-bold text-slate-800">Grant Super Admin Privileges</label>
-                    <p className="text-[10px] text-slate-400">Enables full access to system settings and database logs.</p>
-                  </div>
-               </div>
+              <div className="flex items-center gap-3">
+                <input type="checkbox" name="isSuperAdmin" checked={form.isSuperAdmin} onChange={handleChange} className="h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                <div>
+                  <label className="text-sm font-bold text-slate-800">Grant Super Admin Privileges</label>
+                  <p className="text-[10px] text-slate-400">Enables full access to system settings and database logs.</p>
+                </div>
+              </div>
 
-               <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                >
-                  {loading ? <FaSpinner className="animate-spin" /> : <><FaCheck /> Admin Register</>}
-                </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-12 py-4 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+              >
+                {loading ? <FaSpinner className="animate-spin" /> : <><FaCheck /> Admin Register</>}
+              </button>
             </div>
           </form>
         </div>

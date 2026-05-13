@@ -228,35 +228,35 @@ export default function StudentParentRegisterForm() {
   });
 
   const onStudentChange = (e) => {
-  const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target;
 
-  let newValue = value;
+    let newValue = value;
 
-  // ✅ IFSC → uppercase
-  if (name === "ifscCode") {
-    newValue = value.toUpperCase();
-  }
+    // ✅ IFSC → uppercase
+    if (name === "ifscCode") {
+      newValue = value.toUpperCase();
+    }
 
-  // ✅ Account Number → only digits
-  if (name === "accountNumber") {
-    newValue = value.replace(/\D/g, "");
-  }
+    // ✅ Account Number → only digits
+    if (name === "accountNumber") {
+      newValue = value.replace(/\D/g, "");
+    }
 
-  // ✅ SSID → uppercase + no spaces
-  if (name === "ssid") {
-    newValue = value.toUpperCase().replace(/\s/g, "");
-  }
+    // ✅ SSID → uppercase + no spaces
+    if (name === "ssid") {
+      newValue = value.toUpperCase().replace(/\s/g, "");
+    }
 
-  setStudentForm((prev) => ({
-    ...prev,
-    [name]: type === "checkbox" ? checked : newValue,
-  }));
+    setStudentForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : newValue,
+    }));
 
-  // clear error
-  if (errors[name]) {
-    setErrors((prev) => ({ ...prev, [name]: null }));
-  }
-};
+    // clear error
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
 
   const getCurrentAcademicYear = () => {
     const now = new Date();
@@ -357,32 +357,32 @@ export default function StudentParentRegisterForm() {
       tempErrors.academicYear = "Academic year is required";
 
 
-    
-
-if (
-  studentForm.accountNumber &&
-  !/^[0-9]{9,18}$/.test(studentForm.accountNumber)
-) {
-  tempErrors.accountNumber = "Account number must be 9–18 digits";
-}
-
-if (
-  studentForm.ifscCode &&
-  !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(studentForm.ifscCode)
-) {
-  tempErrors.ifscCode = "Invalid IFSC (e.g. SBIN0001234)";
-}
 
 
+    if (
+      studentForm.accountNumber &&
+      !/^[0-9]{9,18}$/.test(studentForm.accountNumber)
+    ) {
+      tempErrors.accountNumber = "Account number must be 9–18 digits";
+    }
+
+    if (
+      studentForm.ifscCode &&
+      !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(studentForm.ifscCode)
+    ) {
+      tempErrors.ifscCode = "Invalid IFSC (e.g. SBIN0001234)";
+    }
 
 
 
-if (
-  studentForm.ssid &&
-  !/^[A-Z0-9]{8,20}$/.test(studentForm.ssid)
-) {
-  tempErrors.ssid = "SSID must be 8–20 uppercase letters/numbers";
-}
+
+
+    if (
+      studentForm.ssid &&
+      !/^[A-Z0-9]{8,20}$/.test(studentForm.ssid)
+    ) {
+      tempErrors.ssid = "SSID must be 8–20 uppercase letters/numbers";
+    }
 
 
     setErrors(tempErrors);
@@ -646,7 +646,7 @@ if (
                 />
 
                 <Input
-                  label="Email (Optional)"
+                  label="Email "
                   type="email"
                   name="studentEmail"
                   value={studentForm.studentEmail}
@@ -766,7 +766,7 @@ if (
                 />
 
                 <Input
-                  label="Enrollment Number"
+                  label="Enrollment Number(Optional)"
                   name="enrollmentNumber"
                   value={studentForm.enrollmentNumber}
                   onChange={onStudentChange}
@@ -774,7 +774,7 @@ if (
                 />
 
                 <Input
-                  label="Scholar Number"
+                  label="Scholar Number(Optional)"
                   name="scholarNumber"
                   value={studentForm.scholarNumber}
                   onChange={onStudentChange}
@@ -1176,25 +1176,25 @@ if (
                 />
 
                 <Input
-  label="Account Number"
-  name="accountNumber"
-  value={studentForm.accountNumber}
-  onChange={onStudentChange}
-  placeholder="e.g. 123456789012"
-  error={errors.accountNumber}
-  maxLength="18"
-  pattern="[0-9]{10}"
-/>
+                  label="Account Number"
+                  name="accountNumber"
+                  value={studentForm.accountNumber}
+                  onChange={onStudentChange}
+                  placeholder="e.g. 123456789012"
+                  error={errors.accountNumber}
+                  maxLength="18"
+                  pattern="[0-9]{10}"
+                />
 
                 <Input
-  label="IFSC Code"
-  name="ifscCode"
-  value={studentForm.ifscCode}
-  onChange={onStudentChange}
-  placeholder="e.g. SBIN0001234"
-  error={errors.ifscCode}
-   maxLength={11}
-/>
+                  label="IFSC Code"
+                  name="ifscCode"
+                  value={studentForm.ifscCode}
+                  onChange={onStudentChange}
+                  placeholder="e.g. SBIN0001234"
+                  error={errors.ifscCode}
+                  maxLength={11}
+                />
 
                 <Input
                   label="Account Holder Name"

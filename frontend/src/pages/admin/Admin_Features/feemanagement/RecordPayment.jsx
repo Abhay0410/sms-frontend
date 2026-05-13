@@ -14,8 +14,11 @@ import {
   FaDownload,
   FaCheck,
   FaTimes,
+  FaMoneyBillWave ,
    FaHandHoldingUsd,
+  
   FaExclamationCircle,
+  
 } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
 import Swal from "sweetalert2";
@@ -785,7 +788,7 @@ export default function RecordPayment() {
         <div className="flex items-start gap-3">
   
   <div className="h-16 w-16 bg-green-200 text-green-700 rounded-xl flex items-center justify-center">
-    <FaHandHoldingUsd size={32} />
+  <FaRupeeSign size={32} />
   </div>
 
   <div>
