@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import { FaTimes, FaTrophy, FaBan } from "react-icons/fa";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 export default function ClosureModal({ isOpen, onClose, enquiryId, mode, onSuccess }) {
   // mode expects "WIN" (Convert) or "LOSS" (Close)
@@ -13,20 +15,91 @@ export default function ClosureModal({ isOpen, onClose, enquiryId, mode, onSucce
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
+  const [generatedCredentials, setGeneratedCredentials] = useState(null);
 
   const onSubmit = async (data) => {
     try {
       if (isWin) {
-        await api.post(API_ENDPOINTS.ADMIN.ENQUIRY.CONVERT_TO_STUDENT(enquiryId));
-        onSuccess("Lead successfully converted to a Registered Student!");
+        const response = await api.post(API_ENDPOINTS.ADMIN.ENQUIRY.CONVERT_TO_STUDENT(enquiryId));
+
+        // ✅ FIX 1: Extract credentials directly from the response as instructed.
+        const credentials = response?.data?.data?.credentials || response?.data?.credentials || response?.credentials;
+
+        // ✅ FIX 2: Check for the correct properties from the single credentials object.
+        if (credentials && credentials.studentID && credentials.password) {
+          const formattedCredentials = {
+            studentID: credentials.studentID,
+            parentID: credentials.parentID || "N/A",
+            password: credentials.password,
+            parentPassword: credentials.parentPassword || "N/A",
+          };
+
+          setGeneratedCredentials(formattedCredentials);
+          Swal.fire({
+            icon: "success",
+            title: "Conversion Successful!",
+            html: `
+              <div style="text-align: left; font-family: sans-serif;">
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 12px; margin-bottom: 12px;">
+                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                     <span style="color: #166534; font-size: 14px;"><b>Student ID:</b> ${formattedCredentials.studentID}</span>
+                     <button id="copySID" style="font-size: 10px; padding: 2px 8px; background: white; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer; color: #166534;">Copy</button>
+                   </div>
+                   <div style="display: flex; justify-content: space-between; align-items: center;">
+                     <span style="color: #166534; font-size: 14px;"><b>Parent ID:</b> ${formattedCredentials.parentID}</span>
+                     <button id="copyPID" style="font-size: 10px; padding: 2px 8px; background: white; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer; color: #166534;">Copy</button>
+                   </div>
+                </div>
+                <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 12px;">
+                   <p style="margin: 0 0 8px 0; font-size: 11px; color: #92400e; font-weight: 800; text-transform: uppercase;">Generated Access Keys:</p>
+                   <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #e5e7eb;">
+                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                       <span style="font-size: 13px;"><b>Student:</b> <code style="color: #4338ca;">${formattedCredentials.password}</code></span>
+                       <button id="copySPass" style="font-size: 10px; padding: 2px 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; color: #4338ca;">Copy</button>
+                     </div>
+                     <div style="display: flex; justify-content: space-between; align-items: center;">
+                       <span style="font-size: 13px;"><b>Parent:</b> <code style="color: #4338ca;">${formattedCredentials.parentPassword}</code></span>
+                       <button id="copyPPass" style="font-size: 10px; padding: 2px 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; color: #4338ca;">Copy</button>
+                     </div>
+                   </div>
+                </div>
+                <p style="color: #b91c1c; font-size: 11px; margin-top: 15px; font-weight: 600; text-align: center;">⚠️ Save these keys now. They are not stored in plain text.</p>
+              </div>
+            `,
+            confirmButtonText: "Copy All & Close",
+            confirmButtonColor: "#2563eb",
+            didOpen: () => {
+              const copy = (text, label) => { navigator.clipboard.writeText(text); toast.success(`${label} copied!`); };
+              document.getElementById("copySID").onclick = () => copy(formattedCredentials.studentID, "Student ID");
+              document.getElementById("copyPID").onclick = () => copy(formattedCredentials.parentID, "Parent ID");
+              document.getElementById("copySPass").onclick = () => copy(formattedCredentials.password, "Student Password");
+              document.getElementById("copyPPass").onclick = () => copy(formattedCredentials.parentPassword, "Parent Password");
+            },
+            // ✅ FIX 3: Re-added the "Copy All" functionality.
+            preConfirm: () => {
+              navigator.clipboard.writeText(
+                `IDs: Student(${formattedCredentials.studentID}), Parent(${formattedCredentials.parentID}) | Keys: Student(${formattedCredentials.password}), Parent(${formattedCredentials.parentPassword})`,
+              );
+              toast.success("All Credentials copied!");
+            },
+          }).then(() => {
+            onSuccess("Lead successfully converted and credentials generated!");
+            onClose();
+          });
+        } else {
+          toast.error("Conversion succeeded, but failed to retrieve credentials.");
+          onSuccess("Lead converted, but credentials missing. Check student profile.");
+          onClose();
+        }
       } else {
         await api.post(API_ENDPOINTS.ADMIN.ENQUIRY.CLOSE(enquiryId), { closeReason: data.closeReason });
         onSuccess("Lead has been closed.");
+        onClose();
       }
-      onClose();
     } catch (error) {
       console.error("Closure action failed", error);
-      alert(error?.message || "Failed to process lead closure.");
+      toast.error(error?.message || "Failed to process lead closure.");
+      onClose();
     }
   };
 

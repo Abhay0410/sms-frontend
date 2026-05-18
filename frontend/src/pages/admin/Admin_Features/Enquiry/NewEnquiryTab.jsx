@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from "react";
 import api from "../../../../services/api";
 import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 import {
@@ -10,12 +9,14 @@ import {
   FaCheckCircle,
   FaExclamationCircle,
 } from "react-icons/fa";
+import { useForm } from "react-hook-form";
 
 export default function NewEnquiryTab() {
   const {
     register,
     handleSubmit,
     reset,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -26,6 +27,34 @@ export default function NewEnquiryTab() {
   });
 
   const [message, setMessage] = useState(null);
+  const [sessions, setSessions] = useState([]);
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const response = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
+        let sessionData = Array.isArray(response) ? response : response?.data || [];
+
+        // Remove duplicates and sort descending (newest first)
+        sessionData = sessionData.filter((s, index, self) =>
+          index === self.findIndex((x) => x.startYear === s.startYear && x.endYear === s.endYear)
+        );
+        sessionData.sort((a, b) => b.startYear - a.startYear);
+        setSessions(sessionData);
+
+        const active = sessionData.find((s) => s?.isActive);
+        if (active) {
+          reset({
+            ...getValues(),
+            academicYear: `${active.startYear}-${active.endYear}`,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to load sessions", error);
+      }
+    };
+    fetchSessions();
+  }, [reset, getValues]);
 
   const onSubmit = async (data) => {
     setMessage(null);
@@ -115,9 +144,21 @@ export default function NewEnquiryTab() {
                 <option value="Other">Other</option>
               </select>
             </div>
-            <div className="md:col-span-2">
+            <div className="md:col-span-1">
               <label className={labelClass}>Previous School</label>
               <input {...register("previousSchool")} className={inputClass} placeholder="If any" />
+            </div>
+            <div>
+              <label className={labelClass}>Academic Year <span className="text-red-500">*</span></label>
+              <select {...register("academicYear", { required: "Required" })} className={inputClass}>
+                <option value="">Select Year</option>
+                {sessions.map((s) => (
+                  <option key={s._id} value={`${s.startYear}-${s.endYear}`}>
+                    {s.startYear}-{s.endYear} {s.isActive ? "(Current)" : ""}
+                  </option>
+                ))}
+              </select>
+              {errors.academicYear && <p className={errorClass}>{errors.academicYear.message}</p>}
             </div>
           </div>
         </section>

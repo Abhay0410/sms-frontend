@@ -16,7 +16,7 @@ import {
   FaTimes,
   FaMoneyBillWave ,
    FaHandHoldingUsd,
-  
+  FaChevronLeft,FaChevronRight ,
   FaExclamationCircle,
   
 } from "react-icons/fa";
@@ -316,17 +316,30 @@ export default function RecordPayment() {
           return;
         }
 
-        setStudents(studentsData);
+        // ✅ Normalization Layer: Supports both flat Student and nested Enrollment documents
+        const normalizedData = studentsData.map(item => {
+          if (item.student && item.student._id) {
+            return {
+              ...item.student,
+              enrollmentId: item._id,
+              feeDetails: item.feeDetails || item.student.feeDetails,
+              className: item.className || item.student.className,
+              section: item.section || item.student.section,
+            };
+          }
+          return item;
+        });
+
         setTotalStudents(paginationData.total || statsData.totalStudents || studentsData.length);
         setHasMore(page < (paginationData.pages || 1));
         const total = paginationData.total || statsData.totalStudents || studentsData.length;
         
         // Frontend fallback pagination if backend returns all items instead of a paginated chunk
-        if (studentsData.length > itemsPerPage) {
-          setStudents(studentsData.slice((page - 1) * itemsPerPage, page * itemsPerPage));
+        if (normalizedData.length > itemsPerPage) {
+          setStudents(normalizedData.slice((page - 1) * itemsPerPage, page * itemsPerPage));
           setHasMore(page * itemsPerPage < total);
         } else {
-          setStudents(studentsData);
+          setStudents(normalizedData);
           setHasMore(page < (paginationData.pages || Math.ceil(total / itemsPerPage)));
         }
 

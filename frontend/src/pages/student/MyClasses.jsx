@@ -35,11 +35,11 @@ export default function MyClasses() {
       // We create a new object with safely extracted properties
       const processedStudent = {
         ...student,
-        // Safely extract className: Check if it's an object (populated) or string
-        className: student.class?.className || student.class || "Not Assigned",
+        // ✅ ROBUST EXTRACTION: Flat string OR Populated Object
+        className: student.className || student.class?.className || student.class || student.targetClass || "Not Assigned",
         
-        // Safely extract section: Check if it's an object (populated) or string
-        section: student.section?.name || student.section || "Not Assigned",
+        // ✅ ROBUST EXTRACTION: Flat string OR Populated Object
+        section: student.section?.sectionName || student.section?.name || student.section || "Not Assigned",
         
         // Ensure roll number exists
         rollNumber: student.rollNumber || "N/A",

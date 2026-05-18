@@ -1,0 +1,71 @@
+ENROLLMENT & ADMISSIONS PIPELINE - FRONTEND IMPLEMENTATION PLAN
+===============================================================
+
+Overview
+--------
+This plan outlines the frontend UI/UX approach to transition from a linear, tightly-coupled student-class architecture to the new "Enrollment Junction" architecture. This separates the CRM (Admissions) from the Active Academic Roster.
+
+Phase 1: API Setup
+------------------
+[x] Add `ENROLLMENT` endpoints (`UNASSIGNED` and `BULK_ENROLL`) to `src/constants/apiEndpoints.js`.
+
+Phase 2: The "Matchmaker" UI (Bulk Enrollment)
+----------------------------------------------
+Location: `src/pages/admin/Admin_Features/AcademicManagement/BulkEnrollment.jsx`
+Action: Create a new Split-Screen / Dual-Listbox UI component to serve as the bridge between Admissions and Academics.
+
+1. Left Column (The Admissions Pool):
+   - Data Source: `GET /api/admin/enrollment/unassigned?academicYear=...`
+   - Filters:
+     - `Academic Year` (Required Dropdown - synced with right pane).
+     - `Target Grade` (Optional Dropdown to filter applicants).
+   - UI: Data table with Checkboxes for bulk selection.
+   - Columns: Student Name, Applicant ID, Target Grade, Application Date.
+   - Interactivity: "Select All" checkbox and a dynamic badge showing "[X] Students Selected".
+
+2. Right Column (The Academic Destination):
+   - Form Dropdowns: `Academic Year` (Synced), `Class/Grade`, `Section`.
+   - Live Analytics: When a Section is selected, display a capacity badge (e.g., "Current Strength: 24/30").
+   - Action: A prominent "Assign & Generate Roll Numbers" button.
+
+3. Submission Workflow:
+   - Client-side Validation: Ensure selected students count does not exceed available seats in the section.
+   - Trigger `POST /api/admin/enrollment/bulk-enroll`.
+   - On Success: Re-fetch the unassigned list (Left Column) and the updated capacity (Right Column). Trigger a success Toast.
+
+Phase 3: Roster & Student Management Refactoring [COMPLETED]
+------------------------------------------------------------
+Action: All master rosters must now mandate `academicYear` context. This affects multiple locations.
+
+1. Global Filters:
+   - Introduce a mandatory "Academic Year" selector at the top of:
+     - `src/pages/admin/Admin_Features/AcademicManagement/StudentManagement.jsx`
+     - `src/pages/admin/Admin_Features/feemanagement/RecordPayment.jsx`
+     - `src/pages/admin/Admin_Features/feemanagement/PaymentHistory.jsx`
+2. API Payload Updates: 
+   - Ensure all `GET` requests to `API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.LIST` and `API_ENDPOINTS.ADMIN.FEE.STUDENTS_WITH_FEES` append `?academicYear=...`.
+3. Data Mapping:
+   - The backend now returns `Enrollment` documents populated with `student` data. Ensure the frontend data tables correctly destructure this nested response (e.g., `row.student.name` instead of `row.name`).
+
+Phase 4: Promotion UI Updates [COMPLETED]
+-----------------------------------------
+Location: `src/pages/admin/Admin_Features/AcademicManagement/StudentManagement.jsx`
+Action: Update the `PromoteModal` component within `StudentManagement.jsx` to match the new Enrollment junction model.
+
+1. UI Additions:
+   - Add dropdowns to select the Target Academic Year (e.g., moving from 2025 to 2026), Target Class, and Target Section.
+2. Submission:
+   - Pass the selected `studentIds`, alongside the `targetAcademicYear`, `targetClassId`, and `targetSectionName` to the `PROMOTE` endpoint.
+
+Phase 5: Routing & Navigation Updates [COMPLETED]
+-------------------------------------------------
+Location: `src/routes/AdminRoutes.jsx` and Sidebar Navigation
+
+1. Sidebar Updates:
+   - Under "Admissions & Enquiry", add a link to "Pending Enrollments" navigating to `pending-enrollments`.
+   - Ensure "Student Management" explicitly points out it is for the "Active Roster".
+
+Phase 6: Quality Assurance [COMPLETED]
+--------------------------------------
+- [x] Test Edge Case: Assigning students when section capacity is exactly full (Handled by client-side validation in BulkEnrollment.jsx).
+- [x] Test Data Shape: Ensure existing generic Student modals and tables safely handle the new data structure coming from populated Enrollment queries (Handled by object normalization in StudentManagement, RecordPayment, and FeeOverview).

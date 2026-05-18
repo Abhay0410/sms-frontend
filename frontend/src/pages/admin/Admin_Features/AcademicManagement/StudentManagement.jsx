@@ -1,5 +1,6 @@
 // pages/admin/Admin_Features/AcademicManagement/StudentManagement.jsx
 import { useEffect, useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import api, { API_ENDPOINTS } from "../../../../services/api.js";
 import Swal from "sweetalert2";
@@ -76,10 +77,17 @@ export default function StudentManagement() {
       setSessions(sessionData);
 
       // ✅ Active session select
+      const savedSession = localStorage.getItem("academicYear");
       const active = sessionData.find((s) => s?.isActive);
 
-      if (active) {
-        setAcademicYear(`${active.startYear}-${active.endYear}`);
+      let initialYear = savedSession || (active ? `${active.startYear}-${active.endYear}` : "");
+      
+      if (initialYear) {
+        setAcademicYear(initialYear);
+        setFilters((prev) => ({
+          ...prev,
+          academicYear: initialYear
+        }));
       }
     } catch (err) {
       console.error("Session fetch error", err);
@@ -211,7 +219,7 @@ export default function StudentManagement() {
     if (selectedStudents.length === students.length) {
       setSelectedStudents([]);
     } else {
-      setSelectedStudents(students.map((s) => s._id));
+        setSelectedStudents(students.map((s) => s.student ? s.student._id : s._id));
     }
   };
 
@@ -412,6 +420,7 @@ export default function StudentManagement() {
                 onChange={(e) => {
                   setFilters({ ...filters, academicYear: e.target.value })
                   setIsSessionSelected(false);
+                  localStorage.setItem("academicYear", e.target.value);
                 }
                 }
                 className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition"
@@ -577,14 +586,30 @@ export default function StudentManagement() {
                   <th className="p-4 text-left font-semibold text-white uppercase tracking-wider text-xs">
                     Final Result
                   </th>
+                  <th className="p-4 text-left font-semibold text-white uppercase tracking-wider text-xs">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {students.map((student) => {
-                  const isSelected = selectedStudents.includes(student._id);
+                  // Support both nested Enrollment structure and flat Student structure
+                  const studentObj = student.student || student;
+                  const targetStudentId = studentObj._id;
+                  const isSelected = selectedStudents.includes(targetStudentId);
+                  
+                  const studentName = studentObj.name || "N/A";
+                  const studentIDDisplay = studentObj.studentID || "N/A";
+                  const displayClassName = student.className || studentObj.className;
+                  const displaySection = student.section || studentObj.section;
+                  const displayRoll = student.rollNumber || studentObj.rollNumber;
+                  const displayStatus = student.status || studentObj.status;
+                  const parentName = studentObj.parentId?.name || "N/A";
+                  const resultData = student.finalResult || studentObj.finalResult;
+
                   return (
                     <tr
-                      key={student._id}
+                      key={student._id || targetStudentId}
                       className={`transition-all duration-200 ${isSelected
                         ? "bg-indigo-50/50"
                         : "hover:bg-slate-50/80 hover:shadow-sm"
@@ -596,7 +621,7 @@ export default function StudentManagement() {
                             <input
                               type="checkbox"
                               checked={isSelected}
-                              onChange={() => toggleStudent(student._id)}
+                              onChange={() => toggleStudent(targetStudentId)}
                               className="peer hidden"
                             />
                             <div className="h-5 w-5 rounded-md border-2 border-slate-300 bg-white peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-checked:after:absolute peer-checked:after:left-[6px] peer-checked:after:top-[2px] peer-checked:after:h-3 peer-checked:after:w-1.5 peer-checked:after:rotate-45 peer-checked:after:border-r-2 peer-checked:after:border-b-2 peer-checked:after:border-white transition-all"></div>
@@ -611,62 +636,62 @@ export default function StudentManagement() {
                               : "bg-blue-50 text-blue-600"
                               }`}
                           >
-                            {student.name?.charAt(0)}
+                            {studentName.charAt(0)}
                           </div>
 
                           <div>
                             <p className="font-bold text-slate-900">
-                              {student.name}
+                              {studentName}
                             </p>
                             <p className="text-xs text-slate-500 font-medium">
-                              {student.studentID}
+                              {studentIDDisplay}
                             </p>
                           </div>
                         </div>
                       </td>
                       <td className="p-4 text-slate-700 font-medium">
-                        {student.className}{" "}
-                        {student.section && `- ${student.section}`}
-                        {student.rollNumber && (
+                        {displayClassName}{" "}
+                        {displaySection && `- ${displaySection}`}
+                        {displayRoll && (
                           <span className="block text-xs text-slate-500 mt-0.5">
-                            Roll: {student.rollNumber}
+                            Roll: {displayRoll}
                           </span>
                         )}
                       </td>
                       <td className="p-4">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${student.status === "ENROLLED"
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${displayStatus === "ENROLLED" || displayStatus === "ACTIVE"
                             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                            : student.status === "REGISTERED"
+                            : displayStatus === "REGISTERED" || displayStatus === "APPLICANT"
                               ? "bg-amber-50 text-amber-700 border-amber-200"
                               : "bg-slate-50 text-slate-600 border-slate-200"
                             }`}
                         >
-                          {student.status === "ENROLLED" && (
+                          {(displayStatus === "ENROLLED" || displayStatus === "ACTIVE") && (
                             <FaCheckCircle
                               size={10}
                               className="text-emerald-500"
                             />
                           )}
-                          {student.status === "REGISTERED" && (
+                          {(displayStatus === "REGISTERED" || displayStatus === "APPLICANT") && (
                             <FaClock size={10} className="text-amber-500" />
                           )}
-                          {student.status}
+                          {displayStatus}
                         </span>
                       </td>
                       <td className="p-4 text-sm text-slate-700 font-medium">
-                        {student.parentId?.name || "N/A"}
+                        {parentName}
                       </td>
                       <td className="p-4">
-                        {student.finalResult ? (
+                        {resultData ? (
                           <div className="flex flex-col gap-1">
                             <div
-                              className={`px-3 py-1 rounded-md text-[10px] font-bold w-fit flex items-center gap-1.5 shadow-sm border ${student.finalResult.result === "PASS"
+                              className={`px-3 py-1 rounded-md text-[10px] font-bold w-fit flex items-center gap-1.5 shadow-sm border ${resultData.result === "PASS"
                                 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                                 : "bg-rose-50 text-rose-700 border-rose-200"
                                 }`}
                             >
-                              {student.finalResult.result === "PASS" ? (
+                              {resultData.result === "PASS" ? (
                                 <FaCheckCircle
                                   size={10}
                                   className="text-emerald-500"
@@ -674,10 +699,10 @@ export default function StudentManagement() {
                               ) : (
                                 <FaTimes size={10} className="text-rose-500" />
                               )}
-                              {student.finalResult.result} (
-                              {student.finalResult.overallPercentage}%)
+                              {resultData.result} (
+                              {resultData.overallPercentage}%)
                             </div>
-                            {!student.finalResult.isPublished && (
+                            {!resultData.isPublished && (
                               <span className="text-[9px] text-amber-600 font-bold uppercase mt-1 px-1">
                                 ⚠️ Draft
                               </span>
@@ -689,6 +714,16 @@ export default function StudentManagement() {
                             Pending
                           </div>
                         )}
+                      </td>
+                      <td className="p-4">
+                        <Link to={`/admin/student/${targetStudentId}/edit`}>
+                          <button
+                            className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+                            title="Edit Profile"
+                          >
+                            <FaEdit />
+                          </button>
+                        </Link>
                       </td>
                     </tr>
                   );
@@ -799,8 +834,9 @@ export default function StudentManagement() {
               loadData();
             }}
             studentIds={selectedStudents}
-            students={students}
+              students={students.map(s => s.student || s)}
             sessions={sessions}
+              classes={classes}
           />
         )}
       </div>
@@ -816,11 +852,14 @@ function PromoteModal({
   studentIds,
   students,
   sessions,
+  classes,
 }) {
-  const [newClassName, setNewClassName] = useState("");
-  const [newAcademicYear, setNewAcademicYear] = useState("");
-  const [resetSection, setResetSection] = useState(true);
+  const [targetClassId, setTargetClassId] = useState("");
+  const [targetAcademicYear, setTargetAcademicYear] = useState("");
+  const [targetSectionName, setTargetSectionName] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const targetClassData = classes?.find(c => c._id === targetClassId);
 
   const handlePromote = async (e) => {
     e.preventDefault();
@@ -843,9 +882,9 @@ function PromoteModal({
 
       await api.put(API_ENDPOINTS.ADMIN.STUDENT_MANAGEMENT.PROMOTE, {
         studentIds,
-        newClassName,
-        newAcademicYear,
-        resetSection,
+        targetClassId,
+        targetAcademicYear,
+        targetSectionName,
       });
 
       toast.success(`${selectedCount} students promoted successfully`);
@@ -886,15 +925,34 @@ function PromoteModal({
               New Class <span className="text-red-500">*</span>
             </label>
             <select
-              value={newClassName}
-              onChange={(e) => setNewClassName(e.target.value)}
+            value={targetClassId}
+            onChange={(e) => { setTargetClassId(e.target.value); setTargetSectionName(""); }}
               className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-blue-500 focus:outline-none"
               required
             >
               <option value="">Select Class</option>
-              {[...Array(12)].map((_, i) => (
-                <option key={i + 1} value={String(i + 1)}>
-                  Class {i + 1}
+            {classes?.map((cls) => (
+              <option key={cls._id} value={cls._id}>
+                {cls.className}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Target Section <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={targetSectionName}
+              onChange={(e) => setTargetSectionName(e.target.value)}
+              className="w-full rounded-xl border-2 border-slate-200 p-3 focus:border-blue-500 focus:outline-none"
+              required
+              disabled={!targetClassData}
+            >
+              <option value="">Select Section</option>
+              {targetClassData?.sections?.map((sec) => (
+                <option key={sec._id} value={sec.sectionName}>
+                  Section {sec.sectionName}
                 </option>
               ))}
             </select>
@@ -905,8 +963,8 @@ function PromoteModal({
               Academic Year <span className="text-red-500">*</span>
             </label>
             <select
-              value={newAcademicYear}
-              onChange={(e) => setNewAcademicYear(e.target.value)}
+              value={targetAcademicYear}
+              onChange={(e) => setTargetAcademicYear(e.target.value)}
               className="w-full rounded-xl border-2 border-slate-200 p-3"
               required
             >
@@ -918,19 +976,6 @@ function PromoteModal({
                 </option>
               ))}
             </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={resetSection}
-              onChange={(e) => setResetSection(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300"
-            />
-            <label className="text-sm text-slate-700">
-              Reset section and roll number (students will need to be
-              reassigned)
-            </label>
           </div>
 
           <div className="flex gap-3 pt-4">

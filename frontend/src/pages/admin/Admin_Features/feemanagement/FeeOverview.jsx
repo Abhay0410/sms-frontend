@@ -116,7 +116,22 @@ export default function FeeOverview() {
         },
       });
       const students = res?.data?.students || [];
-      setAllStudentsData(students);
+      
+      // ✅ Normalization Layer
+      const normalizedData = students.map(item => {
+        if (item.student && item.student._id) {
+          return {
+            ...item.student,
+            enrollmentId: item._id,
+            feeDetails: item.feeDetails || item.student.feeDetails,
+            className: item.className || item.student.className,
+            section: item.section || item.student.section,
+          };
+        }
+        return item;
+      });
+      
+      setAllStudentsData(normalizedData);
     } catch (err) {
       console.error("Failed to load fee context", err);
     }
@@ -251,7 +266,24 @@ export default function FeeOverview() {
           classId: selectedClass !== "ALL" ? selectedClass : undefined,
         },
       });
-      setStudentList(res?.data?.students || []);
+      
+      const students = res?.data?.students || [];
+      
+      // ✅ Normalization Layer
+      const normalizedData = students.map(item => {
+        if (item.student && item.student._id) {
+          return {
+            ...item.student,
+            enrollmentId: item._id,
+            feeDetails: item.feeDetails || item.student.feeDetails,
+            className: item.className || item.student.className,
+            section: item.section || item.student.section,
+          };
+        }
+        return item;
+      });
+      
+      setStudentList(normalizedData);
     } catch {
       toast.error("Failed to load student list");
     } finally {

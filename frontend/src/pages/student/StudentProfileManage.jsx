@@ -215,6 +215,10 @@ export default function StudentProfileManage() {
   //   ? `${import.meta.env.VITE_REACT_APP_API_BASE_URL}/${studentInfo.profilePicture}`
   //   : `/assets/default-student-avatar.png`);
 
+  // ✅ ROBUST EXTRACTION FOR UI
+  const displayClass = studentInfo?.className || studentInfo?.class?.className || studentInfo?.class || "Unassigned";
+  const displaySection = studentInfo?.section?.sectionName || studentInfo?.section?.name || studentInfo?.section || "";
+
   return (
     <div className="min-h-screen bg-blue-50 ">
       <div className="mx-auto max-w-4xl">
@@ -280,8 +284,8 @@ export default function StudentProfileManage() {
                 <p className="text-blue-100">{studentInfo.studentID}</p>
                 <p className="text-blue-100">{studentInfo.email}</p>
                 <p className="text-blue-100">
-                  Class: {studentInfo.className}{" "}
-                  {studentInfo.section && `- ${studentInfo.section}`}
+                  Class: {displayClass}{" "}
+                  {displaySection && `- Sec ${displaySection}`}
                 </p>
                 {studentInfo.rollNumber && (
                   <p className="text-blue-100">

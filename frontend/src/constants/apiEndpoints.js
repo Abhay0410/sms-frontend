@@ -48,6 +48,12 @@ export const API_ENDPOINTS = {
       TRANSFER: "/api/admin/student-management/transfer",
     },
 
+    // Enrollment Bridge (Admissions to Academics)
+    ENROLLMENT: {
+      UNASSIGNED: "/api/admin/enrollment/unassigned",
+      BULK_ENROLL: "/api/admin/enrollment/bulk-enroll",
+    },
+
     // Teacher Management
     TEACHER: {
       ALL: "/api/admin/teachers",

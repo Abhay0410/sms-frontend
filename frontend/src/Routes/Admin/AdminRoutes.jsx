@@ -49,6 +49,8 @@ import TripLogsTab from "../../pages/admin/Admin_Features/Transport/TripLogsTab.
 import TransportReportsTab from "../../pages/admin/Admin_Features/Transport/TransportReportsTab.jsx";
 import ExpenseDashboard from "../../pages/admin/Admin_Features/Expense/ExpenseDashboard.jsx";
 import InventoryDashboard from "../../pages/admin/Admin_Features/Inventory/InventoryDashboard.jsx";
+import BulkEnrollment from "../../pages/admin/Admin_Features/AcademicManagement/BulkEnrollment.jsx";
+import EditStudentProfile from "../../pages/admin/Admin_Features/AcademicManagement/EditStudentProfile.jsx";
 const AdminRoutes = ({ school }) => {
   // ✅ Accept school prop
   // 1. Logged in user ki details lein
@@ -101,7 +103,7 @@ const AdminRoutes = ({ school }) => {
         subTabs: [
           { title: "Class Management", path: "class-management" },
           { title: "Teacher Management", path: "teacher-management" },
-          { title: "Student Management", path: "student-management" },
+          { title: "Student Management (Active)", path: "student-management" },
           { title: "Subject Management", path: "subject-management" },
           { title: "Timetable Management", path: "timetable-management" },
         ],
@@ -178,9 +180,12 @@ const AdminRoutes = ({ school }) => {
         ],
       },
       {
-        title: "Enquiry",
+        title: "Admissions & Enquiry",
         icon: <FaPhone />,
-        path: "enquiry",
+        subTabs: [
+          { title: "Enquiry Pipeline", path: "enquiry" },
+          { title: "Pending Enrollments", path: "pending-enrollments" },
+        ],
         visibleTo: ["Principal", "Administrator"],
       },
       {
@@ -351,6 +356,8 @@ const AdminRoutes = ({ school }) => {
 
         {/* Enquiry */}
         <Route path="enquiry" element={<EnquiryPage />} />
+        <Route path="pending-enrollments" element={<BulkEnrollment />} />
+        <Route path="student/:studentId/edit" element={<EditStudentProfile />} />
 
         {/* Communication */}
         <Route

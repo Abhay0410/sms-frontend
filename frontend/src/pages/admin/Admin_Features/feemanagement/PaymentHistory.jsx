@@ -113,17 +113,18 @@ export default function PaymentHistory() {
       setSession(sessionData);
 
       // ✅ Active session select
+      const savedSession = localStorage.getItem("academicYear");
       const active = sessionData.find((s) => s?.isActive);
 
-      if (active) {
-  const year = `${active.startYear}-${active.endYear}`;
-  setAcademicYear(year);
+      const initialYear = savedSession || (active ? `${active.startYear}-${active.endYear}` : "");
 
-  setFilters((prev) => ({
-    ...prev,
-    academicYear: year
-  }));
-}
+      if (initialYear) {
+        setAcademicYear(initialYear);
+        setFilters((prev) => ({
+          ...prev,
+          academicYear: initialYear
+        }));
+      }
     } catch (err) {
       console.error("Session fetch error", err);
     }
@@ -484,6 +485,7 @@ export default function PaymentHistory() {
             <select
               value={academicYear}
               onChange={(e) => {
+                localStorage.setItem("academicYear", e.target.value);
                 setAcademicYear(e.target.value);
 
                 setFilters((prev) => ({
