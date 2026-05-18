@@ -74,25 +74,6 @@ const RELATION_OPTIONS = [
   "Aunt",
   "Other",
 ];
-const CLASS_OPTIONS = [
-  // Pre-primary classes
-  { value: "Nursery", label: "Nursery" },
-  { value: "LKG", label: "LKG" },
-  { value: "UKG", label: "UKG" },
-  // Classes 1-12
-  { value: "1", label: "Class 1" },
-  { value: "2", label: "Class 2" },
-  { value: "3", label: "Class 3" },
-  { value: "4", label: "Class 4" },
-  { value: "5", label: "Class 5" },
-  { value: "6", label: "Class 6" },
-  { value: "7", label: "Class 7" },
-  { value: "8", label: "Class 8" },
-  { value: "9", label: "Class 9" },
-  { value: "10", label: "Class 10" },
-  { value: "11", label: "Class 11" },
-  { value: "12", label: "Class 12" },
-];
 const ACADEMIC_YEAR_OPTIONS = [
   "2023-2024",
   "2024-2025",
@@ -152,6 +133,7 @@ export default function StudentParentRegisterForm() {
   const [errors, setErrors] = useState({});
   const [session, setSession] = useState([]);
   const [academicYear, setAcademicYear] = useState("2025-2026");
+  const [classes, setClasses] = useState([]);
 
   const [studentForm, setStudentForm] = useState({
     studentName: "",
@@ -265,6 +247,29 @@ export default function StudentParentRegisterForm() {
     return month >= 3 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
   };
 
+  const fetchClasses = async () => {
+    try {
+      const res = await api.get(API_ENDPOINTS.ADMIN.CLASS.LIST || "/api/admin/class/list");
+      
+      // ✅ Bulletproof array extraction (exactly like your sessions logic)
+      let rawData = Array.isArray(res) ? res : res?.data?.classes || res?.data || res?.classes || [];
+      
+      const classArray = Array.isArray(rawData) ? rawData : [];
+
+      // ✅ Safely extract class names and remove duplicates
+      const uniqueClasses = [
+        ...new Set(
+          classArray.map((c) => (typeof c === "string" ? c : c?.className)).filter(Boolean)
+        ),
+      ];
+      
+      // ✅ Format explicitly as { value, label } for the custom Select component
+      setClasses(uniqueClasses.sort().map(c => ({ value: c, label: c })));
+    } catch (err) {
+      console.error("Failed to fetch classes", err);
+    }
+  };
+
   const fetchSessions = async () => {
     try {
       const res = await api.get(API_ENDPOINTS.SESSION.GET_All_SESSION);
@@ -306,6 +311,7 @@ export default function StudentParentRegisterForm() {
 
   useEffect(() => {
     fetchSessions();
+    fetchClasses();
   }, []);
 
 
@@ -1114,7 +1120,7 @@ if (
                     name="className"
                     value={studentForm.className}
                     onChange={onStudentChange}
-                    options={CLASS_OPTIONS}
+                  options={classes}
                     error={errors.className}
                     required
                   />
