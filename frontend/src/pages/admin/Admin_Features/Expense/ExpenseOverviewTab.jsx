@@ -154,7 +154,7 @@ const ExpenseOverviewTab = () => {
       </div>
 
       {/* KPI Highlight Card */}
-      <div className="bg-white/55 p-8 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+      <div className="bg-slate-50 p-8 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold text-slate-500 uppercase tracking-widest">Total Expenditure</p>
           <h3 className="text-4xl font-bold text-rose-600 mt-2">
@@ -170,7 +170,7 @@ const ExpenseOverviewTab = () => {
       {/* Analytics Chart */}
       <div className="grid grid-cols-1 gap-6">
         {/* Pie Chart (Distribution) */}
-        <div className="bg-white/55 p-8 border border-slate-200 rounded-2xl shadow-sm">
+        <div className="bg-slate-50 p-8 border border-slate-200 rounded-2xl shadow-sm">
           <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6">Expenses Distribution</h3>
           {chartData.length > 0 ? (
             <div className="h-80 w-full">

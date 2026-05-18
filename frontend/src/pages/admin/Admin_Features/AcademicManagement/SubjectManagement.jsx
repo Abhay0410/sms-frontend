@@ -724,9 +724,9 @@ function SectionCard({ section, onRemove, isActive }) {
                 </div>
                 <button
                   onClick={() => onRemove(sub.subjectName)}
-                  className="p-2 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                  className="p-2  text-slate-300  hover:text-red-600 hover:bg-red-50 rounded-lg group-hover:opacity-100 transition-all"
                 >
-                  <FaTrash size={12} />
+                  <FaTrash  size={12} />
                 </button>
               </div>
             ))}

@@ -57,6 +57,29 @@ const INDIAN_STATES = [
   "Puducherry",
 ];
 
+
+// ✅ Convert DD/MM/YYYY string -> Date object
+const parseDate = (dateString) => {
+  if (!dateString) return null;
+
+  const [day, month, year] = dateString.split("/");
+
+  if (!day || !month || !year) return null;
+
+  const date = new Date(year, month - 1, day);
+
+  return isNaN(date.getTime()) ? null : date;
+};
+
+// ✅ Convert Date object -> DD/MM/YYYY
+const formatDate = (date) => {
+  if (!date) return "";
+
+  return `${String(date.getDate()).padStart(2, "0")}/${String(
+    date.getMonth() + 1
+  ).padStart(2, "0")}/${date.getFullYear()}`;
+};
+
 const Input = ({ label, error, required, ...props }) => (
   <div className="flex flex-col gap-1">
     <label className="text-sm font-semibold text-slate-700">
@@ -64,11 +87,10 @@ const Input = ({ label, error, required, ...props }) => (
     </label>
     <input
       {...props}
-      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-        error
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${error
           ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
           : "border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-      }`}
+        }`}
     />
     {error && (
       <span className="text-[11px] font-bold text-rose-600 animate-pulse">
@@ -85,11 +107,10 @@ const FormSelect = ({ label, error, required, options, ...props }) => (
     </label>
     <select
       {...props}
-      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${
-        error
+      className={`w-full p-2.5 border rounded-lg outline-none transition-all ${error
           ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
           : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
-      }`}
+        }`}
     >
       <option value="">Select {label}</option>
       {options.map((opt) => (
@@ -115,12 +136,15 @@ export default function TeacherRegisterForm() {
       state: "",
       country: "India",
       pincode: "",
+      district: "",
+      
     },
     gender: "",
     dateOfBirth: "",
     qualification: [{ degree: "", specialization: "" }],
     subjects: [],
     department: "",
+    customDepartment: "",
     joiningDate: "",
     panNumber: "",
     salary: {
@@ -150,6 +174,7 @@ export default function TeacherRegisterForm() {
     "Music",
     "Library",
     "Primary Education",
+    "Others",
   ];
 
   // const SUBJECT_OPTIONS = [
@@ -269,7 +294,7 @@ export default function TeacherRegisterForm() {
 
     setForm((prev) => ({
       ...prev,
-      qualifications: updated,
+      qualification: updated,
     }));
   };
 
@@ -295,8 +320,8 @@ export default function TeacherRegisterForm() {
     const panRegex = /[A-Z]{5}[0-9]{4}[A-Z]{1}/;
     const pincodeRegex = /^[0-9]{6}$/;
 
-    if (!form.name.trim()) newErrors.name = "Full Name is required";
-    if (!form.email.trim()) {
+    if (!form.name?.trim()) newErrors.name = "Full Name is required";
+    if (!form.email?.trim()) {
       newErrors.email = "Email is required";
     } else if (!emailRegex.test(form.email)) {
       newErrors.email = "Invalid email format";
@@ -312,12 +337,22 @@ export default function TeacherRegisterForm() {
     if (!form.gender) newErrors.gender = "Gender is required";
     if (!form.dateOfBirth) newErrors.dateOfBirth = "Date of Birth is required";
     if (!form.joiningDate) newErrors.joiningDate = "Joining Date is required";
-    if (!form.department) newErrors.department = "Department is required";
-    if (!form.address.street.trim())
+    if (!form.department) {
+      newErrors.department = "Department is required";
+    }
+
+    if (
+      form.department === "Others" &&
+      !form.customDepartment?.trim()
+    ) {
+      newErrors.customDepartment =
+        "Please enter custom department";
+    }
+    if (!form.address.street?.trim())
       newErrors.street = "Street Address is required";
-    if (!form.address.city.trim()) newErrors.city = "City is required";
+    if (!form.address.city?.trim()) newErrors.city = "City is required";
     if (!form.address.state) newErrors.state = "State is required";
-    if (!form.address.pincode.trim()) {
+    if (!form.address.pincode?.trim()) {
       newErrors.pincode = "Pincode is required";
     } else if (!pincodeRegex.test(form.address.pincode)) {
       newErrors.pincode = "Pincode must be 6 digits";
@@ -349,7 +384,12 @@ export default function TeacherRegisterForm() {
       formData.append("email", form.email);
       formData.append("phone", form.phone);
       formData.append("gender", form.gender);
-      formData.append("department", form.department);
+      formData.append(
+        "department",
+        form.department === "Others"
+          ? form.customDepartment
+          : form.department,
+      );
       formData.append("panNumber", form.panNumber);
       formData.append("isActive", true);
       formData.append("dateOfBirth", formatDateForBackend(form.dateOfBirth));
@@ -411,12 +451,15 @@ export default function TeacherRegisterForm() {
           state: "",
           country: "India",
           pincode: "",
+          district: "",
+          
         },
         gender: "",
         dateOfBirth: "",
-        qualification: [""],
+        qualification: [{ degree: "", specialization: "" }],
         subjects: [],
         department: "",
+        customDepartment: "",
         joiningDate: "",
         panNumber: "",
         salary: {
@@ -586,37 +629,43 @@ export default function TeacherRegisterForm() {
               />
 
               {/* Date of Birth */}
+              {/* Date of Birth */}
               <div>
                 <label
-                  className={`text-sm font-semibold ${errors.dateOfBirth ? "text-rose-500" : "text-slate-700"}`}
+                  className={`text-sm font-semibold ${errors.dateOfBirth ? "text-rose-500" : "text-slate-700"
+                    }`}
                 >
                   Date of Birth <span className="text-red-500">*</span>
                 </label>
+
                 <DatePicker
-                  selected={(() => {
-                    if (!form.dateOfBirth) return null;
-                    const [day, month, year] = form.dateOfBirth.split("/");
-                    if (!day || !month || !year) return null;
-                    const date = new Date(year, month - 1, day);
-                    return isNaN(date.getTime()) ? null : date;
-                  })()}
+                  selected={parseDate(form.dateOfBirth)}
                   onChange={(date) => {
-                    const formatted = date
-                      ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`
-                      : "";
-                    setForm((prev) => ({ ...prev, dateOfBirth: formatted }));
-                    if (errors.dateOfBirth)
-                      setErrors((prev) => ({ ...prev, dateOfBirth: null }));
+                    setForm((prev) => ({
+                      ...prev,
+                      dateOfBirth: formatDate(date),
+                    }));
+
+                    if (errors.dateOfBirth) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        dateOfBirth: null,
+                      }));
+                    }
                   }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
-                  className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${
-                    errors.dateOfBirth
+                  maxDate={new Date()}
+                  showYearDropdown
+                  scrollableYearDropdown
+                  yearDropdownItemNumber={100}
+                  className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${errors.dateOfBirth
                       ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
                       : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
-                  }`}
+                    }`}
                   required
                 />
+
                 {errors.dateOfBirth && (
                   <span className="text-[11px] font-bold text-rose-600">
                     {errors.dateOfBirth}
@@ -625,37 +674,43 @@ export default function TeacherRegisterForm() {
               </div>
 
               {/* Joining Date */}
+              {/* Date of Birth */}
               <div>
                 <label
-                  className={`text-sm font-semibold ${errors.joiningDate ? "text-rose-500" : "text-slate-700"}`}
+                  className={`text-sm font-semibold ${errors.dateOfBirth ? "text-rose-500" : "text-slate-700"
+                    }`}
                 >
                   Joining Date <span className="text-red-500">*</span>
                 </label>
+
                 <DatePicker
-                  selected={(() => {
-                    if (!form.joiningDate) return null;
-                    const [day, month, year] = form.joiningDate.split("/");
-                    if (!day || !month || !year) return null;
-                    const date = new Date(year, month - 1, day);
-                    return isNaN(date.getTime()) ? null : date;
-                  })()}
+                  selected={parseDate(form.joiningDate)}
                   onChange={(date) => {
-                    const formatted = date
-                      ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`
-                      : "";
-                    setForm((prev) => ({ ...prev, joiningDate: formatted }));
-                    if (errors.joiningDate)
-                      setErrors((prev) => ({ ...prev, joiningDate: null }));
+                    setForm((prev) => ({
+                      ...prev,
+                      joiningDate: formatDate(date),
+                    }));
+
+                    if (errors.joiningDate) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        joiningDate: null,
+                      }));
+                    }
                   }}
                   dateFormat="dd/MM/yyyy"
                   placeholderText="DD/MM/YYYY"
-                  className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${
-                    errors.joiningDate
+                  maxDate={new Date()}
+                  showYearDropdown
+                  scrollableYearDropdown
+                  yearDropdownItemNumber={100}
+                  className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${errors.dateOfBirth
                       ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
                       : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
-                  }`}
+                    }`}
                   required
                 />
+
                 {errors.joiningDate && (
                   <span className="text-[11px] font-bold text-rose-600">
                     {errors.joiningDate}
@@ -686,57 +741,57 @@ export default function TeacherRegisterForm() {
                   </label>
 
                   <div className="space-y-3">
-  {form.qualification.map((item, index) => (
-    <div key={index} className="flex gap-3 items-center">
-      
-      {/* Qualification */}
-      <input
-        type="text"
-        value={item.degree}
-        onChange={(e) =>
-          handleQualificationChange(index, e.target.value)
-        }
-        placeholder="e.g. B.Ed"
-        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-      />
+                    {form.qualification.map((item, index) => (
+                      <div key={index} className="flex gap-3 items-center">
 
-      {/* Specialization */}
-      <input
-        type="text"
-        value={item.specialization}
-        onChange={(e) =>
-          handleSpecializationChange(index, e.target.value)
-        }
-        placeholder="e.g. Mathematics"
-        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-      />
+                        {/* Qualification */}
+                        <input
+                          type="text"
+                          value={item.degree}
+                          onChange={(e) =>
+                            handleQualificationChange(index, e.target.value)
+                          }
+                          placeholder="e.g. B.Ed"
+                          className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                        />
 
-      {/* Buttons */}
-      <div className="flex gap-2">
-        {index === form.qualification.length - 1 && (
-          <button
-            type="button"
-            onClick={addQualification}
-            className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            +
-          </button>
-        )}
+                        {/* Specialization */}
+                        <input
+                          type="text"
+                          value={item.specialization}
+                          onChange={(e) =>
+                            handleSpecializationChange(index, e.target.value)
+                          }
+                          placeholder="e.g. Mathematics"
+                          className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                        />
 
-        {form.qualification.length > 1 && (
-          <button
-            type="button"
-            onClick={() => removeQualification(index)}
-            className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-          >
-            −
-          </button>
-        )}
-      </div>
+                        {/* Buttons */}
+                        <div className="flex gap-2">
+                          {index === form.qualification.length - 1 && (
+                            <button
+                              type="button"
+                              onClick={addQualification}
+                              className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                            >
+                              +
+                            </button>
+                          )}
 
-    </div>
-  ))}
-</div>
+                          {form.qualification.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeQualification(index)}
+                              className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            >
+                              −
+                            </button>
+                          )}
+                        </div>
+
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -754,6 +809,19 @@ export default function TeacherRegisterForm() {
                       options={DEPARTMENT_OPTIONS}
                       error={errors.department}
                     />
+
+                    {form.department === "Others" && (
+                      <div className="mt-3">
+                        <Input
+                          label="Custom Department"
+                          name="customDepartment"
+                          value={form.customDepartment}
+                          onChange={onChange}
+                          placeholder="Enter custom department"
+                          required
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Subjects */}
@@ -856,6 +924,17 @@ export default function TeacherRegisterForm() {
                     error={errors.country}
                   />
 
+                   <Input
+                    label="District"
+                    type="text"
+                    name="district"
+                    value={form.address.district}
+                    onChange={onChange}
+                    placeholder="Enter district"
+                    required
+                    error={errors.district}
+                  />
+
                   {/* Pincode */}
                   <Input
                     label="Pincode"
@@ -869,6 +948,8 @@ export default function TeacherRegisterForm() {
                     required
                     error={errors.pincode}
                   />
+                 
+                 
                 </div>
               </div>
 
