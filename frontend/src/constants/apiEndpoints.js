@@ -109,6 +109,8 @@ export const API_ENDPOINTS = {
       COPY_ACADEMIC_YEAR: "/api/admin/classes/copy-academic-year",
       ACADEMIC_YEARS: "/api/admin/classes/academic-years",
       UPDATE_FEE_STRUCTURE: (id) => `/api/admin/classes/${id}/fee-structure`,
+      UPDATESECTION :(classId, sectionName) =>`/api/admin/classes/${classId}/section/${sectionName}`,
+      DELETESECTION :(classId, sectionName) =>`/api/admin/classes/${classId}/section/${sectionName}`,
     },
 
     // Subject Management

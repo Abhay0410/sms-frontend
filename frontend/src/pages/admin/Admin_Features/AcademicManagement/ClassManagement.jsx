@@ -1048,6 +1048,7 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
 function SectionsTab({ classData, onReload, onViewStudents }) {
   const [showAddSection, setShowAddSection] = useState(false);
   const [editingSection, setEditingSection] = useState(null);
+  const [sections, setSections] = useState(classData.sections || []);
   const [sectionForm, setSectionForm] = useState({
     sectionName: "",
     capacity: "40",
@@ -1070,7 +1071,10 @@ function SectionsTab({ classData, onReload, onViewStudents }) {
 
     if (result.isConfirmed) {
       try {
-        await api.delete(`/api/admin/classes/${classData._id}/section/${section.sectionName}`);
+        await api.delete(API_ENDPOINTS.ADMIN.CLASS.DELETESECTION(classData._id, section.sectionName));
+    // UI ko instantly update karo
+        setSections(prev => prev.filter(s => s.sectionName !== section.sectionName));
+
         Swal.fire("Deleted!", "Section has been deleted.", "success");
         onReload();
       } catch (error) {
@@ -1097,10 +1101,19 @@ function SectionsTab({ classData, onReload, onViewStudents }) {
 
     try {
       setLoading(true);
-      await api.post(API_ENDPOINTS.ADMIN.CLASS.ADD_SECTION(classData._id), {
+      const res= await api.post(API_ENDPOINTS.ADMIN.CLASS.ADD_SECTION(classData._id), {
         sectionName: sectionForm.sectionName.toUpperCase(),
         capacity: parseInt(sectionForm.capacity),
       });
+
+      const newSection = res?.data?.section || {
+      sectionName: sectionForm.sectionName.toUpperCase(),
+      capacity: parseInt(sectionForm.capacity),
+      currentStrength: 0,
+    };
+
+    setSections(prev => [...prev, newSection]);
+
       toast.success("New section added!");
       setSectionForm({ sectionName: "", capacity: "40" });
       setShowAddSection(false);
@@ -1116,10 +1129,17 @@ function SectionsTab({ classData, onReload, onViewStudents }) {
     e.preventDefault();
     try {
       setLoading(true);
-      await api.put(`/api/admin/classes/${classData._id}/section/${editingSection.originalName}`, {
+      await api.put(API_ENDPOINTS.ADMIN.CLASS.UPDATESECTION(classData._id, editingSection.originalName), {
         sectionName: editingSection.sectionName.toUpperCase(),
         capacity: parseInt(editingSection.capacity),
       });
+      setSections(prev =>
+  prev.map(s =>
+    s.sectionName === editingSection.originalName
+      ? { ...s, sectionName: editingSection.sectionName.toUpperCase(), capacity: parseInt(editingSection.capacity) }
+      : s
+  )
+);
       toast.success("Section updated successfully!");
       setEditingSection(null);
       onReload();
