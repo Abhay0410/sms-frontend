@@ -1140,6 +1140,7 @@ function SectionsTab({ classData, onReload, onViewStudents }) {
       : s
   )
 );
+await onReload();
       toast.success("Section updated successfully!");
       setEditingSection(null);
       onReload();
@@ -1231,7 +1232,7 @@ function SectionsTab({ classData, onReload, onViewStudents }) {
         </form>
       )}
 
-      {classData.sections?.length > 0 ? (
+      {sections?.length > 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200">
           <table className="w-full text-left">
             <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase font-bold text-slate-500 tracking-wider">
@@ -1245,7 +1246,7 @@ function SectionsTab({ classData, onReload, onViewStudents }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm font-medium text-slate-700">
-              {classData.sections?.map((section) => {
+              {sections?.map((section) => {
                 const fillPercentage = (section.currentStrength / section.capacity) * 100;
                 return (
                   <tr key={section._id} className="hover:bg-slate-50/50 transition-colors">
