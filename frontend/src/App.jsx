@@ -4,6 +4,8 @@ import { Routes, Route, Navigate, Outlet, useNavigate, useParams } from "react-r
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop.jsx";
+import AutoLogin from './pages/AutoLogin';
+
 
 import api from "./services/api.js";
 
@@ -203,6 +205,9 @@ export default function App() {
 
     {/* ✅ 4. Legacy Redirect */}
     <Route path="/signin" element={<Navigate to="/" replace />} />
+
+    {/* ✅ Auto Login for Super Admin Impersonation */}
+    <Route path="/auto-login" element={<AutoLogin />} />
 
     {/* ✅ 5. Protected Routes using RoleRouteHandler */}
     <Route path="/school/:schoolSlug/:role/*" element={<PrivateRoute allowedRoles={["admin", "teacher", "student", "parent"]} />}>
