@@ -398,6 +398,7 @@ import {
   FaBus,
   FaBoxOpen,
   FaPhone,
+  FaCog,  
 } from "react-icons/fa";
 
 // Dashboard & Profile
@@ -461,6 +462,11 @@ import TransportReportsTab from "../../pages/admin/Admin_Features/Transport/Tran
 // Expense & Inventory
 import ExpenseDashboard from "../../pages/admin/Admin_Features/Expense/ExpenseDashboard.jsx";
 import InventoryDashboard from "../../pages/admin/Admin_Features/Inventory/InventoryDashboard.jsx";
+import AdminStudentsListPage from "../../pages/admin/Admin_Features/EditStudentParent/AdminStudentListPage.jsx";
+import AdminStudentViewPage from "../../pages/admin/Admin_Features/EditStudentParent/AdminStudentViewPage.jsx";
+
+import AdminParentViewPage from "../../pages/admin/Admin_Features/EditStudentParent/AdminParentViewPage.jsx";
+import AdminParentListPage from "../../pages/admin/Admin_Features/EditStudentParent/AdminParentListPage.jsx";
 
 const AdminRoutes = ({ school }) => {
   const adminData = useMemo(() => {
@@ -631,6 +637,19 @@ const AdminRoutes = ({ school }) => {
         title: "Communication",
         icon: <FaBullhorn />,
         path: "announcements",
+      },
+
+      // SETTINGS
+      {
+        title: "Settings",
+        icon: <FaCog />,
+        subTabs: [
+          { title: "Edit Students Profile", path: "edit-students-profile" },
+          { title: "Edit Parents Profile", path: "edit-parents-profile" },
+        ],
+        
+        visibleTo: ["Principal", "Administrator"],
+
       },
 
       // PROFILE
@@ -853,6 +872,28 @@ const AdminRoutes = ({ school }) => {
 
         {/* ENQUIRY */}
         <Route path="enquiry" element={<EnquiryPage />} />
+
+        {/* SETTINGS */}
+       
+            <Route
+      path="edit-students-profile"
+      element={<AdminStudentsListPage school={school} />}
+    />
+
+    <Route
+      path="edit-students-profile/:studentId"
+      element={<AdminStudentViewPage school={school} />}
+    />
+
+    <Route
+      path="edit-parents-profile"
+      element={<AdminParentListPage school={school} />}
+    />
+
+    <Route
+      path="edit-parents-profile/:parentId"
+      element={<AdminParentViewPage school={school} />}
+    />
 
         {/* COMMUNICATION */}
         <Route

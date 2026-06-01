@@ -266,7 +266,7 @@ export default function ParentProfileManage() {
             )}
 
             {/* Photo Upload */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
+            {/* <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="text-green-600">🖼️</span>
                 Update Profile Photo
@@ -343,7 +343,7 @@ export default function ParentProfileManage() {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column - Contact Info & Password */}
@@ -417,7 +417,7 @@ export default function ParentProfileManage() {
                 </div>
               </div>
 
-              {!isEditing ?(
+              {/* {!isEditing ?(
                 <button
                   onClick={() => setIsEditing(true)}
                   className="mt-6 w-full rounded-xl bg-gradient-to-r from-green-600 to-teal-600 px-6 py-3 text-white font-semibold hover:from-green-700 hover:to-teal-700 transition transform hover:scale-105 duration-200 shadow-lg"
@@ -444,7 +444,7 @@ export default function ParentProfileManage() {
                   </button>
               
                 </>
-              )}
+              )} */}
 
               {/* <button
                 onClick={onSave}
@@ -456,139 +456,10 @@ export default function ParentProfileManage() {
             </div>
 
             {/* Change Password */}
-            <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-400">
-              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <span className="text-green-600">🔒</span>
-                Change Password
-              </h3>
-              <div className="space-y-4">
-                {/* <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Current Password
-                  </label>
-                  <input
-                    className="w-full rounded-xl border border-gray-300 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
-                    type="password"
-                    name="currentPassword"
-                    value={pw.currentPassword}
-                    onChange={onChangePw}
-                    placeholder="Enter current password"
-                  />
-                  
-                </div> */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Current Password
-                  </label>
-
-                  <div className="relative">
-                    <input
-                      type={showCurrent ? "text" : "password"}
-                      name="currentPassword"
-                      value={pw.currentPassword}
-                      onChange={onChangePw}
-                      placeholder="Enter current password"
-                      disabled={!isEditing}
-                      className="w-full rounded-xl border border-slate-400 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => setShowCurrent(!showCurrent)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      {showCurrent ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    New Password
-                  </label>
-                  <input
-                    className="w-full rounded-xl border border-gray-300 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
-                    type="password"
-                    name="newPassword"
-                    value={pw.newPassword}
-                    onChange={onChangePw}
-                    placeholder="Enter new password (min 6 characters)"
-                  />
-                </div> */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    New Password
-                  </label>
-
-                  <div className="relative">
-                    <input
-                      type={showNew ? "text" : "password"}
-                      name="newPassword"
-                      value={pw.newPassword}
-                      onChange={onChangePw}
-                      disabled={!isEditing}
-                      placeholder="Enter new password (min 6 characters)"
-                      className="w-full rounded-xl border border-slate-400 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => setShowNew(!showNew)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      {showNew ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password
-                  </label>
-                  <input
-                    className="w-full rounded-xl border border-gray-300 p-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
-                    type="password"
-                    name="confirm"
-                    value={pw.confirm}
-                    onChange={onChangePw}
-                    placeholder="Confirm new password"
-                  />
-                </div> */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password
-                  </label>
-
-                  <div className="relative">
-                    <input
-                      type={showConfirm ? "text" : "password"}
-                      name="confirm"
-                      value={pw.confirm}
-                      onChange={onChangePw}
-                      placeholder="Confirm new password"
-                      disabled={!isEditing}
-                      className="w-full rounded-xl border border-slate-400 p-3 pr-10 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirm(!showConfirm)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      {showConfirm ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                  </div>
-                </div>
-
-                <button
-                  onClick={changePassword  }
-                  disabled={!isEditing}
-                  className="w-full rounded-xl bg-gray-900 px-6 py-3 text-white font-semibold hover:bg-gray-800 transition transform hover:scale-105 duration-200 shadow-lg disabled:bg-gray-400"
-                >
-                  Update Password
-                </button>
-              </div>
-            </div>
+            
+           
+            
+            
           </div>
         </div>
       </div>

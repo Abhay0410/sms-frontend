@@ -36,7 +36,22 @@ export const API_ENDPOINTS = {
       BULK_UPLOAD: "/api/admin/students/bulk-upload",
       UPDATE_STATUS: (id) => `/api/admin/students/${id}/status`,
       PROMOTE: "/api/admin/students/promote",
+
+      CHANGE_PASSWORD: (id) => `/api/admin/students/${id}/change-password`,
     },
+
+ 
+  PARENT: {
+    ALL: "/api/admin/parents",
+    PROFILE: (id) => `/api/admin/parents/${id}`,
+    CHILDREN: (id) =>
+      `/api/admin/parents/${id}/children`,
+    UPDATE: (id) =>
+      `/api/admin/parents/${id}`,
+    CHANGE_PASSWORD: (id) =>
+      `/api/admin/parents/${id}/change-password`,
+  },
+
 
     // Student Management (Advanced)
     STUDENT_MANAGEMENT: {
