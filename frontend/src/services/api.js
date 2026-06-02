@@ -7,8 +7,15 @@ import { API_ENDPOINTS } from "../constants/apiEndpoints";
  * ────────────────────────────────────────────────────────────── */
 function getBaseURL() {
   let url = import.meta.env.VITE_REACT_APP_API_BASE_URL || 
+            import.meta.env.VITE_API_BASE_URL ||
             import.meta.env.VITE_REACT_APP_API_PROD_URL || 
-            "http://localhost:5000";
+            "";
+            
+  // If no env var is found, fallback to localhost for local dev, 
+  // or an empty string for Vercel (so it automatically hits its own proxy!)
+  if (!url) {
+    url = import.meta.env.DEV ? "http://localhost:5000" : "";
+  }
             
   // Strip trailing /api or / to prevent double /api/api in requests
   if (url.endsWith('/api')) url = url.slice(0, -4);
