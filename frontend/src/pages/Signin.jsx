@@ -310,7 +310,7 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
             {/* User ID Field */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                {currentRole.name} ID
+                {currentRole.name} ID or Email
               </label>
               <div className="relative">
                 <input 
@@ -318,7 +318,7 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                  placeholder={`Enter your ${currentRole.prefix} ID`}
+                  placeholder={`Enter your ID or Email`}
                   required
                 />
                 <div className="absolute right-3 top-3 bg-gray-100 px-2 py-1 rounded text-xs font-medium text-gray-600">
