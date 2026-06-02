@@ -209,75 +209,253 @@ export default function AdminStudentViewPage() {
         : student.profilePicture
       : "/assets/default-student-avatar.png");
 
-  return (
-    <div className="min-h-screen ">
-      <div className="max-w-6xl mx-auto">
+  
+    // <div className="min-h-screen ">
+    //   <div className="max-w-6xl mx-auto">
 
-        {/* HEADER */}
-        {/* <div className="bg-slate-900 text-white p-6 rounded-2xl flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">
-              {student?.name}
-            </h1>
-            <p>{student?.studentID}</p>
-          </div>
+    //     {/* HEADER */}
+       
 
-          {!isEditing ? (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="bg-indigo-600 px-5 py-2 rounded-xl"
-            >
-              Edit
-            </button>
-          ) : (
-            <div className="flex gap-2">
-              <button
-                onClick={() => setIsEditing(false)}
-                className="bg-gray-400 px-4 py-2 rounded-xl"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={onSave}
-                className="bg-green-600 px-4 py-2 rounded-xl"
-              >
-                Save
-              </button>
-            </div>
-          )}
-        </div> */}
+    //     <div className="rounded-3xl bg-gradient-to-r from-slate-900 to-slate-700 p-8 text-white shadow-2xl">
+    //       <div className="flex flex-col md:flex-row gap-8 items-center">
 
-        <div className="rounded-3xl bg-gradient-to-r from-slate-900 to-slate-700 p-8 text-white shadow-2xl">
-          <div className="flex flex-col md:flex-row gap-8 items-center">
+    //         {/* PHOTO */}
+    //         <div className="relative">
+    //           <div className="h-32 w-32 rounded-2xl overflow-hidden border-4 border-white bg-white">
+    //             <img
+    //               src={photoUrl}
+    //               alt="Student"
+    //               className="h-full w-full object-cover"
+    //             />
+    //           </div>
+    //         </div>
 
-            {/* PHOTO */}
+    //         {/* INFO */}
+    //         <div className="flex-1">
+    //           <h1 className="text-3xl font-bold">{student?.name}</h1>
+
+    //           <div className="mt-3 space-y-1 text-slate-200">
+    //             <p>Student ID : {student?.studentID}</p>
+    //             <p>Email : {student?.email}</p>
+    //             <p>Class : {student?.className} {student?.section}</p>
+    //           </div>
+    //         </div>
+
+    //         {/* ACTIONS */}
+    //         <div className="flex gap-3">
+    //           {!isEditing ? (
+    //             <button
+    //               onClick={() => setIsEditing(true)}
+    //               className="bg-indigo-600 px-6 py-2 rounded-xl hover:bg-indigo-700"
+    //             >
+    //               Edit Profile
+    //             </button>
+    //           ) : (
+    //             <>
+    //               <button
+    //                 onClick={() => setIsEditing(false)}
+    //                 className="bg-gray-200 text-black px-5 py-2 rounded-xl"
+    //               >
+    //                 Cancel
+    //               </button>
+
+    //               <button
+    //                 onClick={onSave}
+    //                 className="bg-green-600 px-5 py-2 rounded-xl"
+    //               >
+    //                 Save
+    //               </button>
+    //             </>
+    //           )}
+    //         </div>
+
+    //       </div>
+    //     </div>
+
+    //     {/* PHOTO */}
+    //     <div className="bg-white rounded-3xl p-6 shadow mt-8">
+    //       <h2 className="text-xl font-bold mb-5">Profile Photo</h2>
+
+    //       <div className="flex items-center gap-6">
+    //         <img
+    //           src={photoUrl}
+    //           className="h-24 w-24 rounded-full object-cover border"
+    //         />
+
+    //         <input
+    //           type="file"
+    //           accept="image/*"
+    //           onChange={onPhotoChange}
+    //           disabled={!isEditing}
+    //           className="disabled:opacity-50"
+    //         />
+    //       </div>
+    //     </div>
+
+    //     {/* FORM GRID */}
+    //     <div className="mt-6 grid grid-cols-2 gap-4 bg-white p-6 rounded-2xl">
+
+    //       {Object.keys(form).map((key) => (
+    //         <div key={key}>
+    //           <label className="text-sm font-semibold">
+    //             {formatLabel(key)}
+    //           </label>
+
+    //           <input
+    //             name={key}
+    //             value={form[key]}
+    //             onChange={onChange}
+    //             disabled={!isEditing}
+    //             className="w-full border p-2 rounded-lg"
+    //           />
+    //         </div>
+    //       ))}
+    //     </div>
+
+    //     {/* PASSWORD SECTION */}
+    //     {/* PASSWORD SECTION */}
+    //     <div className={`mt-6 p-6 rounded-2xl transition ${isEditing ? "bg-slate-800 text-white" : "bg-slate-800 opacity-80"
+    //       }`}>
+    //       <h2 className="text-xl font-bold mb-4">
+    //         Change Password
+    //       </h2>
+
+    //       {!isEditing && (
+    //         <p className="text-sm text-gray-500 mb-4">
+    //           Enable edit mode to change password
+    //         </p>
+    //       )}
+
+    //       <div className="space-y-4">
+
+    //         {/* NEW PASSWORD */}
+    //         <div className="relative">
+    //           <input
+    //             type={showNew ? "text" : "password"}
+    //             value={pw.newPassword}
+    //             disabled={!isEditing}
+    //             onChange={(e) =>
+    //               setPw((prev) => ({
+    //                 ...prev,
+    //                 newPassword: e.target.value,
+    //               }))
+    //             }
+    //             placeholder="New Password"
+    //             className="w-full border text-white p-3 rounded-xl pr-10 disabled:bg-gray-200"
+    //           />
+
+    //           <button
+    //             type="button"
+    //             disabled={!isEditing}
+    //             onClick={() => setShowNew(!showNew)}
+    //             className="absolute right-3 top-1/2 -translate-y-1/2"
+    //           >
+    //             {showNew ? <FaEyeSlash /> : <FaEye />}
+    //           </button>
+    //         </div>
+
+    //         {/* CONFIRM PASSWORD */}
+    //         <div className="relative">
+    //           <input
+    //             type={showConfirm ? "text" : "password"}
+    //             value={pw.confirm}
+    //             disabled={!isEditing}
+    //             onChange={(e) =>
+    //               setPw((prev) => ({
+    //                 ...prev,
+    //                 confirm: e.target.value,
+    //               }))
+    //             }
+    //             placeholder="Confirm Password"
+    //             className="w-full border p-3 rounded-xl pr-10 disabled:bg-gray-200"
+    //           />
+
+    //           <button
+    //             type="button"
+    //             disabled={!isEditing}
+    //             onClick={() => setShowConfirm(!showConfirm)}
+    //             className="absolute right-3 top-1/2 -translate-y-1/2"
+    //           >
+    //             {showConfirm ? <FaEyeSlash /> : <FaEye />}
+    //           </button>
+    //         </div>
+
+    //         {/* BUTTON */}
+    //         <button
+    //           onClick={changePassword}
+    //           disabled={!isEditing}
+    //           className={`w-full py-3 rounded-xl font-semibold transition ${isEditing
+    //             ? "bg-blue-800 text-white hover:bg-slate-800"
+    //             : "bg-gray-400 text-white cursor-not-allowed"
+    //             }`}
+    //         >
+    //           Update Password
+    //         </button>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
+
+    return (
+  <div className="min-h-screen bg-slate-100 p-4 md:p-6">
+    <div className="max-w-7xl mx-auto">
+
+      {/* HEADER */}
+
+      <div className="relative overflow-hidden rounded-3xl bg-slate-800 shadow-2xl">
+
+        <div className="absolute inset-0 bg-black/10"></div>
+
+        <div className="relative p-6 md:p-10">
+
+          <div className="flex flex-col lg:flex-row items-center gap-8">
+
             <div className="relative">
-              <div className="h-32 w-32 rounded-2xl overflow-hidden border-4 border-white bg-white">
-                <img
-                  src={photoUrl}
-                  alt="Student"
-                  className="h-full w-full object-cover"
-                />
-              </div>
+
+              <img
+                src={photoUrl}
+                alt="Student"
+                className="h-36 w-36 rounded-3xl border-4 border-white object-cover shadow-2xl"
+              />
+
+              <div className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-green-500 border-4 border-white"></div>
+
             </div>
 
-            {/* INFO */}
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold">{student?.name}</h1>
+            <div className="flex-1 text-center lg:text-left">
 
-              <div className="mt-3 space-y-1 text-slate-200">
-                <p>Student ID : {student?.studentID}</p>
-                <p>Email : {student?.email}</p>
-                <p>Class : {student?.className} {student?.section}</p>
+              <h1 className="text-4xl font-bold text-white">
+                {student?.name}
+              </h1>
+
+              <p className="text-indigo-100 mt-2">
+                Student Dashboard
+              </p>
+
+              <div className="flex flex-wrap gap-3 mt-5 justify-center lg:justify-start">
+
+                <span className="px-4 py-2 rounded-full bg-white/20 text-white">
+                  ID : {student?.studentID}
+                </span>
+
+                <span className="px-4 py-2 rounded-full bg-white/20 text-white">
+                  {student?.className} {student?.section}
+                </span>
+
+                <span className="px-4 py-2 rounded-full bg-green-500/20 border border-green-300 text-white">
+                  {student?.status || "Active"}
+                </span>
+
               </div>
+
             </div>
 
-            {/* ACTIONS */}
             <div className="flex gap-3">
+
               {!isEditing ? (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="bg-indigo-600 px-6 py-2 rounded-xl hover:bg-indigo-700"
+                  className="bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-xl text-white font-semibold"
                 >
                   Edit Profile
                 </button>
@@ -285,73 +463,194 @@ export default function AdminStudentViewPage() {
                 <>
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="bg-gray-200 text-black px-5 py-2 rounded-xl"
+                    className="bg-white text-slate-700 px-5 py-3 rounded-xl font-semibold"
                   >
                     Cancel
                   </button>
 
                   <button
                     onClick={onSave}
-                    className="bg-green-600 px-5 py-2 rounded-xl"
+                    className="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-xl text-white font-semibold"
                   >
                     Save
                   </button>
                 </>
               )}
+
             </div>
 
           </div>
+
         </div>
 
-        {/* PHOTO */}
-        <div className="bg-white rounded-3xl p-6 shadow mt-8">
-          <h2 className="text-xl font-bold mb-5">Profile Photo</h2>
+      </div>
 
-          <div className="flex items-center gap-6">
-            <img
-              src={photoUrl}
-              className="h-24 w-24 rounded-full object-cover border"
-            />
+      {/* STATS */}
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={onPhotoChange}
-              disabled={!isEditing}
-              className="disabled:opacity-50"
-            />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+
+        <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+          <p className="text-slate-500 text-sm">
+            Student ID
+          </p>
+
+          <h3 className="text-2xl font-bold text-indigo-600 mt-2">
+            {student?.studentID}
+          </h3>
+        </div>
+
+        <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+          <p className="text-slate-500 text-sm">
+            Class
+          </p>
+
+          <h3 className="text-xl font-bold mt-2">
+            {student?.className}
+          </h3>
+        </div>
+
+        <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+          <p className="text-slate-500 text-sm">
+            Email
+          </p>
+
+          <h3 className="font-semibold mt-2 truncate">
+            {student?.email}
+          </h3>
+        </div>
+
+      </div>
+
+      {/* MAIN GRID */}
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
+
+        {/* LEFT */}
+
+        <div className="xl:col-span-8 space-y-6">
+
+          
+
+          {/* STUDENT INFO */}
+
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+
+            <h2 className="text-2xl font-bold mb-6">
+              Student Information
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              {Object.keys(form).map((key) => (
+                <div key={key}>
+
+                  <label className="block mb-2 text-sm font-semibold text-slate-600">
+                    {formatLabel(key)}
+                  </label>
+
+                  <input
+                    name={key}
+                    value={form[key]}
+                    onChange={onChange}
+                    disabled={!isEditing}
+                    className="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50"
+                  />
+
+                </div>
+              ))}
+
+            </div>
+
           </div>
-        </div>
 
-        {/* FORM GRID */}
-        <div className="mt-6 grid grid-cols-2 gap-4 bg-white p-6 rounded-2xl">
+          {/* PHOTO */}
 
-          {Object.keys(form).map((key) => (
-            <div key={key}>
-              <label className="text-sm font-semibold">
-                {formatLabel(key)}
-              </label>
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+
+            <h2 className="text-xl font-bold mb-5">
+              Profile Photo
+            </h2>
+
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+
+              <img
+                src={photoUrl}
+                alt="Student"
+                className="h-28 w-28 rounded-full object-cover border-4 border-indigo-100"
+              />
 
               <input
-                name={key}
-                value={form[key]}
-                onChange={onChange}
+                type="file"
+                accept="image/*"
+                onChange={onPhotoChange}
                 disabled={!isEditing}
-                className="w-full border p-2 rounded-lg"
+                className="w-full"
               />
+
             </div>
-          ))}
+
+          </div>
+
         </div>
 
-        {/* PASSWORD SECTION */}
-        {/* PASSWORD SECTION */}
-        <div className={`mt-6 p-6 rounded-2xl transition ${isEditing ? "bg-slate-800 text-white" : "bg-slate-800 opacity-80"
-          }`}>
-          <h2 className="text-xl font-bold mb-4">
-            Change Password
-          </h2>
+        {/* RIGHT */}
 
-          {!isEditing && (
+        <div className="xl:col-span-4 space-y-6">
+
+          {/* SUMMARY */}
+
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+
+            <h2 className="text-xl font-bold mb-5">
+              Student Summary
+            </h2>
+
+            <div className="space-y-4">
+
+              <div className="p-4 rounded-2xl bg-slate-50 border">
+                <p className="text-sm text-slate-500">
+                  Roll Number
+                </p>
+
+                <p className="font-semibold">
+                  {student?.rollNumber || "-"}
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border">
+                <p className="text-sm text-slate-500">
+                  Class
+                </p>
+
+                <p className="font-semibold">
+                  {student?.className} {student?.section}
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border">
+                <p className="text-sm text-slate-500">
+                  Email
+                </p>
+
+                <p className="font-semibold break-all">
+                  {student?.email}
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* PASSWORD */}
+
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl border border-slate-700 p-6 shadow-xl text-white">
+
+            <h2 className="text-xl font-bold mb-5">
+              Change Password
+            </h2>
+
+            <div className="space-y-4">
+               {!isEditing && (
             <p className="text-sm text-gray-500 mb-4">
               Enable edit mode to change password
             </p>
@@ -372,7 +671,7 @@ export default function AdminStudentViewPage() {
                   }))
                 }
                 placeholder="New Password"
-                className="w-full border text-white p-3 rounded-xl pr-10 disabled:bg-gray-200"
+                className="w-full border text-white p-3 rounded-xl pr-10"
               />
 
               <button
@@ -398,7 +697,7 @@ export default function AdminStudentViewPage() {
                   }))
                 }
                 placeholder="Confirm Password"
-                className="w-full border p-3 rounded-xl pr-10 disabled:bg-gray-200"
+                className="w-full border p-3 rounded-xl pr-10 "
               />
 
               <button
@@ -423,10 +722,21 @@ export default function AdminStudentViewPage() {
               Update Password
             </button>
           </div>
+             
+
+            </div>
+
+          </div>
+
         </div>
+
       </div>
+
     </div>
-  );
+  </div>
+);
+    
+  
 }
 
 /* helpers */

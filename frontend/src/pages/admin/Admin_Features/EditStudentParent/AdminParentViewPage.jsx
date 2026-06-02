@@ -48,49 +48,49 @@ export default function AdminParentViewPage() {
   }, [parentId]);
 
   const loadProfile = async () => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const resp = await api.get(
-      API_ENDPOINTS.ADMIN.PARENT.PROFILE(parentId)
-    );
+      const resp = await api.get(
+        API_ENDPOINTS.ADMIN.PARENT.PROFILE(parentId)
+      );
 
-    console.log("PROFILE RESPONSE:", resp.data);
+      console.log("PROFILE RESPONSE:", resp.data);
 
-    // ✅ FIXED
-    const parent =
-      resp?.data?.parent || {};
+      // ✅ FIXED
+      const parent =
+        resp?.data?.parent || {};
 
-    setParentInfo(parent);
+      setParentInfo(parent);
 
-    setChildren(parent.children || []);
+      setChildren(parent.children || []);
 
-    setForm({
-      name: parent.name || "",
-      phone: parent.phone || "",
-      occupation: parent.occupation || "",
-      qualification:
-        parent.qualification || "",
-      address:
-        parent.address?.street ||
-        parent.address ||
-        "",
-      email: parent.email || "",
-    });
+      setForm({
+        name: parent.name || "",
+        phone: parent.phone || "",
+        occupation: parent.occupation || "",
+        qualification:
+          parent.qualification || "",
+        address:
+          parent.address?.street ||
+          parent.address ||
+          "",
+        email: parent.email || "",
+      });
 
-  } catch (e) {
-    console.error(e);
+    } catch (e) {
+      console.error(e);
 
-    toast.error(
-      e?.response?.data?.message ||
-      e.message ||
-      "Failed to load parent profile"
-    );
+      toast.error(
+        e?.response?.data?.message ||
+        e.message ||
+        "Failed to load parent profile"
+      );
 
-  } finally {
-    setLoading(false);
-  }
-};
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onChange = (e) => {
     setForm((prev) => ({
@@ -158,8 +158,8 @@ export default function AdminParentViewPage() {
     } catch (e) {
       toast.error(
         e?.response?.data?.message ||
-          e.message ||
-          "Update failed"
+        e.message ||
+        "Update failed"
       );
     }
   };
@@ -202,8 +202,8 @@ export default function AdminParentViewPage() {
     } catch (e) {
       toast.error(
         e?.response?.data?.message ||
-          e.message ||
-          "Failed to change password"
+        e.message ||
+        "Failed to change password"
       );
     }
   };
@@ -220,152 +220,137 @@ export default function AdminParentViewPage() {
     photoPreview ||
     (parentInfo.profilePicture
       ? parentInfo.profilePicture.startsWith(
-          "http"
-        )
+        "http"
+      )
         ? parentInfo.profilePicture
         : `${API_URL}/uploads/${parentInfo.schoolId}/parents/${parentInfo.profilePicture}`
       : "/assets/default-parent-avatar.png");
 
   return (
-    <div className="min-h-screen ">
-      <div className="max-w-6xl mx-auto">
+    
+
+    <div className="min-h-screen bg-slate-100 p-4 md:p-6">
+      <div className="max-w-7xl mx-auto">
 
         {/* HEADER */}
 
-        <div className="rounded-3xl bg-gradient-to-r from-slate-900 to-slate-700 p-8 text-white shadow-2xl">
-          <div className="flex flex-col md:flex-row gap-8 items-center">
+        <div className="relative overflow-hidden rounded-3xl bg-slate-800  shadow-2xl">
 
-            <div className="relative">
-              <div className="h-32 w-32 rounded-2xl overflow-hidden border-4 border-white bg-white">
+          <div className="absolute inset-0 bg-black/10"></div>
+
+          <div className="relative p-6 md:p-10">
+
+            <div className="flex flex-col lg:flex-row items-center gap-8">
+
+              <div className="relative">
 
                 <img
                   src={photoUrl}
                   alt="Parent"
-                  className="h-full w-full object-cover"
+                  className="h-36 w-36 rounded-3xl border-4 border-white object-cover shadow-2xl"
                 />
+
+                <div className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-green-500 border-4 border-white"></div>
+
               </div>
+
+              <div className="flex-1 text-center lg:text-left">
+
+                <h1 className="text-4xl font-bold text-white">
+                  {parentInfo.name}
+                </h1>
+
+                <p className="text-indigo-100 mt-2">
+                  Parent Dashboard
+                </p>
+
+                <div className="flex flex-wrap gap-3 mt-5 justify-center lg:justify-start">
+
+                  <span className="px-4 py-2 rounded-full bg-white/20 backdrop-blur text-white">
+                    ID : {parentInfo.parentID}
+                  </span>
+
+                  <span className="px-4 py-2 rounded-full bg-white/20 backdrop-blur text-white">
+                    {parentInfo.relation}
+                  </span>
+
+                  <span className="px-4 py-2 rounded-full bg-green-500/20 border border-green-300 text-white">
+                    Active
+                  </span>
+
+                </div>
+
+              </div>
+
             </div>
 
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold">
-                {parentInfo.name}
-              </h1>
-
-              <div className="mt-3 space-y-1 text-slate-200">
-                <p>
-                  Parent ID :{" "}
-                  {parentInfo.parentID}
-                </p>
-
-                <p>
-                  Email :{" "}
-                  {parentInfo.email}
-                </p>
-
-                <p>
-                  Relation :{" "}
-                  {parentInfo.relation}
-                </p>
-              </div>
-            </div>
           </div>
+
+        </div>
+
+        {/* STATS */}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+            <p className="text-slate-500 text-sm">
+              Total Children
+            </p>
+
+            <h3 className="text-3xl font-bold text-indigo-600 mt-2">
+              {children.length}
+            </h3>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+            <p className="text-slate-500 text-sm">
+              Relation
+            </p>
+
+            <h3 className="text-xl font-bold mt-2">
+              {parentInfo.relation}
+            </h3>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+            <p className="text-slate-500 text-sm">
+              Email
+            </p>
+
+            <h3 className="font-semibold mt-2 truncate">
+              {parentInfo.email}
+            </h3>
+          </div>
+
         </div>
 
         {/* MAIN GRID */}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
 
           {/* LEFT */}
 
-          <div className="lg:col-span-2 space-y-6">
+          <div className="xl:col-span-8 space-y-6">
 
-            {/* CHILDREN */}
+            {/* PARENT INFO */}
 
-            <div className="bg-white rounded-3xl p-6 shadow">
-              <h2 className="text-xl font-bold mb-5">
-                Children
-              </h2>
+            <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+
+              <div className="flex justify-between items-center mb-6">
+
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-800">
+                    Parent Information
+                  </h2>
+
+                  <p className="text-slate-500">
+                    Manage parent details
+                  </p>
+                </div>
+
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                {children.map((child) => {
-                  const childPhoto =
-                    child.profilePicture
-                      ? child.profilePicture.startsWith(
-                          "http"
-                        )
-                        ? child.profilePicture
-                        : `${API_URL}/uploads/${parentInfo.schoolId}/students/${child.profilePicture}`
-                      : "/assets/default-student-avatar.png";
-
-                  return (
-                    <div
-                      key={child._id}
-                      className="border rounded-2xl p-4"
-                    >
-                      <div className="flex gap-4 items-center">
-
-                        <img
-                          src={childPhoto}
-                          alt={child.name}
-                          className="h-16 w-16 rounded-full object-cover"
-                        />
-
-                        <div>
-                          <h3 className="font-bold">
-                            {child.name}
-                          </h3>
-
-                          <p className="text-sm text-slate-500">
-                            {
-                              child.studentID
-                            }
-                          </p>
-
-                          <p className="text-sm text-slate-500">
-                            {
-                              child.className
-                            }{" "}
-                            {child.section &&
-                              `- ${child.section}`}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* PHOTO */}
-
-            <div className="bg-white rounded-3xl p-6 shadow">
-              <h2 className="text-xl font-bold mb-5">
-                Profile Photo
-              </h2>
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={onPhotoChange}
-                disabled={!isEditing}
-              />
-            </div>
-          </div>
-
-          {/* RIGHT */}
-
-          <div className="space-y-6">
-
-            {/* CONTACT */}
-
-            <div className="bg-white rounded-3xl p-6 shadow">
-
-              <h2 className="text-xl font-bold mb-5">
-                Parent Information
-              </h2>
-
-              <div className="space-y-4">
 
                 <input
                   type="text"
@@ -374,7 +359,7 @@ export default function AdminParentViewPage() {
                   onChange={onChange}
                   disabled={!isEditing}
                   placeholder="Name"
-                  className="w-full border rounded-xl p-3"
+                  className="w-full rounded-xl border border-slate-300 p-3 focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50"
                 />
 
                 <input
@@ -384,32 +369,26 @@ export default function AdminParentViewPage() {
                   onChange={onChange}
                   disabled={!isEditing}
                   placeholder="Email"
-                  className="w-full border rounded-xl p-3"
+                  className="w-full rounded-xl border border-slate-300 p-3 focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50"
                 />
 
                 <input
                   type="tel"
-                  name="phone"
                   value={form.phone}
+                  disabled={!isEditing}
+                  placeholder="Phone"
                   onChange={(e) => {
                     const value =
-                      e.target.value.replace(
-                        /\D/g,
-                        ""
-                      );
+                      e.target.value.replace(/\D/g, "");
 
-                    if (
-                      value.length <= 10
-                    ) {
+                    if (value.length <= 10) {
                       setForm((prev) => ({
                         ...prev,
                         phone: value,
                       }));
                     }
                   }}
-                  disabled={!isEditing}
-                  placeholder="Phone"
-                  className="w-full border rounded-xl p-3"
+                  className="w-full rounded-xl border border-slate-300 p-3 focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50"
                 />
 
                 <input
@@ -419,7 +398,7 @@ export default function AdminParentViewPage() {
                   onChange={onChange}
                   disabled={!isEditing}
                   placeholder="Occupation"
-                  className="w-full border rounded-xl p-3"
+                  className="w-full rounded-xl border border-slate-300 p-3 focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50"
                 />
 
                 <input
@@ -429,7 +408,7 @@ export default function AdminParentViewPage() {
                   onChange={onChange}
                   disabled={!isEditing}
                   placeholder="Qualification"
-                  className="w-full border rounded-xl p-3"
+                  className="w-full rounded-xl border border-slate-300 p-3 focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50 md:col-span-2"
                 />
 
                 <textarea
@@ -437,9 +416,9 @@ export default function AdminParentViewPage() {
                   value={form.address}
                   onChange={onChange}
                   disabled={!isEditing}
-                  placeholder="Address"
                   rows={4}
-                  className="w-full border rounded-xl p-3"
+                  placeholder="Address"
+                  className="w-full rounded-xl border border-slate-300 p-3 focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-50 md:col-span-2"
                 />
 
               </div>
@@ -449,35 +428,120 @@ export default function AdminParentViewPage() {
                   onClick={() =>
                     setIsEditing(true)
                   }
-                  className="mt-6 w-full bg-indigo-600 text-white rounded-xl py-3 font-semibold"
+                  className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-3 font-semibold transition-all"
                 >
                   Edit Profile
                 </button>
               ) : (
-                <div className="flex gap-3 mt-6">
+                <div className="flex flex-col sm:flex-row gap-3 mt-6">
 
                   <button
                     onClick={() =>
                       setIsEditing(false)
                     }
-                    className="flex-1 bg-slate-200 rounded-xl py-3 font-semibold"
+                    className="flex-1 bg-slate-200 hover:bg-slate-300 rounded-xl py-3 font-semibold"
                   >
                     Cancel
                   </button>
 
                   <button
                     onClick={onSave}
-                    className="flex-1 bg-green-600 text-white rounded-xl py-3 font-semibold"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl py-3 font-semibold"
                   >
-                    Save
+                    Save Changes
                   </button>
+
                 </div>
               )}
+
+            </div>
+
+            {/* PHOTO */}
+
+            <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+
+              <h2 className="text-xl font-bold mb-4">
+                Profile Photo
+              </h2>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={onPhotoChange}
+                disabled={!isEditing}
+                className="w-full"
+              />
+
+            </div>
+
+
+
+          </div>
+
+          {/* RIGHT */}
+
+          <div className="xl:col-span-4 space-y-6">
+
+            {/* CHILDREN */}
+
+            <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-200">
+
+              <h2 className="text-xl font-bold mb-5">
+                Children
+              </h2>
+
+              <div className="space-y-4">
+
+                {children.map((child) => {
+                  const childPhoto =
+                    child.profilePicture
+                      ? child.profilePicture.startsWith("http")
+                        ? child.profilePicture
+                        : `${API_URL}/uploads/${parentInfo.schoolId}/students/${child.profilePicture}`
+                      : "/assets/default-student-avatar.png";
+
+                  return (
+                    <div
+                      key={child._id}
+                      className="group rounded-2xl border border-slate-200 p-4 hover:border-indigo-400 hover:shadow-lg transition-all"
+                    >
+                      <div className="flex items-center gap-4">
+
+                        <img
+                          src={childPhoto}
+                          alt={child.name}
+                          className="h-16 w-16 rounded-2xl object-cover"
+                        />
+
+                        <div>
+
+                          <h3 className="font-bold">
+                            {child.name}
+                          </h3>
+
+                          <p className="text-sm text-slate-500">
+                            {child.studentID}
+                          </p>
+
+                          <span className="inline-block mt-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-medium">
+                            {child.className}
+                            {child.section &&
+                              ` - ${child.section}`}
+                          </span>
+
+                        </div>
+
+                      </div>
+                    </div>
+                  );
+                })}
+
+              </div>
+
             </div>
 
             {/* PASSWORD */}
-
-            <div className="bg-slate-800 text-white rounded-3xl p-6 shadow">
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl  border-white p-6 shadow-xl text-white">
 
               <h2 className="text-xl font-bold mb-5">
                 Change Password
@@ -486,33 +550,40 @@ export default function AdminParentViewPage() {
               <div className="space-y-4">
 
                 <div className="relative">
+
                   <input
-                    type={
-                      showNew
-                        ? "text"
-                        : "password"
-                    }
+                    type={showNew ? "text" : "password"}
                     value={pw.newPassword}
                     onChange={(e) =>
                       setPw((prev) => ({
                         ...prev,
-                        newPassword:
-                          e.target.value,
+                        newPassword: e.target.value,
                       }))
                     }
                     disabled={!isEditing}
                     placeholder="New Password"
-                    className="w-full border rounded-xl p-3 pr-10"
+                    className="   w-full
+      rounded-xl
+      border
+      border-slate-500
+      bg-slate-800/40
+      p-3
+      pr-10
+      text-white
+      placeholder:text-slate-400
+      focus:border-blue-500
+      focus:ring-2
+      focus:ring-blue-500/30
+      outline-none
+      transition-all"
                   />
 
                   <button
                     type="button"
                     onClick={() =>
-                      setShowNew(
-                        !showNew
-                      )
+                      setShowNew(!showNew)
                     }
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600"
                   >
                     {showNew ? (
                       <FaEyeSlash />
@@ -520,9 +591,11 @@ export default function AdminParentViewPage() {
                       <FaEye />
                     )}
                   </button>
+
                 </div>
 
-                <div className="relative">
+                <div className="relative border-white ">
+
                   <input
                     type={
                       showConfirm
@@ -533,23 +606,33 @@ export default function AdminParentViewPage() {
                     onChange={(e) =>
                       setPw((prev) => ({
                         ...prev,
-                        confirm:
-                          e.target.value,
+                        confirm: e.target.value,
                       }))
                     }
                     disabled={!isEditing}
                     placeholder="Confirm Password"
-                    className="w-full border rounded-xl p-3 pr-10"
+                    className="   w-full
+      rounded-xl
+      border
+      border-slate-500
+      bg-slate-800/40
+      p-3
+      pr-10
+      text-white
+      placeholder:text-slate-400
+      focus:border-blue-500
+      focus:ring-2
+      focus:ring-blue-500/30
+      outline-none
+      transition-all"
                   />
 
                   <button
                     type="button"
                     onClick={() =>
-                      setShowConfirm(
-                        !showConfirm
-                      )
+                      setShowConfirm(!showConfirm)
                     }
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600"
                   >
                     {showConfirm ? (
                       <FaEyeSlash />
@@ -557,19 +640,26 @@ export default function AdminParentViewPage() {
                       <FaEye />
                     )}
                   </button>
+
                 </div>
 
                 <button
                   onClick={changePassword}
                   disabled={!isEditing}
-                  className="w-full bg-blue-800 text-white rounded-xl py-3 font-semibold disabled:bg-slate-400"
+                  className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl py-3 font-semibold disabled:bg-slate-500"
                 >
                   Update Password
                 </button>
+
               </div>
+
             </div>
+
+
           </div>
+
         </div>
+
       </div>
     </div>
   );
