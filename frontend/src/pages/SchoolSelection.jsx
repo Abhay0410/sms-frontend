@@ -46,7 +46,7 @@ const SchoolSelection = ({ setSchool }) => {
   useEffect(() => {
     const fetchSchools = async () => {
       try {
-        const response = await api.get(API_ENDPOINTS?.SCHOOL?.LIST || '/schools');
+        const response = await api.get('/api/schools');
         const fetchedSchools = response.data?.data?.schools || response.data?.data || response.data;
         setSchools(Array.isArray(fetchedSchools) ? fetchedSchools : []);
       } catch (error) {
