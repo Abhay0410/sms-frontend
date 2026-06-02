@@ -6,9 +6,9 @@ import { API_ENDPOINTS } from "../constants/apiEndpoints";
  * 🌐 Base URL Resolution
  * ────────────────────────────────────────────────────────────── */
 function getBaseURL() {
-  // In production (Vercel), ALWAYS use relative paths so the vercel.json proxy works!
-  // This completely ignores any buggy Vercel Env Vars or accidentally committed .env files.
-  if (import.meta.env.PROD) {
+  // RUNTIME CHECK: Agar website localhost pe nahi chal rahi (yaani Vercel pe hai),
+  // toh hamesha relative path ("") use karo taaki Vercel Proxy (vercel.json) trigger ho!
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
     return "";
   }
 
