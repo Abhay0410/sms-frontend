@@ -6,16 +6,15 @@ import { API_ENDPOINTS } from "../constants/apiEndpoints";
  * 🌐 Base URL Resolution
  * ────────────────────────────────────────────────────────────── */
 function getBaseURL() {
-  const env = import.meta.env.VITE_REACT_APP_ENV || "development";
-
-  switch (env) {
-    case "production":
-      return import.meta.env.VITE_REACT_APP_API_PROD_URL;
-    case "staging":
-      return import.meta.env.VITE_REACT_APP_API_STAGE_URL;
-    default:
-      return import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
-  }
+  let url = import.meta.env.VITE_REACT_APP_API_BASE_URL || 
+            import.meta.env.VITE_REACT_APP_API_PROD_URL || 
+            "http://localhost:5000";
+            
+  // Strip trailing /api or / to prevent double /api/api in requests
+  if (url.endsWith('/api')) url = url.slice(0, -4);
+  if (url.endsWith('/')) url = url.slice(0, -1);
+  
+  return url;
 }
 
 /* ──────────────────────────────────────────────────────────────

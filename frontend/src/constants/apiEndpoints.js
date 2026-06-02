@@ -2,7 +2,7 @@
 export const API_ENDPOINTS = {
   SCHOOL: {
     REGISTER: "/api/schools/register",
-    LIST: "/api/schools/list",
+    LIST: "/api/schools",
     ACTIVE: "/api/schools/active",
     BY_SLUG: (slug) => `/api/schools/slug/${slug}`,
   },

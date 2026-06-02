@@ -43,7 +43,7 @@ export default function AutoLogin() {
         }));
 
         // 3. Fetch the schools list to find the school's slug
-        const schoolsResponse = await api.get(API_ENDPOINTS?.SCHOOL?.LIST || '/schools');
+        const schoolsResponse = await api.get(API_ENDPOINTS?.SCHOOL?.LIST || '/api/schools');
         const fetchedSchools = schoolsResponse.data?.data?.schools || schoolsResponse.data?.data || schoolsResponse.data;
         const schools = Array.isArray(fetchedSchools) ? fetchedSchools : [];
         const school = schools.find(s => s._id === schoolId);
