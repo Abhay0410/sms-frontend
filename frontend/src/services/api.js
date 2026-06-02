@@ -6,21 +6,11 @@ import { API_ENDPOINTS } from "../constants/apiEndpoints";
  * 🌐 Base URL Resolution
  * ────────────────────────────────────────────────────────────── */
 function getBaseURL() {
-  // RUNTIME CHECK: Agar website localhost pe nahi chal rahi (yaani Vercel pe hai),
-  // toh hamesha relative path ("") use karo taaki Vercel Proxy (vercel.json) trigger ho!
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return "";
+    return ""; // Empty string forces Axios to use Vercel's relative path
   }
 
-  let url = import.meta.env.VITE_REACT_APP_API_BASE_URL || 
-            import.meta.env.VITE_API_BASE_URL ||
-            "http://localhost:5000";
-            
-  // Strip trailing /api or / to prevent double /api/api in requests
-  if (url.endsWith('/api')) url = url.slice(0, -4);
-  if (url.endsWith('/')) url = url.slice(0, -1);
-  
-  return url;
+  return "http://localhost:5000"; // Localhost fallback for development
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -57,7 +47,7 @@ const instance = axios.create({
   withCredentials: false, // Set to true if using cookies/sessions
 });
 
-console.log("🌐 API Base URL:", getBaseURL());
+console.log("🌐 API Base URL:", getBaseURL() === "" ? "Vercel Proxy (Relative Route)" : getBaseURL());
 
 /* ──────────────────────────────────────────────────────────────
  * 📦 Request Interceptor
