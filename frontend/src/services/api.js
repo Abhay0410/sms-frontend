@@ -6,16 +6,15 @@ import { API_ENDPOINTS } from "../constants/apiEndpoints";
  * 🌐 Base URL Resolution
  * ────────────────────────────────────────────────────────────── */
 function getBaseURL() {
+  // In production (Vercel), ALWAYS use relative paths so the vercel.json proxy works!
+  // This completely ignores any buggy Vercel Env Vars or accidentally committed .env files.
+  if (import.meta.env.PROD) {
+    return "";
+  }
+
   let url = import.meta.env.VITE_REACT_APP_API_BASE_URL || 
             import.meta.env.VITE_API_BASE_URL ||
-            import.meta.env.VITE_REACT_APP_API_PROD_URL || 
-            "";
-            
-  // If no env var is found, fallback to localhost for local dev, 
-  // or an empty string for Vercel (so it automatically hits its own proxy!)
-  if (!url) {
-    url = import.meta.env.DEV ? "http://localhost:5000" : "";
-  }
+            "http://localhost:5000";
             
   // Strip trailing /api or / to prevent double /api/api in requests
   if (url.endsWith('/api')) url = url.slice(0, -4);
