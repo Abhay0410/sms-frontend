@@ -70,7 +70,7 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
         
         // Try to get school from list API as fallback
         try {
-          const schoolsResponse = await api.get(API_ENDPOINTS?.SCHOOL?.LIST || '/api/schools');
+          const schoolsResponse = await api.get(API_ENDPOINTS?.SCHOOL?.LIST || '/api/schools/list');
           const fetchedSchools = schoolsResponse.data?.data?.schools || schoolsResponse.data?.data || schoolsResponse.data;
           const schools = Array.isArray(fetchedSchools) ? fetchedSchools : [];
           const foundSchool = schools.find(s => {
