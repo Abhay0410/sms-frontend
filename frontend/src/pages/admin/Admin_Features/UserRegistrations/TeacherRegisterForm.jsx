@@ -58,28 +58,6 @@ const INDIAN_STATES = [
 ];
 
 
-// ✅ Convert DD/MM/YYYY string -> Date object
-const parseDate = (dateString) => {
-  if (!dateString) return null;
-
-  const [day, month, year] = dateString.split("/");
-
-  if (!day || !month || !year) return null;
-
-  const date = new Date(year, month - 1, day);
-
-  return isNaN(date.getTime()) ? null : date;
-};
-
-// ✅ Convert Date object -> DD/MM/YYYY
-const formatDate = (date) => {
-  if (!date) return "";
-
-  return `${String(date.getDate()).padStart(2, "0")}/${String(
-    date.getMonth() + 1
-  ).padStart(2, "0")}/${date.getFullYear()}`;
-};
-
 const Input = ({ label, error, required, ...props }) => (
   <div className="flex flex-col gap-1">
     <label className="text-sm font-semibold text-slate-700">
@@ -140,12 +118,12 @@ export default function TeacherRegisterForm() {
       
     },
     gender: "",
-    dateOfBirth: "",
+    dateOfBirth: null,
     qualification: [{ degree: "", specialization: "" }],
     subjects: [],
     department: "",
     customDepartment: "",
-    joiningDate: "",
+    joiningDate: null,
     panNumber: "",
     salary: {
       paymentMode: "BANK",
@@ -228,13 +206,17 @@ export default function TeacherRegisterForm() {
   }, []);
 
   const onChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+
+    if (name === "phone") {
+      value = value.replace(/\D/g, "").slice(0, 10);
+    }
 
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: null }));
     }
 
-    if (["street", "city", "state", "country", "pincode"].includes(name)) {
+    if (["street", "city", "state", "country", "pincode", "district"].includes(name)) {
       setForm((prev) => ({
         ...prev,
         address: { ...prev.address, [name]: value },
@@ -373,12 +355,6 @@ export default function TeacherRegisterForm() {
     try {
       setLoading(true);
 
-      const formatDateForBackend = (dateStr) => {
-        if (!dateStr) return null;
-        const [day, month, year] = dateStr.split("/");
-        return `${year}-${month}-${day}`;
-      };
-
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("email", form.email);
@@ -392,8 +368,8 @@ export default function TeacherRegisterForm() {
       );
       formData.append("panNumber", form.panNumber);
       formData.append("isActive", true);
-      formData.append("dateOfBirth", formatDateForBackend(form.dateOfBirth));
-      formData.append("joiningDate", formatDateForBackend(form.joiningDate));
+      formData.append("dateOfBirth", form.dateOfBirth ? form.dateOfBirth.toISOString() : "");
+      formData.append("joiningDate", form.joiningDate ? form.joiningDate.toISOString() : "");
       formData.append(
         "qualification",
         JSON.stringify(form.qualification.filter(Boolean)),
@@ -455,12 +431,12 @@ export default function TeacherRegisterForm() {
           
         },
         gender: "",
-        dateOfBirth: "",
+        dateOfBirth: null,
         qualification: [{ degree: "", specialization: "" }],
         subjects: [],
         department: "",
         customDepartment: "",
-        joiningDate: "",
+        joiningDate: null,
         panNumber: "",
         salary: {
           paymentMode: "BANK",
@@ -639,11 +615,11 @@ export default function TeacherRegisterForm() {
                 </label>
 
                 <DatePicker
-                  selected={parseDate(form.dateOfBirth)}
+                  selected={form.dateOfBirth}
                   onChange={(date) => {
                     setForm((prev) => ({
                       ...prev,
-                      dateOfBirth: formatDate(date),
+                      dateOfBirth: date,
                     }));
 
                     if (errors.dateOfBirth) {
@@ -657,8 +633,8 @@ export default function TeacherRegisterForm() {
                   placeholderText="DD/MM/YYYY"
                   maxDate={new Date()}
                   showYearDropdown
-                  scrollableYearDropdown
-                  yearDropdownItemNumber={100}
+                  showMonthDropdown
+                  dropdownMode="select"
                   className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${errors.dateOfBirth
                       ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
                       : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
@@ -684,11 +660,11 @@ export default function TeacherRegisterForm() {
                 </label>
 
                 <DatePicker
-                  selected={parseDate(form.joiningDate)}
+                  selected={form.joiningDate}
                   onChange={(date) => {
                     setForm((prev) => ({
                       ...prev,
-                      joiningDate: formatDate(date),
+                      joiningDate: date,
                     }));
 
                     if (errors.joiningDate) {
@@ -702,8 +678,8 @@ export default function TeacherRegisterForm() {
                   placeholderText="DD/MM/YYYY"
                   maxDate={new Date()}
                   showYearDropdown
-                  scrollableYearDropdown
-                  yearDropdownItemNumber={100}
+                  showMonthDropdown
+                  dropdownMode="select"
                   className={`w-full mt-1 p-2.5 border rounded-lg outline-none transition-all ${errors.dateOfBirth
                       ? "border-rose-500 bg-rose-50/30 focus:ring-2 focus:ring-rose-200"
                       : "border-gray-300 focus:ring-2 focus:ring-indigo-500"
@@ -975,7 +951,7 @@ export default function TeacherRegisterForm() {
                       value={form.salary.uanNumber}
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, ""); // only digits
-                        if (value.length <= 18) {
+                        if (value.length <= 12) {
                           setForm((prev) => ({
                             ...prev,
                             salary: {
@@ -985,7 +961,7 @@ export default function TeacherRegisterForm() {
                           }));
                         }
                       }}
-                      maxLength={18}
+                      maxLength={12}
                       inputMode="numeric"
                       placeholder="Enter 12 digit UAN"
                       className="w-full bg-slate-800 border-none p-4 rounded-xl text-white focus:ring-2 focus:ring-orange-500 transition-all"

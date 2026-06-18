@@ -73,11 +73,11 @@ const AdminRegisterForm = () => {
     name: "",
     email: "",
     phone: "",
-    dateOfBirth: "",
+    dateOfBirth: null,
     gender: "",
     designation: "", // Role selection
     department: "",
-    joiningDate: "",
+    joiningDate: null,
     isSuperAdmin: false,
     address: { street: "", city: "", state: "", pincode: "", country: "India" },
     profilePictureFile: null,
@@ -98,7 +98,11 @@ const AdminRegisterForm = () => {
 
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    let { name, value, type, checked } = e.target;
+
+    if (name === "phone") {
+      value = value.replace(/\D/g, "").slice(0, 10);
+    }
 
     // ✅ Special Handling for Role selection to auto-fill Department & SuperAdmin status
     if (name === "designation") {
@@ -194,11 +198,11 @@ const AdminRegisterForm = () => {
           name: "",
           email: "",
           phone: "",
-          dateOfBirth: "",
+          dateOfBirth: null,
           gender: "",
           designation: "",
           department: "",
-          joiningDate: "",
+          joiningDate: null,
           isSuperAdmin: false,
           address: { street: "", city: "", state: "", pincode: "", country: "India" },
           profilePictureFile: null,

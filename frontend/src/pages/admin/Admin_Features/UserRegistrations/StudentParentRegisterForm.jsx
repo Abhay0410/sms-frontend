@@ -229,6 +229,12 @@ export default function StudentParentRegisterForm({ studentId, onFormSubmit, onC
       newValue = value.toUpperCase().replace(/\s/g, "");
     }
 
+    // ✅ Phone Numbers → only digits, max 10
+    const phoneFields = ["mobileNumber", "fatherPhone", "motherPhone", "guardianPhone", "emergencyContactPhone"];
+    if (phoneFields.includes(name)) {
+      newValue = value.replace(/\D/g, "").slice(0, 10);
+    }
+
     setStudentForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : newValue,
