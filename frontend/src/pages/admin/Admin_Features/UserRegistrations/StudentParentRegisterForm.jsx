@@ -229,6 +229,12 @@ export default function StudentParentRegisterForm({ studentId, onFormSubmit, onC
       newValue = value.toUpperCase().replace(/\s/g, "");
     }
 
+    // ✅ Phone Numbers → only digits, max 10
+    const phoneFields = ["mobileNumber", "fatherPhone", "motherPhone", "guardianPhone", "emergencyContactPhone"];
+    if (phoneFields.includes(name)) {
+      newValue = value.replace(/\D/g, "").slice(0, 10);
+    }
+
     setStudentForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : newValue,
@@ -306,7 +312,12 @@ export default function StudentParentRegisterForm({ studentId, onFormSubmit, onC
       ];
       
       // ✅ Format explicitly as { value, label } for the custom Select component
-      setClasses(uniqueClasses.sort().map(c => ({ value: c, label: c })));
+      // Use localeCompare with { numeric: true } for natural sorting (e.g., Class 2 before Class 10)
+      setClasses(
+        uniqueClasses
+          .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
+          .map(c => ({ value: c, label: c }))
+      );
     } catch (err) {
       console.error("Failed to fetch classes", err);
     }

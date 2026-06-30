@@ -6,16 +6,21 @@ import { API_ENDPOINTS } from "../constants/apiEndpoints";
  * 🌐 Base URL Resolution
  * ────────────────────────────────────────────────────────────── */
 function getBaseURL() {
-  const env = import.meta.env.VITE_REACT_APP_ENV || "development";
+  // if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+  //   return ""; // Empty string forces Axios to use Vercel's relative path
+  // }
 
-  switch (env) {
-    case "production":
-      return import.meta.env.VITE_REACT_APP_API_PROD_URL;
-    case "staging":
-      return import.meta.env.VITE_REACT_APP_API_STAGE_URL;
-    default:
-      return import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
+  // return "http://localhost:5000"; // Localhost fallback for development 
+  const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_REACT_APP_API_BASE_URL;
+  if (envUrl) {
+    return envUrl;
   }
+
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return ""; 
+  }
+  
+  return "http://localhost:5000"; // Localhost fallback for development
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -52,7 +57,7 @@ const instance = axios.create({
   withCredentials: false, // Set to true if using cookies/sessions
 });
 
-console.log("🌐 API Base URL:", getBaseURL());
+console.log("🌐 API Base URL:", getBaseURL() === "" ? "Vercel Proxy (Relative Route)" : getBaseURL());
 
 /* ──────────────────────────────────────────────────────────────
  * 📦 Request Interceptor
