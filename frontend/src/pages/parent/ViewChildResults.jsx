@@ -83,8 +83,12 @@ export default function ViewChildResults() {
     } catch { toast.error("Download failure"); }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><FaSpinner className="animate-spin text-slate-900" size={32}/></div>;
-
+  if (loading) return <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>;
   return (
     <div className="min-h-screen bg-blue-50  font-bold uppercase text-xs tracking-tight">
       <div className="max-w-6xl mx-auto">
@@ -92,7 +96,7 @@ export default function ViewChildResults() {
         <div className=" mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 tracking-tighter leading-none">OFFICIAL TRANSCRIPT</h1>
-            <p className="text-gray-500 mt-2 tracking-normal font-medium capitalize flex items-center gap-2">
+            <p className="text-gray-500 mt-2 tracking-normal  text-[15px] font-medium capitalize flex items-center gap-2">
               <FaGraduationCap className="text-indigo-600" />
               {childInfo?.name} • CLASS {childInfo?.className} {childInfo?.section}
             </p>

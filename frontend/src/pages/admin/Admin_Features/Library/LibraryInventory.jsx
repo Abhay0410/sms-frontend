@@ -405,15 +405,12 @@ export default function LibraryInventory() {
                 {loading ? (
                   <tr>
                     <td colSpan="5" className="p-16 text-center">
-                      <div className="flex flex-col items-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-200 border-t-orange-600 mb-4"></div>
-                        <p className="text-slate-600 font-medium">
-                          Loading inventory...
-                        </p>
-                        <p className="text-sm text-slate-400 mt-1">
-                          Fetching book records
-                        </p>
-                      </div>
+                      
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  
                     </td>
                   </tr>
                 ) : paginatedBooks.length === 0 ? (

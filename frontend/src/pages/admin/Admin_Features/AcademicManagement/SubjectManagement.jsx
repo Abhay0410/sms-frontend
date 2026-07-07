@@ -289,15 +289,12 @@ export default function SubjectManagement() {
 
   if (loading && classes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 space-y-4">
-        <div className="relative">
-          <div className="h-16 w-16 rounded-full border-4 border-blue-200"></div>
-          <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
-        </div>
-        <p className="text-blue-600 font-semibold animate-pulse">
-          Loading academic structure...
-        </p>
-      </div>
+     <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
     );
   }
 
@@ -499,7 +496,7 @@ export default function SubjectManagement() {
                               )}
                             </div>
                             {sub.subjectCode && (
-                              <p className="text-xs text-slate-500 font-mono">
+                              <p className="text-[10px] text-slate-500 font-normal">
                                 {sub.subjectCode}
                               </p>
                             )}
@@ -711,7 +708,7 @@ function SectionCard({ section, onRemove, isActive }) {
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
                       {sub.subjectCode && (
-                        <span className="text-xs text-slate-500 font-mono">
+                        <span className="text-[10px] text-slate-500 font-normal">
                           {sub.subjectCode}
                         </span>
                       )}

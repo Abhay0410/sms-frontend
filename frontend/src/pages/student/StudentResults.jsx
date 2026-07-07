@@ -113,9 +113,12 @@ export default function StudentResults() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <FaSpinner className="h-12 w-12 animate-spin text-indigo-600" />
-      </div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
     );
   }
 
@@ -126,7 +129,7 @@ export default function StudentResults() {
         
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight ">Academic Statement</h1>
-          <p className="text-slate-500 font-medium">Official examination records and performance history.</p>
+          <p className="text-slate-500  mt-1 font-medium">Official examination records and performance history.</p>
         </div>
 
         {/* Search & Filters */}

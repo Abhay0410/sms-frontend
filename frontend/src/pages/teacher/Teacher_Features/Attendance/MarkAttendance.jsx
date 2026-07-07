@@ -167,10 +167,10 @@ export default function MarkAttendance() {
       prev.map((item) =>
         item.studentId === studentId
           ? {
-              ...item,
-              status,
-              remarks: status === "ABSENT" ? "" : item.remarks,
-            }
+            ...item,
+            status,
+            remarks: status === "ABSENT" ? "" : item.remarks,
+          }
           : item,
       ),
     );
@@ -268,11 +268,11 @@ export default function MarkAttendance() {
   );
   const sections = selectedClassData
     ? [
-        {
-          sectionId: selectedClassData.sectionId,
-          sectionName: selectedClassData.section,
-        },
-      ]
+      {
+        sectionId: selectedClassData.sectionId,
+        sectionName: selectedClassData.section,
+      },
+    ]
     : [];
 
   // NEW: Calculate attendance statistics
@@ -284,29 +284,11 @@ export default function MarkAttendance() {
 
   if (loading && assignments.classes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50 rounded-2xl">
-        <div className="relative">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200 border-t-indigo-600"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-indigo-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              />
-            </svg>
-          </div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
         </div>
-        <p className="mt-6 text-lg text-gray-700 font-medium">
-          Loading your assignments...
-        </p>
-        <p className="mt-2 text-sm text-gray-500">Please wait a moment</p>
       </div>
     );
   }
@@ -333,7 +315,7 @@ export default function MarkAttendance() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Mark Attendance
           </h1>
-          <p className="text-gray-500 font-medium text-lg">
+          <p className="text-gray-500 font-medium text-sm">
             Select class, section and date to track student attendance
           </p>
         </div>
@@ -441,7 +423,7 @@ export default function MarkAttendance() {
                     <option value="">Select a class</option>
                     {assignments.classes.map((cls) => (
                       <option key={cls.classId} value={cls.classId}>
-                    {cls.className?.toLowerCase().includes('class') ? cls.className : `Class ${cls.className}`}
+                        {cls.className?.toLowerCase().includes('class') ? cls.className : `Class ${cls.className}`}
                       </option>
                     ))}
                   </select>
@@ -825,11 +807,10 @@ export default function MarkAttendance() {
                                 <label
                                   key={status.value}
                                   className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 
-                                  ${
-                                    student.status === status.value
+                                  ${student.status === status.value
                                       ? "border-purple-600 bg-purple-50"
                                       : "border-slate-400"
-                                  }`}
+                                    }`}
                                 >
                                   <input
                                     type="radio"

@@ -1180,7 +1180,7 @@ export default function BulkEnrollment() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-blue-50  px-4 sm:px-6 lg:px-4">
       <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
         
         {/* Header */}
@@ -1190,7 +1190,7 @@ export default function BulkEnrollment() {
               <FaUserGraduate className="text-indigo-600 text-2xl" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
                 Pending Enrollments
               </h1>
               <p className="text-slate-500 text-sm font-medium mt-1">

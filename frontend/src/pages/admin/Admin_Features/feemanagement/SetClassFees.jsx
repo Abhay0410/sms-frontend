@@ -509,7 +509,7 @@ export default function SetClassFees() {
                       <p className="text-indigo-300 text-sm font-bold uppercase tracking-wider">
                         Total Annual Commitment
                       </p>
-                      <p className="text-slate-400 text-xs mt-1">
+                      <p className="text-gray-500 font-medium text-sm mt-1">
                         Calculated based on selected intervals
                       </p>
                     </div>

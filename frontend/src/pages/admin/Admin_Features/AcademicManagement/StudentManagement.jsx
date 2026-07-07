@@ -371,14 +371,12 @@ export default function StudentManagement() {
 
   if (loading && students.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
-          <p className="mt-6 text-lg font-medium text-slate-700">
-            Loading students...
-          </p>
-        </div>
-      </div>
+     <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
     );
   }
 
@@ -643,7 +641,7 @@ export default function StudentManagement() {
                             <p className="font-bold text-slate-900">
                               {studentName}
                             </p>
-                            <p className="text-xs text-slate-500 font-medium">
+                            <p className="text-[11px] text-slate-500 font-medium">
                               {studentIDDisplay}
                             </p>
                           </div>

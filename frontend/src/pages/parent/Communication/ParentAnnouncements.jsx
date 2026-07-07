@@ -70,10 +70,10 @@ export default function ParentAnnouncements() {
                 {new Date(ann.createdAt).toLocaleDateString()}
               </span>
             </div>
-            <h2 className="text-xl font-bold text-slate-800 mb-2">
+            <h3 className="text-xl font-bold text-slate-800 mb-2">
               {ann.title}
-            </h2>
-            <p className="text-slate-600 text-sm mb-4 leading-relaxed">
+            </h3>
+            <p className="text-slate-600  font-medium text-sm mb-4 leading-relaxed">
               {ann.content}
             </p>
           <div className="flex flex-wrap gap-3 mb-6">

@@ -52,7 +52,7 @@ const StaffManagementTab = () => {
             <p className="text-gray-500 text-sm font-medium mt-1">Manage drivers and helpers</p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => { setSelectedStaff(null); setIsModalOpen(true); }}
           className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-bold text-sm shadow-md hover:shadow-lg"
         >
@@ -63,9 +63,11 @@ const StaffManagementTab = () => {
       {/* Table Area */}
       <div className="mb-6">
         {loading ? (
-          <div className="p-12 text-center bg-slate-50 rounded-xl border border-slate-200">
-            <FaSpinner className="animate-spin text-indigo-600 text-3xl mx-auto mb-4" />
-            <p className="text-slate-500 font-medium">Loading staff data...</p>
+          <div className="flex items-center justify-center min-h-screen bg-gray-50">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+              <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+            </div>
           </div>
         ) : staffList.length > 0 ? (
           <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
@@ -108,7 +110,7 @@ const StaffManagementTab = () => {
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <button 
+                        <button
                           onClick={() => { setSelectedStaff(staff); setIsModalOpen(true); }}
                           className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         >
@@ -131,9 +133,9 @@ const StaffManagementTab = () => {
             </div>
             <h3 className="text-lg font-bold text-slate-700 mb-1">No Staff Found</h3>
             <p className="text-slate-500 mb-6 max-w-sm mx-auto">You haven't added any drivers or helpers yet.</p>
-            <button 
-               onClick={() => { setSelectedStaff(null); setIsModalOpen(true); }}
-               className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-semibold shadow-sm"
+            <button
+              onClick={() => { setSelectedStaff(null); setIsModalOpen(true); }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-semibold shadow-sm"
             >
               <FaPlus /> Add First Staff Member
             </button>
@@ -141,11 +143,11 @@ const StaffManagementTab = () => {
         )}
       </div>
 
-      <StaffModal 
-        isOpen={isModalOpen} 
-        onClose={() => { setIsModalOpen(false); setSelectedStaff(null); }} 
-        onSuccess={fetchStaff} 
-        editData={selectedStaff} 
+      <StaffModal
+        isOpen={isModalOpen}
+        onClose={() => { setIsModalOpen(false); setSelectedStaff(null); }}
+        onSuccess={fetchStaff}
+        editData={selectedStaff}
       />
     </div>
   );

@@ -165,7 +165,7 @@ const staffIdFromUrl = searchParams.get("id");
         <div className="flex justify-between items-center cursor-pointer" onClick={() => setShowPolicy(!showPolicy)}>
           <div className="flex items-center gap-3">
             <FaShieldAlt className="text-orange-400" />
-            <h3 className="font-black uppercase text-xs tracking-widest">Global Payout Configuration</h3>
+            <h3 className="font-extrabold uppercase text-xs tracking-widest">Global Payout Configuration</h3>
           </div>
           <button className="text-[10px] bg-white/10 px-4 py-1 rounded-full hover:bg-white/20">{showPolicy ? 'Close' : 'Modify Default %'}</button>
         </div>
@@ -192,7 +192,7 @@ const staffIdFromUrl = searchParams.get("id");
         {/* Left Column: Inputs */}
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-400">
-            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">1. Target Selection</h3>
+            <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-widest mb-6">1. Target Selection</h3>
             
             <div className="space-y-4">
               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Employee</label>
@@ -252,7 +252,7 @@ const staffIdFromUrl = searchParams.get("id");
         <div className="lg:col-span-7">
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-400">
             <div className="bg-slate-50 p-8 border-b border-slate-400 flex justify-between items-center">
-              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">3. Pro-forma Salary Slip</h3>
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-widest">3. Pro-forma Salary Slip</h3>
               <span className="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black">ESTIMATE</span>
             </div>
 

@@ -155,7 +155,7 @@ export default function BookIssueReturn() {
             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
               Book Circulation
             </h1>
-            <p className="text-gray-500 text-sm font-medium mt-1">
+            <p className="text-slate-500 text-sm font-medium mt-1">
                Track book lending and return activities
             </p>
           </div>
@@ -419,7 +419,7 @@ export default function BookIssueReturn() {
                             {actionType}
                           </span>
                         </div>
-                        <p className="text-[10px] text-slate-500 font-bold uppercase">
+                        <p className="text-[10px] uppercase text-slate-500 font-bold ">
                           {t.userName ||
                             t.studentName ||
                             t.user?.name ||

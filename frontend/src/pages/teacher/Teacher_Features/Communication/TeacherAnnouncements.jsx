@@ -247,10 +247,12 @@ export default function TeacherAnnouncements() {
         ) : (
           <div className="space-y-4">
             {loading ? (
-              <div className="flex flex-col items-center py-20 text-slate-300">
-                  <FaSpinner className="animate-spin text-4xl mb-2" />
-                  <p className="font-medium">Loading notices...</p>
-              </div>
+              <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
             ) : announcements.length === 0 ? (
               <div className="bg-white p-20 rounded-2xl text-center border-2 border-dashed border-slate-400">
                   <FaBell className="mx-auto text-4xl text-slate-200 mb-4" />
@@ -262,7 +264,7 @@ export default function TeacherAnnouncements() {
                   <div className="flex-1">
                       <div className="flex items-center gap-2">
                         {ann.isPinned && <FaStar className="text-orange-400 text-sm" />}
-                        <h3 className="font-bold text-xl text-slate-900 group-hover:text-indigo-600 transition-colors">{ann.title}</h3>
+                        <h2 className="font-bold text-[18px] text-slate-900 group-hover:text-indigo-600 transition-colors">{ann.title}</h2>
                       </div>
                       <div className="flex gap-3 mt-1 items-center">
                           <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest border ${getTypeColor(ann.type)}`}>{ann.type}</span>
@@ -292,7 +294,7 @@ export default function TeacherAnnouncements() {
                   </div>
                 </div>
                 
-                <p className={`text-slate-500 mt-4 text-sm leading-relaxed ${expandedId === ann._id ? '' : 'line-clamp-2'}`}>{ann.content}</p>
+                <p className={`text-slate-500 mt-4 font-medium text-sm leading-relaxed ${expandedId === ann._id ? '' : 'line-clamp-2'}`}>{ann.content}</p>
                 
                 {expandedId === ann._id && (
                   <div className="mt-6 pt-6 border-t border-slate-400 animate-in fade-in zoom-in-95">

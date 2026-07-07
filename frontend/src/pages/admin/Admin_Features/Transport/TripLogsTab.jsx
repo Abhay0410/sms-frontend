@@ -13,7 +13,7 @@ const MONTHS = [
   { value: 9, label: "September" }, { value: 10, label: "October" },
   { value: 11, label: "November" }, { value: 12, label: "December" }
 ];
-const YEARS = Array.from({length: 5}, (_, i) => new Date().getFullYear() - i);
+const YEARS = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 
 const TripLogsTab = () => {
   const [tripLogs, setTripLogs] = useState([]);
@@ -88,7 +88,7 @@ const TripLogsTab = () => {
             <p className="text-gray-500 text-sm font-medium mt-1">Track vehicle usage and trips</p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-bold text-sm shadow-md hover:shadow-lg"
         >
@@ -151,9 +151,11 @@ const TripLogsTab = () => {
       {/* Table Area */}
       <div className="mb-6">
         {loading ? (
-          <div className="p-12 text-center bg-slate-50 rounded-xl border border-slate-200">
-            <FaSpinner className="animate-spin text-indigo-600 text-3xl mx-auto mb-4" />
-            <p className="text-slate-500 font-medium">Loading daily logbook...</p>
+          <div className="flex items-center justify-center min-h-screen bg-gray-50">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+              <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+            </div>
           </div>
         ) : tripLogs.length > 0 ? (
           <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
@@ -231,9 +233,9 @@ const TripLogsTab = () => {
             </div>
             <h3 className="text-lg font-bold text-slate-700 mb-1">No Trips Logged</h3>
             <p className="text-slate-500 mb-6 max-w-sm mx-auto">Keep track of vehicle usage by adding your first trip log.</p>
-            <button 
-               onClick={() => setIsModalOpen(true)}
-               className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-semibold shadow-sm"
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-semibold shadow-sm"
             >
               <FaPlus /> Log First Trip
             </button>
@@ -241,10 +243,10 @@ const TripLogsTab = () => {
         )}
       </div>
 
-      <TripLogModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchTripLogs} 
+      <TripLogModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchTripLogs}
       />
     </div>
   );

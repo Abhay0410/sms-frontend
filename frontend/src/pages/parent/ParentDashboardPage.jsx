@@ -13,7 +13,7 @@ export default function ParentDashboardPage() {
     <div className="space-y-8">
       <header>
         <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome back!</h2>
-        <p className="mt-1 text-gray-500 font-medium italic">Your central command for student success.</p>
+        <p className="mt-1 text-slate-500 font-medium ">Your central command for student success.</p>
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

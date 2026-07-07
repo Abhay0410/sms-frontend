@@ -230,10 +230,12 @@ export default function StaffAttendance() {
               {loading ? (
                 <tr>
                   <td colSpan="7" className="p-8 text-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="animate-spin rounded-full h-10 w-10 border-4 border-teal-200 border-t-teal-600"></div>
-                      <p className="mt-4 text-slate-600">Loading attendance data...</p>
-                    </div>
+                    
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  
                   </td>
                 </tr>
               ) : filteredAttendance.length === 0 ? (

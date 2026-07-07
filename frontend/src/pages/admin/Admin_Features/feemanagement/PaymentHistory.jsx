@@ -588,10 +588,12 @@ export default function PaymentHistory() {
         </div>
 
         {loading ? (
-          <div className="p-12 text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border border-indigo-600"></div>
-            <p className="mt-4 text-slate-500">Loading payment history...</p>
-          </div>
+         <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
         ) : payments.length === 0 ? (
           <div className="p-12 text-center">
             <div className="h-20 w-20 mx-auto bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400 text-3xl mb-4">
@@ -671,7 +673,7 @@ export default function PaymentHistory() {
                       <td className="p-4">
                         <div className="flex items-center gap-1">
                           <FaRupeeSign className="text-emerald-600" />
-                          <span className="font-bold text-emerald-600 text-lg">
+                          <span className="font-semibold text-emerald-600 text-lg">
                             {formatCurrency(payment.amountPaid).replace(
                               "₹",
                               "",
@@ -689,7 +691,7 @@ export default function PaymentHistory() {
 
                       {/* Date & Time */}
                       <td className="p-4">
-                        <p className="font-bold text-sm">
+                        <p className="font-semibold text-sm">
                           {formatDate(payment.paymentDate)}
                         </p>
                       </td>

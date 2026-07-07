@@ -358,20 +358,12 @@ const selectedSectionData = selectedSection;
 
   if (loading && classes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 space-y-6">
-        <div className="relative">
-          <div className="h-20 w-20 rounded-full border-4 border-indigo-100"></div>
-          <div className="absolute top-0 left-0 h-20 w-20 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
-        </div>
-        <div className="text-center">
-          <p className="text-indigo-600 font-semibold text-lg animate-pulse">
-            Loading academic structure...
-          </p>
-          <p className="text-slate-400 text-sm mt-2">
-            Please wait while we prepare your dashboard
-          </p>
-        </div>
-      </div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
     );
   }
 

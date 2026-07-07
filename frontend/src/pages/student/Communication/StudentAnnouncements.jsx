@@ -65,10 +65,12 @@ export default function StudentAnnouncements() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-400">
-        <FaSpinner className="animate-spin text-4xl mb-4 text-indigo-500" />
-        <p className="font-medium animate-pulse">Syncing notice board...</p>
-      </div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
     );
   }
 
@@ -77,13 +79,13 @@ export default function StudentAnnouncements() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-slate-900  flex items-center gap-3">
             <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
               <FaBullhorn size={20} />
             </div>
             Notice Board
           </h1>
-          <p className="text-slate-500 mt-1 font-medium italic">
+          <p className="text-slate-500  font-medium mt-1">
             Latest updates from your school administration
           </p>
         </div>

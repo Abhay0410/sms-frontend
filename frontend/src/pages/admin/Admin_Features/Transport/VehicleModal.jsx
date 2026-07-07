@@ -300,7 +300,12 @@ const VehicleModal = ({ isOpen, onClose, onSuccess, editData = null }) => {
           className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all font-medium flex items-center gap-2 shadow-sm"
         >
           {loading && (
-            <FaSpinner className="animate-spin" />
+            <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
           )}
 
           {editData

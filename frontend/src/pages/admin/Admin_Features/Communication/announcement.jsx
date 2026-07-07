@@ -323,7 +323,7 @@ export default function AdminAnnouncements() {
             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
               Announcement Management
             </h1>
-            <p className="text-gray-500 text-sm font-medium mt-1">
+            <p className="text-slate-500 text-sm font-medium mt-1">
               Create and manage announcements for students, teachers, and
               parents
             </p>
@@ -759,12 +759,12 @@ export default function AdminAnnouncements() {
             /* Announcements List */
             <div className="divide-y divide-slate-400">
               {loading ? (
-                <div className="p-16 text-center">
-                  <FaSpinner className="animate-spin inline text-3xl text-indigo-600 mb-4" />
-                  <p className="text-slate-600 font-medium">
-                    Loading announcements...
-                  </p>
-                </div>
+                <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
               ) : allAnnouncements.length === 0 ? (
                 <div className="p-16 text-center">
                   <FaBell className="text-5xl text-slate-200 mx-auto mb-4" />
@@ -818,7 +818,7 @@ export default function AdminAnnouncements() {
                         </div>
 
                         <p
-                          className={`text-slate-600 mb-4 ${expandedAnnouncement === ann._id ? "" : "line-clamp-2"}`}
+                          className={`text-slate-600 font-medium mb-4 ${expandedAnnouncement === ann._id ? "" : "line-clamp-2"}`}
                         >
                           {ann.content}
                         </p>

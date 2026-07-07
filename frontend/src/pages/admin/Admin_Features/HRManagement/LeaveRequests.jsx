@@ -447,10 +447,12 @@ export default function LeaveRequests() {
       {/* Requests List */}
       <div className="bg-[#FFFFFF] rounded-xl shadow-lg border border-slate-400 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-200 border-t-amber-600 mx-auto"></div>
-            <p className="mt-4 text-slate-600">Loading leave requests...</p>
-          </div>
+          <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
         ) : requests.length === 0 ? (
           <div className="p-8 text-center">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -525,7 +527,7 @@ export default function LeaveRequests() {
                             <p className="font-semibold text-slate-900">
                               {req.teacherId?.name || "Unknown"}
                             </p>
-                            <p className="text-sm text-slate-500">
+                            <p className="text-[13px] font-normal text-slate-500">
                               ID: {req.teacherId?.teacherID || "N/A"} •{" "}
                               {req.teacherId?.department || "General"}
                             </p>
@@ -551,7 +553,7 @@ export default function LeaveRequests() {
                           <p className="text-sm text-slate-700 mt-2 line-clamp-2">
                             {req.reason}
                           </p>
-                          <p className="text-xs text-slate-500 mt-1">
+                          <p className="text-[13px] text-slate-500 mt-1">
                             {calculateDays(req.startDate, req.endDate)} days
                           </p>
                         </div>
@@ -559,13 +561,13 @@ export default function LeaveRequests() {
 
                       <td className="p-4">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                          <div className="flex text-[14px] items-center gap-2">
                             <FaCalendarAlt className="text-slate-400" />
                             <span className="font-medium text-slate-900">
                               {formatDate(req.startDate)}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex text-[14px] items-center gap-2">
                             <FaCalendarAlt className="text-slate-400" />
                             <span className="font-medium text-slate-900">
                               {formatDate(req.endDate)}
@@ -578,7 +580,7 @@ export default function LeaveRequests() {
                         <div className="flex items-center gap-2">
                           {getStatusIcon(req.status)}
                           <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(req.status)}`}
+                            className={`px-3 py-1 rounded-full text-[15px] font-medium ${getStatusColor(req.status)}`}
                           >
                             {req.status}
                           </span>

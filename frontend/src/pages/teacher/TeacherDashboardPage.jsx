@@ -15,7 +15,7 @@ export default function TeacherDashboardPage() {
       {/* Welcome Section */}
       <header>
         <h2 className="text-3xl font-bold text-slate-900 tracking-tighter">Command Center</h2>
-        <p className="mt-1 text-gray-500 font-medium text-lg italic">Welcome back, Educator.</p>
+        <p className="mt-1 text-gray-500 font-medium text-sm italic">Welcome back, Educator.</p>
       </header>
 
       {/* Analytics Grid */}

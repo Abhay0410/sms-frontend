@@ -297,7 +297,7 @@ export default function TeacherManagement() {
               )}
             </div>
             <div className="min-w-0">
-              <h4 className="text-sm font-bold text-slate-900 truncate">
+              <h4 className="text-sm font-semibold text-slate-900 leading-tight truncate uppercase">
                 {teacher.name}
               </h4>
               <p className="text-[10px] font-mono text-slate-400">
@@ -402,13 +402,13 @@ export default function TeacherManagement() {
 
           {/* Teacher Info */}
           <div className="min-w-0 flex-1">
-            <h4 className="text-[15px] font-bold text-slate-900 truncate">
+           <h4 className="text-[15px] font-semibold  text-slate-900 truncate">
               {teacher.name}
             </h4>
             <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
               {teacher.department || "Faculty"}
             </p>
-            <p className="text-[10px] font-mono text-slate-400 mt-1">
+            <p className="text-[10px] font-normal text-slate-400 mt-1">
               {teacher.teacherID}
             </p>
           </div>
@@ -419,17 +419,12 @@ export default function TeacherManagement() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#F8FAFC]">
-        <div className="text-center">
-          <div className="relative">
-            <div className="h-16 w-16 rounded-full border-4 border-indigo-100"></div>
-            <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
-          </div>
-          <p className="mt-6 text-lg font-bold text-slate-700">
-            LOADING FACULTY...
-          </p>
-        </div>
-      </div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
     );
   }
 

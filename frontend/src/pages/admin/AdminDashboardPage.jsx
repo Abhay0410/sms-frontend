@@ -142,12 +142,12 @@ export default function AdminDashboardPage() {
 
   if (stats.loading)
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent"></div>
-        <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">
-          Compiling Analytics...
-        </p>
-      </div>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
     );
 
   return (

@@ -844,21 +844,11 @@ const SegmentCard = ({ title, subtitle, count, color, isActive, onClick }) => {
   );
 };
 
-const LoadingView = ({ academicYear, selectedMonth }) => (
-  <div className="flex flex-col items-center justify-center py-20 space-y-4">
-    <div className="relative">
-      <div className="h-12 w-12 rounded-full border-4 border-purple-100"></div>
-      <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-4 border-purple-600 border-t-transparent animate-spin"></div>
-    </div>
-    <div className="text-center space-y-1">
-      <p className="text-purple-600 font-bold uppercase tracking-widest text-xs animate-pulse">
-        Loading Analytics Dashboard
-      </p>
-      <p className="text-slate-500 font-medium text-xs">
-        {selectedMonth === "ALL"
-          ? `Fetching data for ${academicYear}`
-          : `Fetching ${selectedMonth} data for ${academicYear}`}
-      </p>
+const LoadingView = () => (
+  <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
     </div>
   </div>
 );

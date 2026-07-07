@@ -67,9 +67,12 @@ export default function MyClasses() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
     );
   }
 
@@ -145,14 +148,14 @@ export default function MyClasses() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 p-6 border border-blue-100">
                   <p className="text-sm font-medium text-gray-600 mb-2">Class</p>
-                  <p className="text-4xl font-bold text-blue-600">
+                  <p className="text-3xl font-bold text-blue-600">
                     {studentInfo.className}
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 p-6 border border-purple-100">
                   <p className="text-sm font-medium text-gray-600 mb-2">Section</p>
-                  <p className="text-4xl font-bold text-purple-600">
+                  <p className="text-3xl font-bold text-purple-600">
                     {studentInfo.section || 'Not Assigned'}
                   </p>
                 </div>

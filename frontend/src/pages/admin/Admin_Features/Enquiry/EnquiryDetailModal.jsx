@@ -53,9 +53,12 @@ export default function EnquiryDetailModal({ isOpen, onClose, enquiryId }) {
         {/* Content Body */}
         <div className="flex-1 overflow-y-auto p-6">
           {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-            </div>
+            <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               

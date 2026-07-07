@@ -71,9 +71,12 @@ const ExpenseOverviewTab = () => {
   // Keep rendering UI during subsequent re-fetches (just show small spinner)
   if (loading && !summary) {
     return (
-      <div className="flex justify-center p-12">
-        <FaSpinner className="animate-spin text-indigo-600 text-3xl" />
-      </div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>
     );
   }
 
@@ -116,7 +119,12 @@ const ExpenseOverviewTab = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <h3 className="text-xl font-bold text-black tracking-tight">Financial Overview</h3>
-          {loading && summary && <FaSpinner className="animate-spin text-indigo-600" />}
+          {loading && summary && <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto"></div>
+      <p className="mt-4 text-lg font-medium text-gray-700">Loading...</p>
+    </div>
+  </div>}
         </div>
         
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
