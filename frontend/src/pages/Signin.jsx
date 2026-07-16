@@ -275,8 +275,15 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
             {school.schoolName || "School Login"}
           </h1>
           <div className="text-indigo-100 text-sm space-y-1">
-            <p>{school.address?.street}, {school.address?.city}</p>
-            <p>{school.address?.state}, {school.address?.pincode}</p>
+            {school.address?.street && <p>{school.address.street}</p>}
+            {(school.address?.city && school.address.city !== 'Pending') || (school.address?.state && school.address.state !== 'Pending') ? (
+              <p>
+                {school.address?.city && school.address.city !== 'Pending' ? school.address.city : ''}
+                {school.address?.city && school.address.city !== 'Pending' && school.address?.state && school.address.state !== 'Pending' ? ', ' : ''}
+                {school.address?.state && school.address.state !== 'Pending' ? school.address.state : ''}
+              </p>
+            ) : null}
+            {school.address?.pincode && <p>{school.address.pincode}</p>}
           </div>
         </div>
 

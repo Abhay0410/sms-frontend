@@ -265,7 +265,7 @@ const childPhotoUrl = selectedChild?.profilePicture
                     {selectedChild.studentID}
                   </p>
                   <p className="text-green-100">
-                    Class {selectedChild.className} - Section{" "}
+                    {selectedChild.className?.toLowerCase().startsWith("class") ? selectedChild.className : `Class ${selectedChild.className}`} - Section{" "}
                     {selectedChild.section}
                   </p>
                 </div>

@@ -763,7 +763,7 @@ const selectedSectionData = selectedSection;
           </p>
 
           <p className="text-xs text-indigo-600 font-semibold mt-1">
-          Assigned to Class {activeClassName} - Section {selectedSection?.sectionName}
+          Assigned to {activeClassName?.toLowerCase().startsWith("class") ? activeClassName : `Class ${activeClassName}`} - Section {selectedSection?.sectionName}
           </p>
         </div>
       </div>
@@ -955,7 +955,7 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
           <div>
             <div className="mb-10">
               <h3 className="text-2xl font-black text-slate-900">
-                Class {classData.className}
+                {classData.className?.toLowerCase().startsWith("class") ? classData.className : `Class ${classData.className}`}
               </h3>
               <p className="text-slate-500 text-sm mt-1">
                 {classData.academicYear}
@@ -1007,7 +1007,7 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
                 : "Student Enrollment"}
             </h2>
             <p className="text-slate-500 text-sm mt-1">
-              Class {classData.className} • {classData.academicYear}
+              {classData.className?.toLowerCase().startsWith("class") ? classData.className : `Class ${classData.className}`} • {classData.academicYear}
             </p>
           </header>
 
@@ -1389,7 +1389,7 @@ function AssignStudentsTab({
   const [loading, setLoading] = useState(false);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [mode, setMode] = useState("enroll"); // "enroll" or "transfer"
+  const [mode, setMode] = useState(preSelectedSection ? "view" : "enroll"); // "view", "enroll", or "transfer"
   const [fromSection, setFromSection] = useState("");
   const [toSection, setToSection] = useState("");
   const [showPreview, setShowPreview] = useState(false);
@@ -1437,7 +1437,10 @@ function AssignStudentsTab({
 
   // Filter students based on mode
   const getFilteredStudents = () => {
-    if (mode === "enroll") {
+    if (mode === "view") {
+      // Show only students currently in the selected section
+      return students.filter((s) => s.section === selectedSection);
+    } else if (mode === "enroll") {
       // Show unassigned students + students from other sections
       return students.filter(
         (s) => !s.section || s.section !== selectedSection,
@@ -1533,12 +1536,23 @@ function AssignStudentsTab({
     <div className="space-y-8 animate-in slide-in-from-right duration-500 pb-28 relative">
       {/* Mode Selection Tabs (Segmented Control) */}
       <div className="flex justify-start mb-4">
-        <div className="relative flex bg-slate-100/80 p-1.5 rounded-xl w-full max-w-sm shadow-inner border border-slate-200/60">
+        <div className="relative flex bg-slate-100/80 p-1.5 rounded-xl w-full max-w-md shadow-inner border border-slate-200/60">
           <div
-            className={`absolute top-1.5 bottom-1.5 w-[calc(50%-0.375rem)] bg-white rounded-lg shadow-sm transition-transform duration-300 ease-in-out ${
-              mode === "transfer" ? "translate-x-full" : "translate-x-0"
+            className={`absolute top-1.5 bottom-1.5 w-[calc(33.33%-0.375rem)] bg-white rounded-lg shadow-sm transition-transform duration-300 ease-in-out ${
+              mode === "enroll" ? "translate-x-full" : mode === "transfer" ? "translate-x-[200%]" : "translate-x-0"
             }`}
           ></div>
+          <button
+            onClick={() => {
+              setMode("view");
+              setSelectedStudents([]);
+            }}
+            className={`relative z-10 flex-1 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-colors duration-300 flex items-center justify-center gap-2 ${
+              mode === "view" ? "text-indigo-700" : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <FaEye /> VIEW ENROLLED
+          </button>
           <button
             onClick={() => {
               setMode("enroll");
@@ -1568,11 +1582,11 @@ function AssignStudentsTab({
 
       {/* Control Panel */}
       <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
-        {mode === "enroll" ? (
+        {mode === "view" || mode === "enroll" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest">
-                Target Section
+                {mode === "view" ? "View Section" : "Target Section"}
               </label>
               <div className="relative">
                 <FaBuilding className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -1743,11 +1757,12 @@ function AssignStudentsTab({
                 return (
                   <div
                     key={s._id}
-                    onClick={() =>
+                    onClick={() => {
+                      if (mode === "view") return;
                       setSelectedStudents((prev) =>
                         prev.includes(s._id) ? prev.filter((id) => id !== s._id) : [...prev, s._id]
-                      )
-                    }
+                      );
+                    }}
                     className={`group relative bg-white rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden border
                       ${
                         isSelected
@@ -1760,17 +1775,19 @@ function AssignStudentsTab({
                   >
                     <div className="p-5 flex items-start sm:items-center gap-4 h-full">
                       {/* Checkbox Area */}
-                      <div className="flex-shrink-0 mt-1 sm:mt-0">
-                        <div
-                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                            isSelected
-                              ? mode === "enroll" ? "bg-indigo-600 border-indigo-600 text-white" : "bg-blue-600 border-blue-600 text-white"
-                              : "border-slate-200 bg-slate-50 group-hover:border-slate-400"
-                          }`}
-                        >
-                          {isSelected && <FaCheckCircle className="text-sm" />}
+                      {mode !== "view" && (
+                        <div className="flex-shrink-0 mt-1 sm:mt-0">
+                          <div
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                              isSelected
+                                ? mode === "enroll" ? "bg-indigo-600 border-indigo-600 text-white" : "bg-blue-600 border-blue-600 text-white"
+                                : "border-slate-200 bg-slate-50 group-hover:border-slate-400"
+                            }`}
+                          >
+                            {isSelected && <FaCheckCircle className="text-sm" />}
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Avatar */}
                       <div className="flex-shrink-0 mt-1 sm:mt-0">
@@ -1819,7 +1836,21 @@ function AssignStudentsTab({
           </>
         ) : (
           <div className="py-20 text-center bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center">
-            {mode === "enroll" ? (
+            {mode === "view" ? (
+              <>
+                <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+                  <FaUserGraduate size={40} className="text-slate-400" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">
+                  No Students Enrolled
+                </h3>
+                <p className="text-slate-500 text-sm max-w-sm text-center leading-relaxed">
+                  {selectedSection
+                    ? `Section ${selectedSection} currently has no enrolled students.`
+                    : "Select a section to view its enrolled students."}
+                </p>
+              </>
+            ) : mode === "enroll" ? (
               <>
                 <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
                   <FaUserGraduate size={40} className="text-indigo-400" />

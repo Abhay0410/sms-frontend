@@ -331,7 +331,7 @@ export default function ViewChildFee() {
                     {childInfo.studentID}
                   </p>
                   <p className="text-green-100">
-                    Class {childInfo.className} - Section {childInfo.section}
+                    {childInfo.className?.toLowerCase().startsWith("class") ? childInfo.className : `Class ${childInfo.className}`} - Section {childInfo.section}
                   </p>
                 </div>
               </div>

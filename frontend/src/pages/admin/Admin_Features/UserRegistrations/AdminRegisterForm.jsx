@@ -79,7 +79,7 @@ const AdminRegisterForm = () => {
     department: "",
     joiningDate: null,
     isSuperAdmin: false,
-    address: { street: "", city: "", state: "", pincode: "", country: "India" },
+    address: { street: "", city: "", state: "", district: "", pincode: "", country: "India" },
     profilePictureFile: null,
   });
 
@@ -400,6 +400,7 @@ const AdminRegisterForm = () => {
                   <label className="text-sm font-medium text-slate-700">State</label>
                   <FormSelect name="state" value={form.address.state} onChange={handleAddressChange} options={INDIAN_STATES} />
                 </div>
+                <FormInput label="District" name="district" value={form.address.district} onChange={handleAddressChange} />
                 <FormInput label="Pincode" name="pincode" value={form.address.pincode} onChange={handleAddressChange} />
               </div>
             </div>

@@ -467,18 +467,22 @@ export default function TeacherRegisterForm() {
       }
 
       const cleanReason = actualReason.replace("ValidationError:", "").trim();
-      const mappedErrors = { ...errors };
+      const mappedErrors = {};
       const lowerMsg = cleanReason.toLowerCase();
 
       // Mapping conflicts to specific teacher fields
-      if (lowerMsg.includes("email"))
-        mappedErrors.email = "Email already registered.";
-      if (lowerMsg.includes("phone"))
-        mappedErrors.phone = "Phone number already exists.";
-      if (lowerMsg.includes("pan"))
-        mappedErrors.panNumber = "PAN card already registered.";
-      if (lowerMsg.includes("department"))
-        mappedErrors.department = "Select a valid department.";
+      if (lowerMsg.includes("email")) mappedErrors.email = "Email already registered.";
+      else if (lowerMsg.includes("phone")) mappedErrors.phone = "Phone number already exists.";
+      else if (lowerMsg.includes("pan") || lowerMsg.includes("aadhar")) mappedErrors.panNumber = "PAN or identity card mismatch.";
+      else if (lowerMsg.includes("department")) mappedErrors.department = "Select a valid department.";
+      else if (lowerMsg.includes("gender")) mappedErrors.gender = "Gender selection is invalid.";
+      else if (lowerMsg.includes("birth") || lowerMsg.includes("dob")) mappedErrors.dateOfBirth = "Date of Birth is invalid.";
+      else if (lowerMsg.includes("joining") || lowerMsg.includes("join")) mappedErrors.joiningDate = "Joining Date is invalid.";
+      else if (lowerMsg.includes("street")) mappedErrors.street = "Street address is invalid.";
+      else if (lowerMsg.includes("city")) mappedErrors.city = "City is invalid.";
+      else if (lowerMsg.includes("state")) mappedErrors.state = "State is invalid.";
+      else if (lowerMsg.includes("pincode")) mappedErrors.pincode = "Pincode is invalid.";
+      else if (lowerMsg.includes("district")) mappedErrors.district = "District is invalid.";
 
       setErrors(mappedErrors);
 

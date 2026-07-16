@@ -23,7 +23,10 @@ import {
   FaChevronRight,
   FaEye,
   FaPlus,
+  FaDownload,
 } from "react-icons/fa";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const API_URL =
   import.meta.env.VITE_REACT_APP_API_BASE_URL || "http://localhost:5000";
@@ -200,6 +203,166 @@ export default function TeacherManagement() {
     [academicYear],
   );
 
+  const handleDownloadSchedule = () => {
+    if (!selectedTeacher || !teacherSchedule) return;
+
+    try {
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4"
+      });
+
+      // 1. Header background styling (indigo bar)
+      doc.setFillColor(79, 70, 229); // Primary Indigo
+      doc.rect(0, 0, 297, 24, "F");
+
+      // Title Text
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text("FACULTY TIMETABLE REPORT", 14, 15);
+
+      // School Name/Right aligned title metadata
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "normal");
+      doc.text("EduZager School Management System", 283, 15, { align: "right" });
+
+      // 2. Teacher Metadata section
+      doc.setTextColor(30, 41, 59); // Slate-800
+      doc.setFontSize(10);
+      
+      // Column 1
+      doc.setFont("helvetica", "bold");
+      doc.text("Faculty Name:", 14, 36);
+      doc.setFont("helvetica", "normal");
+      doc.text(selectedTeacher.name, 45, 36);
+
+      doc.setFont("helvetica", "bold");
+      doc.text("Department:", 14, 43);
+      doc.setFont("helvetica", "normal");
+      doc.text(selectedTeacher.department || "Academic", 45, 43);
+
+      // Column 2
+      doc.setFont("helvetica", "bold");
+      doc.text("Employee ID:", 150, 36);
+      doc.setFont("helvetica", "normal");
+      doc.text(selectedTeacher.teacherID || "N/A", 180, 36);
+
+      doc.setFont("helvetica", "bold");
+      doc.text("Academic Session:", 150, 43);
+      doc.setFont("helvetica", "normal");
+      doc.text(academicYear || "N/A", 190, 43);
+
+      // 3. Prepare Timetable Table Data
+      const headers = [["Day", "Period 1", "Period 2", "Period 3", "Period 4", "Period 5", "Period 6", "Period 7", "Period 8"]];
+      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      
+      const body = days.map((day) => {
+        const row = [day];
+        const periods = teacherSchedule[day] || [];
+        for (let p = 1; p <= 8; p++) {
+          const periodData = periods.find((item) => item.periodNumber === p);
+          let desc = "Free";
+          if (periodData) {
+            const classNameStr = periodData.className?.replace(/class\s*/i, "").trim() || "";
+            const sectionStr = periodData.section || "";
+            const classSection = classNameStr && sectionStr ? `${classNameStr} ${sectionStr}` : classNameStr || sectionStr || "";
+            const subjectStr = periodData.subject || "";
+            desc = subjectStr ? `${classSection} (${subjectStr})` : classSection;
+          }
+          row.push(desc);
+        }
+        return row;
+      });
+
+      // 4. Render Table using autoTable
+      autoTable(doc, {
+        startY: 52,
+        head: headers,
+        body: body,
+        theme: "grid",
+        headStyles: {
+          fillColor: [79, 70, 229], // Indigo background
+          textColor: [255, 255, 255],
+          fontSize: 10,
+          fontStyle: "bold",
+          halign: "center",
+          valign: "middle"
+        },
+        columnStyles: {
+          0: { cellWidth: 35, fontStyle: "bold", fillColor: [248, 250, 252], halign: "left" } // Day column
+        },
+        styles: {
+          fontSize: 9,
+          font: "helvetica",
+          cellPadding: 4,
+          halign: "center",
+          valign: "middle",
+          lineColor: [226, 232, 240], // Light gray borders
+          lineWidth: 0.1
+        },
+        didParseCell: (data) => {
+          // Highlight "Free" cells or active periods
+          if (data.row.index >= 0 && data.column.index > 0) {
+            if (data.cell.raw === "Free") {
+              data.cell.styles.textColor = [148, 163, 184]; // Muted Slate-400
+              data.cell.styles.fontStyle = "normal";
+            } else {
+              data.cell.styles.textColor = [79, 70, 229]; // Bold Indigo for active classes
+              data.cell.styles.fontStyle = "bold";
+              data.cell.styles.fillColor = [245, 243, 255]; // Soft purple background for occupied periods
+            }
+          }
+        }
+      });
+
+      // 5. Add Footer note
+      const finalY = doc.lastAutoTable.finalY + 15;
+      doc.setFontSize(8);
+      doc.setTextColor(148, 163, 184);
+      doc.setFont("helvetica", "italic");
+      doc.text(`Generated dynamically on ${new Date().toLocaleDateString()} via EduZager SMS Portal`, 14, Math.min(finalY, 195));
+
+      // Save PDF
+      doc.save(`${selectedTeacher.name}_Schedule_${academicYear}.pdf`);
+      toast.success("Schedule PDF downloaded successfully!");
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      toast.error("Failed to generate PDF. Downloading CSV backup...");
+      
+      // Fallback CSV download code just in case
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Day,Period 1,Period 2,Period 3,Period 4,Period 5,Period 6,Period 7,Period 8\r\n";
+      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      days.forEach((day) => {
+        let row = day;
+        const periods = teacherSchedule[day] || [];
+        for (let p = 1; p <= 8; p++) {
+          const periodData = periods.find((item) => item.periodNumber === p);
+          let desc = "Free";
+          if (periodData) {
+            const classNameStr = periodData.className?.replace(/class\s*/i, "").trim() || "";
+            const sectionStr = periodData.section || "";
+            const classSection = classNameStr && sectionStr ? `${classNameStr} ${sectionStr}` : classNameStr || sectionStr || "";
+            const subjectStr = periodData.subject || "";
+            desc = subjectStr ? `${classSection} (${subjectStr})` : classSection;
+            desc = desc.replace(/"/g, '""');
+          }
+          row += `,"${desc}"`;
+        }
+        csvContent += row + "\r\n";
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `${selectedTeacher.name}_Schedule_${academicYear}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   useEffect(() => {
     fetchSessions();
   }, [fetchSessions]);
@@ -234,11 +397,9 @@ export default function TeacherManagement() {
   }, [teachers, selectedDepartment, searchQuery]);
 
   // Pagination logic
-  const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
   const paginatedTeachers = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredTeachers.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredTeachers, currentPage, itemsPerPage]);
+    return filteredTeachers;
+  }, [filteredTeachers]);
 
   // Reset page on filter change
   useEffect(() => {
@@ -526,30 +687,6 @@ export default function TeacherManagement() {
             {renderedTeacherList}
           </div>
 
-          {/* Pagination Bar */}
-          {filteredTeachers.length > 0 && (
-            <div className="p-3 border-t border-slate-400 bg-slate-50 flex items-center justify-between">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="p-2 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm disabled:opacity-30 transition-all"
-              >
-                <FaChevronLeft size={12} />
-              </button>
-              <span className="text-xs font-bold text-slate-400 tracking-widest">
-                PAGE {currentPage} / {totalPages}
-              </span>
-              <button
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages}
-                className="p-2 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm disabled:opacity-30 transition-all"
-              >
-                <FaChevronRight size={12} />
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Right Panel - Scrollable */}
@@ -689,9 +826,18 @@ export default function TeacherManagement() {
 
               {/* Schedule Summary - Day vs Period */}
               <div className="w-full xl:w-[65%]">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
-                  Schedule Summary
-                </h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-0">
+                    Schedule Summary
+                  </h3>
+                  <button
+                    onClick={handleDownloadSchedule}
+                    className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 rounded-lg text-xs font-bold transition-all shadow-sm"
+                  >
+                    <FaDownload size={10} />
+                    Download Schedule
+                  </button>
+                </div>
                 <div className="bg-white border border-slate-400 rounded-2xl overflow-hidden shadow-sm">
                   {loadingSchedule ? (
                     <div className="p-8 text-center">
@@ -701,16 +847,16 @@ export default function TeacherManagement() {
                       </p>
                     </div>
                   ) : (
-                    <table className="w-full text-[9px] text-center border-collapse">
-                      <thead className="bg-slate-50 border-b border-slate-400">
+                    <table className="w-full text-[10px] text-center border-collapse">
+                      <thead className="bg-indigo-50/50 border-b border-slate-300">
                         <tr>
-                          <th className="p-3 border-r border-slate-400 font-bold text-slate-400">
+                          <th className="p-3 border-r border-slate-200 font-semibold text-indigo-900">
                             Day
                           </th>
                           {[1, 2, 3, 4, 5, 6, 7, 8].map((p) => (
                             <th
                               key={p}
-                              className="p-2 border-r border-slate-400 font-bold text-slate-400 w-[10%]"
+                              className="p-2 border-r border-slate-200 font-semibold text-indigo-900 w-[10%]"
                             >
                               P{p}
                             </th>
@@ -730,9 +876,9 @@ export default function TeacherManagement() {
                           return (
                             <tr
                               key={day}
-                              className="border-b border-slate-400 last:border-0 h-12"
+                              className="border-b border-slate-200 last:border-0 h-14 hover:bg-slate-50/50 transition-colors"
                             >
-                              <td className="p-2 border-r border-slate-400 font-bold bg-slate-50/30 text-slate-500 uppercase tracking-widest text-[8px]">
+                              <td className="p-2 border-r border-slate-200 font-semibold bg-slate-50/40 text-slate-500 uppercase tracking-wider text-[9px]">
                                 {day.slice(0, 3)}
                               </td>
                               {[1, 2, 3, 4, 5, 6, 7, 8].map((p) => {
@@ -742,14 +888,14 @@ export default function TeacherManagement() {
                                 return (
                                   <td
                                     key={p}
-                                    className="border-r border-slate-400 last:border-0 p-1 align-middle"
+                                    className="border-r border-slate-200 last:border-0 p-1 align-middle"
                                   >
                                     {period ? (
-                                      <div className="bg-indigo-50/50 p-1 rounded-md h-full flex flex-col justify-center items-center">
+                                      <div className="bg-indigo-50/70 p-1.5 rounded-lg h-full flex flex-col justify-center items-center border border-indigo-100">
                                         <div className="font-bold text-indigo-700 leading-none mb-0.5">
-                                        C{period.className?.replace(/class\s*/i, "").trim()}-{period.section}
+                                          {period.className?.replace(/class\s*/i, "").trim() || ""} {period.section || ""}
                                         </div>
-                                        <div className="text-[7px] text-slate-400 uppercase font-bold">
+                                        <div className="text-[8px] text-indigo-400 uppercase font-bold tracking-wider">
                                           {period.subject?.slice(0, 3)}
                                         </div>
                                       </div>

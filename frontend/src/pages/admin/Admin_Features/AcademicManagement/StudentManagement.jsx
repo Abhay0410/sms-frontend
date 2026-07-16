@@ -30,7 +30,7 @@ export default function StudentManagement() {
   const [academicYear, setAcademicYear] = useState("2025-2026");
   const [pagination, setPagination] = useState({
     currentPage: 1,
-    perPage: 4,
+    perPage: 10000,
     total: 0,
     totalPages: 0   // ✅ ADD THIS
   });
@@ -549,7 +549,7 @@ export default function StudentManagement() {
 
         {/* Student Table */}
         <div className="mt-6 rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
             <table className="w-full text-left border-collapse">
               <thead className="bg-slate-800 text-white border-b border-slate-200">
                 <tr>
@@ -730,95 +730,7 @@ export default function StudentManagement() {
             </table>
           </div>
 
-          {/* Pagination */}
-          {pagination.totalPages > 1 && (
-  <div className="p-4 flex items-center justify-between border-t border-slate-200 bg-white">
 
-    {/* LEFT INFO */}
-    <p className="text-sm text-slate-600">
-      Showing{" "}
-      <span className="font-semibold">
-        {(pagination.currentPage - 1) * pagination.perPage + 1}
-      </span>{" "}
-      to{" "}
-      <span className="font-semibold">
-        {Math.min(
-          pagination.currentPage * pagination.perPage,
-          pagination.total
-        )}
-      </span>{" "}
-      of <span className="font-semibold">{pagination.total}</span>
-    </p>
-
-    {/* RIGHT PAGINATION */}
-    <div className="flex items-center gap-2">
-
-      {/* Prev */}
-      <button
-        onClick={() =>
-          setPagination((prev) => ({
-            ...prev,
-            currentPage: prev.currentPage - 1,
-          }))
-        }
-        disabled={pagination.currentPage === 1}
-        className="px-3 py-1.5 text-sm rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-40"
-      >
-        Prev
-      </button>
-
-      {/* Page Numbers */}
-      {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-        .filter((page) => {
-          // 🔥 Show only nearby pages (smart UI)
-          return (
-            page === 1 ||
-            page === pagination.totalPages ||
-            Math.abs(page - pagination.currentPage) <= 1
-          );
-        })
-        .map((page, index, arr) => (
-          <span key={page} className="flex items-center">
-            
-            {/* Ellipsis */}
-            {index > 0 && page - arr[index - 1] > 1 && (
-              <span className="px-2 text-slate-400">...</span>
-            )}
-
-            <button
-              onClick={() =>
-                setPagination((prev) => ({
-                  ...prev,
-                  currentPage: page,
-                }))
-              }
-              className={`px-3 py-1.5 text-sm rounded-lg border transition ${
-                pagination.currentPage === page
-                  ? "bg-blue-600 text-white border-blue-600 shadow"
-                  : "border-slate-300 hover:bg-slate-100"
-              }`}
-            >
-              {page}
-            </button>
-          </span>
-        ))}
-
-      {/* Next */}
-      <button
-        onClick={() =>
-          setPagination((prev) => ({
-            ...prev,
-            currentPage: prev.currentPage + 1,
-          }))
-        }
-        disabled={pagination.currentPage === pagination.totalPages}
-        className="px-3 py-1.5 text-sm rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-40"
-      >
-        Next
-      </button>
-    </div>
-  </div>
-)}
         </div>
 
         {/* Promote Modal */}

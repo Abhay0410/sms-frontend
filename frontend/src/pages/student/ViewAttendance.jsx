@@ -158,7 +158,7 @@ export default function ViewAttendance() {
                 <h3 className="text-2xl font-bold">{student.name}</h3>
                 <p className="text-blue-100 font-medium">{student.studentID}</p>
                 <p className="text-blue-100">
-                  Class {student.className} - {student.section}
+                  {student.className?.toLowerCase().startsWith("class") ? student.className : `Class ${student.className}`} - {student.section}
                 </p>
               </div>
               <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">

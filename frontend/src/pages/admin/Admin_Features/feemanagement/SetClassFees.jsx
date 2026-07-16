@@ -410,7 +410,7 @@ export default function SetClassFees() {
                         animate={{ opacity: 1, y: 0 }}
                         className="grid grid-cols-12 gap-4 p-6 bg-slate-50 rounded-2xl items-center border border-slate-400 hover:border-indigo-500 transition-all"
                       >
-                        <div className="col-span-5">
+                        <div className="col-span-4">
                           <label className="text-xs font-medium text-slate-600 mb-1 block">
                             Fee Label
                           </label>
@@ -465,7 +465,7 @@ export default function SetClassFees() {
                             ))}
                           </select>
                         </div>
-                        <div className="col-span-1">
+                        <div className="col-span-2">
                           <label className="text-xs font-medium text-slate-600 mb-1 block">
                             Late Fee
                           </label>

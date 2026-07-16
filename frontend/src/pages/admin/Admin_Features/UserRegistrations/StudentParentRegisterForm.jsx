@@ -1035,7 +1035,7 @@ export default function StudentParentRegisterForm({ studentId, onFormSubmit, onC
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-1 h-6 bg-purple-500 rounded-full"></div>
                 <h3 className="text-sm font-bold text-purple-800 uppercase tracking-wider">
-                  Guardian Account Details
+                  Guardian Details
                 </h3>
               </div>
 

@@ -254,7 +254,7 @@ function ChildDetailView({
                   <div className="flex items-center gap-2 mt-1">
                     <FaGraduationCap className="h-4 w-4 text-white/80" />
                     <span className="text-white/90 text-sm">
-                      Class {child.className}{" "}
+                      {child.className?.toLowerCase().startsWith("class") ? child.className : `Class ${child.className}`}{" "}
                       {child.section && `- ${child.section}`}
                     </span>
                   </div>

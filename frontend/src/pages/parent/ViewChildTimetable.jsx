@@ -261,7 +261,7 @@ console.log("Final Image URL:", childPhotoUrl);
                     {displayChild.studentID}
                   </p>
                   <p className="text-green-100">
-                    Class {displayChild.className || "N/A"} - Section{" "}
+                    {displayChild.className?.toLowerCase().startsWith("class") ? displayChild.className : `Class ${displayChild.className || "N/A"}`} - Section{" "}
                     {displayChild.section || "N/A"}
                   </p>
                 </div>

@@ -279,13 +279,29 @@ const AdminRoutes = ({ school }) => {
     ];
 
     return allSections.filter((section) => {
+      // 1. Check plan module gates first
+      const moduleGates = {
+        "Inventory & Assets": "INVENTORY",
+        "Financial Ledger": "EXPENSE",
+        "Staff HR": "HR",
+        "Payroll & Salary": "PAYROLL",
+        "Library": "LIBRARY",
+        "Transport": "TRANSPORT"
+      };
+      
+      const requiredModule = moduleGates[section.title];
+      if (requiredModule && school?.modulesEnabled) {
+        if (!school.modulesEnabled.includes(requiredModule)) {
+          return false;
+        }
+      }
+
+      // 2. Check role designation visibleTo
       if (isSuperAdmin || designation === "Principal") return true;
-
       if (!section.visibleTo) return true;
-
       return section.visibleTo.includes(designation);
     });
-  }, [designation, isSuperAdmin]);
+  }, [designation, isSuperAdmin, school]);
 
   return (
     <Routes>

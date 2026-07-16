@@ -177,12 +177,28 @@ export default function NewEnquiryTab() {
             </div>
             <div>
               <label className={labelClass}>Primary Phone <span className="text-red-500">*</span></label>
-              <input {...register("primaryPhone", { required: "Required", pattern: { value: /^[0-9]{10}$/, message: "Must be a 10-digit number" } })} className={inputClass} placeholder="10-digit mobile" />
+              <input
+                maxLength={10}
+                {...register("primaryPhone", {
+                  required: "Required",
+                  pattern: { value: /^[0-9]{10}$/, message: "Must be a 10-digit number" },
+                })}
+                className={inputClass}
+                placeholder="10-digit mobile"
+              />
               {errors.primaryPhone && <p className={errorClass}>{errors.primaryPhone.message}</p>}
             </div>
             <div>
               <label className={labelClass}>Secondary Phone</label>
-              <input {...register("secondaryPhone")} className={inputClass} placeholder="Alternate number" />
+              <input
+                maxLength={10}
+                {...register("secondaryPhone", {
+                  pattern: { value: /^[0-9]{10}$/, message: "Must be a 10-digit number" },
+                })}
+                className={inputClass}
+                placeholder="Alternate number"
+              />
+              {errors.secondaryPhone && <p className={errorClass}>{errors.secondaryPhone.message}</p>}
             </div>
             <div>
               <label className={labelClass}>Email</label>

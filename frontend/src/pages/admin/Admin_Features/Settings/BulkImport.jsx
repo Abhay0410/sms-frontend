@@ -31,9 +31,9 @@ export default function BulkImport({ type = "academic" }) {
     student:
       "Name,AdmissionID,RollNumber,Email,ClassName,Section,ParentName,ParentPhone,Gender,ParentID,ParentEmail\nAarav Sharma,STU26051,1,aarav@mail.com,10,B,Rajesh Sharma,9812345670,Male,PAR250001,rajesh@parent.com",
     fee:
-      "ClassName,FeeHead,Amount,Frequency,DueDateDay\n10,Tuition Fee,2000,MONTHLY,10\n10,Exam Fee,500,ONE_TIME,15\n9,Tuition Fee,1800,MONTHLY,10",
+      "ClassName,FeeHead,Amount,Frequency,DueDateDay\nNursery,Tuition Fee,1500,MONTHLY,10\nNursery,Admission Fee,5000,ONE_TIME,5\nClass 1,Tuition Fee,2200,MONTHLY,10\nClass 1,Sports Fee,800,YEARLY,25",
     payment:
-      "StudentID,Amount,Mode,Date,Remarks\nSTU26001,5000,CASH,2026-04-10,Migration Import\nSTU26002,1200,NEFT,2026-03-15,Q1 Partial",
+      "StudentID,Amount,Mode,Date,Remarks\nSTU26096,2200,CASH,2026-04-10,April Tuition Fee - Migration\nSTU26096,800,UPI,2026-04-15,Sports Fee Yearly - Migration\nSTU26097,2200,CHEQUE,2026-04-08,April Tuition Fee Chq No 1021\nSTU26097,800,CASH,2026-04-12,Sports Fee Yearly - Migration\nSTU26098,2200,ONLINE,2026-04-11,April Tuition Fee Online Trans\nSTU26098,800,NEFT,2026-04-14,Sports Fee Yearly - Migration\nSTU26099,3000,UPI,2026-04-10,Combined April Tuition and Sports Fee\nSTU26100,2200,NEFT,2026-04-09,April Tuition Fee Migration\nSTU26100,800,ONLINE,2026-04-20,Sports Fee Yearly Migration\nSTU26096,2200,CASH,2026-05-10,May Tuition Fee - Advanced\nSTU26097,2200,UPI,2026-05-10,May Tuition Fee - Advanced\nSTU26098,2200,ONLINE,2026-05-11,May Tuition Fee - Advanced\nSTU26099,2200,CASH,2026-05-09,May Tuition Fee - Advanced\nSTU26100,2200,CHEQUE,2026-05-08,May Tuition Fee Chq No 1055",
   };
 
   // Instruction Data Map

@@ -55,9 +55,9 @@ export default function AdminDashboardPage() {
 
       const [studentResp, teacherResp, classResp] = await Promise.all([
         api.get(
-          `${API_ENDPOINTS.ADMIN.STUDENT.LIST}?academicYear=${currentYear}`,
+          `${API_ENDPOINTS.ADMIN.STUDENT.LIST}?academicYear=${currentYear}&limit=10000`,
         ),
-        api.get(API_ENDPOINTS.ADMIN.TEACHER.LIST),
+        api.get(`${API_ENDPOINTS.ADMIN.TEACHER.LIST}?limit=10000`),
         api.get(
           `${API_ENDPOINTS.ADMIN.CLASS.LIST}?academicYear=${currentYear}`,
         ),
@@ -65,11 +65,11 @@ export default function AdminDashboardPage() {
 
       // ✅ FIX: Extracting counts based on your backend response structures
       const studentList =
-        studentResp?.data?.students || studentResp?.students || [];
+        Array.isArray(studentResp?.data) ? studentResp.data : (studentResp?.students || []);
       const teacherList =
-        teacherResp?.data?.teachers || teacherResp?.teachers || [];
+        Array.isArray(teacherResp?.data) ? teacherResp.data : (teacherResp?.teachers || []);
       const classList =
-        classResp?.data?.classes || classResp?.data || classResp || [];
+        Array.isArray(classResp?.data) ? classResp.data : (Array.isArray(classResp) ? classResp : []);
 
       // Calculate capacity and distribution
       const totalCap = classList.reduce(

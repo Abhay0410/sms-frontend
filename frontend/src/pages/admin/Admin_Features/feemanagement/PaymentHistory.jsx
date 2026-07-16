@@ -146,7 +146,18 @@ export default function PaymentHistory() {
         const uniqueClasses = [
           ...new Set(classData.map((c) => c.className).filter(Boolean)),
         ];
-        setClasses(uniqueClasses.sort());
+        const getWeight = (name) => {
+          const lower = name.toLowerCase().trim();
+          if (lower.startsWith("nursery")) return 1;
+          if (lower.startsWith("lkg")) return 2;
+          if (lower.startsWith("ukg")) return 3;
+          const match = lower.match(/\d+/);
+          if (match) {
+            return 10 + parseInt(match[0]);
+          }
+          return 100;
+        };
+        setClasses(uniqueClasses.sort((a, b) => getWeight(a) - getWeight(b)));
       } else {
         setClasses([
           "Nursery",
