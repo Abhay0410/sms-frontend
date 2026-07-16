@@ -31,6 +31,23 @@ import {
   FaEye,
 } from "react-icons/fa";
 
+const formatClassName = (name) => {
+  if (!name) return "";
+  const trimmed = name.trim();
+  const lower = trimmed.toLowerCase();
+  
+  if (lower.startsWith("class")) {
+    return trimmed;
+  }
+  
+  const prePrimaryNames = ["nursery", "lkg", "ukg", "playgroup", "pre-nursery"];
+  if (prePrimaryNames.some(p => lower.startsWith(p))) {
+    return trimmed;
+  }
+  
+  return `Class ${trimmed}`;
+};
+
 const getClassPriority = (className) => {
   const name = className.toLowerCase();
 
@@ -588,7 +605,7 @@ const selectedSectionData = selectedSection;
                         : "text-white"
                     }`}
                   >
-                    {cls.className}
+                    {formatClassName(cls.className)}
                   </div>
                   <div className="text-xs text-white-500">
                     {cls.sections?.length || 0} sections
@@ -615,7 +632,7 @@ const selectedSectionData = selectedSection;
               </option>
               {classes.map((cls) => (
                 <option key={cls._id} value={cls.className}>
-                  {cls.className}
+                  {formatClassName(cls.className)}
                 </option>
               ))}
             </select>
@@ -661,7 +678,7 @@ const selectedSectionData = selectedSection;
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-white">
-                        {activeClassName} - Section{" "}
+                        {formatClassName(activeClassName)} - Section{" "}
                         {selectedSection.sectionName}
                       </h2>
                       <p className="text-sm text-white flex items-center gap-2 mt-0.5">
@@ -763,7 +780,7 @@ const selectedSectionData = selectedSection;
           </p>
 
           <p className="text-xs text-indigo-600 font-semibold mt-1">
-          Assigned to {activeClassName?.toLowerCase().startsWith("class") ? activeClassName : `Class ${activeClassName}`} - Section {selectedSection?.sectionName}
+          Assigned to {formatClassName(activeClassName)} - Section {selectedSection?.sectionName}
           </p>
         </div>
       </div>
@@ -955,7 +972,7 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
           <div>
             <div className="mb-10">
               <h3 className="text-2xl font-black text-slate-900">
-                {classData.className?.toLowerCase().startsWith("class") ? classData.className : `Class ${classData.className}`}
+                {formatClassName(classData.className)}
               </h3>
               <p className="text-slate-500 text-sm mt-1">
                 {classData.academicYear}
@@ -1007,7 +1024,7 @@ function ClassDetailsModal({ classData, onClose, onReload }) {
                 : "Student Enrollment"}
             </h2>
             <p className="text-slate-500 text-sm mt-1">
-              {classData.className?.toLowerCase().startsWith("class") ? classData.className : `Class ${classData.className}`} • {classData.academicYear}
+              {formatClassName(classData.className)} • {classData.academicYear}
             </p>
           </header>
 
