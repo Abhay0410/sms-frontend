@@ -21,6 +21,7 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchingSchool, setFetchingSchool] = useState(true);
+  const [activeDemoTab, setActiveDemoTab] = useState("admin");
 
   // Persist selected role to localStorage to prevent reset on error/refresh
   useEffect(() => {
@@ -382,15 +383,104 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
 
           {/* Demo Credentials */}
           <div className="mt-6 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
-            <p className="font-bold text-indigo-700 mb-2 text-sm">Demo Credentials:</p>
-            <div className="text-xs text-indigo-600 space-y-1">
-              <p><span className="font-medium">Admin:</span> ADM001 / Admin@123</p>
-              <p><span className="font-medium">Teacher:</span> TCHR250001 / Teacher@123</p>
-              <p><span className="font-medium">Student:</span> STU250001 / Student@0001</p>
-              <p><span className="font-medium">Parent:</span> PAR250001 / Parent@0001</p>
+            <p className="font-bold text-indigo-700 mb-3 text-sm">Demo Credentials:</p>
+            
+            {/* Tabs Selector */}
+            <div className="flex border-b border-indigo-200 mb-3 text-xs">
+              {["admin", "teacher", "student/parent"].map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveDemoTab(tab)}
+                  className={`pb-2 px-3 font-semibold capitalize border-b-2 transition-all ${
+                    activeDemoTab === tab
+                      ? "border-indigo-600 text-indigo-700"
+                      : "border-transparent text-indigo-400 hover:text-indigo-600"
+                  }`}
+                >
+                  {tab === "student/parent" ? "Students & Parents" : tab}
+                </button>
+              ))}
             </div>
-            <p className="text-xs text-indigo-500 mt-2">
-              ⚠️ These work only for <span className="font-bold">{school.schoolName}</span>
+
+            {/* Tab Contents */}
+            {activeDemoTab === "admin" && (
+              <div className="text-xs text-indigo-600 space-y-1">
+                <p><span className="font-semibold">Login ID:</span> ADM-591 <span className="text-indigo-400">or</span> greenvalley@gmail.com</p>
+                <p><span className="font-semibold">Password:</span> greenvalley123</p>
+              </div>
+            )}
+
+            {activeDemoTab === "teacher" && (
+              <div className="overflow-x-auto max-h-40 overflow-y-auto border border-indigo-100 rounded-lg">
+                <table className="min-w-full text-[10px] text-indigo-600 text-left">
+                  <thead className="bg-indigo-100/50 sticky top-0 font-bold">
+                    <tr>
+                      <th className="p-1">Teacher Name</th>
+                      <th className="p-1">Login ID</th>
+                      <th className="p-1">Password</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-indigo-100">
+                    {[
+                      { name: "Abhay Singh", id: "TCHR26001" },
+                      { name: "John Doe", id: "TCHR26002" },
+                      { name: "Priya Sharma", id: "TCHR26003" },
+                      { name: "Rajesh Kumar", id: "TCHR26004" },
+                      { name: "Anita Desai", id: "TCHR26005" },
+                      { name: "Vikram Mehta", id: "TCHR26006" },
+                      { name: "Sunita Reddy", id: "TCHR26007" },
+                      { name: "Amit Patel", id: "TCHR26008" },
+                      { name: "Deepa Nair", id: "TCHR26009" },
+                      { name: "Sanjay Gupta", id: "TCHR26010" }
+                    ].map((t, idx) => (
+                      <tr key={idx} className="hover:bg-indigo-100/30">
+                        <td className="p-1">{t.name}</td>
+                        <td className="p-1 font-mono">{t.id}</td>
+                        <td className="p-1 font-mono">Teacher@123</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {activeDemoTab === "student/parent" && (
+              <div className="overflow-x-auto max-h-40 overflow-y-auto border border-indigo-100 rounded-lg">
+                <table className="min-w-full text-[10px] text-indigo-600 text-left">
+                  <thead className="bg-indigo-100/50 sticky top-0 font-bold">
+                    <tr>
+                      <th className="p-1">Student (ID)</th>
+                      <th className="p-1">Parent (ID)</th>
+                      <th className="p-1">Password</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-indigo-100">
+                    {[
+                      { sName: "Aarav Sharma", sId: "STU26051", pName: "Rajesh Sharma", pId: "PAR250001" },
+                      { sName: "Anaya Reddy", sId: "STU26052", pName: "Suresh Reddy", pId: "PAR250002" },
+                      { sName: "Vihaan Kumar", sId: "STU26053", pName: "Manoj Kumar", pId: "PAR250003" },
+                      { sName: "Sara Khan", sId: "STU26054", pName: "Irfan Khan", pId: "PAR250004" },
+                      { sName: "Zara Khan", sId: "STU26062", pName: "Irfan Khan", pId: "PAR250004" },
+                      { sName: "Advik Singh", sId: "STU26055", pName: "Ram Singh", pId: "PAR250005" },
+                      { sName: "Aadhya Iyer", sId: "STU26056", pName: "Krishna Iyer", pId: "PAR250006" },
+                      { sName: "Ishaan Gupta", sId: "STU26057", pName: "Anil Gupta", pId: "PAR250007" },
+                      { sName: "Riya Patel", sId: "STU26058", pName: "Sanjay Patel", pId: "PAR250008" },
+                      { sName: "Arjun Nair", sId: "STU26059", pName: "Deepak Nair", pId: "PAR250009" }
+                    ].map((row, idx) => (
+                      <tr key={idx} className="hover:bg-indigo-100/30">
+                        <td className="p-1">{row.sName} ({row.sId})</td>
+                        <td className="p-1">{row.pName} ({row.pId})</td>
+                        <td className="p-1 font-mono">Student@123</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <p className="text-xs text-indigo-500 mt-3">
+              ⚠️ These work only for <span className="font-bold">{school?.schoolName || "Green Valley"}</span>
             </p>
           </div>
         </div>
