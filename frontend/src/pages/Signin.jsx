@@ -480,7 +480,7 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
             )}
 
             <p className="text-xs text-indigo-500 mt-3">
-              ⚠️ These work only for <span className="font-bold">{school?.schoolName || "Green Valley"}</span>
+              ⚠️ These work only for <span className="font-bold">{ "Green Valley"}</span>
             </p>
           </div>
         </div>
