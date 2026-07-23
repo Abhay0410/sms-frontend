@@ -407,7 +407,7 @@ const Signin = ({ setIsLoggedIn, setUserRole, setSchool }) => {
             {activeDemoTab === "admin" && (
               <div className="text-xs text-indigo-600 space-y-1">
                 <p><span className="font-semibold">Login ID:</span> ADM-591 <span className="text-indigo-400">or</span> greenvalley@gmail.com</p>
-                <p><span className="font-semibold">Password:</span> greenvalley123</p>
+                <p><span className="font-semibold">Password:</span> Greenvalley123</p>
               </div>
             )}
 
