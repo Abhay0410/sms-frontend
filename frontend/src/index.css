@@ -1,4 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  
+  --color-deep-slate-50: #f8fafc;
+  --color-deep-slate-100: #f1f5f9;
+  --color-deep-slate-200: #e2e8f0;
+  --color-deep-slate-300: #cbd5e1;
+  --color-deep-slate-400: #94a3b8;
+  --color-deep-slate-500: #64748b;
+  --color-deep-slate-600: #475569;
+  --color-deep-slate-700: #334155;
+  --color-deep-slate-800: #1e293b;
+  --color-deep-slate-900: #0f172a;
+  --color-deep-slate-950: #020617;
+  
+  --color-navy-blue-50: #f0f7ff;
+  --color-navy-blue-100: #e0effe;
+  --color-navy-blue-200: #bae0fd;
+  --color-navy-blue-300: #7cc7fb;
+  --color-navy-blue-400: #38a9f8;
+  --color-navy-blue-500: #0e8fe3;
+  --color-navy-blue-600: #0271c2;
+  --color-navy-blue-700: #035aa0;
+  --color-navy-blue-800: #074c84;
+  --color-navy-blue-900: #0c406e;
+  --color-navy-blue-950: #051224;
+}
+
+html {
+  font-size: 14px !important;
+  font-family: 'Inter', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Widescreen fluid viewports override to force 100% width on page components inside dashboard content */
+#main-content .max-w-7xl,
+#main-content .max-w-6xl,
+#main-content .max-w-5xl,
+#main-content .max-w-4xl,
+#main-content .max-w-3xl,
+#main-content .max-w-\[1500px\] {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Subtle micro-animations for interactive buttons/links */
+.btn-micro-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-micro-active:hover {
+  transform: translateY(-1px);
+}
+.btn-micro-active:active {
+  transform: translateY(0) scale(0.98);
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
